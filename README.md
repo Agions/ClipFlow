@@ -1,183 +1,113 @@
-```
-  ____ _ _       _____ _
- / ___| (_)_ __ |  ___| | _____      __
-| |   | | | '_ \| |_  | |/ _ \ \ /\ / /
-| |___| | | |_) |  _| | | (_) \ V  V /
- \____|_|_| .__/|_|   |_|\___/ \_/\_/
-           |_|
-```
+# ClipFlow
+
+> AI 自主剪辑桌面客户端（Tauri）
 
 <p align="center">
-  <strong>ClipFlow — AI 驱动的专业视频内容创作平台</strong>
+  <img src="./public/logo.svg" alt="ClipFlow" width="88" />
 </p>
 
 <p align="center">
-
-[![版本](https://img.shields.io/badge/version-1.0.0--beta-blue.svg)](https://github.com/agions/clipflow)
-[![许可证](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript)](https://www.typescriptlang.org)
-[![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react)](https://react.dev)
-[![Tauri](https://img.shields.io/badge/Tauri-2.x-FFC107?logo=tauri)](https://tauri.app)
-
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License" /></a>
+  <img src="https://img.shields.io/badge/version-1.0.0--beta-blue.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/React-18+-61DAFB?logo=react" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-5+-3178C6?logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Tauri-2.x-FFC107?logo=tauri" alt="Tauri" />
 </p>
 
----
+## 项目定位
 
-## 简介
+ClipFlow 不是传统时间线剪辑器，而是面向精品内容生产的 **AI 自主剪辑系统**。  
+系统围绕“理解画面 -> 规划叙事 -> 生成解说 -> 自动混剪 -> 导出成片”构建，强调流程完整性与可维护工程化落地。
 
-ClipFlow 是一款面向影视创作者和内容创作者的专业 AI 视频内容创作平台。通过深度整合前沿大语言模型，ClipFlow 为用户提供 **智能脚本生成**、**视频分析** 和 **智能混剪** 等核心功能，大幅提升视频创作效率。
+## 核心能力
 
----
+- `AI 解说`：基于画面语义自动生成解说文本
+- `AI 混剪`：按节奏和场景组织片段并生成旁白建议
+- `第一人称视角解说`：POV 叙事风格生成
+- `自动添加原画`：三种 AI 模式均支持原画辅助叠加
+- `多模型接入`：模型配置与 API Key 管理联动
 
-## 核心功能
+## 技术架构
 
-| 功能 | 描述 |
-|------|------|
-| 🎬 **AI 智能剪辑** | 自动识别精彩片段，智能生成剪辑方案 |
-| 🎙️ **AI 智能解说** | 支持 AI 自动生成专业解说文案，多种音色可选 |
-| 👤 **AI 第一人称解说** | 第一人称视角叙述，像主播一样与观众互动 |
-| ✂️ **AI 混剪** | 多素材智能合成，自动匹配节奏 |
-| 🔍 **视频分析** | OCR 文字识别、语音转写、场景检测、关键帧提取 |
-
-### 完整工作流程
-
-```
-┌────────────┐    ┌────────────┐    ┌────────────┐    ┌────────────┐
-│   创建项目  │    │  上传视频   │    │ AI 分析    │    │ 生成脚本   │
-│  Project  │ ─▶ │   Video    │ ─▶ │ (场景、OCR) │ ─▶ │  Script   │
-└────────────┘    └────────────┘    │  关键帧)   │    └────────────┘
-                                   └────────────┘            │
-                                                               ▼
-      ▲                                              ┌────────────┐
-      │                                              │  视频合成   │
-      │                                              │ Synthesis │
-      │                                              └────────────┘
-      │                                                    │
-      └─────────────────── 导出 ◀──────────────────────────┘
-```
-
----
+- 前端：`React 18` + `TypeScript` + `Ant Design 5` + `Zustand`
+- 客户端：`Tauri 2.x`（Rust 命令负责文件与系统能力）
+- 构建：`Vite 6`
+- 文档：`Docsify + GitHub Pages`
 
 ## 快速开始
 
-### 环境要求
+## 1. 环境要求
 
-| 要求 | 版本 |
-|------|------|
-| Node.js | >= 18.0.0 |
-| npm | >= 9.0.0 |
-| Rust | 最新稳定版 (可选) |
+- Node.js `>= 20`
+- npm `>= 10`
+- Rust（Tauri 打包需要）
 
-### 安装
+## 2. 安装依赖
 
 ```bash
-# 克隆项目
-git clone https://github.com/agions/clipflow.git
-cd clipflow
-
-# 安装依赖
 npm install
-
-# 启动开发服务器
-npm run dev
 ```
 
-### 构建桌面应用
+## 3. 本地开发
+
+```bash
+npm run tauri dev
+```
+
+## 4. 生产构建
 
 ```bash
 npm run tauri build
 ```
 
----
+## 5. macOS DMG（稳定构建）
 
-## 技术栈
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        前端技术栈                              │
-├─────────────────────────────────────────────────────────────┤
-│  React 18  │  TypeScript 5  │  Ant Design 5.x            │
-│  Zustand   │  LESS + CSS    │  Framer Motion             │
-├─────────────────────────────────────────────────────────────┤
-│                       桌面应用                                │
-├─────────────────────────────────────────────────────────────┤
-│                          Tauri 2.x                           │
-├─────────────────────────────────────────────────────────────┤
-│                       构建工具                               │
-├─────────────────────────────────────────────────────────────┤
-│                           Vite                               │
-└─────────────────────────────────────────────────────────────┘
+```bash
+npm run tauri:build:dmg
 ```
 
----
+该命令会在官方 DMG 脚本失败时自动兜底转换，输出最终可安装 `.dmg`。
 
-## 支持的 AI 模型
+## 常用命令
 
-| 厂商 | 模型 | 适用场景 |
-|------|------|----------|
-| **OpenAI** | GPT-5.3, GPT-4o | 综合文本生成 |
-| **Anthropic** | Claude 4.6 Opus, Claude 4 Sonnet | 长文本分析 |
-| **Google** | Gemini 3 Ultra, Gemini 3 Pro | 多模态理解 |
-| **DeepSeek** | DeepSeek R1, DeepSeek V3 | 推理任务 |
-| **阿里云** | Qwen 3.5, Qwen Max | 中文内容 |
-| **智谱** | GLM-5 | 多任务处理 |
-| **月之暗面** | Kimi k2.5, Kimi k2 | 长文本处理 |
+```bash
+# 类型检查
+npm run type-check
 
----
+# 前端构建
+npm run build
 
-## 项目结构
-
-```
-clipflow/
-├── src/
-│   ├── components/       # React 组件
-│   │   ├── AIPanel/    # AI 功能面板
-│   │   ├── common/     # 通用组件
-│   │   └── editor/     # 编辑器组件
-│   ├── core/           # 核心服务
-│   │   ├── services/   # 业务服务
-│   │   ├── hooks/      # 自定义 Hooks
-│   │   ├── store/      # 状态管理
-│   │   └── types/      # 类型定义
-│   ├── pages/          # 页面组件
-│   ├── layouts/        # 布局组件
-│   ├── styles/         # 全局样式
-│   └── utils/          # 工具函数
-├── docs/               # 项目文档
-└── src-tauri/          # Tauri 后端
+# 文档本地预览
+npm run docs:dev
 ```
 
----
+## 目录结构
 
-## 文档
+```text
+.
+├── src/                     # 前端业务代码
+├── src-tauri/               # Tauri/Rust 代码与打包配置
+├── docs/                    # 在线文档站点
+├── scripts/                 # 工具脚本（含 build-dmg.sh）
+└── .github/workflows/       # CI/CD（含 docs pages 发布）
+```
 
-| 文档 | 描述 |
-|------|------|
-| [快速开始](docs/getting-started.md) | 环境配置和安装 |
-| [功能特性](docs/features.md) | 详细功能介绍 |
-| [工作流程](docs/workflow.md) | AI 创作流程 |
-| [常见问题](docs/faq.md) | FAQ 解答 |
-| [更新日志](docs/CHANGELOG.md) | 版本更新记录 |
+## 在线文档
 
----
+- 文档入口：`docs/README.md`
+- 推荐阅读顺序：
+1. `docs/getting-started/installation.md`
+2. `docs/getting-started/quick-start.md`
+3. `docs/guides/core-workflow.md`
+4. `docs/guides/model-config.md`
 
-## 科技暗黑主题
+## 开发原则
 
-ClipFlow 采用精心设计的科技暗黑风格：
+- 模块清晰：服务层与页面层职责分离
+- 单一来源：项目文件读写以 Tauri 命令为主
+- 渐进重构：优先保证可运行、可验证、可回滚
+- 文档先行：关键流程和发布命令文档化
 
-- 🌑 **深邃黑背景** — #0a0a0f 主色调
-- ✨ **霓虹发光** — 紫色/青色/粉色光效
-- 💎 **玻璃拟态** — 现代半透明组件
-- 🎬 **流畅动画** — 丝滑过渡效果
+## License
 
----
-
-## 许可证
-
-MIT License - 自由使用和修改
-
----
-
-<p align="center">
-  <strong>Made with ❤️ by Agions</strong>
-</p>
+MIT
