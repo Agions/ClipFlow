@@ -29,6 +29,10 @@ export { videoEffectService, VideoEffectService } from './video-effect.service';
 export { exportService, ExportService } from './export.service';
 export { pipelineService, PipelineService } from './pipeline.service';
 
+// 新增服务
+export { smartCutService, SmartCutService } from './smartCut.service';
+export { videoEnhanceService, VideoEnhanceService } from './videoEnhance.service';
+
 // 重新导出类型
 export type { AIResponse, RequestConfig } from './ai.service';
 export type {
