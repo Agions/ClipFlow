@@ -80,3 +80,6 @@ export type {
 export type {
   PipelineConfig, PipelineState, WorkflowStep as PipelineWorkflowStep, WorkflowEventType, WorkflowEvent, WorkflowResult
 } from './pipeline.service';
+
+export { unifiedWorkflowService, UnifiedWorkflowService } from './unified-workflow.service';
+export type { WorkflowMode, WorkflowState, WorkflowStep, WorkflowResult, VideoClip, SceneInfo, AudioPeak, ScriptData, ScriptSegment, SubtitleData, SubtitleEntry } from './unified-workflow.service';
