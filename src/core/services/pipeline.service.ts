@@ -122,14 +122,14 @@ export class PipelineService {
     const signal = this.abortController.signal;
 
     try {
-      // Step 1: 上传
-      this.updateState('upload', 10, '正在上传视频...');
+      // Step 1: 上传 (5%)
+      this.updateState('upload', 5, '正在上传视频...');
       await this.uploadVideo(videoFile, signal);
       stepsCompleted++;
       
       if (signal.aborted) throw new Error('工作流已取消');
 
-      // Step 2: 分析
+      // Step 2: 分析 (25%)
       if (this.config.autoAnalyze) {
         this.updateState('analyzing', 30, '正在分析视频...');
         await this.analyzeVideo(signal);
@@ -138,22 +138,22 @@ export class PipelineService {
       
       if (signal.aborted) throw new Error('工作流已取消');
 
-      // Step 3: 智能剪辑
+      // Step 3: 智能剪辑 (35%)
       if (this.config.enableSmartClip) {
-        this.updateState('clipping', 50, '正在进行智能剪辑...');
+        this.updateState('clipping', 65, '正在进行智能剪辑...');
         await this.smartClip(signal);
         stepsCompleted++;
       }
       
       if (signal.aborted) throw new Error('工作流已取消');
 
-      // Step 4: 编辑
-      this.updateState('editing', 70, '正在处理编辑...');
+      // Step 4: 编辑 (15%)
+      this.updateState('editing', 80, '正在处理编辑...');
       await this.processEditing(signal);
       stepsCompleted++;
 
-      // Step 5: 导出
-      this.updateState('exporting', 90, '正在导出视频...');
+      // Step 5: 导出 (20%)
+      this.updateState('exporting', 100, '正在导出视频...');
       const outputPath = await this.exportVideo(signal);
       stepsCompleted++;
 
