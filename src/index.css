@@ -101,3 +101,34 @@ body {
   border-color: #6366f1 !important;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
 }
+
+/* Focus visible 键盘导航样式 */
+*:focus-visible {
+  outline: 2px solid var(--brand-purple);
+  outline-offset: 2px;
+}
+
+/* Card 组件 focus 样式 */
+.ant-card:focus-visible,
+.ant-card[role="button"]:focus-visible {
+  outline: 2px solid var(--brand-purple);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--brand-purple-glow);
+}
+
+/* Button focus 样式 */
+.ant-btn:focus-visible {
+  outline: 2px solid var(--brand-purple);
+  outline-offset: 2px;
+}
+
+/* 降低动画以适应 prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

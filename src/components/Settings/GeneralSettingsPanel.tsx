@@ -39,13 +39,14 @@ const GeneralSettingsPanel: React.FC<GeneralSettingsPanelProps> = ({
 
   return (
     <Card title="通用设置" extra={<SettingOutlined />}>
-      <Form layout="vertical">
+      <Form layout="vertical" aria-label="通用设置表单">
         <Form.Item label="自动保存">
           <Switch
             checked={autoSave}
             onChange={onAutoSaveChange}
             checkedChildren="开启"
             unCheckedChildren="关闭"
+            aria-label="自动保存开关"
           />
         </Form.Item>
 
@@ -55,11 +56,12 @@ const GeneralSettingsPanel: React.FC<GeneralSettingsPanelProps> = ({
             onChange={onCompactModeChange}
             checkedChildren="开启"
             unCheckedChildren="关闭"
+            aria-label="紧凑模式开关"
           />
         </Form.Item>
 
         <Form.Item label="主题">
-          <Select value={theme} onChange={onThemeChange} style={{ width: 200 }}>
+          <Select value={theme} onChange={onThemeChange} style={{ width: 200 }} aria-label="主题选择">
             <Option value="light">浅色</Option>
             <Option value="dark">深色</Option>
             <Option value="auto">跟随系统</Option>
@@ -71,6 +73,7 @@ const GeneralSettingsPanel: React.FC<GeneralSettingsPanelProps> = ({
             value={projectSaveBehavior}
             onChange={onProjectSaveBehaviorChange}
             style={{ width: 220 }}
+            aria-label="保存后跳转行为"
           >
             <Option value="stay">留在编辑页</Option>
             <Option value="detail">跳转项目详情</Option>
@@ -81,7 +84,7 @@ const GeneralSettingsPanel: React.FC<GeneralSettingsPanelProps> = ({
 
         <Form.Item>
           <Space>
-            <Button icon={<UndoOutlined />} onClick={handleReset}>
+            <Button icon={<UndoOutlined />} onClick={handleReset} aria-label="重置设置">
               重置为默认
             </Button>
           </Space>

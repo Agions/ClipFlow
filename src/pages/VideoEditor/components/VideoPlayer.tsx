@@ -77,12 +77,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   if (!videoSrc) {
     return (
-      <div className={styles.emptyPlayer}>
+      <div className={styles.emptyPlayer} role="region" aria-label="视频加载区域">
         <Button
           type="primary"
           icon={<UploadOutlined />}
           onClick={onLoadVideo}
           size="large"
+          aria-label="加载视频文件"
         >
           加载视频
         </Button>
@@ -94,7 +95,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }
 
   return (
-    <div className={styles.playerWrapper}>
+    <div className={styles.playerWrapper} role="region" aria-label="视频播放器">
       <video
         ref={videoRef}
         src={videoSrc}
@@ -102,21 +103,23 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onClick={togglePlayPause}
+        aria-label="视频播放区域"
       />
 
-      <div className={styles.playerControls}>
+      <div className={styles.playerControls} role="toolbar" aria-label="播放控制">
         <Button
           type="text"
           icon={isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
           onClick={togglePlayPause}
           size="large"
+          aria-label={isPlaying ? "暂停" : "播放"}
         />
 
-        <div className={styles.timeDisplay}>
+        <div className={styles.timeDisplay} aria-live="polite">
           <Text>{formatTime(currentTime)} / {formatTime(duration)}</Text>
         </div>
 
-        <div className={styles.progressBar}>
+        <div className={styles.progressBar} role="slider" aria-label="播放进度" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round((currentTime / Math.max(duration, 1)) * 100)}>
           <Progress
             percent={(currentTime / Math.max(duration, 1)) * 100}
             showInfo={false}
@@ -129,6 +132,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <Button
             type="text"
             icon={<FullscreenOutlined />}
+            aria-label="全屏"
           />
         </Tooltip>
       </div>

@@ -45,30 +45,35 @@ const Toolbar: React.FC<ToolbarProps> = ({
   onExport,
 }) => {
   return (
-    <div className={styles.toolbar}>
+    <div className={styles.toolbar} role="toolbar" aria-label="视频编辑器工具栏">
       <div className={styles.leftTools}>
         <Button
           type="primary"
           icon={<UploadOutlined />}
           onClick={onLoadVideo}
           loading={loading}
+          aria-label="加载视频"
         >
           加载视频
         </Button>
 
-        <Tooltip title="撤销">
+        <Tooltip title="撤销 (Ctrl+Z)">
           <Button
             icon={<UndoOutlined />}
             disabled={!canUndo}
             onClick={onUndo}
+            aria-label="撤销"
+            aria-disabled={!canUndo}
           />
         </Tooltip>
 
-        <Tooltip title="重做">
+        <Tooltip title="重做 (Ctrl+Y)">
           <Button
             icon={<RedoOutlined />}
             disabled={!canRedo}
             onClick={onRedo}
+            aria-label="重做"
+            aria-disabled={!canRedo}
           />
         </Tooltip>
 
@@ -77,6 +82,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             icon={<PlusOutlined />}
             onClick={onAddSegment}
             disabled={!hasVideo}
+            aria-label="添加片段"
           />
         </Tooltip>
 
@@ -86,6 +92,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onClick={onSmartClip}
             disabled={!hasVideo || analyzing}
             loading={analyzing}
+            aria-label="智能剪辑"
           >
             智能剪辑
           </Button>
@@ -98,6 +105,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           onClick={onSave}
           loading={isSaving}
           disabled={!hasVideo || loading || analyzing || isSaving || isExporting}
+          aria-label="保存项目"
         >
           保存
         </Button>
@@ -108,6 +116,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           onClick={onExport}
           loading={isExporting}
           disabled={!hasVideo || loading || analyzing || isSaving || isExporting}
+          aria-label="导出视频"
         >
           导出
         </Button>

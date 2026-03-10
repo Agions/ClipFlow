@@ -84,6 +84,7 @@ const ApiKeysPanel: React.FC<ApiKeysPanelProps> = ({ apiKeys, onUpdateKey, onDel
                   placeholder={`输入 ${PROVIDER_NAMES[provider]} API 密钥`}
                   value={config?.key || ''}
                   onChange={(e) => onUpdateKey(provider, e.target.value)}
+                  aria-label={`${PROVIDER_NAMES[provider]} API 密钥输入框`}
                   suffix={
                     config?.isValid === true ? <CheckCircleOutlined style={{ color: '#52c41a' }} /> :
                     config?.isValid === false ? <CloseCircleOutlined style={{ color: '#ff4d4f' }} /> :
@@ -93,11 +94,13 @@ const ApiKeysPanel: React.FC<ApiKeysPanelProps> = ({ apiKeys, onUpdateKey, onDel
                 <Button
                   icon={isVisible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                   onClick={() => toggleKeyVisibility(provider)}
+                  aria-label={isVisible ? "隐藏密钥" : "显示密钥"}
                 />
                 <Button
                   type="primary"
                   loading={isTesting}
                   onClick={() => handleTest(provider, config?.key || '')}
+                  aria-label={`验证 ${PROVIDER_NAMES[provider]} 密钥`}
                 >
                   验证
                 </Button>
@@ -106,6 +109,7 @@ const ApiKeysPanel: React.FC<ApiKeysPanelProps> = ({ apiKeys, onUpdateKey, onDel
                     danger
                     icon={<DeleteOutlined />}
                     onClick={() => onDeleteKey(provider)}
+                    aria-label={`删除 ${PROVIDER_NAMES[provider]} 密钥`}
                   />
                 )}
               </Space.Compact>

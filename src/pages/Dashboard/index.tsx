@@ -232,12 +232,24 @@ const Dashboard: React.FC = () => {
     ],
   });
   
+  // 键盘导航处理
+  const handleProjectKeyDown = (projectId: string) => (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openProject(projectId);
+    }
+  };
+
   // 渲染网格视图中的项目卡片
   const renderGridItem = (project: Project) => (
     <Col xs={24} sm={12} md={8} lg={6} key={project.id}>
       <Card 
         className={styles.projectCard}
+        role="button"
+        tabIndex={0}
+        onKeyDown={handleProjectKeyDown(project.id)}
         onMouseEnter={() => { void preloadProjectEditPage(); }}
+        aria-label={`项目: ${project.title}, 时长: ${formatDuration(project.duration)}`}
         cover={
           <div className={styles.thumbnailContainer}>
             <img 
@@ -260,6 +272,7 @@ const Dashboard: React.FC = () => {
                 e.stopPropagation();
                 toggleStar(project.id);
               }}
+              aria-label={project.starred ? "取消收藏" : "收藏项目"}
             />
           </div>
         }
@@ -269,6 +282,7 @@ const Dashboard: React.FC = () => {
               type="text" 
               icon={<EditOutlined />} 
               onClick={() => openProject(project.id)}
+              aria-label="编辑项目"
             />
           </Tooltip>,
           <Tooltip title="导出视频">
@@ -276,10 +290,11 @@ const Dashboard: React.FC = () => {
               type="text" 
               icon={<CloudUploadOutlined />} 
               onClick={() => console.log('导出', project.id)}
+              aria-label="导出视频"
             />
           </Tooltip>,
           <Dropdown menu={projectMenu(project.id)} placement="bottomRight" trigger={['click']}>
-            <Button type="text" icon={<MoreOutlined />} />
+            <Button type="text" icon={<MoreOutlined />} aria-label="更多操作" />
           </Dropdown>
         ]}
       >
@@ -311,25 +326,32 @@ const Dashboard: React.FC = () => {
   const renderListItem = (project: Project) => (
     <List.Item
       key={project.id}
+      role="button"
+      tabIndex={0}
+      onKeyDown={handleProjectKeyDown(project.id)}
+      aria-label={`项目: ${project.title}`}
       actions={[
         <Button
           type="text"
           icon={project.starred ? <StarFilled style={{ color: '#faad14' }} /> : <StarOutlined />}
           onClick={() => toggleStar(project.id)}
+          aria-label={project.starred ? "取消收藏" : "收藏项目"}
         />,
         <Button
           type="text"
           icon={<EditOutlined />}
           onMouseEnter={() => { void preloadProjectEditPage(); }}
           onClick={() => openProject(project.id)}
+          aria-label="编辑项目"
         />,
         <Button
           type="text"
           icon={<CloudUploadOutlined />}
           onClick={() => console.log('导出', project.id)}
+          aria-label="导出视频"
         />,
         <Dropdown menu={projectMenu(project.id)} placement="bottomRight" trigger={['click']}>
-          <Button type="text" icon={<MoreOutlined />} />
+          <Button type="text" icon={<MoreOutlined />} aria-label="更多操作" />
         </Dropdown>
       ]}
     >
@@ -483,28 +505,60 @@ const Dashboard: React.FC = () => {
       <Card title="快速工具" className={styles.quickTools}>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={8} md={6}>
-            <Card className={styles.toolCard} onMouseEnter={() => { void preloadAIVideoEditorPage(); }} onClick={() => navigate('/workflow')}>
+            <Card 
+              className={styles.toolCard} 
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/workflow'); } }}
+              onMouseEnter={() => { void preloadAIVideoEditorPage(); }} 
+              onClick={() => navigate('/workflow')}
+              aria-label="模板库: 使用专业模板快速创建"
+            >
               <VideoCameraOutlined className={styles.toolIcon} />
               <div className={styles.toolTitle}>模板库</div>
               <div className={styles.toolDesc}>使用专业模板快速创建</div>
             </Card>
           </Col>
           <Col xs={24} sm={8} md={6}>
-            <Card className={styles.toolCard} onMouseEnter={() => { void preloadProjectsPage(); }} onClick={() => navigate('/projects')}>
+            <Card 
+              className={styles.toolCard} 
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/projects'); } }}
+              onMouseEnter={() => { void preloadProjectsPage(); }} 
+              onClick={() => navigate('/projects')}
+              aria-label="素材库: 管理您的视频素材"
+            >
               <FolderOutlined className={styles.toolIcon} />
               <div className={styles.toolTitle}>素材库</div>
               <div className={styles.toolDesc}>管理您的视频素材</div>
             </Card>
           </Col>
           <Col xs={24} sm={8} md={6}>
-            <Card className={styles.toolCard} onMouseEnter={() => { void preloadAIVideoEditorPage(); }} onClick={() => navigate('/ai-editor')}>
+            <Card 
+              className={styles.toolCard} 
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/ai-editor'); } }}
+              onMouseEnter={() => { void preloadAIVideoEditorPage(); }} 
+              onClick={() => navigate('/ai-editor')}
+              aria-label="AI 助手: 智能生成内容与剪辑"
+            >
               <FireOutlined className={styles.toolIcon} />
               <div className={styles.toolTitle}>AI 助手</div>
               <div className={styles.toolDesc}>智能生成内容与剪辑</div>
             </Card>
           </Col>
           <Col xs={24} sm={8} md={6}>
-            <Card className={styles.toolCard} onMouseEnter={() => { void preloadSettingsPage(); }} onClick={() => navigate('/settings')}>
+            <Card 
+              className={styles.toolCard} 
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/settings'); } }}
+              onMouseEnter={() => { void preloadSettingsPage(); }} 
+              onClick={() => navigate('/settings')}
+              aria-label="数据分析: 查看您的创作数据"
+            >
               <BarChartOutlined className={styles.toolIcon} />
               <div className={styles.toolTitle}>数据分析</div>
               <div className={styles.toolDesc}>查看您的创作数据</div>
