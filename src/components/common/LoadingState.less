@@ -1,3 +1,19 @@
+@film-amber: #d4a574;
+@film-amber-light: #e8c9a8;
+@film-amber-glow: rgba(212, 165, 116, 0.35);
+
+@border-subtle: rgba(255, 255, 255, 0.06);
+@border-default: rgba(255, 255, 255, 0.1);
+
+@text-primary: #f8f8f2;
+@text-secondary: #a8a8b3;
+@text-muted: #6b6b7a;
+
+@bg-void: #08080a;
+@bg-surface: #1c1c22;
+
+@radius-md: 8px;
+
 .loading-skeleton {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
@@ -27,7 +43,7 @@
     width: 20px;
     height: 20px;
     border: 2px solid #f0f0f0;
-    border-top-color: #6366f1;
+    border-top-color: @film-amber;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -45,7 +61,7 @@
   
   .progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #6366f1, #87d068);
+    background: linear-gradient(90deg, @film-amber, #87d068);
     animation: progress 2s ease-in-out infinite;
   }
 }
