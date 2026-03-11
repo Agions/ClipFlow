@@ -1,814 +1,500 @@
-/**
- * 设置页面样式
- * 提供系统设置和AI模型配置界面样式
- * 
- * @author Agions
- * @date 2024
- * @version 2.0
- * @description 基于Ant Design的高级设置界面，支持响应式布局和深色模式
- */
-@import '../../styles/variables.less';
+/* ClipFlow X - Settings Page Cinema Director Styles */
+/* 电影导演工作室风格 - 设置页面 */
 
-// 基础变量定义
-@primary-color: #1890ff;
+@film-amber: #d4a574;
+@film-amber-light: #e8c9a8;
+@film-amber-glow: rgba(212, 165, 116, 0.35);
+
+@ink-black: #0d0d0f;
+@ink-deep: #141418;
+@ink-charcoal: #1c1c22;
+@ink-surface: #242430;
+
+@border-subtle: rgba(255, 255, 255, 0.06);
+@border-default: rgba(255, 255, 255, 0.1);
+
+@text-primary: #f8f8f2;
+@text-secondary: #a8a8b3;
+@text-muted: #6b6b7a;
+
+@bg-void: #08080a;
+@bg-primary: #0d0d0f;
+@bg-elevated: #141418;
+@bg-surface: #1c1c22;
+@bg-card: rgba(28, 28, 34, 0.7);
+
 @radius-md: 8px;
-@box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-@box-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
-@transition-duration: 0.3s;
+@radius-lg: 12px;
+@radius-xl: 16px;
 
-// 深色模式变量 - 科技暗黑主题
-@dark-bg-primary: #0a0a0f;
-@dark-bg-secondary: #12121a;
-@dark-bg-tertiary: #1a1a24;
-@dark-primary: #6366f1;
-@dark-border: #2a2a3a;
-@dark-text-primary: #f1f5f9;
-@dark-text-secondary: #94a3b8;
-
-// 霓虹发光效果
-@neon-glow: 0 0 20px rgba(99, 102, 241, 0.4);
-@neon-glow-soft: 0 0 15px rgba(99, 102, 241, 0.25);
-@neon-border: 0 0 1px 1px rgba(99, 102, 241, 0.3);
+@shadow-glow-amber: 0 0 30px var(--film-amber-glow);
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
   @media (max-width: 768px) {
     padding: 16px;
   }
+}
 
-  .header {
-    margin-bottom: 24px;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    h2 {
-      font-size: 28px;
-      margin-bottom: 8px;
+.header {
+  margin-bottom: 32px;
 
-      @media (max-width: 768px) {
-        font-size: 24px;
-      }
+  h2 {
+    font-family: var(--font-display, 'Outfit', sans-serif);
+    font-weight: 700;
+    font-size: 28px;
+    color: @text-primary;
+    margin-bottom: 8px;
+
+    @media (max-width: 768px) {
+      font-size: 24px;
     }
   }
 }
 
+/* 设置卡片 - 电影胶片风格 */
 .settingsCard {
-  background: rgba(255, 255, 255, 0.6);
+  background: @bg-card;
   backdrop-filter: blur(20px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: @radius-xl;
+  border: 1px solid @border-subtle;
   overflow: hidden;
-  transition: all @transition-duration cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   margin-bottom: 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
 
   &:hover {
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.06);
+    border-color: rgba(212, 165, 116, 0.1);
   }
 
-  &.darkCard {
-    background: rgba(30, 30, 30, 0.6);
-    border-color: @dark-border;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  }
-
-  @media (max-width: @screen-sm) {
-    border-radius: @radius-md;
+  @media (max-width: 768px) {
+    border-radius: @radius-lg;
   }
 }
 
+/* 标签页 */
 .tabs {
   min-height: 500px;
 
   :global {
     .ant-tabs-nav {
-      width: 200px;
+      width: 220px;
+      padding: 16px 0;
 
       @media (max-width: 768px) {
-        width: 120px;
+        width: 100%;
       }
     }
 
     .ant-tabs-tab {
-      padding: 16px 20px;
-      margin: 0 0 8px 0;
-      transition: all @transition-duration;
-      border-radius: 12px;
+      padding: 14px 20px;
+      margin: 4px 12px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      border-radius: @radius-md;
+      color: @text-secondary;
+      font-family: var(--font-display, 'Outfit', sans-serif);
       font-weight: 500;
 
-      @media (max-width: 768px) {
-        padding: 12px;
-      }
-
       &:hover {
-        background-color: rgba(24, 144, 255, 0.04);
-        color: @primary-color;
+        background: rgba(255, 255, 255, 0.03);
+        color: @text-primary;
       }
 
-      &.ant-tabs-tab-active {
-        background: linear-gradient(135deg, rgba(24, 144, 255, 0.1), rgba(114, 46, 209, 0.1));
-        box-shadow: 0 4px 12px rgba(24, 144, 255, 0.1);
-        color: @primary-color;
+      @media (max-width: 768px) {
+        margin: 0 4px;
+        padding: 12px 16px;
+      }
+    }
 
-        .anticon {
-          color: @primary-color;
-        }
+    .ant-tabs-tab-active {
+      background: rgba(212, 165, 116, 0.1) !important;
+
+      .ant-tabs-tab-btn {
+        color: @film-amber !important;
+      }
+    }
+
+    .ant-tabs-ink-bar {
+      background: @film-amber;
+      box-shadow: 0 0 10px @film-amber-glow;
+    }
+
+    .ant-tabs-content-holder {
+      background: @bg-elevated;
+      border-left: 1px solid @border-subtle;
+
+      @media (max-width: 768px) {
+        border-left: none;
+        border-top: 1px solid @border-subtle;
       }
     }
 
     .ant-tabs-content {
-      padding: 0 16px;
-
-      @media (max-width: 768px) {
-        padding: 0 8px;
-      }
+      padding: 24px;
     }
-  }
-}
 
-.form {
-  width: 100%;
-}
-
-.modelList {
-  padding: 16px 0;
-
-  .alert {
-    margin-bottom: 24px;
-    border-radius: @radius-md;
-  }
-}
-
-.modelGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  margin-top: 20px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.success {
-  color: #52c41a;
-  padding: 4px 0;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-
-  .anticon {
-    margin-right: 6px;
-  }
-}
-
-.error {
-  color: #f5222d;
-  padding: 4px 0;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-
-  .anticon {
-    margin-right: 6px;
-  }
-}
-
-.testButton {
-  margin-left: 8px;
-  height: 100%;
-  border: none;
-  border-radius: 0 @radius-md @radius-md 0;
-}
-
-.defaultButton {
-  margin-left: 8px;
-  border-radius: 6px;
-}
-
-.switchItem {
-  margin-bottom: 20px;
-  padding: 16px 20px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: #fff;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-    transform: translateY(-1px);
-  }
-
-  @media (max-width: 768px) {
-    padding: 12px;
-    margin-bottom: 12px;
-  }
-}
-
-.languageSelector {
-  margin-bottom: 20px;
-  padding: 16px 20px;
-  border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: #fff;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-    transform: translateY(-1px);
-  }
-
-  .anticon {
-    font-size: 20px;
-    margin-right: 12px;
-    color: @primary-color;
-  }
-
-  @media (max-width: 768px) {
-    padding: 12px;
-    margin-bottom: 12px;
-  }
-}
-
-.settingRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  .anticon {
-    font-size: 20px;
-    margin-right: 12px;
-    color: @primary-color;
-
-    @media (max-width: 768px) {
-      font-size: 18px;
-      margin-right: 8px;
-    }
-  }
-}
-
-.switchLabel {
-  flex: 1;
-  font-weight: 600;
-  font-size: 15px;
-  margin-right: 16px;
-
-  @media (max-width: 768px) {
-    margin-right: 8px;
-  }
-}
-
-.settingDescription {
-  color: var(--text-color-secondary);
-  font-size: 14px;
-  margin-top: 4px;
-  max-width: 600px;
-
-  @media (max-width: 768px) {
-    font-size: 12px;
-  }
-}
-
-.formItem {
-  margin-bottom: 20px;
-
-  @media (max-width: 768px) {
-    margin-bottom: 16px;
-  }
-
-  :global {
-    .ant-form-item-label {
-      padding-bottom: 4px;
-    }
-  }
-}
-
-.apiKeyInput {
-  width: 100%;
-  max-width: 500px;
-  border-radius: @radius-md;
-
-  :global {
-    .ant-input-group-addon {
+    .ant-tabs-tabpane {
       padding: 0;
     }
   }
 }
 
-.validationStatus {
-  margin: 8px 0;
-  font-size: 14px;
-}
+/* 表单样式 */
+.formSection {
+  margin-bottom: 32px;
 
-.optionContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-
-  @media (max-width: 992px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.optionCard {
-  border-radius: @radius-md;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  transition: box-shadow @transition-duration;
-
-  &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-}
-
-.chineseModelsGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-
-.dependencyItem {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  padding: 12px;
-  background-color: var(--bg-color-secondary);
-  border-radius: 4px;
-}
-
-.dependencyInfo {
-  flex: 1;
-}
-
-.dependencyStatus {
-  margin-left: 16px;
-}
-
-.installInstruction {
-  margin-top: 24px;
-
-  .installCard {
-    margin-top: 12px;
-    background-color: var(--bg-color-secondary);
-    border-radius: 10px;
-    border: none;
-
-    code {
-      background-color: rgba(0, 0, 0, 0.06);
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-    }
-  }
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-
-  .saveButton {
-    min-width: 140px;
-    height: 48px;
-    border-radius: 10px;
-    font-weight: 500;
-    font-size: 16px;
-    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.2);
-  }
-}
-
-.loading {
-  padding: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-}
-
-// 深色模式适配 - 科技暗黑主题
-:global(.dark) {
-  .container {
-    background: @dark-bg-primary;
-
-    .header {
-      h2 {
-        color: @dark-text-primary;
-      }
-    }
-  }
-
-  .settingsCard {
-    background: rgba(18, 18, 26, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid @dark-border;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), @neon-glow-soft;
-
-    &:hover {
-      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), @neon-glow;
-    }
-  }
-
-  .tabs {
-    :global {
-      .ant-tabs-nav {
-        background-color: @dark-bg-secondary;
-
-        .ant-tabs-tab {
-          color: @dark-text-secondary;
-
-          &:hover {
-            background-color: rgba(99, 102, 241, 0.1);
-            color: @dark-primary;
-          }
-
-          &.ant-tabs-tab-active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.15));
-            box-shadow: @neon-glow-soft;
-            color: @dark-primary;
-
-            .anticon {
-              color: @dark-primary;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .modelGrid {
-    .modelCard {
-      background-color: @dark-bg-tertiary;
-      border-color: @dark-border;
-
-      .apiKeyExample {
-        background-color: rgba(99, 102, 241, 0.1);
-        color: @dark-text-secondary;
-      }
-    }
-  }
-
-  .switchItem {
-    background: rgba(26, 26, 36, 0.6);
-    border-color: @dark-border;
-
-    &:hover {
-      background: @dark-bg-tertiary;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), @neon-glow-soft;
-    }
-  }
-
-  .languageSelector {
-    background: rgba(26, 26, 36, 0.6);
-    border-color: @dark-border;
-
-    &:hover {
-      background: @dark-bg-tertiary;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), @neon-glow-soft;
-    }
-
-    .anticon {
-      color: @dark-primary;
-    }
-  }
-
-  .settingRow {
-    .anticon {
-      color: @dark-primary;
-    }
-  }
-
-  .switchLabel {
-    color: @dark-text-primary;
-  }
-
-  .settingDescription {
-    color: @dark-text-secondary;
-  }
-
-  .dependencyItem {
-    background-color: rgba(26, 26, 36, 0.6);
-    border-color: @dark-border;
-    color: @dark-text-primary;
-  }
-
-  .installInstruction {
-    .installCard {
-      background-color: rgba(26, 26, 36, 0.6);
-      border: 1px solid @dark-border;
-
-      code {
-        background-color: rgba(99, 102, 241, 0.15);
-        color: @dark-primary;
-      }
-    }
-  }
-
-  .actions {
-    border-top-color: @dark-border;
-
-    .saveButton {
-      background: @gradient-primary;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3), @neon-glow-soft;
-
-      &:hover {
-        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4), @neon-glow;
-      }
-    }
-  }
-
-  .formItem {
-    :global {
-      .ant-form-item-label {
-        > label {
-          color: @dark-text-primary;
-        }
-      }
-    }
-  }
-
-  .apiKeyInput {
-    background-color: @dark-bg-secondary;
-    border-color: @dark-border;
-
-    &:hover, &:focus {
-      border-color: @dark-primary;
-      box-shadow: @neon-glow-soft;
-    }
-  }
-
-  .success {
-    color: #10b981;
-  }
-
-  .error {
-    color: #ef4444;
+  &:last-child {
+    margin-bottom: 0;
   }
 
   .sectionTitle {
-    border-color: @dark-border;
-    color: @dark-text-primary;
+    font-family: var(--font-display, 'Outfit', sans-serif);
+    font-weight: 600;
+    font-size: 18px;
+    color: @text-primary;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid @border-subtle;
+  }
+}
 
-    .anticon {
-      color: @dark-primary;
+.formRow {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -12px 20px;
+
+  > * {
+    padding: 0 12px;
+  }
+
+  &.twoCol > * {
+    flex: 1;
+    min-width: 50%;
+
+    @media (max-width: 576px) {
+      min-width: 100%;
     }
   }
 
-  .tabsContainer {
-    :global(.ant-tabs-tab-active) {
-      background-color: rgba(99, 102, 241, 0.15);
+  &.threeCol > * {
+    flex: 1;
+    min-width: 33.33%;
 
-      .ant-tabs-tab-btn {
-        color: @dark-primary;
+    @media (max-width: 768px) {
+      min-width: 50%;
+    }
+
+    @media (max-width: 576px) {
+      min-width: 100%;
+    }
+  }
+}
+
+/* 输入框 */
+:global {
+  .ant-form-item {
+    margin-bottom: 20px;
+
+    .ant-form-item-label {
+      padding-bottom: 8px;
+
+      > label {
+        color: @text-secondary;
+        font-family: var(--font-body, 'DM Sans', sans-serif);
+        font-weight: 500;
       }
     }
   }
 
-  .section {
-    background: rgba(18, 18, 26, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid @dark-border;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-select-selector,
+  .ant-picker {
+    background: @bg-surface !important;
+    border-color: @border-default !important;
+    border-radius: @radius-md !important;
+    color: @text-primary !important;
+    transition: all 0.2s ease;
+
+    &::placeholder {
+      color: @text-muted !important;
+    }
 
     &:hover {
-      background: rgba(26, 26, 36, 0.8);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), @neon-glow-soft;
+      border-color: rgba(212, 165, 116, 0.3) !important;
+    }
+
+    &:focus,
+    &-focused {
+      border-color: @film-amber !important;
+      box-shadow: 0 0 0 3px @film-amber-glow !important;
     }
   }
 
-  .modelList {
-    .alert {
-      background: rgba(26, 26, 36, 0.6);
-      border-color: @dark-border;
+  .ant-input-password-icon {
+    color: @text-muted;
+  }
 
-      :global(.ant-alert-message) {
-        color: @dark-text-primary;
+  .ant-select-arrow {
+    color: @text-muted;
+  }
+
+  .ant-select-dropdown {
+    background: @bg-elevated !important;
+    border: 1px solid @border-subtle !important;
+    border-radius: @radius-md !important;
+
+    .ant-select-item {
+      color: @text-secondary;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.03);
       }
 
-      :global(.ant-alert-description) {
-        color: @dark-text-secondary;
-      }
-    }
-  }
-
-  .loading {
-    color: @dark-text-secondary;
-  }
-
-  .optionCard {
-    background: rgba(26, 26, 36, 0.6);
-    border-color: @dark-border;
-  }
-
-  .chineseModelsGrid {
-    .modelCard {
-      background: rgba(26, 26, 36, 0.6);
-      border-color: @dark-border;
-    }
-  }
-
-  .validationStatus {
-    color: @dark-text-secondary;
-  }
-}
-
-// 响应式布局适配
-@media (max-width: 768px) {
-  .tabs {
-    min-height: auto;
-
-    :global {
-      .ant-tabs-nav {
-        width: 100%;
-      }
-
-      .ant-tabs-content-holder {
-        overflow-x: hidden;
+      &-option-selected {
+        background: rgba(212, 165, 116, 0.1) !important;
+        color: @film-amber !important;
       }
     }
   }
 
-  .container {
-    .header {
-      h2 {
-        font-size: 28px;
-      }
+  .ant-switch {
+    background: @bg-surface;
+
+    &-checked {
+      background: @film-amber !important;
+      box-shadow: @shadow-glow-amber;
     }
   }
 
-  .actions {
-    .saveButton {
-      width: 100%;
-    }
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: @film-amber !important;
+    border-color: @film-amber !important;
   }
 
-  // 移动端设置卡片优化
-  .settingsCard {
-    margin-bottom: 16px;
+  .ant-radio-checked .ant-radio-inner {
+    border-color: @film-amber !important;
 
-    :global(.ant-card-body) {
-      padding: 16px;
+    &::after {
+      background: @film-amber;
     }
   }
 }
 
-// 适配小屏幕
-@media (max-width: 576px) {
-  .tabs {
-    :global {
-      .ant-tabs-nav {
-        width: 100px;
-      }
+/* 按钮 */
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid @border-subtle;
 
-      .ant-tabs-tab {
-        padding: 8px;
-        font-size: 13px;
+  :global {
+    .ant-btn {
+      font-family: var(--font-display, 'Outfit', sans-serif);
+      font-weight: 500;
+      border-radius: @radius-md;
+      height: 40px;
+      padding: 0 24px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .ant-btn-primary {
+      background: linear-gradient(135deg, @film-amber 0%, #c49464 100%) !important;
+      border: none !important;
+      color: @ink-black !important;
+      box-shadow: @shadow-glow-amber;
+
+      &:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+        box-shadow: 0 0 40px @film-amber-glow;
+      }
+    }
+
+    .ant-btn-default {
+      background: @bg-surface;
+      border-color: @border-default;
+      color: @text-secondary;
+
+      &:hover {
+        border-color: @film-amber;
+        color: @film-amber;
       }
     }
   }
+}
 
-  .settingRow {
-    flex-direction: column;
-    align-items: flex-start;
+/* API 密钥输入框 */
+.apiKeyInput {
+  position: relative;
 
-    .anticon {
-      margin-bottom: 8px;
-    }
+  .keyPrefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: @text-muted;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 12px;
+    z-index: 1;
   }
 
-  .switchLabel {
+  :global {
+    .ant-input {
+      padding-left: 80px;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    }
+  }
+}
+
+/* 模型选择卡片 */
+.modelCard {
+  padding: 16px;
+  border-radius: @radius-lg;
+  background: @bg-surface;
+  border: 1px solid @border-default;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover {
+    border-color: rgba(212, 165, 116, 0.3);
+    transform: translateY(-2px);
+  }
+
+  &.selected {
+    border-color: @film-amber;
+    background: rgba(212, 165, 116, 0.08);
+    box-shadow: 0 0 20px @film-amber-glow;
+  }
+
+  .modelName {
+    font-family: var(--font-display, 'Outfit', sans-serif);
+    font-weight: 600;
+    font-size: 15px;
+    color: @text-primary;
     margin-bottom: 4px;
   }
 
-  .settingDescription {
-    margin-left: 0;
-    margin-top: 8px;
+  .modelProvider {
+    font-size: 12px;
+    color: @text-muted;
+  }
+
+  .modelCheck {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: @film-amber;
+    font-size: 18px;
   }
 }
 
-.section {
-  margin-bottom: 32px;
-  padding: 24px;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  border-radius: 16px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: #fff;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
-  }
-
-  @media (max-width: 768px) {
-    padding: 16px;
-    margin-bottom: 24px;
-  }
-}
-
-.sectionTitle {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  color: rgba(0, 0, 0, 0.85);
+/* 路径配置 */
+.pathConfig {
   display: flex;
   align-items: center;
+  gap: 12px;
 
-  .anticon {
-    font-size: 20px;
-    margin-right: 12px;
-    color: @primary-color;
+  .pathInput {
+    flex: 1;
   }
 
-  @media (max-width: 768px) {
-    font-size: 16px;
-    margin-bottom: 16px;
+  .pathBtn {
+    flex-shrink: 0;
   }
 }
 
-// 暗黑模式特定样式 - 科技暗黑主题
-:global(.dark) {
+/* 描述文本 */
+.formDescription {
+  font-size: 13px;
+  color: @text-muted;
+  margin-top: 4px;
+  line-height: 1.5;
+}
 
-  .section {
-    background: rgba(18, 18, 26, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid @dark-border;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+/* 徽章 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
 
-    &:hover {
-      background: rgba(26, 26, 36, 0.8);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), @neon-glow-soft;
-    }
+  &.badge-primary {
+    background: rgba(212, 165, 116, 0.15);
+    color: @film-amber;
+    border: 1px solid rgba(212, 165, 116, 0.3);
   }
 
-  .switchItem,
-  .languageSelector {
-    background: rgba(26, 26, 36, 0.6);
-    border-color: @dark-border;
-
-    &:hover {
-      background: @dark-bg-tertiary;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), @neon-glow-soft;
-    }
+  &.badge-success {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
   }
 
-  .settingsCard {
-    border-color: @dark-border;
-  }
-
-  .sectionTitle {
-    border-color: @dark-border;
-    color: @dark-text-primary;
-  }
-
-  .apiKeyInput {
-    background-color: @dark-bg-secondary;
-    border-color: @dark-border;
+  &.badge-warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
   }
 }
 
-// 卡片切换样式
-.tabsContainer {
-  :global(.ant-tabs-nav-list) {
-    width: 100%;
+/* 分割线 */
+.divider {
+  height: 1px;
+  background: @border-subtle;
+  margin: 24px 0;
+}
 
-    @media (min-width: 992px) {
-      width: auto;
+/* 响应式 */
+@media (max-width: 768px) {
+  .tabs {
+    :global {
+      .ant-tabs-nav {
+        padding: 8px 0;
+      }
+
+      .ant-tabs-content-holder {
+        border-left: none;
+        border-top: 1px solid @border-subtle;
+      }
+
+      .ant-tabs-content {
+        padding: 16px;
+      }
     }
   }
 
-  :global(.ant-tabs-tab) {
-    margin: 0;
-    width: 100%;
-    justify-content: center;
-    padding: 12px 16px;
-    transition: all 0.3s;
+  .formRow {
+    margin: 0 -8px 16px;
 
-    @media (min-width: 992px) {
-      width: auto;
-      justify-content: flex-start;
-      padding: 12px 24px;
-    }
-
-    &:hover {
-      color: @primary-color;
+    > * {
+      padding: 0 8px;
     }
   }
 
-  :global(.ant-tabs-ink-bar) {
-    display: none;
-  }
+  .formActions {
+    flex-direction: column;
 
-  :global(.ant-tabs-tab-active) {
-    background-color: var(--bg-color-secondary);
-    border-radius: 4px;
-
-    .ant-tabs-tab-btn {
-      color: @primary-color;
+    :global .ant-btn {
+      width: 100%;
     }
   }
 }

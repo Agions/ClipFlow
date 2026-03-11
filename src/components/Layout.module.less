@@ -1,49 +1,78 @@
+/* ClipFlow X - Cinema Director Layout Styles */
+/* 电影导演工作室风格布局 */
+
 @import '../styles/variables.less';
+
+// 电影胶片调色板 - Cinema Film Palette
+@film-amber: #d4a574;
+@film-amber-light: #e8c9a8;
+@film-amber-glow: rgba(212, 165, 116, 0.35);
+
+@ink-black: #0d0d0f;
+@ink-deep: #141418;
+@ink-charcoal: #1c1c22;
+@ink-surface: #242430;
+
+@neon-cyan: #00f5d4;
+@neon-magenta: #f72585;
+
+@border-subtle: rgba(255, 255, 255, 0.06);
+@border-default: rgba(255, 255, 255, 0.1);
+
+@text-primary: #f8f8f2;
+@text-secondary: #a8a8b3;
+@text-muted: #6b6b7a;
+
+@bg-void: #08080a;
+@bg-primary: #0d0d0f;
+@bg-elevated: #141418;
+@bg-surface: #1c1c22;
+
+@shadow-glow-amber: 0 0 30px var(--film-amber-glow);
 
 .layout {
   min-height: 100vh;
 }
 
 .sider {
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
   position: fixed;
   left: 0;
   height: 100vh;
   overflow: auto;
-  z-index: 10;
-  background-color: #fff;
-  border-right: none;
-  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
-  background: linear-gradient(180deg, #ffffff, #f9fafc);
+  z-index: 100;
+  background: linear-gradient(180deg, @bg-elevated 0%, @bg-primary 100%);
+  border-right: 1px solid @border-subtle;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* 滚动条样式优化 */
+  /* 滚动条样式 */
   &::-webkit-scrollbar {
     width: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: @border-default;
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-track {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: transparent;
   }
 }
 
+/* Logo 区域 - 电影胶片风格 */
 .logo {
   height: @layout-header-height;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 @spacing-lg;
-  color: @primary-color;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid @border-subtle;
   margin: 0;
   overflow: hidden;
   transition: all 0.3s;
   position: relative;
 
+  /* 微光底部线条 */
   &::after {
     content: '';
     position: absolute;
@@ -51,12 +80,11 @@
     left: 15%;
     right: 15%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.4), transparent);
+    background: linear-gradient(90deg, transparent, @film-amber-glow, transparent);
   }
 
-  /* 品牌文字加上渐变 */
   h4 {
-    background: linear-gradient(90deg, @primary-color, #8b5cf6);
+    background: linear-gradient(90deg, @film-amber 0%, @film-amber-light 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -66,30 +94,34 @@
   }
 }
 
+/* 菜单样式 - 电影导演风格 */
 .menu {
   border-right: none;
   padding: @spacing-lg @spacing-sm;
 
-  /* 菜单项样式增强 */
   :global {
     .ant-menu-item {
-      border-radius: 10px;
+      border-radius: @radius-md;
       margin: @spacing-sm 0;
       height: 48px;
       line-height: 48px;
       font-weight: @font-weight-normal;
-      transition: all 0.3s ease;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      color: @text-secondary;
+      position: relative;
 
       &:hover {
-        background-color: rgba(99, 102, 241, 0.08);
+        background-color: rgba(212, 165, 116, 0.08);
+        color: @text-primary;
         transform: translateX(4px);
       }
 
       &.ant-menu-item-selected {
-        background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.08) 100%);
-        font-weight: @font-weight-bold;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        background: linear-gradient(90deg, rgba(212, 165, 116, 0.15) 0%, rgba(212, 165, 116, 0.05) 100%);
+        font-weight: @font-weight-semibold;
+        color: @film-amber;
 
+        /* 左侧高亮条 - 胶片卷轴意象 */
         &::before {
           content: '';
           position: absolute;
@@ -97,19 +129,19 @@
           top: 10px;
           bottom: 10px;
           width: 3px;
-          background: linear-gradient(180deg, #6366f1, #8b5cf6);
+          background: linear-gradient(180deg, @film-amber, #c49464);
           border-radius: 0 3px 3px 0;
-          box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+          box-shadow: 0 0 12px @film-amber-glow;
         }
 
         .anticon {
-          color: #6366f1;
-          filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.5));
+          color: @film-amber;
+          filter: drop-shadow(0 0 6px @film-amber-glow);
         }
       }
 
       .anticon {
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
         font-size: 18px;
         margin-right: 12px;
       }
@@ -117,16 +149,21 @@
   }
 }
 
+/* 内容区域 */
 .content {
   padding: @container-padding;
   overflow: auto;
-  background-color: @bg-light;
+  background: @bg-void;
   min-height: calc(100vh - @layout-header-height);
   margin-left: @layout-sider-width;
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, #f8fafc, #f5f7fa);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* 适应侧边栏折叠状态 */
+  /* 微妙网格背景 */
+  background-image: 
+    linear-gradient(rgba(212, 165, 116, 0.01) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 165, 116, 0.01) 1px, transparent 1px);
+  background-size: 40px 40px;
+
   .siderCollapsed & {
     margin-left: 80px;
   }
@@ -135,13 +172,16 @@
 .contentWrapper {
   max-width: @content-max-width;
   margin: 0 auto;
-  background: @bg-white;
+  background: @bg-elevated;
   padding: @container-padding;
   border-radius: @radius-lg;
-  box-shadow: @shadow-md;
+  border: 1px solid @border-subtle;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   min-height: calc(100vh - 112px);
+  backdrop-filter: blur(20px);
 }
 
+/* 折叠按钮 */
 .collapseButton {
   position: absolute;
   bottom: @spacing-xl;
@@ -149,32 +189,35 @@
   text-align: center;
 }
 
+/* 顶部导航栏 */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: white;
+  background: @bg-elevated;
   padding: 0 @container-padding;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid @border-subtle;
   height: @layout-header-height;
   position: sticky;
   top: 0;
-  z-index: 9;
+  z-index: 99;
   margin-left: @layout-sider-width;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
-  /* 适应侧边栏折叠状态 */
   .siderCollapsed & {
     margin-left: 80px;
   }
 }
 
+/* 页面标题 */
 .headerTitle {
   font-size: 18px;
-  font-weight: @font-weight-normal;
-  color: @primary-color;
+  font-weight: @font-weight-semibold;
+  color: @text-primary;
   position: relative;
   padding-left: @spacing-xl;
+  font-family: var(--font-display, 'Outfit', sans-serif);
 
   &::before {
     content: '';
@@ -184,20 +227,25 @@
     transform: translateY(-50%);
     width: 4px;
     height: 18px;
-    background: @primary-color;
+    background: linear-gradient(180deg, @film-amber, #c49464);
     border-radius: 2px;
+    box-shadow: 0 0 10px @film-amber-glow;
   }
 }
 
+/* 头部控制区 */
 .headerControls {
   display: flex;
   align-items: center;
   gap: @spacing-sm;
 
   .ant-btn {
+    color: @text-secondary;
+    transition: all 0.2s ease;
+
     &:hover {
-      background-color: rgba(0, 0, 0, 0.03);
-      color: @primary-color;
+      background-color: rgba(212, 165, 116, 0.1);
+      color: @film-amber;
     }
   }
 
@@ -207,118 +255,31 @@
     transition: all 0.3s;
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.03);
+      background-color: rgba(212, 165, 116, 0.1);
     }
   }
 }
 
-// ==============================================
-// 科技暗黑模式适配
-// ==============================================
-:global(.dark) {
-  .sider {
-    background: linear-gradient(180deg, @bg-secondary 0%, @bg-primary 100%);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-    border-right: 1px solid @border-primary;
+/* 用户头像样式 */
+.userAvatar {
+  background: linear-gradient(135deg, @film-amber 0%, #c49464 100%) !important;
+  box-shadow: @shadow-glow-amber !important;
+}
 
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba(255, 255, 255, 0.15);
-    }
-
-    &::-webkit-scrollbar-track {
-      background-color: rgba(255, 255, 255, 0.03);
-    }
-  }
-
-  .logo {
-    border-bottom-color: @border-primary;
-
-    &::after {
-      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
-    }
-
-    h4 {
-      background: linear-gradient(90deg, #6366f1, #a855f7);
-      -webkit-background-clip: text;
-      background-clip: text;
-    }
-  }
-
-  .menu {
-    :global {
-      .ant-menu-item {
-        color: @text-secondary;
-
-        &:hover {
-          background-color: rgba(99, 102, 241, 0.12);
-          color: @text-primary;
-        }
-
-        &.ant-menu-item-selected {
-          background: linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%);
-          color: @text-primary;
-
-          &::before {
-            background: linear-gradient(180deg, #6366f1, #8b5cf6);
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.7);
-          }
-
-          .anticon {
-            color: #a5b4fc;
-            filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6));
-          }
-        }
-
-        .anticon {
-          color: @text-secondary;
-        }
-      }
-    }
-  }
-
+/* 响应式适配 */
+@media (max-width: 768px) {
   .content {
-    background: linear-gradient(180deg, @bg-primary 0%, @bg-secondary 100%);
-    background-image:
-      linear-gradient(rgba(99, 102, 241, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(99, 102, 241, 0.02) 1px, transparent 1px);
-    background-size: 30px 30px;
-  }
-
-  .contentWrapper {
-    background: @bg-secondary;
-    border: 1px solid @border-primary;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    padding: @spacing-md;
+    margin-left: 0;
   }
 
   .header {
-    background: @bg-secondary;
-    border-bottom: 1px solid @border-primary;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin-left: 0;
+    padding: 0 @spacing-md;
   }
 
-  .headerTitle {
-    color: @text-primary;
-
-    &::before {
-      background: linear-gradient(180deg, #6366f1, #8b5cf6);
-      box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
-    }
-  }
-
-  .headerControls {
-    .ant-btn {
-      color: @text-secondary;
-
-      &:hover {
-        background-color: rgba(99, 102, 241, 0.1);
-        color: #6366f1;
-      }
-    }
-
-    .userButton {
-      &:hover {
-        background-color: rgba(99, 102, 241, 0.1);
-      }
-    }
+  .contentWrapper {
+    padding: @spacing-md;
+    border-radius: @radius-md;
   }
 }

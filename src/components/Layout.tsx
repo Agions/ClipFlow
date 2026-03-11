@@ -18,16 +18,19 @@ import { useTheme } from '@/context/ThemeContext';
 const { Sider, Content, Header } = AntLayout;
 const { Title, Text } = Typography;
 
-// 科技暗黑配色常量
-const DARK_COLORS = {
-  bgPrimary: '#0a0a0f',
-  bgSecondary: '#12121a',
-  bgTertiary: '#1a1a24',
-  border: '#2a2a3a',
-  textPrimary: '#f1f5f9',
-  textSecondary: '#94a3b8',
-  primary: '#6366f1',
-  primaryHover: '#7c7ff7',
+// 电影导演工作室配色 - Cinema Director Studio
+const CINEMA_COLORS = {
+  bgVoid: '#08080a',
+  bgPrimary: '#0d0d0f',
+  bgElevated: '#141418',
+  bgSurface: '#1c1c22',
+  borderSubtle: 'rgba(255, 255, 255, 0.06)',
+  borderDefault: 'rgba(255, 255, 255, 0.1)',
+  textPrimary: '#f8f8f2',
+  textSecondary: '#a8a8b3',
+  filmAmber: '#d4a574',
+  filmAmberLight: '#e8c9a8',
+  filmAmberGlow: 'rgba(212, 165, 116, 0.35)',
 };
 
 interface LayoutProps {
@@ -143,8 +146,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             top: 0,
             bottom: 0,
             zIndex: 100,
-            background: isDarkMode ? DARK_COLORS.bgSecondary : '#fff',
-            borderRight: `1px solid ${isDarkMode ? DARK_COLORS.border : 'rgba(0,0,0,0.06)'}`,
+            background: isDarkMode ? CINEMA_COLORS.bgSecondary : '#fff',
+            borderRight: `1px solid ${isDarkMode ? CINEMA_COLORS.border : 'rgba(0,0,0,0.06)'}`,
             boxShadow: isDarkMode ? '2px 0 10px rgba(0, 0, 0, 0.3)' : 'none',
           }}
         >
@@ -155,7 +158,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             alignItems: 'center',
             justifyContent: collapsed ? 'center' : 'flex-start',
             padding: collapsed ? '0' : '0 20px',
-            borderBottom: `1px solid ${isDarkMode ? DARK_COLORS.border : 'rgba(0,0,0,0.06)'}`,
+            borderBottom: `1px solid ${isDarkMode ? CINEMA_COLORS.border : 'rgba(0,0,0,0.06)'}`,
             cursor: 'pointer',
             transition: 'all 0.2s'
           }} onClick={() => navigate('/')}>
@@ -210,7 +213,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 type="text"
                 icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                 onClick={() => setCollapsed(!collapsed)}
-                style={{ color: isDarkMode ? DARK_COLORS.textSecondary : 'rgba(0,0,0,0.45)' }}
+                style={{ color: isDarkMode ? CINEMA_COLORS.textSecondary : 'rgba(0,0,0,0.45)' }}
               />
             </Tooltip>
           </div>
@@ -223,11 +226,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         open={mobileDrawerVisible}
         onClose={() => setMobileDrawerVisible(false)}
         width={280}
-        bodyStyle={{ padding: 0, background: isDarkMode ? DARK_COLORS.bgSecondary : '#fff' }}
+        bodyStyle={{ padding: 0, background: isDarkMode ? CINEMA_COLORS.bgSecondary : '#fff' }}
         className="mobile-drawer"
         styles={{
           body: { padding: 0 },
-          header: { padding: '12px 16px', background: isDarkMode ? DARK_COLORS.bgSecondary : '#fff', borderBottom: `1px solid ${isDarkMode ? DARK_COLORS.border : 'rgba(0,0,0,0.06)'}` }
+          header: { padding: '12px 16px', background: isDarkMode ? CINEMA_COLORS.bgSecondary : '#fff', borderBottom: `1px solid ${isDarkMode ? CINEMA_COLORS.border : 'rgba(0,0,0,0.06)'}` }
         }}
       >
         {/* Mobile Logo */}
@@ -236,7 +239,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           display: 'flex',
           alignItems: 'center',
           padding: '0 20px',
-          borderBottom: `1px solid ${isDarkMode ? DARK_COLORS.border : 'rgba(0,0,0,0.06)'}`,
+          borderBottom: `1px solid ${isDarkMode ? CINEMA_COLORS.border : 'rgba(0,0,0,0.06)'}`,
           cursor: 'pointer'
         }} onClick={() => navigate('/')}>
           <div style={{
@@ -259,7 +262,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             margin: '0 0 0 12px',
             fontSize: 18,
             whiteSpace: 'nowrap',
-            color: isDarkMode ? DARK_COLORS.textPrimary : 'inherit'
+            color: isDarkMode ? CINEMA_COLORS.textPrimary : 'inherit'
           }}>
             ClipFlow
           </Title>
@@ -291,12 +294,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       }}>
         {/* 顶部栏 - 科技暗黑风格 */}
         <Header style={{
-          background: isDarkMode ? DARK_COLORS.bgSecondary : '#fff',
+          background: isDarkMode ? CINEMA_COLORS.bgSecondary : '#fff',
           padding: isMobile ? '0 16px' : '0 24px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: `1px solid ${isDarkMode ? DARK_COLORS.border : 'rgba(0,0,0,0.06)'}`,
+          borderBottom: `1px solid ${isDarkMode ? CINEMA_COLORS.border : 'rgba(0,0,0,0.06)'}`,
           height: 56,
           lineHeight: '56px',
           position: 'sticky',
@@ -316,12 +319,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   width: 44,
                   height: 44,
                   fontSize: 18,
-                  color: isDarkMode ? DARK_COLORS.textPrimary : 'inherit'
+                  color: isDarkMode ? CINEMA_COLORS.textPrimary : 'inherit'
                 }}
                 className="touch-friendly"
               />
             )}
-            <Text strong style={{ fontSize: isMobile ? 15 : 16, color: isDarkMode ? DARK_COLORS.textPrimary : 'inherit' }}>{getPageTitle()}</Text>
+            <Text strong style={{ fontSize: isMobile ? 15 : 16, color: isDarkMode ? CINEMA_COLORS.textPrimary : 'inherit' }}>{getPageTitle()}</Text>
           </div>
 
           <Space size={isMobile ? 2 : 4}>
@@ -332,7 +335,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   shape="circle"
                   icon={<QuestionCircleOutlined />}
                   size="small"
-                  style={{ color: isDarkMode ? DARK_COLORS.textSecondary : 'inherit' }}
+                  style={{ color: isDarkMode ? CINEMA_COLORS.textSecondary : 'inherit' }}
                 />
               </Tooltip>
             )}
@@ -344,15 +347,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   icon={<BellOutlined />}
                   size="small"
                   className="touch-friendly"
-                  style={{ color: isDarkMode ? DARK_COLORS.textSecondary : 'inherit' }}
+                  style={{ color: isDarkMode ? CINEMA_COLORS.textSecondary : 'inherit' }}
                 />
               </Badge>
             </Tooltip>
             <Dropdown menu={userMenu} placement="bottomRight" trigger={['click']}>
-              <Button type="text" style={{ padding: isMobile ? '0 4px' : '0 8px', color: isDarkMode ? DARK_COLORS.textPrimary : 'inherit' }}>
+              <Button type="text" style={{ padding: isMobile ? '0 4px' : '0 8px', color: isDarkMode ? CINEMA_COLORS.textPrimary : 'inherit' }}>
                 <Space>
                   <Avatar size="small" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)', boxShadow: '0 0 10px rgba(99, 102, 241, 0.4)' }}>U</Avatar>
-                  {!isMobile && <span style={{ fontSize: 13, color: isDarkMode ? DARK_COLORS.textPrimary : 'inherit' }}>用户</span>}
+                  {!isMobile && <span style={{ fontSize: 13, color: isDarkMode ? CINEMA_COLORS.textPrimary : 'inherit' }}>用户</span>}
                 </Space>
               </Button>
             </Dropdown>
@@ -363,7 +366,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Content style={{
           padding: isMobile ? 16 : 24,
           minHeight: 'calc(100vh - 56px)',
-          background: isDarkMode ? DARK_COLORS.bgPrimary : '#f5f5f5',
+          background: isDarkMode ? CINEMA_COLORS.bgPrimary : '#f5f5f5',
         }}>
           {children}
         </Content>

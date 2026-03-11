@@ -1,0 +1,51 @@
+/* Error Message Styles - Cinema Theme */
+
+.optimized-error-message {
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.inline-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.inline-error-icon {
+  font-size: 14px;
+}
+
+.inline-error-message strong {
+  margin-right: 4px;
+}
+
+.error-code {
+  margin-top: 8px;
+  font-size: 12px;
+  
+  code {
+    background: rgba(239, 68, 68, 0.15);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+.error-retry-btn {
+  margin-top: 12px;
+  padding: 6px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: rgba(239, 68, 68, 0.2);
+  }
+}

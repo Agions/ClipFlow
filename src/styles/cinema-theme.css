@@ -1,0 +1,634 @@
+/* ClipFlow X - 电影导演工作室风格 (2026) */
+/* Cinema Director Studio Aesthetic */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ═══════════════════════════════════════════════════════
+     🎬 电影胶片调色板 - Cinema Film Palette
+  ═══════════════════════════════════════════════════════ */
+  
+  /* 核心色 - 温暖琥珀 + 深墨色 */
+  --film-amber: #d4a574;
+  --film-amber-light: #e8c9a8;
+  --film-amber-glow: rgba(212, 165, 116, 0.35);
+  
+  --ink-black: #0d0d0f;
+  --ink-deep: #141418;
+  --ink-charcoal: #1c1c22;
+  --ink-surface: #242430;
+  
+  /* 强调色 - 赛博霓虹 */
+  --neon-cyan: #00f5d4;
+  --neon-magenta: #f72585;
+  --neon-violet: #7b2cbf;
+  
+  /* 功能色 */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #06b6d4;
+  
+  /* 文本层次 */
+  --text-primary: #f8f8f2;
+  --text-secondary: #a8a8b3;
+  --text-muted: #6b6b7a;
+  --text-dim: #45455a;
+  
+  /* 边框与分隔 */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-focus: rgba(212, 165, 116, 0.5);
+  
+  /* ═══════════════════════════════════════════════════════
+     🎨 间距系统 - Spacing
+  ═══════════════════════════════════════════════════════ */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  
+  /* ═══════════════════════════════════════════════════════
+     ⬜ 圆角系统 - Radius
+  ═══════════════════════════════════════════════════════ */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+  
+  /* ═══════════════════════════════════════════════════════
+     🌑 暗色背景 - Deep Dark Backgrounds
+  ═══════════════════════════════════════════════════════ */
+  --bg-void: #08080a;
+  --bg-primary: #0d0d0f;
+  --bg-elevated: #141418;
+  --bg-surface: #1c1c22;
+  --bg-card: rgba(28, 28, 34, 0.7);
+  --bg-glass: rgba(20, 20, 26, 0.85);
+  
+  /* 背景纹理 - 微妙噪点 */
+  --bg-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  
+  /* ═══════════════════════════════════════════════════════
+     🔤 字体系统 - Typography
+  ═══════════════════════════════════════════════════════ */
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  /* 字号 */
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 36px;
+  --text-4xl: 48px;
+  
+  /* 行高 */
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+  
+  /* 字重 */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  
+  /* ═══════════════════════════════════════════════════════
+     💫 动画系统 - Animation
+  ═══════════════════════════════════════════════════════ */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
+  
+  /* ═══════════════════════════════════════════════════════
+     🌟 阴影系统 - Shadows
+  ═══════════════════════════════════════════════════════ */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow-amber: 0 0 30px var(--film-amber-glow);
+  --shadow-glow-cyan: 0 0 30px rgba(0, 245, 212, 0.25);
+  
+  /* ═══════════════════════════════════════════════════════
+     📐 Z-Index 层级
+  ═══════════════════════════════════════════════════════ */
+  --z-base: 0;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-overlay: 30;
+  --z-modal: 40;
+  --z-toast: 50;
+  --z-tooltip: 60;
+}
+
+/* ═══════════════════════════════════════════════════════
+   🌑 全局样式 - Global Styles
+══════════════════════════════════════════════════════ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  background: var(--bg-void);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 电影胶片背景 - 微妙渐变 + 噪点 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(212, 165, 116, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(123, 44, 191, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 30% at 50% 50%, rgba(0, 245, 212, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* 噪点纹理叠加 */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.015;
+  background-image: var(--bg-noise);
+  pointer-events: none;
+  z-index: -1;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════════
+   🔤 排版 Typography
+══════════════════════════════════════════════════════ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: var(--text-4xl); }
+h2 { font-size: var(--text-3xl); }
+h3 { font-size: var(--text-2xl); }
+h4 { font-size: var(--text-xl); }
+h5 { font-size: var(--text-lg); }
+h6 { font-size: var(--text-base); }
+
+p {
+  margin-bottom: var(--space-md);
+}
+
+a {
+  color: var(--film-amber);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out-quart);
+}
+
+a:hover {
+  color: var(--film-amber-light);
+}
+
+/* ═══════════════════════════════════════════════════════
+   📜 代码字体
+══════════════════════════════════════════════════════ */
+
+code, pre, kbd, samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* ═══════════════════════════════════════════════════════
+   🖱️ 滚动条 - Custom Scrollbar
+══════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: var(--radius-full);
+  transition: background var(--duration-fast) var(--ease-out-quart);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ✨ 选中样式
+══════════════════════════════════════════════════════ */
+
+::selection {
+  background: var(--film-amber);
+  color: var(--ink-black);
+}
+
+/* ═══════════════════════════════════════════════════════
+   🔲 卡片基础样式
+══════════════════════════════════════════════════════ */
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(20px);
+  transition: all var(--duration-normal) var(--ease-out-expo);
+}
+
+.card:hover {
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* ═══════════════════════════════════════════════════════
+   🔘 按钮基础样式
+══════════════════════════════════════════════════════ */
+
+.btn {
+  font-family: var(--font-display);
+  font-weight: var(--font-medium);
+  font-size: var(--text-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out-expo);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  letter-spacing: 0.01em;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--film-amber) 0%, #c49464 100%);
+  color: var(--ink-black);
+  box-shadow: var(--shadow-glow-amber), 0 2px 8px rgba(212, 165, 116, 0.3);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 0 40px var(--film-amber-glow), 0 4px 12px rgba(212, 165, 116, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-secondary {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+.btn-secondary:hover {
+  background: var(--ink-charcoal);
+  border-color: var(--film-amber);
+}
+
+/* ═══════════════════════════════════════════════════════
+   💡 Focus 焦点状态
+══════════════════════════════════════════════════════ */
+
+*:focus-visible {
+  outline: 2px solid var(--film-amber);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   🔄 过渡动画 - Reduced Motion
+══════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   🎬 页面进入动画
+══════════════════════════════════════════════════════ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px var(--film-amber-glow); }
+  50% { box-shadow: 0 0 40px var(--film-amber-glow); }
+}
+
+/* 骨架屏 shimmer 效果 */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface) 25%,
+    var(--ink-charcoal) 50%,
+    var(--bg-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+/* ═══════════════════════════════════════════════════════
+   🎯 Ant Design 组件覆盖 - Dark Theme
+══════════════════════════════════════════════════════ */
+
+.ant-layout {
+  background: transparent !important;
+}
+
+.ant-layout-sider {
+  background: var(--bg-elevated) !important;
+}
+
+.ant-menu-dark {
+  background: transparent !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+  background: linear-gradient(90deg, rgba(212, 165, 116, 0.15) 0%, transparent 100%) !important;
+  border-left: 2px solid var(--film-amber) !important;
+}
+
+.ant-menu-dark .ant-menu-item:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.ant-modal-content {
+  background-color: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-xl) !important;
+  backdrop-filter: blur(20px);
+}
+
+.ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+}
+
+.ant-modal-title {
+  font-family: var(--font-display) !important;
+  font-weight: var(--font-semibold) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, var(--film-amber) 0%, #c49464 100%) !important;
+  border: none !important;
+  box-shadow: var(--shadow-glow-amber) !important;
+  color: var(--ink-black) !important;
+  font-family: var(--font-display) !important;
+  font-weight: var(--font-medium) !important;
+}
+
+.ant-btn-primary:hover {
+  filter: brightness(1.1) !important;
+  transform: translateY(-1px) !important;
+}
+
+.ant-btn-default {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-default) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-btn-default:hover {
+  border-color: var(--film-amber) !important;
+  color: var(--film-amber) !important;
+}
+
+.ant-input,
+.ant-input-affix-wrapper {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-default) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.ant-input::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.ant-input:focus,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
+  border-color: var(--film-amber) !important;
+  box-shadow: 0 0 0 3px var(--film-amber-glow) !important;
+}
+
+.ant-select-selector {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-default) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.ant-select-dropdown {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.ant-select-item {
+  color: var(--text-secondary) !important;
+}
+
+.ant-select-item-option-selected {
+  background: rgba(212, 165, 116, 0.15) !important;
+  color: var(--film-amber) !important;
+}
+
+.ant-select-item-option-active {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.ant-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.ant-card-head {
+  border-bottom: 1px solid var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-card-body {
+  color: var(--text-secondary) !important;
+}
+
+.ant-table {
+  background: transparent !important;
+}
+
+.ant-table-thead > tr > th {
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  color: var(--text-secondary) !important;
+  font-family: var(--font-display) !important;
+  font-weight: var(--font-medium) !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.ant-dropdown-menu {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-xs) !important;
+}
+
+.ant-dropdown-menu-item {
+  color: var(--text-secondary) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.ant-dropdown-menu-item:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary) !important;
+}
+
+.ant-tooltip-inner {
+  background: var(--ink-charcoal) !important;
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-body) !important;
+}
+
+.ant-message-notice-content {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.ant-switch-checked {
+  background: var(--film-amber) !important;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--film-amber) !important;
+  border-color: var(--film-amber) !important;
+}
+
+.ant-radio-checked .ant-radio-inner {
+  border-color: var(--film-amber) !important;
+}
+
+.ant-radio-checked .ant-radio-inner::after {
+  background: var(--film-amber) !important;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--film-amber) !important;
+}
+
+.ant-tabs-ink-bar {
+  background: var(--film-amber) !important;
+}
+
+/* ═══════════════════════════════════════════════════════
+   📱 响应式断点
+══════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  
+  :root {
+    --text-4xl: 36px;
+    --text-3xl: 28px;
+    --text-2xl: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+}

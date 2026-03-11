@@ -1,45 +1,115 @@
-@import '../../styles/variables.less';
+/* ClipFlow X - Video Editor Cinema Director Styles */
+/* 电影导演工作室风格 - 视频编辑器 */
+
+@film-amber: #d4a574;
+@film-amber-light: #e8c9a8;
+@film-amber-glow: rgba(212, 165, 116, 0.35);
+
+@ink-black: #0d0d0f;
+@ink-deep: #141418;
+@ink-charcoal: #1c1c22;
+@ink-surface: #242430;
+
+@border-subtle: rgba(255, 255, 255, 0.06);
+@border-default: rgba(255, 255, 255, 0.1);
+
+@text-primary: #f8f8f2;
+@text-secondary: #a8a8b3;
+@text-muted: #6b6b7a;
+@text-dim: #45455a;
+
+@bg-void: #08080a;
+@bg-primary: #0d0d0f;
+@bg-elevated: #141418;
+@bg-surface: #1c1c22;
+@bg-card: rgba(28, 28, 34, 0.7);
+
+@radius-md: 8px;
+@radius-sm: 4px;
+@radius-lg: 12px;
+@radius-xl: 16px;
+
+@shadow-glow-amber: 0 0 30px var(--film-amber-glow);
 
 .editorLayout {
   height: 100%;
-  background-color: #f5f7fa;
+  background: @bg-void;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .editorContent {
   padding: 24px;
 }
 
-// 工具栏
+/* 工具栏 */
 .toolbar {
   display: flex;
   justify-content: space-between;
   margin-bottom: 24px;
-  padding: 12px 16px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 14px 20px;
+  background: @bg-card;
+  border-radius: @radius-lg;
+  border: 1px solid @border-subtle;
+  backdrop-filter: blur(20px);
 
   .leftTools, .rightTools {
     display: flex;
     gap: 8px;
   }
+
+  :global {
+    .ant-btn {
+      font-family: var(--font-display, 'Outfit', sans-serif);
+      background: @bg-surface;
+      border-color: @border-default;
+      color: @text-secondary;
+      border-radius: @radius-md;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: @film-amber;
+        color: @film-amber;
+      }
+
+      &.ant-btn-primary {
+        background: linear-gradient(135deg, @film-amber 0%, #c49464 100%) !important;
+        border: none !important;
+        color: @ink-black !important;
+        box-shadow: @shadow-glow-amber;
+      }
+    }
+  }
 }
 
-// 卡片样式
+/* 播放器卡片 */
 .playerCard {
   margin-bottom: 16px;
-  border-radius: 12px;
+  border-radius: @radius-lg;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: @bg-card;
+  border: 1px solid @border-subtle;
+  backdrop-filter: blur(20px);
 
   .playerWrapper {
     position: relative;
     width: 100%;
     height: 480px;
-    background-color: #000;
-    border-radius: 8px;
+    background: @ink-black;
+    border-radius: @radius-md;
     overflow: hidden;
+
+    /* 播放器底色 - 电影黑 */
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(212, 165, 116, 0.03) 0%, @ink-black 70%);
+    }
 
     .videoPlayer {
       width: 100%;
@@ -54,59 +124,122 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e8eaf6 100%);
-    border-radius: 8px;
+    background: linear-gradient(135deg, @bg-elevated 0%, @bg-primary 100%);
+    border-radius: @radius-md;
+    border: 1px dashed @border-default;
+
+    .anticon {
+      font-size: 64px;
+      color: @text-dim;
+      margin-bottom: 16px;
+    }
+
+    .emptyText {
+      color: @text-muted;
+      font-size: 15px;
+    }
   }
 }
 
-// 播放器控制
+/* 播放器控制条 */
 .playerControls {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 100%);
-  padding: 12px 16px;
+  background: linear-gradient(to top, rgba(13, 13, 15, 0.95) 0%, rgba(13, 13, 15, 0.8) 100%);
+  padding: 16px 20px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: white;
+  gap: 16px;
+  color: @text-primary;
+  backdrop-filter: blur(10px);
 
   .timeDisplay {
-    color: white;
+    color: @text-secondary;
     min-width: 100px;
-    font-family: @font-family-code;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
     font-size: 13px;
   }
 
   .progressBar {
     flex: 1;
   }
+
+  :global {
+    .ant-slider {
+      .ant-slider-rail {
+        background: @bg-surface;
+      }
+
+      .ant-slider-track {
+        background: @film-amber;
+      }
+
+      .ant-slider-handle {
+        background: @film-amber;
+        border-color: @film-amber;
+
+        &::after {
+          box-shadow: 0 0 10px @film-amber-glow;
+        }
+      }
+
+      &:hover {
+        .ant-slider-track {
+          background: @film-amber-light;
+        }
+      }
+    }
+
+    .ant-btn {
+      color: @text-secondary;
+
+      &:hover {
+        color: @film-amber;
+      }
+    }
+  }
 }
 
-// 时间轴
+/* 时间轴 */
 .timelineContainer {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 16px;
+  background: @bg-card;
+  border-radius: @radius-lg;
+  padding: 20px;
   margin-bottom: 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid @border-subtle;
+  backdrop-filter: blur(20px);
 
   .timeline {
     position: relative;
-    height: 44px;
-    background: linear-gradient(180deg, #f0f2f5 0%, #e8eaed 100%);
-    border-radius: 6px;
+    height: 56px;
+    background: linear-gradient(180deg, @bg-surface 0%, @ink-charcoal 100%);
+    border-radius: @radius-md;
     overflow: hidden;
+
+    /* 刻度线 */
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 49px,
+        @border-default 49px,
+        @border-default 50px
+      );
+      opacity: 0.5;
+    }
 
     .timelineSegment {
       position: absolute;
       height: 100%;
       top: 0;
-      background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+      background: linear-gradient(180deg, @film-amber 0%, #c49464 100%);
       opacity: 0.8;
-      border-radius: 4px;
+      border-radius: @radius-sm;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -115,335 +248,259 @@
 
       &:hover {
         opacity: 1;
-        box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 15px @film-amber-glow;
       }
 
       &.selected {
-        background: linear-gradient(180deg, #f43f5e 0%, #e11d48 100%);
-        opacity: 0.9;
+        background: linear-gradient(180deg, @film-amber-light 0%, @film-amber 100%);
+        opacity: 1;
         z-index: 2;
-        box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
+        box-shadow: 0 0 20px @film-amber-glow;
+        border: 2px solid @film-amber-light;
       }
 
       .segmentLabel {
-        color: white;
+        color: @ink-black;
         font-weight: 600;
         font-size: 12px;
-      }
-
-      .segmentHandle {
-        position: absolute;
-        width: 8px;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.4);
-        cursor: col-resize;
-        transition: background-color 0.2s;
-
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.7);
-        }
-
-        &:first-child {
-          left: 0;
-          border-radius: 4px 0 0 4px;
-        }
-
-        &:last-child {
-          right: 0;
-          border-radius: 0 4px 4px 0;
-        }
-      }
-    }
-
-    .playhead {
-      position: absolute;
-      top: 0;
-      height: 100%;
-      width: 2px;
-      background: linear-gradient(180deg, #f43f5e 0%, #e11d48 100%);
-      z-index: 3;
-      pointer-events: none;
-      box-shadow: 0 0 8px rgba(244, 63, 94, 0.8);
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: -4px;
-        left: -4px;
-        width: 10px;
-        height: 10px;
-        background: #f43f5e;
-        border-radius: 50%;
-        box-shadow: 0 0 10px rgba(244, 63, 94, 0.8);
+        font-family: var(--font-display, 'Outfit', sans-serif);
       }
     }
   }
 }
 
-// 片段列表
-.segmentList {
-  padding: 16px 0;
+/* 时间轴控制 */
+.timelineControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid @border-subtle;
 
-  .segmentCard {
-    margin-bottom: 12px;
-    border-radius: 10px;
+  .controlGroup {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  :global {
+    .ant-btn {
+      color: @text-muted;
+      background: transparent;
+      border: none;
+
+      &:hover {
+        color: @film-amber;
+        background: rgba(212, 165, 116, 0.1);
+      }
+    }
+
+    .ant-input-number {
+      background: @bg-surface;
+      border-color: @border-default;
+      border-radius: @radius-sm;
+
+      .ant-input-number-input {
+        color: @text-primary;
+        font-family: var(--font-mono, monospace);
+      }
+    }
+  }
+}
+
+/* 属性面板 */
+.propertiesPanel {
+  background: @bg-card;
+  border-radius: @radius-lg;
+  border: 1px solid @border-subtle;
+  backdrop-filter: blur(20px);
+
+  :global {
+    .ant-collapse {
+      background: transparent;
+      border: none;
+
+      .ant-collapse-item {
+        border-bottom: 1px solid @border-subtle;
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+
+      .ant-collapse-header {
+        color: @text-primary !important;
+        font-family: var(--font-display, 'Outfit', sans-serif);
+        font-weight: 600;
+        padding: 16px 20px !important;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.02);
+        }
+      }
+
+      .ant-collapse-content {
+        background: transparent;
+        border-top: 1px solid @border-subtle;
+      }
+
+      .ant-collapse-content-box {
+        padding: 16px 20px;
+      }
+    }
+
+    .ant-form-item-label > label {
+      color: @text-secondary;
+    }
+
+    .ant-select-selector {
+      background: @bg-surface !important;
+      border-color: @border-default !important;
+    }
+  }
+}
+
+/* 素材库 */
+.mediaLibrary {
+  background: @bg-card;
+  border-radius: @radius-lg;
+  border: 1px solid @border-subtle;
+  backdrop-filter: blur(20px);
+  padding: 20px;
+
+  .libraryHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h4 {
+      font-family: var(--font-display, 'Outfit', sans-serif);
+      font-weight: 600;
+      color: @text-primary;
+      margin: 0;
+    }
+  }
+
+  .mediaGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .mediaItem {
+    position: relative;
+    aspect-ratio: 16/9;
+    border-radius: @radius-md;
+    overflow: hidden;
     cursor: pointer;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
 
     &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      border-color: rgba(99, 102, 241, 0.3);
+      border-color: @film-amber;
+      transform: scale(1.02);
+
+      .mediaOverlay {
+        opacity: 1;
+      }
     }
 
     &.selected {
-      border-color: #f43f5e;
-      border-width: 2px;
-      background: rgba(244, 63, 94, 0.05);
+      border-color: @film-amber;
+      box-shadow: @shadow-glow-amber;
     }
 
-    .segmentHeader {
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .mediaOverlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 13, 15, 0.7);
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
-    }
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
 
-    .segmentTime {
-      margin-bottom: 8px;
-    }
-
-    .segmentContent {
-      color: #666;
-    }
-  }
-
-  .addSegmentButton {
-    margin-top: 16px;
-  }
-}
-
-// 关键帧
-.keyframesContainer {
-  padding: 16px 0;
-
-  .keyframeList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px;
-    margin-top: 16px;
-
-    .keyframeItem {
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      border-radius: 6px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.3s ease;
-
-      &:hover {
-        transform: scale(1.02);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        border-color: rgba(99, 102, 241, 0.4);
-      }
-
-      .keyframeImage {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
+      .anticon {
+        color: @film-amber;
+        font-size: 24px;
       }
     }
   }
 }
 
-// 设置面板
-.settingsPanel {
-  padding: 16px 0;
+/* 转场效果 */
+.transitionsList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 
-  .settingCard {
-    border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-
-    .settingItem {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-  }
-}
-
-// 编辑器标签页
-.editorTabs {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-// 节标题
-.sectionTitle {
-  margin-bottom: 16px !important;
-  border-left: 3px solid #6366f1;
-  padding-left: 10px;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-// AI 剪辑面板
-.aiClipPanel {
-  padding: 8px 0;
-}
-
-// 效果面板
-.effectsPanel {
-  padding: 8px 0;
-}
-
-// ==============================================
-// 科技暗黑模式适配
-// ==============================================
-:global(.dark) {
-  .editorLayout {
-    background-color: @bg-primary;
-  }
-
-  .editorContent {
-    background-color: @bg-primary;
-  }
-
-  // 工具栏 - 霓虹发光边框
-  .toolbar {
-    background-color: @bg-secondary;
-    border: 1px solid @border-primary;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  .transitionItem {
+    padding: 12px;
+    text-align: center;
+    border-radius: @radius-md;
+    background: @bg-surface;
+    border: 1px solid @border-default;
+    cursor: pointer;
+    transition: all 0.2s ease;
 
     &:hover {
-      border-color: rgba(99, 102, 241, 0.3);
-    }
-  }
-
-  // 播放器卡片
-  .playerCard {
-    background-color: @bg-secondary;
-    border: 1px solid @border-primary;
-
-    :global(.ant-card-head) {
-      border-bottom-color: @border-primary;
+      border-color: @film-amber;
+      background: rgba(212, 165, 116, 0.05);
     }
 
-    :global(.ant-card-head-title) {
-      color: @text-primary;
-    }
+    &.selected {
+      border-color: @film-amber;
+      background: rgba(212, 165, 116, 0.1);
+      box-shadow: @shadow-glow-amber;
 
-    .emptyPlayer {
-      background: linear-gradient(135deg, @bg-tertiary 0%, @bg-secondary 100%);
-    }
-  }
-
-  // 播放器控制
-  .playerControls {
-    background: linear-gradient(to top, rgba(10, 10, 15, 0.95) 0%, rgba(10, 10, 15, 0.8) 100%);
-    border-top: 1px solid rgba(99, 102, 241, 0.2);
-  }
-
-  // 时间轴
-  .timelineContainer {
-    background-color: @bg-secondary;
-    border: 1px solid @border-primary;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
-    .timeline {
-      background: linear-gradient(180deg, @bg-tertiary 0%, @bg-elevated 100%);
-
-      .timelineSegment {
-        background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
-
-        &.selected {
-          background: linear-gradient(180deg, #f43f5e 0%, #e11d48 100%);
-        }
-      }
-    }
-  }
-
-  // 片段列表
-  .segmentList {
-    .segmentCard {
-      background-color: @bg-tertiary;
-      border: 1px solid @border-primary;
-
-      &:hover {
-        border-color: rgba(99, 102, 241, 0.4);
-        box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
-      }
-
-      &.selected {
-        border-color: #f43f5e;
-        background: rgba(244, 63, 94, 0.1);
-        box-shadow: 0 0 15px rgba(244, 63, 94, 0.2);
-      }
-    }
-  }
-
-  // 关键帧
-  .keyframesContainer {
-    .keyframeList {
-      .keyframeItem {
-        border-color: @border-primary;
-
-        &:hover {
-          border-color: rgba(99, 102, 241, 0.5);
-          box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
-        }
-      }
-    }
-  }
-
-  // 设置面板
-  .settingsPanel {
-    .settingCard {
-      background-color: @bg-tertiary;
-      border: 1px solid @border-primary;
-    }
-  }
-
-  // 编辑器标签页
-  .editorTabs {
-    background-color: @bg-secondary;
-    border: 1px solid @border-primary;
-
-    :global(.ant-tabs-nav) {
-      &::before {
-        border-bottom-color: @border-primary;
+      .transitionName {
+        color: @film-amber;
       }
     }
 
-    :global(.ant-tabs-tab) {
+    .transitionIcon {
+      font-size: 20px;
+      color: @text-muted;
+      margin-bottom: 4px;
+    }
+
+    .transitionName {
+      font-size: 11px;
       color: @text-secondary;
-
-      &:hover {
-        color: #6366f1;
-      }
-
-      &.ant-tabs-tab-active {
-        .ant-tabs-tab-btn {
-          color: #6366f1;
-        }
-      }
-    }
-
-    :global(.ant-tabs-ink-bar) {
-      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      font-family: var(--font-body, 'DM Sans', sans-serif);
     }
   }
+}
 
-  // 节标题
-  .sectionTitle {
-    color: @text-primary;
-    border-left-color: #6366f1;
+/* 响应式 */
+@media (max-width: 768px) {
+  .editorContent {
+    padding: 16px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .playerCard .playerWrapper {
+    height: 280px;
+  }
+
+  .mediaGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .transitionsList {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

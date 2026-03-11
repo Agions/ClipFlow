@@ -1,95 +1,389 @@
-// Dark theme colors
-@bg-primary: #0a0a0f;
-@bg-secondary: #12121a;
-@bg-tertiary: #1a1a24;
-@primary-color: #6366f1;
-@border-primary: #2a2a3a;
-@text-primary: #f1f5f9;
-@text-secondary: #94a3b8;
+/* ClipFlow X - Projects Page Cinema Director Styles */
+/* 电影导演工作室风格 - 项目列表页 */
+
+@film-amber: #d4a574;
+@film-amber-light: #e8c9a8;
+@film-amber-glow: rgba(212, 165, 116, 0.35);
+
+@ink-black: #0d0d0f;
+@ink-deep: #141418;
+@ink-charcoal: #1c1c22;
+@ink-surface: #242430;
+
+@border-subtle: rgba(255, 255, 255, 0.06);
+@border-default: rgba(255, 255, 255, 0.1);
+
+@text-primary: #f8f8f2;
+@text-secondary: #a8a8b3;
+@text-muted: #6b6b7a;
+
+@bg-void: #08080a;
+@bg-primary: #0d0d0f;
+@bg-elevated: #141418;
+@bg-surface: #1c1c22;
+@bg-card: rgba(28, 28, 34, 0.7);
+
+@radius-md: 8px;
+@radius-lg: 12px;
+@radius-xl: 16px;
+
+@shadow-glow-amber: 0 0 30px var(--film-amber-glow);
 
 .container {
-  padding: 20px;
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-:global(.projects-filter-select-popup) {
-  z-index: 3200 !important;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+/* 页面头部 */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 
   h2 {
+    font-family: var(--font-display, 'Outfit', sans-serif);
+    font-weight: 700;
+    font-size: 28px;
+    color: @text-primary;
     margin: 0;
-    font-size: 24px;
-    font-weight: bold;
+  }
+
+  :global {
+    .ant-btn-primary {
+      background: linear-gradient(135deg, @film-amber 0%, #c49464 100%) !important;
+      border: none !important;
+      color: @ink-black !important;
+      font-family: var(--font-display, 'Outfit', sans-serif);
+      font-weight: 500;
+      box-shadow: @shadow-glow-amber;
+
+      &:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+      }
+    }
   }
 }
 
+/* 筛选器 */
+.filterBar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+
+  :global {
+    .ant-select {
+      .ant-select-selector {
+        background: @bg-surface !important;
+        border-color: @border-default !important;
+        border-radius: @radius-md !important;
+        color: @text-primary;
+      }
+    }
+
+    .ant-input-affix-wrapper {
+      background: @bg-surface !important;
+      border-color: @border-default !important;
+      border-radius: @radius-md !important;
+
+      .ant-input {
+        background: transparent !important;
+        color: @text-primary;
+
+        &::placeholder {
+          color: @text-muted;
+        }
+      }
+
+      .ant-input-prefix {
+        color: @text-muted;
+      }
+    }
+  }
+}
+
+/* 项目卡片 */
 .projectCard {
-  margin-bottom: 16px;
-  transition: all 0.3s;
+  margin-bottom: 20px;
+  border-radius: @radius-lg;
+  overflow: hidden;
+  background: @bg-card;
+  border: 1px solid @border-subtle;
+  backdrop-filter: blur(20px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    border-color: rgba(212, 165, 116, 0.3);
+    box-shadow: @shadow-glow-amber, 0 8px 32px rgba(0, 0, 0, 0.3);
+
+    .cardCover {
+      .coverOverlay {
+        opacity: 1;
+      }
+    }
+  }
+
+  :global {
+    .ant-card-body {
+      padding: 16px;
+    }
   }
 }
 
+/* 封面区域 */
 .cardCover {
+  position: relative;
+  height: 160px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 140px;
-  background-color: #f5f5f5;
-}
+  background: linear-gradient(135deg, @bg-surface 0%, @ink-charcoal 100%);
+  overflow: hidden;
 
-.cardIcon {
-  font-size: 48px;
-  color: #1890ff;
-}
-
-.cardInfo {
-  margin-bottom: 8px;
-}
-
-// Dark mode styles with neon glow effects
-:global(.dark) {
-  .container {
-    background-color: @bg-primary;
-  }
-
-  .header {
-    h2 {
-      color: @text-primary;
-    }
-  }
-
-  .projectCard {
-    background-color: @bg-secondary;
-    border: 1px solid @border-primary;
-
-    &:hover {
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4),
-                  0 4px 12px rgba(0, 0, 0, 0.3);
-      border-color: @primary-color;
-    }
-  }
-
-  .cardCover {
-    background-color: @bg-tertiary;
+  /* 网格背景 */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(212, 165, 116, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212, 165, 116, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
   }
 
   .cardIcon {
-    color: @primary-color;
-    text-shadow: 0 0 10px rgba(99, 102, 241, 0.8),
-                 0 0 20px rgba(99, 102, 241, 0.5),
-                 0 0 30px rgba(99, 102, 241, 0.3);
+    font-size: 48px;
+    color: @text-muted;
+    opacity: 0.5;
+    transition: all 0.3s ease;
   }
 
-  .cardInfo {
+  .coverOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(212, 165, 116, 0.15) 0%, rgba(13, 13, 15, 0.7) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    .anticon {
+      font-size: 32px;
+      color: @film-amber;
+    }
+  }
+}
+
+/* 卡片信息 */
+.cardInfo {
+  margin-bottom: 12px;
+
+  :global {
+    .ant-typography-title {
+      font-family: var(--font-display, 'Outfit', sans-serif);
+      font-weight: 600;
+      color: @text-primary !important;
+    }
+  }
+
+  .projectTitle {
+    font-family: var(--font-display, 'Outfit', sans-serif);
+    font-weight: 600;
+    font-size: 16px;
+    color: @text-primary;
+    margin-bottom: 4px;
+  }
+
+  .projectDesc {
+    font-size: 13px;
+    color: @text-muted;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* 项目元信息 */
+.projectMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+
+  .metaItem {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: @text-muted;
+
+    .anticon {
+      font-size: 14px;
+    }
+  }
+}
+
+/* 状态标签 */
+:global {
+  .ant-tag {
+    border-radius: 4px;
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+
+  .ant-tag-blue {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: rgba(6, 182, 212, 0.3);
+    color: #06b6d4;
+  }
+
+  .ant-tag-green {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10b981;
+  }
+
+  .ant-tag-orange {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #f59e0b;
+  }
+
+  .ant-tag-default {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: @border-default;
     color: @text-secondary;
+  }
+}
+
+/* 操作按钮 */
+.cardActions {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid @border-subtle;
+
+  :global {
+    .ant-btn {
+      color: @text-muted;
+      background: transparent;
+      border: none;
+
+      &:hover {
+        color: @film-amber;
+        background: rgba(212, 165, 116, 0.1);
+      }
+    }
+  }
+}
+
+/* 空状态 */
+.emptyState {
+  padding: 80px 24px;
+  text-align: center;
+
+  .emptyIcon {
+    font-size: 64px;
+    color: @text-dim;
+    margin-bottom: 24px;
+    opacity: 0.5;
+  }
+
+  .emptyTitle {
+    font-family: var(--font-display, 'Outfit', sans-serif);
+    font-size: 20px;
+    font-weight: 600;
+    color: @text-primary;
+    margin-bottom: 8px;
+  }
+
+  .emptyDesc {
+    font-size: 14px;
+    color: @text-muted;
+    margin-bottom: 24px;
+  }
+}
+
+/* 分页 */
+:global {
+  .ant-pagination {
+    .ant-pagination-item {
+      background: @bg-surface;
+      border-color: @border-default;
+
+      a {
+        color: @text-secondary;
+      }
+
+      &:hover {
+        border-color: @film-amber;
+
+        a {
+          color: @film-amber;
+        }
+      }
+    }
+
+    .ant-pagination-item-active {
+      background: rgba(212, 165, 116, 0.15);
+      border-color: @film-amber;
+
+      a {
+        color: @film-amber;
+      }
+    }
+
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      .ant-pagination-item-link {
+        background: @bg-surface;
+        border-color: @border-default;
+        color: @text-secondary;
+
+        &:hover {
+          border-color: @film-amber;
+          color: @film-amber;
+        }
+      }
+    }
+  }
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .filterBar {
+    width: 100%;
+  }
+
+  .cardCover {
+    height: 120px;
   }
 }

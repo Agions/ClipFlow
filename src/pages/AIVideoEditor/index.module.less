@@ -1,64 +1,103 @@
-@import '../../styles/variables.less';
+/* ClipFlow X - AI Video Editor Cinema Director Styles */
+/* 电影导演工作室风格 - AI 视频编辑器 */
 
-/**
- * AI 视频编辑器样式 - 标签页分离布局
- */
+@film-amber: #d4a574;
+@film-amber-light: #e8c9a8;
+@film-amber-glow: rgba(212, 165, 116, 0.35);
+
+@ink-black: #0d0d0f;
+@ink-deep: #141418;
+@ink-charcoal: #1c1c22;
+@ink-surface: #242430;
+
+@border-subtle: rgba(255, 255, 255, 0.06);
+@border-default: rgba(255, 255, 255, 0.1);
+
+@text-primary: #f8f8f2;
+@text-secondary: #a8a8b3;
+@text-muted: #6b6b7a;
+@text-dim: #45455a;
+
+@bg-void: #08080a;
+@bg-primary: #0d0d0f;
+@bg-elevated: #141418;
+@bg-surface: #1c1c22;
+@bg-card: rgba(28, 28, 34, 0.7);
+
+@radius-md: 8px;
+@radius-lg: 12px;
+@radius-xl: 16px;
+
+@shadow-glow-amber: 0 0 30px var(--film-amber-glow);
+
 .editorContainer {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: @bg-primary;
+  background: @bg-void;
   color: @text-primary;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  animation: fadeIn 0.3s ease;
 }
 
-// 顶部功能标签区域
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 顶部功能卡片区域 */
 .tabHeader {
-  padding: 16px 24px;
-  background: @bg-secondary;
-  border-bottom: 1px solid @border-primary;
+  padding: 20px 24px;
+  background: @bg-elevated;
+  border-bottom: 1px solid @border-subtle;
 }
 
 .functionCards {
   display: flex;
   gap: 16px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .functionCard {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
-  background: @bg-tertiary;
-  border: 2px solid @border-primary;
-  border-radius: 12px;
+  gap: 14px;
+  padding: 18px 28px;
+  background: @bg-card;
+  border: 1px solid @border-subtle;
+  border-radius: @radius-lg;
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 280px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 260px;
+  backdrop-filter: blur(20px);
 
   &:hover {
-    border-color: var(--func-color, @primary-color);
+    border-color: rgba(212, 165, 116, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: @shadow-glow-amber;
   }
 
   &.active {
-    border-color: var(--func-color, @primary-color);
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-    box-shadow: 0 0 20px rgba(var(--func-color), 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+    border-color: @film-amber;
+    background: linear-gradient(135deg, rgba(212, 165, 116, 0.12) 0%, rgba(212, 165, 116, 0.05) 100%);
+    box-shadow: @shadow-glow-amber, 0 8px 32px rgba(0, 0, 0, 0.2);
 
     .functionIcon {
-      color: var(--func-color, @primary-color);
+      color: @film-amber;
       transform: scale(1.1);
+      filter: drop-shadow(0 0 8px @film-amber-glow);
+    }
+
+    .functionName {
+      color: @film-amber;
     }
   }
 }
 
 .functionIcon {
   font-size: 28px;
-  color: @text-secondary;
-  transition: all 0.3s ease;
+  color: @text-muted;
+  transition: all 0.25s ease;
 }
 
 .functionInfo {
@@ -71,135 +110,387 @@
   font-size: 16px;
   font-weight: 600;
   color: @text-primary;
+  font-family: var(--font-display, 'Outfit', sans-serif);
 }
 
 .functionDesc {
   font-size: 12px;
-  color: @text-secondary;
+  color: @text-muted;
 }
 
-// 标签页样式
-.tabLabel {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-}
-
-.functionTabs {
-  display: none; // 使用自定义卡片替代
-}
-
-// 主要工作区
+/* 主要工作区 */
 .workspace {
   flex: 1;
   overflow: auto;
-  padding: 16px 24px;
+  padding: 24px;
+  background: @bg-void;
 }
 
-// Dark mode with neon glow effects
-:global(.dark) {
-  .editorContainer {
-    background: @bg-primary;
-    box-shadow: inset 0 0 60px rgba(99, 102, 241, 0.05);
+/* AI 剪辑面板 */
+.aiClipPanel {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  height: 100%;
 
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 视频预览区 */
+.previewSection {
+  background: @bg-card;
+  border-radius: @radius-xl;
+  border: 1px solid @border-subtle;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+
+  .previewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid @border-subtle;
+
+    h3 {
+      font-family: var(--font-display, 'Outfit', sans-serif);
+      font-weight: 600;
+      color: @text-primary;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .anticon {
+        color: @film-amber;
+      }
+    }
+  }
+
+  .previewContent {
+    position: relative;
+    aspect-ratio: 16/9;
+    background: @ink-black;
+
+    /* 微妙光晕 */
     &::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background:
-        radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(212, 165, 116, 0.05) 0%, @ink-black 60%);
       pointer-events: none;
     }
   }
+}
 
-  .tabHeader {
-    background: linear-gradient(180deg, @bg-secondary 0%, @bg-primary 100%);
-    border-bottom: 1px solid @border-primary;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
+/* 控制按钮组 */
+.controlButtons {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid @border-subtle;
+  background: @bg-elevated;
 
-  .functionCard {
-    background: @bg-tertiary;
-    border-color: @border-primary;
+  :global {
+    .ant-btn {
+      font-family: var(--font-display, 'Outfit', sans-serif);
+      font-weight: 500;
+      border-radius: @radius-md;
+      height: 40px;
+      transition: all 0.2s ease;
 
-    &:hover {
-      border-color: var(--func-color, @primary-color);
-      box-shadow: 0 0 15px rgba(var(--func-color), 0.2);
-    }
+      &.ant-btn-primary {
+        background: linear-gradient(135deg, @film-amber 0%, #c49464 100%) !important;
+        border: none !important;
+        color: @ink-black !important;
+        box-shadow: @shadow-glow-amber;
 
-    &.active {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
-      border-color: var(--func-color, @primary-color);
-      box-shadow: 0 0 25px rgba(var(--func-color), 0.3), 0 4px 16px rgba(0, 0, 0, 0.3);
-
-      .functionIcon {
-        filter: drop-shadow(0 0 8px var(--func-color, @primary-color));
-      }
-    }
-  }
-
-  .functionIcon {
-    color: @text-secondary;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-  }
-
-  // Neon glow effects for interactive elements
-  :global(.ant-btn-primary) {
-    background: @primary-color;
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
-    border-color: @primary-color;
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: lighten(@primary-color, 5%);
-      box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-      border-color: @primary-color;
-    }
-  }
-
-  :global(.ant-tabs) {
-    :global(.ant-tabs-nav) {
-      &::before {
-        border-bottom-color: @border-primary;
-      }
-    }
-
-    :global(.ant-tabs-tab) {
-      color: @text-secondary;
-      transition: all 0.3s ease;
-
-      &:hover {
-        color: @primary-color;
-        text-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+        &:hover {
+          filter: brightness(1.1);
+          transform: translateY(-1px);
+        }
       }
 
-      &.ant-tabs-tab-active {
-        :global(.ant-tabs-tab-btn) {
-          color: @primary-color;
-          text-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+      &:not(.ant-btn-primary) {
+        background: @bg-surface;
+        border-color: @border-default;
+        color: @text-secondary;
+
+        &:hover {
+          border-color: @film-amber;
+          color: @film-amber;
         }
       }
     }
   }
+}
 
-  :global(.ant-card) {
-    background: @bg-tertiary;
-    border-color: @border-primary;
+/* 右侧面板 */
+.sidePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 设置面板 */
+.settingsPanel {
+  background: @bg-card;
+  border-radius: @radius-xl;
+  border: 1px solid @border-subtle;
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+
+  .panelHeader {
+    padding: 16px 20px;
+    border-bottom: 1px solid @border-subtle;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h4 {
+      font-family: var(--font-display, 'Outfit', sans-serif);
+      font-weight: 600;
+      color: @text-primary;
+      margin: 0;
+    }
   }
 
-  :global(.ant-progress) {
-    :global(.ant-progress-inner) {
-      background: @bg-tertiary;
+  .panelContent {
+    padding: 20px;
+  }
+}
+
+/* 表单样式 */
+:global {
+  .ant-form-item {
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
     }
 
-    :global(.ant-progress-bg) {
-      background: @primary-color;
-      box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+    .ant-form-item-label {
+      padding-bottom: 6px;
+
+      > label {
+        color: @text-secondary;
+        font-size: 13px;
+        font-family: var(--font-body, 'DM Sans', sans-serif);
+      }
+    }
+  }
+
+  .ant-select-selector {
+    background: @bg-surface !important;
+    border-color: @border-default !important;
+    border-radius: @radius-md !important;
+    color: @text-primary !important;
+    height: 36px !important;
+
+    &:hover {
+      border-color: rgba(212, 165, 116, 0.5) !important;
+    }
+  }
+
+  .ant-select-selection-item {
+    color: @text-primary !important;
+    line-height: 34px !important;
+  }
+
+  .ant-input,
+  .ant-input-number {
+    background: @bg-surface !important;
+    border-color: @border-default !important;
+    border-radius: @radius-md !important;
+    color: @text-primary !important;
+    height: 36px;
+
+    &::placeholder {
+      color: @text-muted !important;
+    }
+
+    &:focus,
+    &:hover {
+      border-color: @film-amber !important;
+      box-shadow: 0 0 0 2px @film-amber-glow !important;
+    }
+  }
+
+  .ant-slider {
+    .ant-slider-rail {
+      background: @bg-surface;
+    }
+
+    .ant-slider-track {
+      background: @film-amber;
+    }
+
+    .ant-slider-handle {
+      background: @film-amber;
+      border-color: @film-amber;
+
+      &::after {
+        box-shadow: 0 0 8px @film-amber-glow;
+      }
+    }
+  }
+
+  .ant-switch {
+    background: @bg-surface;
+
+    &-checked {
+      background: @film-amber !important;
+      box-shadow: @shadow-glow-amber;
+    }
+  }
+
+  .ant-radio-wrapper {
+    color: @text-secondary;
+  }
+
+  .ant-radio-checked .ant-radio-inner {
+    border-color: @film-amber !important;
+
+    &::after {
+      background: @film-amber;
+    }
+  }
+}
+
+/* 进度条 */
+.progressSection {
+  :global {
+    .ant-progress {
+      .ant-progress-text {
+        color: @text-primary;
+      }
+    }
+
+    .ant-progress-bg {
+      background: @film-amber !important;
+    }
+  }
+}
+
+/* AI 状态指示 */
+.aiStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: @bg-surface;
+  border-radius: @radius-md;
+  margin-bottom: 16px;
+
+  .statusDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: @film-amber;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+      box-shadow: 0 0 0 0 @film-amber-glow;
+    }
+    50% {
+      opacity: 0.8;
+      box-shadow: 0 0 0 6px transparent;
+    }
+  }
+
+  .statusText {
+    font-size: 13px;
+    color: @text-secondary;
+  }
+}
+
+/* 快捷操作 */
+.quickActions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+
+  .actionBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+    background: @bg-surface;
+    border: 1px solid @border-default;
+    border-radius: @radius-md;
+    color: @text-secondary;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: @film-amber;
+      color: @film-amber;
+      background: rgba(212, 165, 116, 0.05);
+    }
+
+    .anticon {
+      font-size: 16px;
+    }
+  }
+}
+
+/* 标签页内容区 */
+.tabContent {
+  padding: 24px;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .tabHeader {
+    padding: 16px;
+  }
+
+  .functionCards {
+    flex-direction: column;
+  }
+
+  .functionCard {
+    min-width: 100%;
+  }
+
+  .workspace {
+    padding: 16px;
+  }
+
+  .aiClipPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .controlButtons {
+    flex-wrap: wrap;
+
+    :global .ant-btn {
+      flex: 1;
+      min-width: 120px;
     }
   }
 }

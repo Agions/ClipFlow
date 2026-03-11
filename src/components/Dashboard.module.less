@@ -1,28 +1,128 @@
+/* ClipFlow X - Dashboard Cinema Director Styles */
+/* 电影导演工作室风格 - 项目管理页面 */
+
+@film-amber: #d4a574;
+@film-amber-light: #e8c9a8;
+@film-amber-glow: rgba(212, 165, 116, 0.35);
+
+@ink-black: #0d0d0f;
+@ink-deep: #141418;
+@ink-charcoal: #1c1c22;
+@ink-surface: #242430;
+
+@neon-cyan: #00f5d4;
+
+@border-subtle: rgba(255, 255, 255, 0.06);
+@border-default: rgba(255, 255, 255, 0.1);
+
+@text-primary: #f8f8f2;
+@text-secondary: #a8a8b3;
+@text-muted: #6b6b7a;
+
+@bg-void: #08080a;
+@bg-primary: #0d0d0f;
+@bg-elevated: #141418;
+@bg-surface: #1c1c22;
+@bg-card: rgba(28, 28, 34, 0.7);
+
+@radius-md: 8px;
+@radius-lg: 12px;
+
+@shadow-glow-amber: 0 0 30px var(--film-amber-glow);
+
 .dashboardContainer {
   padding: 24px;
   max-width: 1600px;
   margin: 0 auto;
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 页面头部 */
 .dashboardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   flex-wrap: wrap;
   gap: 16px;
+
+  :global {
+    .ant-typography {
+      color: @text-primary !important;
+      font-family: var(--font-display, 'Outfit', sans-serif);
+    }
+  }
 }
 
+/* 操作按钮区 */
 .dashboardActions {
   display: flex;
   gap: 12px;
   align-items: center;
   
   .searchInput {
-    width: 240px;
+    width: 260px;
+    background: @bg-surface !important;
+    border-color: @border-default !important;
+    border-radius: @radius-md !important;
+
+    :global {
+      .ant-input {
+        background: transparent !important;
+        color: @text-primary !important;
+        font-family: var(--font-body, 'DM Sans', sans-serif);
+
+        &::placeholder {
+          color: @text-muted !important;
+        }
+      }
+
+      .ant-input-prefix {
+        color: @text-muted;
+        margin-right: 8px;
+      }
+    }
+
+    &:focus, &:hover {
+      border-color: @film-amber !important;
+      box-shadow: 0 0 0 3px @film-amber-glow !important;
+    }
+  }
+
+  :global {
+    .ant-btn {
+      font-family: var(--font-display, 'Outfit', sans-serif);
+      font-weight: 500;
+      border-radius: @radius-md;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+      &:not(.ant-btn-primary) {
+        background: @bg-surface;
+        border-color: @border-default;
+        color: @text-secondary;
+
+        &:hover {
+          border-color: @film-amber;
+          color: @film-amber;
+          background: rgba(212, 165, 116, 0.08);
+        }
+      }
+    }
   }
 }
 
+/* 项目网格 */
 .projectsGrid {
   min-height: 400px;
 }
@@ -32,18 +132,56 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
 
-.projectCard {
-  transition: all 0.3s;
-  overflow: hidden;
-  
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
+  :global {
+    .ant-spin-dot-item {
+      background-color: @film-amber !important;
+    }
   }
 }
 
+/* 项目卡片 - 电影胶片风格 */
+.projectCard {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  overflow: hidden;
+  background: @bg-card !important;
+  border: 1px solid @border-subtle !important;
+  border-radius: @radius-lg !important;
+  backdrop-filter: blur(20px);
+
+  &:hover {
+    box-shadow: @shadow-glow-amber, 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(-4px) !important;
+    border-color: rgba(212, 165, 116, 0.3) !important;
+  }
+
+  :global {
+    .ant-card-body {
+      padding: 16px !important;
+    }
+
+    .ant-card-actions {
+      background: transparent !important;
+      border-top: 1px solid @border-subtle !important;
+
+      li {
+        margin: 8px 0 !important;
+
+        .anticon {
+          color: @text-muted;
+          font-size: 16px;
+          transition: all 0.2s ease;
+
+          &:hover {
+            color: @film-amber;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* 缩略图容器 */
 .thumbnailContainer {
   position: relative;
   height: 160px;
@@ -54,6 +192,10 @@
     .thumbnailOverlay {
       opacity: 1;
     }
+    
+    .projectThumbnail {
+      transform: scale(1.08);
+    }
   }
 }
 
@@ -61,58 +203,146 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s;
-  
-  &:hover {
-    transform: scale(1.05);
-  }
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* 缩略图遮罩 - 微妙渐变 */
 .thumbnailOverlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: linear-gradient(
+    135deg,
+    rgba(212, 165, 116, 0.2) 0%,
+    rgba(13, 13, 15, 0.6) 100%
+  );
   display: flex;
   justify-content: center;
   align-items: center;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s ease;
 }
 
 .viewIcon {
-  font-size: 32px;
-  color: white;
+  font-size: 36px;
+  color: @film-amber;
+  filter: drop-shadow(0 0 10px @film-amber-glow);
 }
 
+/* 项目信息 */
 .projectInfo {
-  padding: 0 8px;
+  padding: 0 4px;
+
+  :global {
+    .ant-typography {
+      color: @text-primary !important;
+      font-family: var(--font-display, 'Outfit', sans-serif);
+    }
+
+    .ant-typography-title-5 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px !important;
+      letter-spacing: -0.01em;
+    }
+  }
 }
 
+/* 项目元信息 */
 .projectMeta {
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
+  font-size: 12px;
+
+  :global {
+    .ant-typography {
+      color: @text-muted !important;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
 }
 
 .projectDate {
   display: block;
-  font-size: 12px;
+  font-size: 11px !important;
+  color: @text-muted !important;
 }
 
+/* 收藏图标 */
 .starredIcon {
-  color: #faad14;
+  color: @film-amber !important;
+  filter: drop-shadow(0 0 6px @film-amber-glow);
 }
 
+/* 空状态 */
+:global {
+  .ant-empty-description {
+    color: @text-muted !important;
+  }
+}
+
+/* 弹窗样式 */
+:global {
+  .ant-modal-content {
+    background: @bg-elevated !important;
+    border: 1px solid @border-subtle !important;
+    border-radius: @radius-lg !important;
+
+    .ant-modal-header {
+      background: transparent !important;
+      border-bottom: 1px solid @border-subtle !important;
+
+      .ant-modal-title {
+        color: @text-primary !important;
+        font-family: var(--font-display, 'Outfit', sans-serif) !important;
+        font-weight: 600 !important;
+      }
+    }
+
+    .ant-modal-body {
+      background: transparent !important;
+    }
+
+    .ant-modal-close {
+      color: @text-muted;
+
+      &:hover {
+        color: @text-primary;
+      }
+    }
+  }
+
+  .ant-form-item-label > label {
+    color: @text-secondary !important;
+    font-family: var(--font-body, 'DM Sans', sans-serif);
+  }
+
+  .ant-select-selector {
+    background: @bg-surface !important;
+    border-color: @border-default !important;
+    color: @text-primary !important;
+  }
+
+  .ant-picker {
+    background: @bg-surface !important;
+    border-color: @border-default !important;
+  }
+}
+
+/* 表单操作按钮 */
 .formActions {
   display: flex;
   justify-content: flex-end;
   margin-top: 24px;
 }
 
-// 响应式调整
+/* 响应式调整 */
 @media (max-width: 768px) {
   .dashboardHeader {
     flex-direction: column;
@@ -128,19 +358,10 @@
       width: 100%;
     }
   }
-}
 
-// 暗黑模式适配
-:global(.dark) {
   .projectCard {
-    background-color: #1f1f1f;
-    
     &:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      transform: translateY(-2px) !important;
     }
   }
-  
-  .thumbnailOverlay {
-    background: rgba(0, 0, 0, 0.7);
-  }
-} 
+}
