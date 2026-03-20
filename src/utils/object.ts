@@ -146,8 +146,9 @@ export function find<T extends Record<string, unknown>>(
 /**
  * 键值对转换
  */
-export function entries<T extends Record<string, unknown>>(obj: T): Array<[string, T[Extract<keyof T, string>]]> {
-  return Object.entries(obj) as Array<[string, T[Extract<keyof T, string>]>]>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function entries<T extends Record<string, unknown>>(obj: T): Array<[string, unknown]> {
+  return Object.entries(obj);
 }
 
 /**

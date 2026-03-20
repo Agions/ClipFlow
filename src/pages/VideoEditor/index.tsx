@@ -154,7 +154,7 @@ const VideoEditorPage: React.FC = () => {
       };
 
       // 显示进度
-      let progressMsg: any = message.loading('正在导出视频...', 0);
+      const progressMsg: any = message.loading('正在导出视频...', 0);
 
       // 执行导出
       const result = await exportService.export(

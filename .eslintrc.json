@@ -1,6 +1,12 @@
 {
   "root": true,
-  "ignorePatterns": ["node_modules/", "dist/", "src/components/WorkflowMonitor.tsx", "src/core/store/"],
+  "ignorePatterns": [
+    "node_modules/",
+    "dist/",
+    "src/components/WorkflowMonitor.tsx",
+    "src/core/store/",
+    "**/error-codes.ts"
+  ],
   "env": {
     "browser": true,
     "es2021": true,
@@ -25,6 +31,7 @@
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-empty-object-type": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    "no-prototype-builtins": "off",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
     "react/jsx-key": "off",

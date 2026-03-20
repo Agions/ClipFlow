@@ -43,7 +43,7 @@ export async function executeUniquenessStep(
   uniquenessService.updateConfig(config);
 
   // 添加随机性
-  let scriptWithRandomness = uniquenessService.addRandomness(scriptToCheck);
+  const scriptWithRandomness = uniquenessService.addRandomness(scriptToCheck);
   updateProgress?.(56);
 
   // 确保唯一性

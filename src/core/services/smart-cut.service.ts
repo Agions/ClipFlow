@@ -213,7 +213,7 @@ export class SmartCutService {
       
       // 采样间隔
       const sampleInterval = 2;
-      let previousFrame = await this.extractFrame(video, 0);
+      const previousFrame = await this.extractFrame(video, 0);
       let segmentStart = 0;
       let totalIntensity = 0;
       let sampleCount = 0;
