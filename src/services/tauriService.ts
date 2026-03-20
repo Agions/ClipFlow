@@ -125,9 +125,9 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
 
   try {
     // 确保目录存在
-    await ensureAppDataDir().catch(err => {
-      logger.error('确保应用数据目录存在时出错:', err);
-      throw new Error(`应用数据目录错误: ${err.message || '未知错误'}`);
+    await ensureAppDataDir().catch(_err => {
+      logger.error('确保应用数据目录存在时出错:', _err);
+      throw new Error(`应用数据目录错误: ${_err.message || '未知错误'}`);
     });
     
     const projectPath = `ClipFlow/${normalizedProjectId}.json`;
@@ -150,8 +150,8 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
       if (!projectData) {
         throw new Error('项目数据序列化为空');
       }
-    } catch (err) {
-      logger.error('序列化项目数据失败:', err);
+    } catch (_err) {
+      logger.error('序列化项目数据失败:', _err);
       throw new Error('无法序列化项目数据');
     }
     
@@ -171,7 +171,7 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
     
     // 检查文件是否已存在
     const fileExists = await exists(projectPath, { baseDir: BaseDirectory.AppData })
-      .catch(err => {
+      .catch(_err => {
         logger.error('检查文件是否存在时出错:', err);
         return false;
       });

@@ -161,8 +161,8 @@ export function useVideo(): UseVideoReturn {
       setVideo(info);
       
       return info;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '上传失败');
+    } catch (_err) {
+      setError(_err instanceof Error ? _err.message : '上传失败');
       return null;
     } finally {
       setIsUploading(false);
@@ -233,12 +233,12 @@ export function useVideo(): UseVideoReturn {
       } : null);
       
       return analysisResult;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '分析失败');
+    } catch (_err) {
+      setError(_err instanceof Error ? _err.message : '分析失败');
       setTaskStatus(prev => prev ? {
         ...prev,
         status: 'failed',
-        error: err instanceof Error ? err.message : '分析失败'
+        error: _err instanceof Error ? _err.message : '分析失败'
       } : null);
       return null;
     } finally {
@@ -265,7 +265,7 @@ export function useVideo(): UseVideoReturn {
     
     try {
       return await generateThumbnail(video.path, timestamp);
-    } catch (err) {
+    } catch (_err) {
       setError('提取缩略图失败');
       return null;
     }

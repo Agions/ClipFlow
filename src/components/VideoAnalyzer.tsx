@@ -50,7 +50,7 @@ const VideoAnalyzer: React.FC<VideoAnalyzerProps> = ({
       // 调用Tauri后端分析视频
       const videoMetadata = await invoke<AnalyzeVideoResult>('analyze_video', { 
         path: selectedVideoUrl 
-      }).catch(err => {
+      }).catch(_err => {
         console.error('视频分析失败:', err);
         throw new Error(`视频分析失败: ${err}`);
       });
@@ -62,7 +62,7 @@ const VideoAnalyzer: React.FC<VideoAnalyzerProps> = ({
       const keyFrames = await invoke<string[]>('extract_key_frames', {
         path: selectedVideoUrl,
         count: keyFrameCount
-      }).catch(err => {
+      }).catch(_err => {
         console.error('提取关键帧失败:', err);
         return [] as string[];
       });
@@ -72,7 +72,7 @@ const VideoAnalyzer: React.FC<VideoAnalyzerProps> = ({
       // 生成缩略图
       const thumbnail = await invoke<string>('generate_thumbnail', {
         path: selectedVideoUrl
-      }).catch(err => {
+      }).catch(_err => {
         console.error('生成缩略图失败:', err);
         return '';
       });

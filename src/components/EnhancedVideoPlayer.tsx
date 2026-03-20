@@ -117,7 +117,7 @@ const EnhancedVideoPlayer: React.FC<EnhancedVideoPlayerProps> = ({
     
     // 自动播放（如果设置为true）
     if (autoPlay) {
-      video.play().catch(err => {
+      video.play().catch(_err => {
         console.log('自动播放失败，可能是浏览器策略限制:', err);
       });
     }
@@ -147,7 +147,7 @@ const EnhancedVideoPlayer: React.FC<EnhancedVideoPlayerProps> = ({
     if (isPlaying) {
       video.pause();
     } else {
-      video.play().catch(err => {
+      video.play().catch(_err => {
         console.error('播放失败:', err);
       });
     }
@@ -211,13 +211,13 @@ const EnhancedVideoPlayer: React.FC<EnhancedVideoPlayerProps> = ({
       if (container.requestFullscreen) {
         container.requestFullscreen()
           .then(() => setIsFullscreen(true))
-          .catch(err => console.error('全屏失败:', err));
+          .catch(_err => console.error('全屏失败:', err));
       }
     } else {
       if (document.exitFullscreen) {
         document.exitFullscreen()
           .then(() => setIsFullscreen(false))
-          .catch(err => console.error('退出全屏失败:', err));
+          .catch(_err => console.error('退出全屏失败:', err));
       }
     }
   }, [isFullscreen]);
