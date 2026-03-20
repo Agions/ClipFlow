@@ -2,7 +2,7 @@ import {
   EyeOutlined,
   FileTextOutlined,
   EditOutlined,
-  VideoCameraOutlined,
+  
   PlayCircleOutlined,
   DownloadOutlined,
   ScissorOutlined,

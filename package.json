@@ -18,7 +18,7 @@
     "tauri": "tauri",
     "tauri:build:dmg": "bash scripts/build-dmg.sh",
     "type-check": "tsc --noEmit",
-    "lint": "eslint src --max-warnings 300",
+    "lint": "eslint src --max-warnings 250",
     "lint:core": "node scripts/lint-core.mjs",
     "lint:legacy": "eslint src --ext .ts,.tsx --rule '@typescript-eslint/ban-ts-comment: off'",
     "lint:all": "npm run lint:core && npm run lint:legacy",

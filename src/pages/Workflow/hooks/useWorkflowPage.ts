@@ -73,8 +73,8 @@ export const useWorkflowPage = () => {
       const stepInfo = getWorkflowSteps(workflowMode).find((s) => s.key === step);
       notify.info(`进入步骤: ${stepInfo?.title}`);
     },
-    onError: (err) => {
-      notify.error(err, '工作流执行失败');
+    onError: (_err) => {
+      notify.error(_err, '工作流执行失败');
     },
     onComplete: () => {
       notify.success('工作流完成！');
@@ -109,7 +109,7 @@ export const useWorkflowPage = () => {
         scriptParams,
         aiClipConfig: aiClipConfig.enabled ? aiClipConfig : undefined,
       });
-    } catch (err) {
+    } catch (_err) {
       // 错误已在回调中处理
     }
   }, [selectedFile, selectedModel, selectedTemplate, scriptParams, aiClipConfig, start, workflowMode, autoOriginalOverlay, overlayMixMode, overlayOpacity]);

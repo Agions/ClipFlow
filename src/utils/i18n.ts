@@ -75,7 +75,7 @@ export function useTranslation() {
     return text;
   }, []);
 
-  const changeLanguage = useCallback((_newLang: Language) => {
+  const changeLanguage = useCallback((_newLang2: Language) => {
     window.localStorage.setItem('app_language', 'zh');
   }, []);
 

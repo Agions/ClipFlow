@@ -218,8 +218,8 @@ export function onRenderCallback(
   _phase: 'mount' | 'update',
   actualDuration: number,
   baseDuration: number,
-  _startTime: number,
-  _commitTime: number
+  _startTime2: number,
+  _commitTime2: number
 ): void {
   // Log slow renders (renders taking more than 16ms)
   if (actualDuration > 16) {
