@@ -1,15 +1,24 @@
-- 概览
-  - [文档首页](/)
+<!-- docs/_sidebar.md -->
 
 - 快速开始
-  - [安装与环境](getting-started/installation.md)
-  - [5 分钟上手](getting-started/quick-start.md)
+  - [首页](/)
+  - [快速开始](getting-started.md)
+  - [安装指南](getting-started/installation.md)
+  - [快速入门](getting-started/quick-start.md)
+
+- 功能介绍
+  - [功能总览](features.md)
+  - [工作流程](workflow.md)
 
 - 使用指南
-  - [核心流程](guides/core-workflow.md)
-  - [模型配置](guides/model-config.md)
   - [项目管理](guides/project-management.md)
+  - [模型配置](guides/model-config.md)
+  - [AI 工作流](guides/ai-workflow.md)
 
-- 参考文档
-  - [常见问题](reference/faq.md)
-  - [更新日志](CHANGELOG.md)
+- 开发参考
+  - [FAQ](reference/faq.md)
+  - [贡献指南](CONTRIBUTING.md)
+
+- 其他
+  - [CHANGELOG](CHANGELOG.md)
+  - [GitHub](https://github.com/agions/clipflow)

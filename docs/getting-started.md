@@ -2,13 +2,50 @@
 
 > 本指南将帮助您快速上手 ClipFlow AI 视频创作平台
 
+## 🚀 5 分钟快速入门
+
+### 第一步：安装
+
+```bash
+git clone https://github.com/agions/clipflow.git
+cd clipflow
+npm install
+npm run dev
+```
+
+应用将在 http://localhost:1420 启动
+
+### 第二步：配置 API
+
+1. 打开应用 → 设置 → API 密钥管理
+2. 选择 AI 模型并输入密钥
+3. 点击验证确认
+
+| 模型 | 获取地址 |
+|------|----------|
+| OpenAI | [platform.openai.com](https://platform.openai.com) |
+| Anthropic | [anthropic.com](https://www.anthropic.com) |
+| Google | [aistudio.google.com](https://aistudio.google.com) |
+
+### 第三步：创建项目
+
+1. 点击首页「创建新项目」
+2. 上传视频素材
+3. 选择 AI 功能
+4. 等待处理完成
+5. 预览并导出
+
+---
+
 ## 环境要求
 
-| 要求    | 最低版本          |
-| ------- | ----------------- |
-| Node.js | >= 18.0.0         |
-| npm     | >= 9.0.0          |
-| Rust    | 最新稳定版 (可选) |
+| 要求 | 最低版本 | 推荐版本 |
+|------|----------|----------|
+| Node.js | >= 18.0.0 | >= 20.0.0 |
+| npm | >= 9.0.0 | >= 10.0.0 |
+| Rust | 可选 | 最新稳定版 |
+
+---
 
 ## 安装步骤
 
@@ -31,17 +68,15 @@ npm install
 npm run dev
 ```
 
-应用将在 http://localhost:1420 启动
-
 ### 4. 构建桌面应用 (可选)
 
 ```bash
 npm run tauri build
 ```
 
-## 配置 API 密钥
+---
 
-首次使用前，需要配置 AI 模型 API 密钥：
+## 配置 API 密钥
 
 ### 配置步骤
 
@@ -52,30 +87,36 @@ npm run tauri build
 
 ### 支持的模型
 
-| 模型      | 获取地址                                                 |
-| --------- | -------------------------------------------------------- |
-| OpenAI    | [platform.openai.com](https://platform.openai.com)       |
-| Anthropic | [anthropic.com](https://www.anthropic.com)               |
-| Google    | [aistudio.google.com](https://aistudio.google.com)       |
-| DeepSeek  | [platform.deepseek.com](https://platform.deepseek.com)   |
-| 阿里云    | [dashscope.aliyuncs.com](https://dashscope.aliyuncs.com) |
-| 智谱      | [open.bigmodel.cn](https://open.bigmodel.cn)             |
-| 月之暗面  | [platform.moonshot.cn](https://platform.moonshot.cn)     |
+| 模型 | 获取地址 |
+|------|----------|
+| OpenAI | [platform.openai.com](https://platform.openai.com) |
+| Anthropic | [anthropic.com](https://www.anthropic.com) |
+| Google | [aistudio.google.com](https://aistudio.google.com) |
+| DeepSeek | [platform.deepseek.com](https://platform.deepseek.com) |
+| 阿里云 | [dashscope.aliyuncs.com](https://dashscope.aliyuncs.com) |
+| 智谱 | [open.bigmodel.cn](https://open.bigmodel.cn) |
+| 月之暗面 | [platform.moonshot.cn](https://platform.moonshot.cn) |
+
+---
 
 ## 创建第一个项目
 
+### 操作流程
+
 ```
-1. 点击首页【创建新项目】→ 2. 上传视频素材 → 3. 选择 AI 功能
-→ 4. 等待 AI 处理 → 5. 预览并导出视频
+上传视频 → AI 分析 → 选择功能 → 预览导出
 ```
 
 ### 详细步骤
 
-1. **创建项目** - 点击首页「创建新项目」按钮
-2. **上传素材** - 拖拽或点击上传视频文件
-3. **选择功能** - 选择 AI 剪辑/解说/混剪
-4. **AI 处理** - 等待 AI 完成分析或生成
-5. **预览导出** - 预览效果并导出最终视频
+| 步骤 | 操作 | 说明 |
+|------|------|------|
+| 1 | 创建项目 | 点击首页「创建新项目」 |
+| 2 | 上传素材 | 拖拽或点击上传视频 |
+| 3 | AI 处理 | 等待 AI 完成分析 |
+| 4 | 预览导出 | 预览效果并导出 |
+
+---
 
 ## 平台特定问题
 
@@ -97,8 +138,11 @@ xcode-select --install
 sudo apt-get install libgtk-3-dev libwebkit2gtk-4.0-dev
 ```
 
+---
+
 ## 下一步
 
-- 📖 查看 [功能特性](features.md) 了解更多功能
-- 🔄 查看 [工作流程](workflow.md) 了解创作流程
-- ❓ 查看 [常见问题](faq.md) 解决疑问
+- 📖 [功能特性](features.md) - 了解更多功能
+- 🔄 [工作流程](workflow.md) - 了解创作流程
+- 💡 [AI 工作流](guides/ai-workflow.md) - AI 处理详解
+- ❓ [常见问题](reference/faq.md) - 解决疑问

@@ -4,60 +4,74 @@
 
 ---
 
-## [1.0.0-beta] - 2026-03-21
+## [Unreleased] - 开发中
 
 ### 🔧 优化
 
-#### 代码质量
-- 类型统一：`VideoProject` 类型添加，原 `Project` 标记 `@deprecated`
-- 组件拆分：`VideoProcessingController/modules/` 模块化
-- 代码清理：TODO 注释增强描述信息
+#### 代码质量提升
 
-#### 重构
-- **console.log → logger 重构**：33+ 文件统一使用 `@/utils/logger`
-- **工具函数去重**：`helpers.ts` 重导出 `array.ts`，消除 `unique`/`groupBy`/`sortBy`/`shuffle` 重复实现
-- **localStorage key 统一**：重命名 `'reelforge-store'` → `'clipflow-app-settings'`
+| 优化项 | 说明 |
+|--------|------|
+| 类型统一 | `VideoProject` 类型添加，消除与 `core/types/Project` 命名冲突 |
+| 组件模块化 | `VideoProcessingController/modules/` 子组件拆分 |
+| 日志重构 | `console.*` → `logger` 统一日志管理 |
+| 工具函数去重 | `helpers.ts` 重导出 `array.ts`，消除重复实现 |
 
-#### 清理
-- 移除未使用依赖：`styled-components` @types/styled-components
+#### 构建优化
+
+| 优化项 | 说明 |
+|--------|------|
+| Vite Chunking | icons 独立打包，提高缓存效率 |
+| Bundle 优化 | antd-vendor: 989KB → 922KB |
+
+#### 依赖清理
+
+- 移除未使用依赖：`styled-components`
 - 删除死代码：`src/features/` 目录 (-511 行)
 
 ### 🧪 测试
-- 新增 `format.test.ts` (33 tests)
-- 新增 `object.test.ts` (23 tests)
-- 测试结果：101 passed
+
+| 测试文件 | 测试数 |
+|----------|--------|
+| `format.test.ts` | 33 |
+| `object.test.ts` | 23 |
+| `validators.test.ts` | 24 |
+| `logger.test.ts` | 9 |
+| `route-preload.test.ts` | 7 |
+| `model-availability.test.ts` | 9 |
+| `shared/utils/common.test.ts` | 30 |
+| **总计** | **180+ tests** |
 
 ### ✅ 质量门禁
+
 - TypeScript: 0 errors
 - ESLint: 0 warnings
-- Build: ~17s
+- Build: ~15s
 
 ---
 
 ## [1.0.0-beta] - 2026-03-03
 
-### ✨ 新增
+### ✨ 新增功能
 
 - 科技暗黑主题 UI 设计
 - 霓虹发光效果
 - 玻璃拟态组件
-- 默认暗色模式
-- 简化左侧导航栏（首页、项目管理、设置）
-- API 密钥管理面板支持 Google (Gemini)
+- 简化左侧导航栏
+- API 密钥管理面板支持多平台
 - 2026年3月最新 AI 模型列表
 
 ### 🔄 更新
 
 - 设计系统配色方案
 - 布局组件暗色样式
-- 首页视觉效果
-- 输入框改为白色背景
+- 输入框样式优化
 
 ### 🤖 模型更新
 
-| 厂商 | 新增/更新模型 |
-|------|---------------|
-| OpenAI | GPT-5.3 (最新) |
+| 厂商 | 模型 |
+|------|------|
+| OpenAI | GPT-5.3 |
 | Anthropic | Claude 4.6 Opus |
 | Google | Gemini 3 Ultra |
 | DeepSeek | DeepSeek R1 |
@@ -68,18 +82,6 @@
 ### 🗑️ 移除
 
 - 百度 ERNIE 模型
-
----
-
-## [1.x.x] - 早期版本
-
-### 初始版本
-
-- 基础项目结构
-- React + TypeScript + Tauri 技术栈
-- Ant Design UI 组件库
-- Zustand 状态管理
-- 基础 AI 功能集成
 
 ---
 

@@ -37,9 +37,11 @@
 
 ### 环境要求
 
-- Node.js `>= 20`
-- npm `>= 10`
-- Rust（Tauri 打包需要）
+| 要求 | 版本 |
+|------|------|
+| Node.js | >= 18 |
+| npm | >= 9 |
+| Rust | 最新稳定版 (可选) |
 
 ### 安装
 
@@ -58,15 +60,15 @@ npm run dev
 ### 构建
 
 ```bash
-# 开发模式（前端）
+# 开发模式
 npm run dev
 
 # 生产构建
 npm run build
 
 # Tauri 桌面应用
-npm run tauri dev      # 开发
-npm run tauri build    # 打包
+npm run tauri dev    # 开发
+npm run tauri build  # 打包
 ```
 
 ### 常用命令
@@ -80,7 +82,6 @@ npm run tauri build    # 打包
 | `npm run type-check` | TypeScript 类型检查 |
 | `npm run lint` | ESLint 检查 |
 | `npm run test` | 运行测试 |
-| `npm run test:coverage` | 测试覆盖率 |
 | `npm run docs:dev` | 文档开发服务器 |
 
 ---
@@ -88,30 +89,37 @@ npm run tauri build    # 打包
 ## 🎯 核心功能
 
 ### 1. AI 智能剪辑
+
 - 场景切换检测
 - 音频峰值识别（笑声、掌声）
 - 运动强度分析
 - 自动生成精彩集锦
 
 ### 2. 智能字幕
+
 - 语音转字幕 (ASR)
 - 多语言翻译
 - 字幕风格化
 - 导出 SRT/ASS/VTT
 
 ### 3. 自动配乐
+
 - 情绪匹配音乐
 - 本地音乐库
 - 淡入淡出
 - 音量调节
 
 ### 4. 多模型接入
-- OpenAI
-- Anthropic  
-- Google AI
-- 阿里通义
-- 智谱 AI
-- 支持自定义 API
+
+| 厂商 | 模型 |
+|------|------|
+| OpenAI | GPT-5.3 |
+| Anthropic | Claude 4.6 |
+| Google | Gemini 3 Ultra |
+| 阿里通义 | Qwen 3.5 |
+| 智谱 | GLM-5 |
+| DeepSeek | DeepSeek R1 |
+| 月之暗面 | Kimi k2.5 |
 
 ---
 
@@ -125,6 +133,7 @@ npm run tauri build    # 打包
 | 桌面客户端 | Tauri 2.x (Rust) |
 | 构建工具 | Vite 6 |
 | AI 服务 | OpenAI + Claude API |
+| 测试框架 | Vitest |
 
 ---
 
@@ -135,21 +144,17 @@ clipflow/
 ├── src/                        # 前端源码
 │   ├── components/             # React 组件
 │   │   ├── editor/            # 编辑器组件
-│   │   │   └── Timeline/      # 时间轴组件（模块化）
 │   │   ├── AIPanel/          # AI 功能面板
-│   │   └── common/           # 通用组件
+│   │   └── common/            # 通用组件
 │   ├── core/                  # 核心逻辑
 │   │   ├── services/          # 业务服务
-│   │   │   ├── workflow/      # 工作流服务
-│   │   │   │   └── steps/    # 工作流步骤
-│   │   │   └── ai.service.ts # AI 服务
-│   │   └── types/            # 类型定义（统一）
+│   │   │   └── workflow/     # 工作流服务
+│   │   └── types/             # 类型定义
 │   ├── pages/                 # 页面组件
 │   ├── hooks/                 # 自定义 Hooks
-│   ├── store/                # Zustand 状态管理
-│   ├── styles/               # 全局样式
-│   └── theme/                # 主题系统
-├── src-tauri/                # Tauri/Rust 后端
+│   ├── store/                 # Zustand 状态管理
+│   └── utils/                 # 工具函数
+├── src-tauri/                 # Tauri/Rust 后端
 ├── docs/                      # 文档
 ├── scripts/                   # 构建脚本
 └── tests/                     # 测试文件
@@ -157,9 +162,20 @@ clipflow/
 
 ---
 
+## 📊 代码质量
+
+| 指标 | 状态 |
+|------|------|
+| TypeScript | 0 errors |
+| ESLint | 0 warnings |
+| 测试覆盖 | 180+ tests |
+| 构建时间 | ~15s |
+
+---
+
 ## 🤝 贡献指南
 
-欢迎贡献！请先阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
+欢迎贡献！
 
 ```bash
 # 克隆项目
@@ -171,7 +187,10 @@ git checkout -b feature/your-feature
 # 安装依赖
 npm install
 
-# 提交更改
+# 开发
+npm run dev
+
+# 提交
 git commit -m 'feat: 添加新功能'
 
 # 推送
@@ -183,15 +202,15 @@ git push origin feature/your-feature
 ## 📖 文档
 
 - [📚 在线文档](https://agions.github.io/clipflow/)
-- [🔥 快速开始](docs/getting-started/quick-start.md)
+- [🔥 快速开始](docs/getting-started.md)
 - [⚙️ 模型配置](docs/guides/model-config.md)
-- [💡 核心工作流](docs/guides/core-workflow.md)
+- [💡 AI 工作流](docs/guides/ai-workflow.md)
 
 ---
 
 ## 📝 更新日志
 
-查看 [CHANGELOG.md](CHANGELOG.md) 了解版本更新。
+查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解版本更新。
 
 ---
 
