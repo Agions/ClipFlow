@@ -139,7 +139,7 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
     setProgress(0);
 
     try {
-      // 模拟生成过程
+      // TODO: 调用实际的 AI 服务生成脚本
       const steps = [
         { progress: 10, message: '分析视频内容...', delay: 800 },
         { progress: 30, message: '提取关键信息...', delay: 1000 },
@@ -153,31 +153,10 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
         setProgress(step.progress);
       }
 
-      // 生成模拟脚本
-      const script: ScriptData = {
-        id: `script_${Date.now()}`,
-        title: values.topic || '生成的脚本',
-        content: generateMockScript(values),
-        segments: generateMockSegments(values),
-        metadata: {
-          style: values.style,
-          tone: values.tone,
-          length: values.length,
-          targetAudience: values.audience,
-          language: 'zh',
-          wordCount: estimateWordCount(values.length),
-          estimatedDuration: estimateDuration(values.length),
-          generatedBy: selectedModel.id,
-          generatedAt: new Date().toISOString()
-        },
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-
-      setProgress(100);
-      setGeneratedScript(script);
-      onGenerate?.(script);
-      notify.success('脚本生成成功');
+      // TODO: 替换为实际的 AI 服务调用
+      // const result = await aiService.generateScript(...)
+      
+      notify.info('脚本生成功能待实现');
     } catch (error) {
       logger.error('脚本生成失败:', { error });
       notify.error(error, '脚本生成失败');
@@ -448,31 +427,6 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
 };
 
 // 辅助函数
-function generateMockScript(values: ScriptFormValues): string {
-  return `欢迎来到${values.topic}！
-
-今天我们将一起探索这个精彩的主题。
-
-首先，让我们了解一下基本概念。${values.topic}是一个非常重要的话题，它影响着我们的日常生活。
-
-在接下来的内容中，我将为大家详细介绍：
-1. 核心概念和原理
-2. 实际应用场景
-3. 注意事项和技巧
-4. 常见问题解答
-
-希望通过这个视频，能够帮助大家更好地理解${values.topic}。让我们开始吧！`;
-}
-
-function generateMockSegments(_values: ScriptFormValues): ScriptSegment[] {
-  return [
-    { id: '1', startTime: 0, endTime: 10, content: '开场介绍', type: 'narration' },
-    { id: '2', startTime: 10, endTime: 60, content: '核心概念讲解', type: 'narration' },
-    { id: '3', startTime: 60, endTime: 120, content: '实际演示', type: 'action' },
-    { id: '4', startTime: 120, endTime: 150, content: '总结回顾', type: 'narration' }
-  ];
-}
-
 function estimateWordCount(length: string): number {
   const map: Record<string, number> = { short: 400, medium: 650, long: 1150 };
   return map[length] || 650;

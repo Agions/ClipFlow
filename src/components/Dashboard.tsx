@@ -61,23 +61,12 @@ const Dashboard: React.FC = () => {
   // 使用 useCallback 缓存回调函数
   const handleCreateProject = useCallback((values: CreateProjectFormValues) => {
     logger.info('创建新项目:', { values });
-    // 这里应该实现实际的项目创建逻辑
+    // TODO: 实现实际的项目创建逻辑
+    // 调用: POST /api/projects
     setShowCreateModal(false);
     form.resetFields();
     
-    // 模拟创建后添加到列表
-    const newProject: ProjectType = {
-      id: Date.now().toString(),
-      title: values.title,
-      thumbnail: 'https://picsum.photos/seed/new/300/200',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      duration: 0,
-      resolution: values.resolution,
-      starred: false
-    };
-    
-    setProjects(prev => [newProject, ...prev]);
+    notify.info('项目创建功能待实现');
   }, [form]);
 
   const handleOpenProject = (projectId: string) => {

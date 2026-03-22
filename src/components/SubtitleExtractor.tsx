@@ -44,32 +44,23 @@ const SubtitleExtractor: React.FC<SubtitleExtractorProps> = ({ projectId, videoU
     setExtractedSubtitles([]);
     
     try {
-      // 模拟进度更新
+      // 模拟进度更新 - TODO: Replace with actual subtitle service call
       const progressInterval = setInterval(() => {
         setProgress(prev => Math.min(prev + 10, 90));
       }, 300);
 
-      // 调用字幕服务（这里用模拟数据，实际会调用 subtitleService）
-      // 实际实现需要获取视频的音频轨道并传给 ASR
+      // TODO: 调用实际的字幕服务 (subtitleService.recognizeSpeech)
+      // 需要获取视频的音频轨道并传给 ASR
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       clearInterval(progressInterval);
       setProgress(100);
       
-      // 模拟字幕结果
-      const mockSubtitles = [
-        { id: '1', start: '00:00:01,000', end: '00:00:04,500', text: '大家好，欢迎来到本期视频。' },
-        { id: '2', start: '00:00:05,000', end: '00:00:08,200', text: '今天我们将介绍AI大模型最前沿的应用。' },
-        { id: '3', start: '00:00:08,500', end: '00:00:12,100', text: '包括最新的推理模型以及视觉识别模块。' },
-        { id: '4', start: '00:00:12,500', end: '00:00:18,000', text: '让我们通过一个实际的代码案例来看看它是如何工作的。' },
-      ];
+      // TODO: 替换为实际字幕结果
+      // const result = await subtitleService.recognizeSpeech(audioBuffer, options);
       
-      setExtractedSubtitles(mockSubtitles);
-      notify.success('字幕提取成功！');
+      notify.success('字幕提取功能待实现');
       
-      if (onExtracted) {
-        onExtracted(mockSubtitles);
-      }
     } catch (error) {
       notify.error(error, '字幕提取失败，请重试');
     } finally {

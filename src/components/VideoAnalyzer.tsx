@@ -45,13 +45,12 @@ const VideoAnalyzer: React.FC<VideoAnalyzerProps> = ({
       setLoading(true);
       setError(null);
       
-      // 初始进度
       setProgress(10);
       
       // 调用Tauri后端分析视频
       const videoMetadata = await invoke<AnalyzeVideoResult>('analyze_video', { 
         path: selectedVideoUrl 
-      }).catch(_err => {
+      }).catch(err => {
         logger.error('视频分析失败:', { error: err });
         throw new Error(`视频分析失败: ${err}`);
       });
@@ -63,7 +62,7 @@ const VideoAnalyzer: React.FC<VideoAnalyzerProps> = ({
       const keyFrames = await invoke<string[]>('extract_key_frames', {
         path: selectedVideoUrl,
         count: keyFrameCount
-      }).catch(_err => {
+      }).catch(err => {
         logger.error('提取关键帧失败:', { error: err });
         return [] as string[];
       });
@@ -73,17 +72,16 @@ const VideoAnalyzer: React.FC<VideoAnalyzerProps> = ({
       // 生成缩略图
       const thumbnail = await invoke<string>('generate_thumbnail', {
         path: selectedVideoUrl
-      }).catch(_err => {
+      }).catch(err => {
         logger.error('生成缩略图失败:', { error: err });
         return '';
       });
       
-      // 模拟关键时刻和情感分析
-      // 在实际项目中，这部分应由AI模型完成
+      // TODO: 实际关键时刻和情感分析应由 AI 模型完成
+      // 临时使用均匀分布生成关键帧
       const keyMoments: KeyMoment[] = [];
       const emotions: Emotion[] = [];
       
-      // 生成均匀分布的关键时刻
       const numKeyMoments = Math.min(8, Math.ceil(videoMetadata.duration / 30));
       const interval = videoMetadata.duration / (numKeyMoments + 1);
       
@@ -92,17 +90,8 @@ const VideoAnalyzer: React.FC<VideoAnalyzerProps> = ({
         keyMoments.push({
           timestamp,
           description: `关键时刻 ${i}`,
-          importance: Math.random() * 5 + 5 // 5-10的重要性
+          importance: 7 // 默认重要性
         });
-        
-        // 同时添加情感标记
-        if (i % 2 === 0) {
-          emotions.push({
-            timestamp,
-            type: i % 4 === 0 ? '兴奋' : '平静',
-            intensity: Math.random() * 0.5 + 0.5 // 0.5-1.0的强度
-          });
-        }
       }
       
       setProgress(90);
@@ -180,4 +169,4 @@ const VideoAnalyzer: React.FC<VideoAnalyzerProps> = ({
   );
 };
 
-export default VideoAnalyzer; 
+export default VideoAnalyzer;

@@ -142,20 +142,22 @@ const VideoSynthesize: React.FC<VideoSynthesizeProps> = ({ onNext }) => {
     setProgress(0);
 
     try {
-      // 模拟配音生成
+      // TODO: 实际配音生成
       setProgress(30);
       const voiceResult = await voiceSynthesisService.synthesize(scriptContent);
       
       setProgress(60);
-      const generatedAudioUrl = voiceResult.audioUrl || `/mock/voice_${Date.now()}.mp3`;
-      setVoice(generatedAudioUrl, {
-        voiceId: config.voiceId,
-        speed: config.voiceSpeed / 100,
-        volume: config.voiceVolume / 100
-      });
+      // TODO: voiceResult.audioUrl 应为实际的配音 URL
+      if (voiceResult.audioUrl) {
+        setVoice(voiceResult.audioUrl, {
+          voiceId: config.voiceId,
+          speed: config.voiceSpeed / 100,
+          volume: config.voiceVolume / 100
+        });
+      }
       
       setProgress(100);
-      notify.success('配音生成成功！');
+      notify.success('配音生成功能待实现');
     } catch (error) {
       logger.error('配音生成失败:', { error });
       notify.error(error, '配音生成失败');

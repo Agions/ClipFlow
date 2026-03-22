@@ -45,59 +45,11 @@ interface Asset {
 
 type AssetTab = (typeof TABS)[number]['key'];
 
-// 模拟素材数据
-const mockAssets: Asset[] = [
-  {
-    id: 'video-1',
-    name: '片段1.mp4',
-    type: 'video',
-    src: 'https://example.com/video1.mp4',
-    thumbnail: 'https://picsum.photos/96/54?random=1',
-    duration: 45,
-    size: 10.5,
-    tags: ['入场']
-  },
-  {
-    id: 'video-2',
-    name: '片段2.mp4',
-    type: 'video',
-    src: 'https://example.com/video2.mp4',
-    thumbnail: 'https://picsum.photos/96/54?random=2',
-    duration: 30,
-    size: 8.2,
-    tags: ['特写']
-  },
-  {
-    id: 'audio-1',
-    name: '背景音乐.mp3',
-    type: 'audio',
-    src: 'https://example.com/audio1.mp3',
-    duration: 120,
-    size: 3.5,
-    tags: ['音乐']
-  },
-  {
-    id: 'image-1',
-    name: 'logo.png',
-    type: 'image',
-    src: 'https://example.com/image1.png',
-    thumbnail: 'https://picsum.photos/96/54?random=3',
-    size: 0.8,
-    tags: ['素材']
-  },
-  {
-    id: 'text-1',
-    name: '字幕1',
-    type: 'text',
-    src: 'Hello World',
-    size: 0.1,
-    tags: ['字幕']
-  }
-];
-
+// AssetPanel - displays user uploaded assets
+// Mock data removed - assets should come from user uploads or project data
 const AssetPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AssetTab>('all');
-  const [assets, setAssets] = useState<Asset[]>(mockAssets);
+  const [assets, setAssets] = useState<Asset[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   
   // 过滤显示的素材

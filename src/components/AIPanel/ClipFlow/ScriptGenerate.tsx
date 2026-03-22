@@ -96,102 +96,23 @@ const scriptLengths = [
   { value: 'long', label: '长视频', desc: '3-10分钟', wordCount: 800, time: '3-10min' },
 ];
 
-// 生成模拟文案
-const generateMockScript = (
-  functionType: AIFunctionType, 
-  style: string, 
-  length: string
+// TODO: 生成文案 - 实际应调用 AI 服务
+const _generateMockScript = (
+  _functionType: AIFunctionType, 
+  _style: string, 
+  _length: string
 ): ScriptData => {
-  const templates: Record<AIFunctionType, { title: string; content: string }> = {
-    'video-narration': {
-      title: 'AI 视频解说文案',
-      content: `【视频解说】
-
-开场白：
-欢迎观看本期内容！今天我们来聊聊${style === 'formal' ? '专业领域' : '大家感兴趣的话题'}。
-
-正文部分：
-首先，让我们看一下这个画面。这是本次内容的核心要点之一...
-${style === 'casual' ? '哎，等等！这里有个细节值得关注...' : '值得注意的是...'}
-接着往下看，第二个重点来了...
-
-总结：
-好了，以上就是本期内容的全部讲解。希望对你有所帮助！
-
-结尾：
-如果觉得有帮助，记得点赞关注哦！我们下期再见！`,
-    },
-    'first-person': {
-      title: '第一人称解说',
-      content: `【第一人称视角】
-
-嘿，朋友们！我是XXX，今天带大家一起看看这个...
-
-说实话，当我第一眼看到这个的时候，我的内心是...
-你们看，这个地方真的超级有意思！我当时在现场的时候...
-哦对了，忘记说了，这里还有个彩蛋...
-
-怎么样？是不是很有意思？喜欢的话一键三连支持一下！
-我会继续给大家带来更多有趣的内容，拜拜~`,
-    },
-    'remix': {
-      title: 'AI混剪旁白',
-      content: `【AI混剪旁白】
-
-【开场 - 悬念营造】
-就在刚才，发生了这一幕...
-没有人能想到，接下来会发生什么...
-
-【高潮1 - 精彩瞬间】
-看！就是这个画面！太燃了！
-这一帧，绝对是名场面...
-
-【高潮2 - 节奏剪辑】
-紧接着，剧情发生了反转！
-每一秒都是精华，每一帧都不容错过...
-
-【结尾 - 意犹未尽】
-最后，让我们回顾一下这些精彩瞬间...
-这就是本期混剪的全部内容，下期更精彩！`,
-    },
-  };
-
-  const template = templates[functionType];
-  const lengthConfig = scriptLengths.find(l => l.value === length);
-  
-  const metadata: ScriptMetadata = {
-    style,
-    tone: style,
-    length: length as 'short' | 'medium' | 'long',
-    targetAudience: '通用',
-    language: 'zh-CN',
-    wordCount: lengthConfig?.wordCount || 300,
-    estimatedDuration: lengthConfig?.wordCount ? lengthConfig.wordCount / 3 : 100,
-    generatedBy: 'AI',
-    generatedAt: new Date().toISOString(),
-    template: functionType,
-  };
-
-  // 生成片段
-  const segments: ScriptSegment[] = template.content.split('\n\n').map((text, i) => ({
-    id: `segment_${i}`,
-    startTime: i * 30,
-    endTime: (i + 1) * 30,
-    content: text,
-    type: functionType === 'remix' ? 'action' : 'narration',
-  }));
-
+  // 占位函数，实际项目中应删除
   return {
     id: `script_${Date.now()}`,
-    title: template.title,
-    content: template.content,
-    segments,
-    metadata,
+    title: '待生成',
+    content: '',
+    segments: [],
+    metadata: { style: 'unknown', tone: 'friendly', length: 'medium', targetAudience: 'general', language: 'zh', wordCount: 0, estimatedDuration: 0, generatedBy: 'unknown', generatedAt: new Date().toISOString() },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 };
-
 interface ScriptGenerateProps {
   onNext?: () => void;
 }
@@ -326,21 +247,7 @@ const ScriptGenerate: React.FC<ScriptGenerateProps> = ({ onNext }) => {
         notify.success(`${FUNCTION_CONFIG[functionType].title}生成成功！`);
       } catch (apiError) {
         logger.error('AI API 调用失败:', { error: apiError });
-        setProgress(50);
-        notify.warning('AI 服务暂不可用，使用智能模板生成');
-        
-        const mockScript = generateMockScript(functionType, config.style, config.length);
-        setProgress(80);
-        const alignedMockScript = applyCommentaryOrchestration(mockScript);
-        
-        if (functionType === 'video-narration' || functionType === 'first-person') {
-          setNarrationScript(alignedMockScript);
-        } else {
-          setRemixScript(alignedMockScript);
-        }
-        
-        setProgress(100);
-        notify.success('文案生成成功（智能模板）');
+        notify.error(apiError, 'AI 服务暂不可用');
       }
     } catch (error) {
       logger.error('文案生成失败:', { error });

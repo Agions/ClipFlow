@@ -42,43 +42,15 @@ const formatTime = (seconds: number): string => {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
-// 生成模拟场景数据
-const generateMockScenes = (duration: number): Scene[] => {
-  const scenes: Scene[] = [];
-  const sceneCount = Math.max(3, Math.floor(duration / 10));
-  
-  for (let i = 0; i < sceneCount; i++) {
-    const startTime = (duration / sceneCount) * i;
-    const endTime = startTime + (duration / sceneCount);
-    scenes.push({
-      id: `scene-${i}`,
-      startTime,
-      endTime,
-      type: ['action', 'dialog', 'landscape', 'closeup'][i % 4] as Scene['type'],
-      score: 0.7 + Math.random() * 0.3,
-    });
-  }
-  
-  return scenes;
+// TODO: 这些函数应替换为实际的 AI 服务调用
+// 生成场景数据 - TODO: 使用 visionService.detectScenesAdvanced
+const _generateMockScenes = (duration: number): Scene[] => {
+  return [];
 };
 
-// 生成模拟字幕数据
-const generateMockSubtitles = (duration: number) => {
-  const subtitles = [];
-  const subtitleCount = Math.max(5, Math.floor(duration / 5));
-  
-  for (let i = 0; i < subtitleCount; i++) {
-    const startTime = (duration / subtitleCount) * i;
-    const endTime = startTime + (duration / subtitleCount);
-    subtitles.push({
-      id: `subtitle-${i}`,
-      startTime,
-      endTime,
-      text: `这是第 ${i + 1} 段字幕内容`,
-    });
-  }
-  
-  return subtitles;
+// 生成字幕数据 - TODO: 使用实际的 OCR/ASR 服务
+const _generateMockSubtitles = (duration: number) => {
+  return [];
 };
 
 // AI 分析任务列表
@@ -156,9 +128,8 @@ const AIAnalyze: React.FC<AIAnalyzeProps> = ({ onNext }) => {
           const emotionStrings = emotions?.map(e => e.dominant || e.emotion || 'neutral') || [];
           setAnalysis({ id: `analysis_${Date.now()}`, videoId: state.currentVideo.id, scenes, keyframes: [], objects, emotions: emotionStrings, summary: `检测到 ${scenes.length} 个场景`, stats: { sceneCount: scenes.length, objectCount: objects?.length || 0, avgSceneDuration: state.currentVideo.duration / scenes.length, sceneTypes: {}, objectCategories: {}, dominantEmotions: {} }, createdAt: new Date().toISOString() });
         } catch {
-          notify.warning('场景检测使用默认数据');
-          const mockScenes = generateMockScenes(state.currentVideo.duration);
-          setAnalysis({ id: `analysis_${Date.now()}`, videoId: state.currentVideo.id, scenes: mockScenes, keyframes: [], objects: [], emotions: [], summary: `检测到 ${mockScenes.length} 个场景`, stats: { sceneCount: mockScenes.length, objectCount: 0, avgSceneDuration: state.currentVideo.duration / mockScenes.length, sceneTypes: {}, objectCategories: {}, dominantEmotions: {} }, createdAt: new Date().toISOString() });
+          // TODO: 实际项目中应使用默认数据或提示用户
+          notify.warning('场景检测功能待实现');
         }
         completedTasks++;
         setProgress(Math.round((completedTasks / totalTasks) * 100));
@@ -186,8 +157,9 @@ const AIAnalyze: React.FC<AIAnalyzeProps> = ({ onNext }) => {
       if (config.ocrEnabled) {
         setCurrentTask('📝 正在识别文字 (OCR)...');
         setTaskList(prev => [...prev, '✅ OCR 字幕识别完成']);
-        const ocrSubtitles = generateMockSubtitles(state.currentVideo.duration).map((s, i) => ({ ...s, text: `OCR文字 ${i + 1}` }));
-        setOcrSubtitle(ocrSubtitles);
+        // TODO: 调用实际的 OCR 服务
+        // const ocrSubtitles = await ocrService.recognizeFromVideo(state.currentVideo);
+        // setOcrSubtitle(ocrSubtitles);
         completedTasks++;
         setProgress(Math.round((completedTasks / totalTasks) * 100));
       }
@@ -196,8 +168,9 @@ const AIAnalyze: React.FC<AIAnalyzeProps> = ({ onNext }) => {
       if (config.asrEnabled) {
         setCurrentTask('🎤 正在转换语音 (ASR)...');
         setTaskList(prev => [...prev, '✅ ASR 语音转写完成']);
-        const asrSubtitles = generateMockSubtitles(state.currentVideo.duration).map((s, i) => ({ ...s, text: `语音转写 ${i + 1}` }));
-        setAsrSubtitle(asrSubtitles);
+        // TODO: 调用实际的 ASR 服务
+        // const asrSubtitles = await asrService.recognizeSpeech(state.currentVideo);
+        // setAsrSubtitle(asrSubtitles);
         completedTasks++;
         setProgress(Math.round((completedTasks / totalTasks) * 100));
       }

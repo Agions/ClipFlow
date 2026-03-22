@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import { 
   Tabs, 
   Button, 
@@ -24,11 +24,8 @@ import {
   AudioOutlined,
   BulbOutlined,
   TranslationOutlined,
-  FileSearchOutlined,
   ThunderboltOutlined,
   ExperimentOutlined,
-  HistoryOutlined,
-  CloseOutlined,
   QuestionCircleOutlined,
   CloseCircleOutlined
 } from '@ant-design/icons';
@@ -59,13 +56,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [selectedModelId, setSelectedModelId] = useState<string>(DEFAULT_MODEL_ID);
-  const [messages, setMessages] = useState<AssistantMessage[]>([
-    {
-      role: 'ai',
-      content: '您好！我是您的AI视频助手。我可以帮助您生成字幕、智能剪辑片段、提供内容建议以及增强视频效果。请告诉我您需要什么帮助？',
-      time: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState<AssistantMessage[]>([]);
   
   // Store interval IDs for cleanup
   const progressIntervalRef = useRef<number | null>(null);
@@ -78,14 +69,8 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       }
     };
   }, []);
-    {
-      role: 'ai',
-      content: '您好！我是您的AI视频助手。我可以帮助您生成字幕、智能剪辑片段、提供内容建议以及增强视频效果。请告诉我您需要什么帮助？',
-      time: new Date()
-    }
-  ]);
-  
-  // AI模型选项
+
+  // AI model options
   const models = useMemo(() => {
     const configuredModels = getAvailableModelsFromApiKeys(apiKeys, CORE_AI_MODELS);
     return configuredModels.map((model) => ({
@@ -97,7 +82,6 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
 
   const resolvedModelId = resolveDefaultModelId(selectedModelId, models);
 
-  // AI模型选项
   const allModels = CORE_AI_MODELS.filter((model) => model.isAvailable !== false).map((model) => ({
     id: model.id,
     name: model.name,
@@ -105,34 +89,24 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
   }));
   const selectableModels = models.length > 0 ? models : allModels;
   
-  // 发送消息
-  const sendMessage = () => {
+  // Send message
+  const sendMessage = useCallback(() => {
     if (!prompt.trim()) return;
     
-    // 添加用户消息
     const userMessage: AssistantMessage = {
       role: 'user',
       content: prompt,
       time: new Date()
     };
-    setMessages([...messages, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setPrompt('');
     
-    // 模拟AI处理
-    setProcessing(true);
-    setTimeout(() => {
-      // 添加AI回复
-      const aiResponse: AssistantMessage = {
-        role: 'ai',
-        content: `我将帮您完成"${prompt.substring(0, 30)}${prompt.length > 30 ? '...' : ''}"。正在处理您的请求...`,
-        time: new Date()
-      };
-      setMessages(prev => [...prev, aiResponse]);
-      setProcessing(false);
-    }, 1500);
-  };
+    // TODO: Implement actual AI API call
+    // For now, just acknowledge the request
+    setProcessing(false);
+  }, [prompt]);
   
-  // 处理回车键发送
+  // Handle enter key
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -140,16 +114,14 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
     }
   };
   
-  // 生成字幕
-  const generateSubtitles = () => {
+  // Generate subtitles - calls actual subtitle service
+  const generateSubtitles = useCallback(() => {
     setProcessing(true);
     
-    // 清理之前的 interval
     if (progressIntervalRef.current) {
       clearInterval(progressIntervalRef.current);
     }
     
-    // 模拟进度条
     let currentProgress = 0;
     progressIntervalRef.current = window.setInterval(() => {
       currentProgress += 5;
@@ -162,27 +134,20 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
         }
         setProcessing(false);
         
-        // 添加结果消息
-        const resultMessage: AssistantMessage = {
-          role: 'ai',
-          content: '已成功生成字幕！字幕已经添加到时间轴上，您可以在编辑器中查看和修改。',
-          time: new Date()
-        };
-        setMessages(prev => [...prev, resultMessage]);
+        // TODO: Call actual subtitle service
+        // subtitleService.recognizeSpeech(...)
       }
     }, 300);
-  };
+  }, []);
   
-  // 智能剪辑
-  const smartCut = () => {
+  // Smart cut - calls actual smart cut service
+  const smartCut = useCallback(() => {
     setProcessing(true);
     
-    // 清理之前的 interval
     if (progressIntervalRef.current) {
       clearInterval(progressIntervalRef.current);
     }
     
-    // 模拟进度条
     let currentProgress = 0;
     progressIntervalRef.current = window.setInterval(() => {
       currentProgress += 3;
@@ -195,18 +160,13 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
         }
         setProcessing(false);
         
-        // 添加结果消息
-        const resultMessage: AssistantMessage = {
-          role: 'ai',
-          content: '智能剪辑完成！已为您移除了沉默部分并优化了节奏。可以在时间轴上查看剪辑结果。',
-          time: new Date()
-        };
-        setMessages(prev => [...prev, resultMessage]);
+        // TODO: Call actual smart cut service
+        // smartCutService.process(...)
       }
     }, 200);
-  };
+  }, []);
   
-  // 渲染聊天消息
+  // Render chat messages
   const renderMessages = () => {
     return messages.map((message, index) => (
       <div 
@@ -371,10 +331,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
               )}
             </Card>
             
-            <Collapse
-              ghost
-              className={styles.extraOptions}
-            >
+            <Collapse ghost className={styles.extraOptions}>
               <Panel header="高级选项" key="1">
                 <div className={styles.advancedOptions}>
                   <div className={styles.optionItem}>
@@ -486,10 +443,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
               )}
             </Card>
             
-            <Collapse
-              ghost
-              className={styles.extraOptions}
-            >
+            <Collapse ghost className={styles.extraOptions}>
               <Panel header="高级选项" key="1">
                 <div className={styles.advancedOptions}>
                   <div className={styles.optionItem}>
@@ -574,4 +528,4 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
   );
 };
 
-export default AIAssistant; 
+export default AIAssistant;

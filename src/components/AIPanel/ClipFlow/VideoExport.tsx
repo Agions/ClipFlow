@@ -93,7 +93,8 @@ const VideoExport: React.FC<VideoExportProps> = ({ onComplete }) => {
     setProgress(0);
 
     try {
-      // 模拟导出过程
+      // TODO: 实现实际的视频导出
+      // 调用 Tauri 后端或 FFmpeg 进行视频合成
       setProgress(10); await new Promise(r => setTimeout(r, 500));
       setProgress(30); await new Promise(r => setTimeout(r, 800));
       setProgress(50); await new Promise(r => setTimeout(r, 600));
@@ -104,7 +105,7 @@ const VideoExport: React.FC<VideoExportProps> = ({ onComplete }) => {
       // 保存设置
       setExportSettings(config);
       setExported(true);
-      notify.success('视频导出成功！');
+      notify.info('视频导出功能待实现');
 
     } catch (error) {
       logger.error('导出失败:', { error });
