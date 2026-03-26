@@ -493,41 +493,49 @@ export class ExportService {
     }>,
     onProgress?: (completed: number, total: number, result: ExportResult) => void
   ): Promise<ExportResult[]> {
-    const results: ExportResult[] = [];
     const total = tasks.length;
+    const results: ExportResult[] = new Array(total);
+    const concurrency = 2; // 最多同时转码2个视频，避免资源竞争
 
-    for (let i = 0; i < tasks.length; i++) {
-      const task = tasks[i];
+    // 分批并行执行，每批最多2个，避免资源竞争
+    const CONCURRENCY = 2;
+    for (let batchStart = 0; batchStart < total; batchStart += CONCURRENCY) {
+      const batchEnd = Math.min(batchStart + CONCURRENCY, total);
+      const batchTasks = tasks.slice(batchStart, batchEnd);
+      
+      await Promise.all(
+        batchTasks.map(async (task, batchIdx) => {
+          const i = batchStart + batchIdx;
+          // 检查是否已取消
+          if (this.abortController?.signal.aborted) {
+            const canceledResult: ExportResult = {
+              id: uuidv4(),
+              success: false,
+              duration: 0,
+              format: task.format || this.config.format,
+              quality: task.quality || this.config.quality,
+              error: '任务已取消',
+            };
+            results[i] = canceledResult;
+            onProgress?.(i + 1, total, canceledResult);
+            return;
+          }
 
-      // 检查是否已取消
-      if (this.abortController?.signal.aborted) {
-        const canceledResult: ExportResult = {
-          id: uuidv4(),
-          success: false,
-          duration: 0,
-          format: task.format || this.config.format,
-          quality: task.quality || this.config.quality,
-          error: '任务已取消',
-        };
-        results.push(canceledResult);
-        onProgress?.(i + 1, total, canceledResult);
-        continue;
-      }
+          const result = await this.transcodeVideo(
+            task.inputPath,
+            task.outputPath,
+            task.quality,
+            task.format,
+            () => {
+              // 单个任务的进度回调（简化，避免引用未定义的result）
+              onProgress?.(i, total, { success: false } as ExportResult);
+            }
+          );
 
-      const result = await this.transcodeVideo(
-        task.inputPath,
-        task.outputPath,
-        task.quality,
-        task.format,
-        (progress) => {
-          // 单个任务的进度回调
-          const overallProgress = ((i + progress.progress / 100) / total) * 100;
-          onProgress?.(i, total, { ...result, success: false });
-        }
+          results[i] = result;
+          onProgress?.(i + 1, total, result);
+        })
       );
-
-      results.push(result);
-      onProgress?.(i + 1, total, result);
     }
 
     return results;
