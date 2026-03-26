@@ -25,6 +25,93 @@ export interface SubtitleEntry {
 export type SubtitleFormat = 'srt' | 'ass' | 'vtt' | 'lrc';
 
 /**
+ * 字幕样式（用于 ASS 格式）
+ */
+export interface SubtitleStyle {
+  fontName: string;
+  fontSize: number;
+  primaryColor: string;    // ARGB: &HAARRGGBB
+  outlineColor: string;
+  shadowColor: string;
+  bold: boolean;
+  italic: boolean;
+  outline: number;
+  shadow: number;
+  alignment: number;        // 1-9 (bottom-left to top-right)
+  marginL: number;
+  marginR: number;
+  marginV: number;
+}
+
+/** 内置字幕样式预设 */
+export const SUBTITLE_PRESETS: Record<string, SubtitleStyle> = {
+  /** 默认白字黑边 */
+  default: {
+    fontName: 'Arial',
+    fontSize: 20,
+    primaryColor: '&H00FFFFFF',
+    outlineColor: '&H00000000',
+    shadowColor: '&H00000000',
+    bold: false,
+    italic: false,
+    outline: 2,
+    shadow: 2,
+    alignment: 2,
+    marginL: 10,
+    marginR: 10,
+    marginV: 10,
+  },
+  /** 高对比白字（电影感） */
+  cinematic: {
+    fontName: 'Microsoft YaHei',
+    fontSize: 24,
+    primaryColor: '&H00FFFFFF',
+    outlineColor: '&H00202020',
+    shadowColor: '&H00000000',
+    bold: true,
+    italic: false,
+    outline: 3,
+    shadow: 1,
+    alignment: 2,
+    marginL: 20,
+    marginR: 20,
+    marginV: 15,
+  },
+  /** 明亮背景用黑字 */
+  light: {
+    fontName: 'Arial',
+    fontSize: 22,
+    primaryColor: '&H00202020',
+    outlineColor: '&H00FFFFFF',
+    shadowColor: '&H00CCCCCC',
+    bold: false,
+    italic: false,
+    outline: 1,
+    shadow: 2,
+    alignment: 2,
+    marginL: 10,
+    marginR: 10,
+    marginV: 10,
+  },
+  /** 小屏移动端 */
+  mobile: {
+    fontName: 'Arial',
+    fontSize: 16,
+    primaryColor: '&H00FFFFFF',
+    outlineColor: '&H00000000',
+    shadowColor: '&H00000000',
+    bold: false,
+    italic: false,
+    outline: 2,
+    shadow: 3,
+    alignment: 2,
+    marginL: 8,
+    marginR: 8,
+    marginV: 8,
+  },
+};
+
+/**
  * 字幕数据
  */
 export interface SubtitleData {
@@ -119,7 +206,35 @@ export class SubtitleService {
   /**
    * 导出 ASS 格式
    */
-  exportToASS(subtitles: SubtitleData): string {
+  exportToASS(subtitles: SubtitleData, styleName: keyof typeof SUBTITLE_PRESETS = 'default'): string {
+    const style = SUBTITLE_PRESETS[styleName] || SUBTITLE_PRESETS.default;
+    
+    const styleLine = [
+      'Style: Default',
+      style.fontName,
+      style.fontSize.toString(),
+      style.primaryColor,
+      '&H000000FF', // SecondaryColour
+      style.outlineColor,
+      style.shadowColor,
+      style.bold ? '1' : '0',
+      style.italic ? '1' : '0',
+      '0', // Underline
+      '0', // StrikeOut
+      '100', // ScaleX
+      '100', // ScaleY
+      '0',   // Spacing
+      '0',   // Angle
+      '1',   // BorderStyle
+      style.outline.toString(),
+      style.shadow.toString(),
+      style.alignment.toString(),
+      style.marginL.toString(),
+      style.marginR.toString(),
+      style.marginV.toString(),
+      '1',   // Encoding
+    ].join(',');
+
     const header = `[Script Info]
 Title: ClipFlow Subtitles
 ScriptType: v4.00+
@@ -128,7 +243,7 @@ PlayDepth: 0
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,Arial,20,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,2,2,2,10,10,10,1
+${styleLine}
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
