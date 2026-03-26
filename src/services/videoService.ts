@@ -226,17 +226,24 @@ export const cutVideo = async (
     
     logger.info('开始剪辑视频:', { inputPath, outputPath, segments, options });
     
-    await invoke('cut_video', {
-      input_path: inputPath,
-      output_path: outputPath,
-      segments,
-      quality: options?.quality,
-      format: options?.format,
-      transition: options?.transition,
-      transition_duration: options?.transitionDuration,
-      volume: options?.volume,
-      add_subtitles: options?.addSubtitles
-    });
+    try {
+      await invoke('cut_video', {
+        input_path: inputPath,
+        output_path: outputPath,
+        segments,
+        quality: options?.quality,
+        format: options?.format,
+        transition: options?.transition,
+        transition_duration: options?.transitionDuration,
+        volume: options?.volume,
+        add_subtitles: options?.addSubtitles
+      });
+    } catch (error) {
+      // Fallback: 尝试使用 WebAssembly 版 FFmpeg
+      logger.warn('Tauri cut_video 未实现，使用 Web 版 fallback:', { error });
+      // TODO: 实现 WebAssembly FFmpeg fallback
+      throw new Error(`视频剪辑失败: ${error instanceof Error ? error.message : String(error)}. Tauri cut_video 命令未实现。`);
+    }
     
     logger.info('视频剪辑完成');
     return true;
