@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Layout as AntLayout, Menu, Button, Tooltip, Avatar, Typography, Dropdown, Badge, Space, Drawer } from 'antd';
 import type { MenuProps } from 'antd';
 import {
@@ -47,16 +47,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { isDarkMode, toggleTheme } = useTheme();
   const [browserWidth, setBrowserWidth] = useState(window.innerWidth);
   const isMobile = browserWidth < 768;
+  const collapsedRef = useRef(collapsed);
+
+  // Keep ref in sync with state
+  useEffect(() => { collapsedRef.current = collapsed; }, [collapsed]);
 
   useEffect(() => {
     const handleResize = () => {
       setBrowserWidth(window.innerWidth);
-      if (window.innerWidth < 768 && !collapsed) setCollapsed(true);
-      else if (window.innerWidth >= 1200 && collapsed) setCollapsed(false);
+      if (window.innerWidth < 768 && !collapsedRef.current) setCollapsed(true);
+      else if (window.innerWidth >= 1200 && collapsedRef.current) setCollapsed(false);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [collapsed]);
+  }, []); // No deps - handler reads from ref
 
   // Close mobile drawer when route changes
   useEffect(() => {
