@@ -531,7 +531,21 @@ fn list_app_data_files(app: tauri::AppHandle, directory: String) -> Result<Vec<S
 
 #[tauri::command]
 fn delete_file(path: String) -> Result<(), String> {
-    let target = PathBuf::from(path);
+    // 路径遍历防护：确保路径是安全的
+    let target = PathBuf::from(&path);
+    let canonical = target.canonicalize().map_err(|e| format!("路径无效: {e}"))?;
+
+    // 禁止删除系统关键路径
+    let forbidden = ["/", "/home", "/root", "/tmp", "/var", "/etc", "/usr", "/opt"];
+    for dir in forbidden {
+        if canonical.starts_with(dir) && canonical != PathBuf::from(dir) {
+            // 允许在 /tmp 下删除，但不允许删除根目录等
+            if !canonical.starts_with("/tmp/clipflow") {
+                return Err("禁止删除此路径".to_string());
+            }
+        }
+    }
+
     if target.exists() {
         fs::remove_file(&target).map_err(|e| format!("删除文件失败: {e}"))?;
     }
@@ -540,11 +554,33 @@ fn delete_file(path: String) -> Result<(), String> {
 
 #[tauri::command]
 fn read_text_file(path: String) -> Result<String, String> {
+    // 路径遍历防护
+    let target = PathBuf::from(&path);
+    let canonical = target.canonicalize().map_err(|e| format!("路径无效: {e}"))?;
+
+    // 限制只能读取特定目录
+    let allowed_dirs = ["/tmp/clipflow", ".clipflow"];
+    let is_allowed = allowed_dirs.iter().any(|dir| canonical.starts_with(dir));
+    if !is_allowed && !path.starts_with("/tmp/") && !path.starts_with(".") {
+        return Err("禁止读取此路径".to_string());
+    }
+
     fs::read_to_string(path).map_err(|e| format!("读取文件失败: {e}"))
 }
 
 #[tauri::command]
 fn get_file_size(path: String) -> Result<u64, String> {
+    // 路径遍历防护
+    let target = PathBuf::from(&path);
+    let canonical = target.canonicalize().map_err(|e| format!("路径无效: {e}"))?;
+
+    // 限制只能获取特定目录下的文件大小
+    let allowed_prefixes = ["/tmp/clipflow", "/tmp/ClipFlow"];
+    let is_allowed = allowed_prefixes.iter().any(|prefix| canonical.starts_with(prefix));
+    if !is_allowed && !path.starts_with("/tmp/") && !path.contains("clipflow") {
+        return Err("禁止获取此文件的信息".to_string());
+    }
+
     let metadata = fs::metadata(&path).map_err(|e| format!("读取文件信息失败: {e}"))?;
     Ok(metadata.len())
 }

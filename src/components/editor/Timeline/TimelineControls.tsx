@@ -86,7 +86,7 @@ const TimelineControls: React.FC<TimelineControlsProps> = memo(({
     switch (e.key.toLowerCase()) {
       case ' ':
         e.preventDefault()
-        isPlaying ? onPause() : onPlay()
+        if (isPlaying) { onPause() } else { onPlay() }
         break
       case 'v':
         onToolChange('select')

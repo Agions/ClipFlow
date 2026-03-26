@@ -38,15 +38,17 @@ export interface ASRProviderConfig {
 }
 
 // Whisper API 响应类型
+interface WhisperSegment {
+  id?: number;
+  text?: string;
+  start?: number;
+  end?: number;
+  confidence?: number;
+}
+
 interface WhisperResponse {
   text?: string;
-  segments?: Array<{
-    id?: number;
-    text?: string;
-    start?: number;
-    end?: number;
-    confidence?: number;
-  >;
+  segments?: WhisperSegment[];
   language?: string;
 }
 
