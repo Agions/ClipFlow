@@ -5,22 +5,22 @@
 ### 系统要求
 
 - **Node.js**: ≥ 18
-- **npm**: ≥ 9
-- **Rust**: 最新稳定版 (用于 Tauri 开发)
-- **FFmpeg**: 必须安装并添加到 PATH
+- **pnpm**: ≥ 9
+- **Rust**: 最新稳定版（仅开发 Tauri 时需要）
+- **FFmpeg**: 必须安装并加入 PATH
 
 ### 安装步骤
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/agions/storyforge.git
-cd storyforge
+git clone https://github.com/Agions/StoryForge.git
+cd StoryForge
 
 # 2. 安装 Node 依赖
-npm install
+pnpm install
 
-# 3. 安装 Rust (如果需要)
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# 3. 安装 Rust（如需要）
+curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 # 4. 验证 FFmpeg
 ffmpeg -version
@@ -29,17 +29,17 @@ ffmpeg -version
 ### 开发环境启动
 
 ```bash
-# 前端开发模式 (React + Vite)
+# 前端开发模式（React + Vite）
 npm run dev
 
-# Tauri 开发模式 (完整桌面应用)
+# Tauri 开发模式（完整桌面应用）
 npm run tauri dev
-
-# 运行测试
-npm run test
 
 # 类型检查
 npm run type-check
+
+# 运行测试
+npm run test
 ```
 
 ---
@@ -47,25 +47,74 @@ npm run type-check
 ## 项目结构
 
 ```
-src/
-├── components/       # React 组件
-│   ├── AIPanel/     # AI 功能面板
-│   │   ├── AIEditorContext.tsx   # AI 编辑器上下文
-│   │   ├── ClipFlow/             # 剪辑模式组件
-│   │   └── ...
-│   ├── editor/      # 时间线/轨道编辑器
-│   └── common/      # 通用组件
-├── core/
-│   ├── services/    # 业务服务
-│   │   ├── ai.service.ts
-│   │   ├── plotAnalysis.service.ts   # ✨ 新增
-│   │   ├── aiClip.service.ts
-│   │   └── ...
-│   └── types/       # TypeScript 类型
-├── pages/           # 页面
-├── hooks/           # 自定义 Hooks
-├── store/           # Zustand stores
-└── utils/           # 工具函数
+StoryForge/
+├── src/
+│   ├── components/          # React 组件
+│   │   ├── AIPanel/        # AI 功能面板
+│   │   │   ├── AIEditorContext.tsx  # AI 编辑器上下文
+│   │   │   └── ClipFlow/             # 剪辑模式组件
+│   │   ├── editor/          # 时间线 / 轨道编辑器
+│   │   └── common/          # 通用组件
+│   ├── core/
+│   │   ├── services/        # 业务服务层
+│   │   │   ├── ai.service.ts            # AI 模型适配
+│   │   │   ├── plotAnalysis.service.ts   # 剧情分析 ✨NEW
+│   │   │   ├── aiClip.service.ts        # 智能剪辑
+│   │   │   ├── vision.service.ts        # 视觉分析
+│   │   │   ├── asr.service.ts          # 语音转写
+│   │   │   ├── subtitle.service.ts     # 字幕生成
+│   │   │   ├── auto-music.service.ts   # 自动配乐
+│   │   │   └── export.service.ts       # 导出服务
+│   │   └── types/           # TypeScript 领域模型
+│   ├── pages/                # 页面组件
+│   ├── hooks/                # 自定义 Hooks
+│   ├── store/                # Zustand 状态管理
+│   └── utils/                # 工具函数
+├── src-tauri/                # Tauri / Rust 后端
+│   └── src/
+│       ├── lib.rs           # 库入口
+│       └── main.rs          # 应用入口
+├── docs/                     # 文档（docsify）
+└── scripts/                  # 构建脚本
+```
+
+---
+
+## 服务层规范
+
+### 新增服务
+
+```typescript
+// src/core/services/myService.service.ts
+
+import { BaseService, ServiceError } from "./base.service";
+import type { VideoInfo } from "@/core/types";
+
+export class MyService extends BaseService {
+  constructor() {
+    super("MyService", { timeout: 30000, retries: 2 });
+  }
+
+  async processVideo(video: VideoInfo): Promise<Result> {
+    return this.executeRequest(
+      async () => {
+        // 业务逻辑
+        return result;
+      },
+      "处理视频",
+      { loadingMessage: "正在处理中..." }
+    );
+  }
+}
+
+export const myService = new MyService();
+```
+
+### 在 index.ts 中导出
+
+```typescript
+// src/core/services/index.ts
+export { myService, MyService } from "./myService.service";
 ```
 
 ---
@@ -75,14 +124,13 @@ src/
 ### 前端调试
 
 ```bash
-# 开启详细日志
+# 开启详细日志（开发时控制台会输出 service 层日志）
 DEBUG=storyforge:* npm run dev
 
-# React DevTools
-# 安装浏览器扩展: React Developer Tools
+# React DevTools：安装浏览器扩展
+# https://react.dev/learn/react-developer-tools
 
-# Zustand DevTools  
-# 状态管理调试 (浏览器扩展)
+# Zustand DevTools：浏览器扩展调试状态
 ```
 
 ### Tauri 调试
@@ -91,19 +139,16 @@ DEBUG=storyforge:* npm run dev
 # 查看 Rust 日志
 tail -f ~/.cache/tauri/logs/*/logs/*.log
 
-# 重启 Tauri
+# 强制重启 Tauri
 npm run tauri dev -- --force
 ```
 
 ### AI 服务调试
 
-在 `.env` 中配置:
+在 `.env` 中配置：
 
 ```bash
-# 启用调试日志
 VITE_DEBUG_AI=true
-
-# AI 服务日志
 AI_DEBUG_LOG=true
 ```
 
@@ -113,52 +158,39 @@ AI_DEBUG_LOG=true
 
 ### 1. 添加新的 AI 模型
 
-编辑 `src/core/services/ai.service.ts`:
+编辑 `src/core/services/ai.service.ts`：
 
 ```typescript
-// 1. 添加模型类型
-export type LegacyAIModelType = 
-  | 'openai' 
-  | 'anthropic'
-  | // ... existing
-  | 'yourmodel';  // 新增
-
-// 2. 添加模型配置
-const MODEL_CONFIGS: Record<LegacyAIModelType, ModelConfig> = {
-  // ... existing
-  yourmodel: {
-    url: 'https://api.yourmodel.com/v1/chat',
-    model: 'yourmodel-latest',
-    headers: (apiKey) => ({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
-    }),
-    transformRequest: (prompt) => ({
-      model: 'yourmodel-latest',
-      messages: [{ role: 'user', content: prompt }]
-    }),
-    transformResponse: (data) => 
-      data.choices[0].message.content
+// 1. 在 MODEL_PROVIDERS 添加提供商
+const MODEL_PROVIDERS: Record<SupportedProvider, ModelProvider> = {
+  // ... 现有配置
+  yourprovider: {
+    name: "你的模型",
+    baseUrl: "https://api.yourmodel.com/v1"
   }
 };
+
+// 2. 在 callAPI 中添加对应的请求处理
 ```
 
 ### 2. 添加新的剪辑模式
 
-```typescript
-// src/core/services/workflow/steps/plotClipStep.ts
+在 `src/core/services/workflow/steps/` 下新建文件：
 
-export interface PlotClipConfig {
+```typescript
+// src/core/services/workflow/steps/myClipStep.ts
+
+export interface MyClipConfig {
   enabled: boolean;
-  // ... config options
+  // ... 配置项
 }
 
-export async function executePlotClipStep(
+export async function executeMyClipStep(
   videoInfo: VideoInfo,
-  config: PlotClipConfig,
-  updateProgress?: (progress: number) => void
+  config: MyClipConfig,
+  updateProgress?: (p: number) => void
 ): Promise<void> {
-  // 实现逻辑
+  // 实现剪辑逻辑
 }
 ```
 
@@ -167,9 +199,11 @@ export async function executePlotClipStep(
 ```typescript
 // src/core/services/newService.service.ts
 
-export class NewService {
+export class NewService extends BaseService {
   async doSomething(param: string): Promise<Result> {
-    // 实现
+    return this.executeRequest(async () => {
+      // ...
+    }, "执行操作");
   }
 }
 
@@ -184,7 +218,7 @@ export const newService = new NewService();
 # 运行所有测试
 npm run test
 
-# 监听模式 (开发用)
+# 监听模式（开发时使用）
 npm run test -- --watch
 
 # 生成覆盖率报告
@@ -198,12 +232,12 @@ npm run test:ui
 
 ```typescript
 // src/utils/__tests__/helpers.test.ts
-import { describe, it, expect } from 'vitest';
-import { yourFunction } from '../helpers';
+import { describe, it, expect } from "vitest";
+import { yourFunction } from "../helpers";
 
-describe('yourFunction', () => {
-  it('should return expected result', () => {
-    expect(yourFunction('input')).toBe('expected');
+describe("yourFunction", () => {
+  it("应返回预期结果", () => {
+    expect(yourFunction("input")).toBe("expected");
   });
 });
 ```
@@ -219,10 +253,10 @@ npm run build
 # 构建 Tauri 应用
 npm run tauri build
 
-# 仅构建特定平台
-npm run tauri build -- --target x86_64-pc-windows-msvc
-npm run tauri build -- --target x86_64-apple-darwin
-npm run tauri build -- --target x86_64-unknown-linux-gnu
+# 构建特定平台
+npm run tauri build -- --target x86_64-pc-windows-msvc    # Windows
+npm run tauri build -- --target x86_64-apple-darwin       # macOS
+npm run tauri build -- --target x86_64-unknown-linux-gnu  # Linux
 ```
 
 ---
@@ -232,19 +266,19 @@ npm run tauri build -- --target x86_64-unknown-linux-gnu
 ### TypeScript
 
 - 使用 strict 模式
-- 优先使用 `interface` 而非 `type`
+- 优先使用 `interface`，避免滥用 `any`
 - 导出类型而非实现细节
 
 ### React
 
 - 使用函数组件 + Hooks
-- 组件文件使用 PascalCase: `MyComponent.tsx`
-- Hooks 使用 camelCase 以 `use` 开头
+- 组件文件用 PascalCase：`MyComponent.tsx`
+- Hooks 以 `use` 开头
 
 ### CSS/LESS
 
 - 使用 LESS 模块化样式
-- 遵循 BEM 命名规范
+- 遵循 BEM 命名约定
 
 ---
 
@@ -259,7 +293,7 @@ brew install ffmpeg
 # Ubuntu/Debian
 sudo apt install ffmpeg
 
-# Windows (使用 winget)
+# Windows
 winget install ffmpeg
 ```
 
@@ -276,7 +310,8 @@ npm run tauri build
 
 ### Q: AI API 调用失败
 
-检查 `.env` 配置:
+检查 `.env` 配置：
+
 ```bash
 VITE_OPENAI_API_KEY=sk-xxx
 VITE_ANTHROPIC_API_KEY=xxx
@@ -286,12 +321,15 @@ VITE_ANTHROPIC_API_KEY=xxx
 
 ## 资源链接
 
-- [Tauri 文档](https://tauri.app/v1/guides/)
-- [React 文档](https://react.dev/)
-- [TypeScript 手册](https://www.typescriptlang.org/docs/)
-- [Ant Design](https://ant.design/components/overview/)
-- [Zustand](https://github.com/pmndrs/zustand)
+| 资源 | 链接 |
+|------|------|
+| Tauri 文档 | https://tauri.app/v2/guides/ |
+| React 文档 | https://react.dev/ |
+| TypeScript 手册 | https://www.typescriptlang.org/docs/ |
+| Ant Design | https://ant.design/components/overview/ |
+| Zustand | https://github.com/pmndrs/zustand |
+| StoryForge Issues | https://github.com/Agions/StoryForge/issues |
 
 ---
 
-*Last updated: 2026-03-28*
+*最后更新：2026-03-28*
