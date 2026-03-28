@@ -4,7 +4,6 @@
  */
 
 import { useState, useCallback, useRef } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import type { VideoInfo, VideoAnalysis, TaskStatus } from '@/core/types';
 
 export interface UseVideoReturn {
@@ -49,7 +48,7 @@ const getVideoInfo = (file: File): Promise<VideoInfo> => {
       URL.revokeObjectURL(url);
       
       const info: VideoInfo = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         path: url,
         name: file.name,
         duration: video.duration,
@@ -179,7 +178,7 @@ export function useVideo(): UseVideoReturn {
     
     // 创建任务状态
     const task: TaskStatus = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       type: 'analysis',
       status: 'running',
       progress: 0,
@@ -212,7 +211,7 @@ export function useVideo(): UseVideoReturn {
       
       // 生成模拟分析结果
       const analysisResult: VideoAnalysis = {
-        id: uuidv4(),
+        id: crypto.randomUUID(),
         videoId,
         scenes: generateMockScenes(video.duration),
         keyframes: generateMockKeyframes(video.duration),
@@ -320,7 +319,7 @@ function generateMockScenes(duration: number) {
   
   for (let i = 0; i < sceneCount; i++) {
     scenes.push({
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       startTime: i * 30,
       endTime: Math.min((i + 1) * 30, duration),
       thumbnail: '',
@@ -338,7 +337,7 @@ function generateMockKeyframes(duration: number) {
   
   for (let i = 0; i < count; i++) {
     keyframes.push({
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       timestamp: i * 5,
       thumbnail: '',
       description: `关键帧 ${i + 1}`
