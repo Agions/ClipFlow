@@ -1,255 +1,169 @@
-# StoryForge 贡献指南
+# 贡献指南
 
-感谢您对 StoryForge 的关注！本指南将帮助您开始贡献。
+感谢你关注 StoryForge！欢迎为项目贡献代码和想法。
 
 ---
 
-## 如何贡献
+## 🤝 如何参与
 
-### 报告 Bug
+### 报告问题
 
-1. 在 [GitHub Issues](https://github.com/agions/storyforge/issues) 创建新 Issue
-2. 使用 Bug 报告模板
-3. 提供以下信息:
-   - 清晰的标题和描述
-   - 复现步骤
-   - 预期 vs 实际行为
-   - 环境信息 (OS, Node 版本等)
-   - 截图或日志
+遇到问题时，请先搜索 [已有的 Issue](https://github.com/Agions/StoryForge/issues)，避免重复。
 
-### 提出功能建议
-
-1. 在 [GitHub Discussions](https://github.com/agions/storyforge/discussions) 讨论
-2. 描述您的用例
-3. 解释为什么这会对项目有益
-4. 提供参考实现或链接
+报告新问题时请包含：
+- **清晰的问题描述**
+- **复现步骤**
+- **环境信息**（操作系统、Node 版本、Tauri 版本等）
+- **相关截图或日志**
 
 ### 提交代码
 
-#### 开发流程
+1. **Fork** 本仓库
+2. **克隆**你的 Fork：
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/StoryForge.git
+   cd StoryForge
+   ```
+3. **创建分支**：
+   ```bash
+   git checkout -b feat/your-feature-name
+   ```
+4. **开发 & 测试**
+5. **提交**（遵守 Commit 规范，见下文）
+6. **Push 并发起 Pull Request**
 
-```bash
-# 1. Fork 仓库
-# 点击 GitHub 页面右上角 Fork 按钮
+---
 
-# 2. 克隆您 Fork 的仓库
-git clone https://github.com/YOUR_USERNAME/storyforge.git
-cd storyforge
+## 📝 Commit 规范
 
-# 3. 创建功能分支
-git checkout -b feature/your-feature-name
-# 或修复分支
-git checkout -b fix/issue-number
-
-# 4. 安装依赖
-npm install
-
-# 5. 进行开发
-npm run dev
-
-# 6. 运行测试
-npm run test
-
-# 7. 运行 lint
-npm run lint
-
-# 8. 提交更改
-git add .
-git commit -m 'feat: Add your feature description'
-# 遵循 conventional commits 格式
-
-# 9. 推送到您的 Fork
-git push origin feature/your-feature-name
-
-# 10. 创建 Pull Request
-```
-
-#### Commit 消息格式
+每次提交应遵循以下格式：
 
 ```
-<type>(<scope>): <description>
+<类型>: <简短描述>
 
-[optional body]
-
-[optional footer]
+[可选正文：详细解释 "为什么" 而不是 "做了什么"]
+[可选正文：包含相关 Issue 编号]
 ```
 
-**类型 (type)**:
+### 类型标识
 
-| Type | Description |
-|------|-------------|
+| 类型 | 说明 |
+|------|------|
 | `feat` | 新功能 |
-| `fix` | Bug 修复 |
+| `fix` | 修复 bug |
 | `docs` | 文档更新 |
-| `style` | 代码格式 (不影响功能) |
-| `refactor` | 重构 (非新功能非修复) |
+| `style` | 代码格式调整（不影响功能）|
+| `refactor` | 代码重构 |
 | `perf` | 性能优化 |
 | `test` | 测试相关 |
-| `build` | 构建相关 |
-| `ci` | CI/CD 相关 |
-| `chore` | 其他 |
+| `chore` | 构建、工具链变更 |
+| `build` | 影响构建系统的变更 |
+| `ci` | CI 配置变更 |
 
-**示例**:
+### 示例
 
 ```
-feat(plotAnalysis): Add narrative structure detection
+feat(plotAnalysis): 新增剧情图谱生成功能
 
-Add PlotAnalysisService for understanding video story structure.
-- Scene boundary detection
-- Emotion tracking
-- Plot point identification
+- 支持场景检测和情感分析
+- 输出多版本剪辑建议
 
-Closes #123
+Closes #42
 ```
 
 ---
 
-## 代码规范
+## 🧪 开发指南
 
-### TypeScript
+### 环境要求
 
-- 启用 strict 模式
-- 避免使用 `any`
-- 优先使用 `interface`
-- 导出清晰类型
+- Node.js ≥ 18
+- pnpm ≥ 9
+- Rust（仅 Tauri 开发需要）
+- FFmpeg
 
-```typescript
-// ✅ Good
-export interface VideoSegment {
-  id: string;
-  startTime: number;
-  endTime: number;
-}
-
-// ❌ Avoid
-export interface VideoSegment {
-  id: any;
-  startTime: any;
-  endTime: any;
-}
-```
-
-### React 组件
-
-- 使用函数组件
-- 使用 Hooks
-- 组件文件 `.tsx`
-- 样式文件 `.module.less`
-
-```typescript
-// ✅ Good
-export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUpload }) => {
-  const [loading, setLoading] = useState(false);
-  return <div>...</div>;
-};
-
-// ❌ Avoid
-class VideoUploader extends Component<VideoUploaderProps> {
-  render() { return <div>...</div>; }
-}
-```
-
-### 命名规范
-
-| 类别 | 规范 | 示例 |
-|------|------|------|
-| 组件 | PascalCase | `VideoPlayer` |
-| Hooks | camelCase + use 前缀 | `useVideoPlayer` |
-| 常量 | SCREAMING_SNAKE | `MAX_DURATION` |
-| 类型/接口 | PascalCase | `VideoMetadata` |
-| 文件 | kebab-case | `video-player.tsx` |
-
----
-
-## 测试要求
-
-- 新功能必须包含测试
-- Bug 修复必须包含回归测试
-- 测试覆盖率应保持或提高
+### 开发流程
 
 ```bash
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+
+# 类型检查
+npm run type-check
+
+# ESLint 检查
+npm run lint
+
 # 运行测试
 npm run test
-
-# 生成覆盖率
-npm run test:coverage
 ```
+
+### 代码规范
+
+- 使用 **TypeScript**（严格模式）
+- 遵循项目 ESLint 和 Prettier 配置
+- 新增服务需在 `src/core/services/index.ts` 统一导出
+- 公共类型添加到 `src/core/types/`
+- 为新功能编写测试（Vitest）
 
 ---
 
-## Pull Request 流程
+## 🔍 Pull Request 审查流程
 
-1. **创建 PR** — 填写 PR 模板
-2. **CI 检查** — 必须通过所有检查
-3. **代码审查** — 至少 1 人审查
-4. **合并** — 审查通过后合并
+1. PR 提交后会自动运行 CI（类型检查 / 测试 / 构建）
+2. 维护者会尽快 Review
+3. 请及时响应 Review 意见并进行修改
+4. 至少 1 个维护者 Approve 后合并
 
-### PR 模板
+### PR 描述模板
 
 ```markdown
-## 描述
-[简要描述更改内容]
+## 做了什么
+（简洁描述改动内容）
 
-## 类型
-- [ ] Bug 修复
-- [ ] 新功能
-- [ ] 文档更新
-- [ ] 重构
+## 为什么做
+（改动的原因或解决的问题）
 
-## 截图/截图
-[如果涉及 UI 更改]
+## 影响范围
+（改动涉及的功能或模块）
 
-## 检查清单
-- [ ] 代码遵循项目规范
-- [ ] 测试已添加/更新
-- [ ] 文档已更新 (如需要)
-- [ ] CI 检查通过
+## 测试截图
+（如有 UI 改动，请附截图）
 ```
 
 ---
 
-## 分支管理
+## 📐 设计规范
 
-```
-main          # 稳定版本，只读
-develop       # 开发分支
-feature/*     # 功能分支
-fix/*         # 修复分支
-docs/*        # 文档分支
-```
+### UI 组件
 
-### 分支命名
+- 使用 **Ant Design** 作为基础组件库
+- 自定义组件放在 `src/components/` 对应子目录下
+- 样式使用 **Less**，遵循 Ant Design 变量覆盖规范
 
-```
-feature/plot-analysis      # 新功能
-fix/video-upload-bug      # Bug 修复
-docs/readme-update         # 文档
-refactor/ai-service        # 重构
-```
+### 服务层
 
----
+- 所有服务继承 `BaseService`
+- 统一错误处理使用 `ServiceError`
+- 服务实例在 `src/core/services/index.ts` 导出
+- 每个服务一个文件，文件名与服务类名对应
 
-## 社区准则
+### 状态管理
 
-- 尊重所有参与者
-- 使用友好和包容的语言
-- 建设性反馈
-- 专注于项目目标
+- 使用 **Zustand** 管理全局状态
+- Store 文件放在 `src/store/`
+- 按功能模块拆分 Store，避免单一 Store 过大
 
 ---
 
-## 许可证
+## 💬 讨论与社区
 
-通过贡献，您同意您的代码将根据 MIT 许可证发布。
-
----
-
-## 联系我们
-
-- **GitHub Issues**: [报告问题](https://github.com/agions/storyforge/issues)
-- **Discussions**: [功能讨论](https://github.com/agions/storyforge/discussions)
-- **邮箱**: agions@qq.com
+- [GitHub Discussions](https://github.com/Agions/StoryForge/discussions) — 功能建议和问答
+- [GitHub Issues](https://github.com/Agions/StoryForge/issues) — Bug 报告和功能请求
 
 ---
 
-*感谢您的贡献！*
+再次感谢你的贡献！🌟
