@@ -1,21 +1,18 @@
 /**
- * Hooks 统一导出
+ * Core Hooks 统一导出
+ *
+ * 命名规范：kebab-case（use-ai-clip.ts, use-auto-save.ts）
  */
 
-export { useModel, useModelCost } from './useModel';
-export { useProject } from './useProject';
-export { useVideo } from './useVideo';
-export { useWorkflow } from './useWorkflow';
-export { useEditor } from './useEditor';
-export { useSmartModel } from './useSmartModel';
-export { useAIClip } from './useAIClip';
+// AI 剪辑
+export { useAIClip } from './use-ai-clip';
+export { useAutoSave } from './use-auto-save';
+export { useSmartModel } from './use-smart-model';
 
-export { useAutoSave, useAutoSaveRegister } from './useAutoSave';
-export type { AutoSaveConfig, AutoSaveState } from './useAutoSave';
-export type { UseModelReturn, UseModelCostReturn } from './useModel';
-export type { UseProjectReturn } from './useProject';
-export type { UseVideoReturn } from './useVideo';
-export type { UseWorkflowReturn } from './useWorkflow';
-export type { EditorState, EditorOperations } from './useEditor';
-export type { SmartGenerateResult, SmartGenerateOptions, UsageStats } from './useSmartModel';
-export type { UseAIClipReturn } from './useAIClip';
+// 工作流
+export { useWorkflow } from './use-workflow';
+export { useProject } from './use-project';
+export { useVideo } from './use-video';
+export { useModel } from './use-model';
+export { useProjectEdit } from './use-project-edit';
+export { useEditor } from './use-editor-state';
