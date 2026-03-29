@@ -139,31 +139,57 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
     setProgress(0);
 
     try {
-      // TODO: 调用实际的 AI 服务生成脚本
-      const steps = [
-        { progress: 10, message: '分析视频内容...', delay: 800 },
-        { progress: 30, message: '提取关键信息...', delay: 1000 },
-        { progress: 50, message: '构建脚本结构...', delay: 1200 },
-        { progress: 70, message: '生成脚本内容...', delay: 1500 },
-        { progress: 90, message: '优化语言表达...', delay: 1000 }
-      ];
-
-      for (const step of steps) {
-        await new Promise(resolve => setTimeout(resolve, step.delay));
-        setProgress(step.progress);
-      }
-
-      // TODO: 替换为实际的 AI 服务调用
-      // const result = await aiService.generateScript(...)
+      // 动态导入 AI 服务
+      const { aiService } = await import('@/core/services');
       
-      notify.info('脚本生成功能待实现');
+      // 获取模型设置
+      const modelSettings = selectedModel || {
+        id: 'gpt-4o',
+        name: 'GPT-4o',
+        type: 'openai' as const,
+        enabled: true,
+      };
+
+      // 调用 AI 服务生成脚本
+      setProgress(10);
+      setCurrentStep('正在调用 AI 服务...');
+
+      const result = await aiService.generateScript(
+        modelSettings,
+        {},
+        {
+          topic: form.getFieldValue('topic') || '通用主题',
+          style: form.getFieldValue('style') || 'professional',
+          tone: form.getFieldValue('tone') || 'friendly',
+          length: form.getFieldValue('length') || 'medium',
+          audience: form.getFieldValue('audience') || 'general',
+          language: 'zh-CN',
+          requirements: form.getFieldValue('requirements'),
+        }
+      );
+
+      setProgress(70);
+      setCurrentStep('正在处理结果...');
+
+      // 更新脚本
+      setScript({
+        id: result.id,
+        title: result.title,
+        content: result.content,
+        segments: result.segments,
+        metadata: result.metadata,
+      });
+
+      setProgress(100);
+      notify.success('脚本生成成功');
+
     } catch (error) {
       logger.error('脚本生成失败:', { error });
       notify.error(error, '脚本生成失败');
     } finally {
       setIsGenerating(false);
     }
-  }, [selectedModel, isConfigured, onGenerate]);
+  }, [selectedModel, isConfigured, onGenerate, form]);
 
   // 保存脚本
   const handleSave = useCallback(() => {

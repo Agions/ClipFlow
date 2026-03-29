@@ -51,22 +51,71 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     // 从API获取项目数据
-    setLoading(true);
-    // TODO: 替换为真实API调用 - 需要对接后端项目列表接口
-    // 接口: GET /api/projects
-    setProjects([]);
-    setLoading(false);
+    const fetchProjects = async () => {
+      setLoading(true);
+      try {
+        const { projectApi } = await import('@/services/api');
+        const projects = await projectApi.getAll();
+        setProjects(projects || []);
+      } catch (error) {
+        // API 不可用时使用本地存储
+        logger.warn('API 不可用，使用本地存储');
+        const localProjects = localStorage.getItem('storyforge_projects');
+        setProjects(localProjects ? JSON.parse(localProjects) : []);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
   // 使用 useCallback 缓存回调函数
-  const handleCreateProject = useCallback((values: CreateProjectFormValues) => {
+  const handleCreateProject = useCallback(async (values: CreateProjectFormValues) => {
     logger.info('创建新项目:', { values });
-    // TODO: 实现实际的项目创建逻辑
-    // 调用: POST /api/projects
+    
+    try {
+      const { projectApi } = await import('@/services/api');
+      const newProject = await projectApi.create({
+        name: values.name,
+        description: values.description,
+        type: values.type,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      
+      // 添加到列表
+      setProjects(prev => [newProject, ...prev]);
+      
+      // 保存到本地存储作为备份
+      const localProjects = JSON.parse(localStorage.getItem('storyforge_projects') || '[]');
+      localProjects.unshift(newProject);
+      localStorage.setItem('storyforge_projects', JSON.stringify(localProjects));
+      
+      notify.success('项目创建成功');
+    } catch (error) {
+      // API 不可用时使用本地存储
+      logger.warn('API 创建失败，使用本地存储');
+      const localProject = {
+        id: `local_${Date.now()}`,
+        name: values.name,
+        description: values.description,
+        type: values.type,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      setProjects(prev => [localProject, ...prev]);
+      
+      const localProjects = JSON.parse(localStorage.getItem('storyforge_projects') || '[]');
+      localProjects.unshift(localProject);
+      localStorage.setItem('storyforge_projects', JSON.stringify(localProjects));
+      
+      notify.success('项目已保存到本地');
+    }
+    
     setShowCreateModal(false);
     form.resetFields();
-    
-    notify.info('项目创建功能待实现');
   }, [form]);
 
   const handleOpenProject = (projectId: string) => {
@@ -88,8 +137,22 @@ const Dashboard: React.FC = () => {
       okText: '删除',
       okType: 'danger',
       cancelText: '取消',
-      onOk: () => {
-        setProjects(projects.filter(project => project.id !== projectId));
+      onOk: async () => {
+        try {
+          const { projectApi } = await import('@/services/api');
+          await projectApi.delete(projectId);
+          notify.success('项目已删除');
+        } catch (error) {
+          logger.warn('API 删除失败，仅本地删除');
+        }
+        
+        // 同时从本地列表删除
+        setProjects(prev => prev.filter(project => project.id !== projectId));
+        
+        // 从本地存储删除
+        const localProjects = JSON.parse(localStorage.getItem('storyforge_projects') || '[]');
+        const filtered = localProjects.filter((p: Project) => p.id !== projectId);
+        localStorage.setItem('storyforge_projects', JSON.stringify(filtered));
       }
     });
   };
