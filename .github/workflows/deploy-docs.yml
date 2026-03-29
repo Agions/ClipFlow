@@ -12,16 +12,23 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   docs:
     name: Deploy Docs
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
@@ -32,7 +39,12 @@ jobs:
       - name: Build Documentation
         run: npm run docs:build
 
-      - uses: actions/configure-pages@v4
+      - name: Verify Build Output
+        run: |
+          echo "Build output directory:"
+          ls -la docs/.vitepress/dist/
+          echo "File count:"
+          find docs/.vitepress/dist/ -type f | wc -l
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
