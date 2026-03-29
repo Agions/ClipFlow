@@ -6,8 +6,6 @@ export default defineConfig({
   
   lang: 'zh-CN',
   
-  base: '/StoryForge/',
-  
   cleanUrls: true,
   
   ignoreDeadLinks: true,

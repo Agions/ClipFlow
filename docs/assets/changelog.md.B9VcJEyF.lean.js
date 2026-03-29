@@ -1,0 +1,1 @@
+import{_ as e,o as l,c as i,ag as t}from"./chunks/framework.CvgP6Fyv.js";const _=JSON.parse('{"title":"更新日志","description":"","frontmatter":{},"headers":[],"relativePath":"changelog.md","filePath":"changelog.md"}'),r={name:"changelog.md"};function o(n,a,h,s,c,d){return l(),i("div",null,[...a[0]||(a[0]=[t("",11)])])}const f=e(r,[["render",o]]);export{_ as __pageData,f as default};

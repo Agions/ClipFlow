@@ -1,1 +1,0 @@
-import{_ as e,o as r,c as o,ag as t}from"./chunks/framework.CLqXlKno.js";const u=JSON.parse('{"title":"常见问题","description":"","frontmatter":{},"headers":[],"relativePath":"faq.md","filePath":"faq.md"}'),i={name:"faq.md"};function l(h,a,n,s,d,c){return r(),o("div",null,[...a[0]||(a[0]=[t("",24)])])}const f=e(i,[["render",l]]);export{u as __pageData,f as default};
