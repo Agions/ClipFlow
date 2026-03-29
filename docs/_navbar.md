@@ -1,11 +1,11 @@
-* [首页](/)
-* 快速开始
-  * [安装与环境](getting-started/installation.md)
-  * [5 分钟上手](getting-started/quick-start.md)
-* 使用指南
-  * [核心流程](guides/core-workflow.md)
-  * [模型配置](guides/model-config.md)
-  * [项目管理](guides/project-management.md)
-* 参考
-  * [常见问题](reference/faq.md)
-  * [更新日志](CHANGELOG.md)
+<!-- 顶部导航栏 -->
+
+* GitHub
+  * [项目主页](https://github.com/Agions/StoryForge)
+  * [Releases](https://github.com/Agions/StoryForge/releases)
+  * [Issues](https://github.com/Agions/StoryForge/issues)
+
+* 文档
+  * [快速开始](/docs/getting-started)
+  * [功能介绍](/docs/features)
+  * [常见问题](/docs/faq)

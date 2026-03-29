@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ClipFlow Docs</title>
+    <title>StoryForge 文档 - AI 视频创作平台</title>
     <meta
       name="description"
-      content="ClipFlow 在线文档：安装部署、项目流程、AI 模型配置、常见问题与版本说明。"
+      content="StoryForge 在线文档：快速开始、功能指南、AI 模型配置、工作流和常见问题。"
     />
     <link
       rel="stylesheet"
@@ -14,7 +14,11 @@
     />
     <style>
       :root {
-        --theme-color: #1768ff;
+        --theme-color: #6366f1;
+        --sidebar-nav-link-color: #475569;
+        --sidebar-nav-link-active-color: #6366f1;
+        --link-color: #6366f1;
+        --heading-color: #1e293b;
       }
       .app-name img {
         max-width: 28px;
@@ -28,34 +32,52 @@
       }
       .sidebar ul li.active > a {
         font-weight: 600;
+        color: var(--sidebar-nav-link-active-color);
+      }
+      .search input {
+        border-radius: 8px;
+      }
+      .badge {
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      .badge.primary {
+        background: var(--theme-color);
+        color: white;
       }
     </style>
   </head>
   <body>
-    <div id="app">文档加载中...</div>
+    <div id="app">加载中...</div>
     <script>
       window.$docsify = {
-        name: 'ClipFlow 文档',
-        repo: 'https://github.com/agions/clipflow',
+        name: 'StoryForge',
+        repo: 'https://github.com/agions/storyforge',
         loadSidebar: true,
         loadNavbar: true,
         subMaxLevel: 2,
         auto2top: true,
         maxLevel: 3,
         search: {
-          placeholder: '搜索文档',
+          placeholder: '搜索文档...',
           noData: '没有找到相关内容',
           depth: 4,
         },
         pagination: {
-          previousText: '上一页',
-          nextText: '下一页',
+          previousText: '上一篇',
+          nextText: '下一篇',
           crossChapter: true,
         },
         copyCode: {
           buttonText: '复制',
           errorText: '失败',
-          successText: '已复制',
+          successText: '已复制 ✓',
+        },
+        toc: {
+          tocLevel: [1, 2, 3],
+          target: 'h1, h2, h3',
         },
       };
     </script>
@@ -66,6 +88,6 @@
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-typescript.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-rust.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-javascript.min.js"></script>
   </body>
 </html>
