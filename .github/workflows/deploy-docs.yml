@@ -22,11 +22,14 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Enable pnpm
+        run: corepack enable pnpm
+
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: pnpm install --frozen-lockfile || pnpm install
 
       - name: Build VitePress
-        run: npm run docs:build
+        run: pnpm docs:build
 
       - name: Show build output
         run: ls -la docs/.vitepress/dist/
