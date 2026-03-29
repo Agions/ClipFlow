@@ -59,7 +59,7 @@ export interface PlotTimeline {
 /** 剪辑版本类型 */
 export type EditVersion =
   | 'full'        // 剧情完整版
-  | 'highlights'; // 精华版
+  | 'highlights'  // 精华版
   | 'intense';    // 高能混剪版
 
 /** 剪辑建议 */

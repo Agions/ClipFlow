@@ -297,3 +297,13 @@ export function getModelProvider(modelId: string) {
   const model = getModelConfig(modelId);
   return model?.provider;
 }
+
+// ============================================================================
+// 兼容性别名（供旧代码使用）
+// ============================================================================
+
+/** 兼容性别名 */
+export const LLM_MODELS = CORE_AI_MODELS;
+
+/** 兼容性别名 */
+export const DEFAULT_LLM_MODEL = DEFAULT_MODEL_ID;
