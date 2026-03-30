@@ -32,6 +32,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Install Tauri CLI
+        run: pnpm add -D @tauri-apps/cli
+
       - name: Build Web
         run: pnpm build
 
@@ -43,7 +46,7 @@ jobs:
       - name: Build Tauri
         run: |
           cd src-tauri
-          cargo build --release --bundles deb
+          cargo tauri build
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
 
