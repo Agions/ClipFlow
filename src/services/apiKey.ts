@@ -37,7 +37,7 @@ export const validateApiKey = async (provider: string, apiKey: string): Promise<
         await axios.post(
           'https://api.anthropic.com/v1/messages',
           {
-            model: 'claude-sonnet-4-20250514',
+            model: 'claude-3.7-sonnet',
             max_tokens: 1,
             messages: [{ role: 'user', content: 'ping' }],
           },
@@ -78,8 +78,8 @@ export const validateApiKey = async (provider: string, apiKey: string): Promise<
       case 'alibaba':
         // 阿里通义千问 - 使用 chat/completions 验证
         await axios.post(
-          'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation',
-          { model: 'qwen-turbo', input: { prompt: 'hi' } },
+          'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+          { model: 'qwen2.5-max', messages: [{ role: 'user', content: 'hi' }] },
           {
             headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
             timeout: 10000,
@@ -99,7 +99,7 @@ export const validateApiKey = async (provider: string, apiKey: string): Promise<
         // 智谱清言 - 使用 chat/completions 验证
         await axios.post(
           'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-          { model: 'glm-4', messages: [{ role: 'user', content: 'hi' }] },
+          { model: 'glm-4-plus', messages: [{ role: 'user', content: 'hi' }] },
           {
             headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
             timeout: 10000,
@@ -111,7 +111,7 @@ export const validateApiKey = async (provider: string, apiKey: string): Promise<
         // Moonshot Kimi - 使用 chat/completions 验证
         await axios.post(
           'https://api.moonshot.cn/v1/chat/completions',
-          { model: 'kimi-latest', messages: [{ role: 'user', content: 'hi' }] },
+          { model: 'kimi-2', messages: [{ role: 'user', content: 'hi' }] },
           {
             headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
             timeout: 10000,

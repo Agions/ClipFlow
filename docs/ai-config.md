@@ -1,12 +1,12 @@
 # AI 模型配置
 
-StoryForge 支持多种 AI 模型服务提供商。
+StoryForge 支持多种 AI 模型服务提供商。所有模型均已更新至 **2026年3月最新版本**。
 
 ## 支持的提供商
 
 ### OpenAI
 
-使用 OpenAI GPT 系列模型进行文本生成和分析。
+使用 OpenAI GPT-4.5 系列模型进行文本生成和分析。
 
 ```bash
 VITE_DEFAULT_PROVIDER=openai
@@ -14,36 +14,103 @@ VITE_OPENAI_API_KEY=sk-xxxx
 VITE_OPENAI_BASE_URL=https://api.openai.com/v1
 ```
 
+**推荐模型**: `gpt-4.5`
+
 获取 API 密钥：[platform.openai.com](https://platform.openai.com/api-keys)
 
-### Azure OpenAI
+### Anthropic Claude
 
-使用 Azure 托管的 OpenAI 模型。
+使用 Claude 3.7 Sonnet 模型，提供出色的推理和创作能力。
 
 ```bash
-VITE_AZURE_API_KEY=xxxx
-VITE_AZURE_ENDPOINT=https://xxxx.openai.azure.com
-VITE_AZURE_DEPLOYMENT=gpt-35-turbo
+VITE_ANTHROPIC_API_KEY=sk-ant-xxxx
 ```
 
-获取 API 密钥：[Azure Portal](https://portal.azure.com)
+**推荐模型**: `claude-3.7-sonnet`
 
-### 智谱 AI
+获取 API 密钥：[console.anthropic.com](https://console.anthropic.com/)
 
-使用智谱 GLM 系列模型。
+### Google Gemini
+
+使用 Google Gemini 2.0 Pro 模型。
+
+```bash
+VITE_GOOGLE_API_KEY=xxxx
+```
+
+**推荐模型**: `gemini-2.0-pro`
+
+获取 API 密钥：[AI Studio](https://aistudio.google.com/app/apikey)
+
+### 智谱 AI (GLM)
+
+使用智谱 GLM-4 Plus 系列模型。
 
 ```bash
 VITE_ZHIPU_API_KEY=xxxx
 ```
 
+**推荐模型**: `glm-4-plus`
+
 获取 API 密钥：[智谱 AI 开放平台](https://open.bigmodel.cn/)
+
+### 通义千问 (Qwen)
+
+使用阿里 Qwen 2.5 Max 模型。
+
+```bash
+VITE_QIANWEN_API_KEY=xxxx
+```
+
+**推荐模型**: `qwen2.5-max`
+
+获取 API 密钥：[阿里云百炼](https://bailian.console.aliyun.com/)
+
+### DeepSeek
+
+使用 DeepSeek V3 模型，性价比极高。
+
+```bash
+VITE_DEEPSEEK_API_KEY=sk-xxxx
+```
+
+**推荐模型**: `deepseek-v3`
+
+获取 API 密钥：[platform.deepseek.com](https://platform.deepseek.com/)
+
+### Moonshot Kimi
+
+使用 Kimi 2 模型，长上下文支持优秀。
+
+```bash
+VITE_MOONSHOT_API_KEY=sk-xxxx
+```
+
+**推荐模型**: `kimi-2`
+
+获取 API 密钥：[Moonshot Console](https://platform.moonshot.cn/)
+
+### 讯飞星火
+
+使用讯飞星火 V3.5 模型。
+
+```bash
+VITE_SPARK_API_KEY=xxxx
+```
+
+**推荐模型**: `generalv3.5`
+
+获取 API 密钥：[讯飞开放平台](https://xinghuo.xfyun.cn/)
 
 ## 配置方式
 
 在项目根目录创建 `.env` 文件：
 
 ```bash
+# 选择默认提供商
 VITE_DEFAULT_PROVIDER=openai
+
+# OpenAI 配置
 VITE_OPENAI_API_KEY=your-api-key
 ```
 
@@ -53,9 +120,22 @@ VITE_OPENAI_API_KEY=your-api-key
 
 ## 模型推荐
 
-| 场景 | 推荐模型 |
-|------|----------|
-| 剧情分析 | GPT-4o / Claude-3.5 |
-| 脚本生成 | GPT-4o / GLM-4 |
-| 字幕翻译 | GPT-4o / 百度翻译 |
-| 语音合成 | Azure TTS / 阿里语音 |
+| 场景 | 推荐模型 | 说明 |
+|------|----------|------|
+| 剧情分析 | GPT-4.5 / Claude-3.7-Sonnet | 强大的推理和分析能力 |
+| 脚本生成 | GPT-4.5 / Qwen-2.5-Max | 高质量的文本生成 |
+| 字幕翻译 | GPT-4.5 / DeepSeek-V3 | 准确的翻译能力 |
+| 语音合成 | Azure TTS / 阿里语音 | 自然的语音输出 |
+| 多模态分析 | Gemini-2.0-Pro | 出色的视觉理解能力 |
+
+## 模型对比 (2026年3月)
+
+| 模型 | 上下文 | 优势 | 适合场景 |
+|------|--------|------|----------|
+| GPT-4.5 | 128K | 全能型，推理能力强 | 复杂分析、创意写作 |
+| Claude-3.7-Sonnet | 200K | 超长上下文，安全性高 | 长文本分析、代码 |
+| Gemini-2.0-Pro | 1M | 超长上下文，多模态 | 视频理解、超长文本 |
+| Qwen-2.5-Max | 128K | 中文优化，性价比高 | 中文内容创作 |
+| DeepSeek-V3 | 128K | 开源友好，价格低 | 日常任务、翻译 |
+| GLM-4-Plus | 128K | 中文优化，免费额度 | 中文内容创作 |
+| Kimi-2 | 200K | 超长上下文 | 长文本分析 |
