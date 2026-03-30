@@ -33,7 +33,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Setup pnpm
-        run: corepack enable pnpm
+        run: npm install -g pnpm
 
       - name: Install dependencies
         run: pnpm install
