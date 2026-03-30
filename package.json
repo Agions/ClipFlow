@@ -1,7 +1,7 @@
 {
   "name": "storyforge",
   "private": true,
-  "version": "1.1.0-beta",
+  "version": "1.0.1",
   "description": "StoryForge - AI 驱动的专业智能视频剪辑工具，支持智能混剪、剧情分析、字幕生成等全链路 AI 剪辑能力",
   "author": "Agions <agions@qq.com>",
   "license": "MIT",

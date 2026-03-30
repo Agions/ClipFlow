@@ -1,0 +1,124 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.0.1)'
+        required: true
+        default: '1.0.1'
+      platform:
+        description: 'Build platform'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - windows
+          - macos
+          - linux
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            artifact_name: StoryForge-windows
+          - os: macos-latest
+            platform: macos
+            artifact_name: StoryForge-macos
+          - os: ubuntu-latest
+            platform: linux
+            artifact_name: StoryForge-linux
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Web
+        run: pnpm build
+
+      - name: Setup Rust
+        uses: dtolnay/rust-action@stable
+        with:
+          targets: ${{ matrix.platform }}-pc-gnu
+
+      - name: Build Tauri
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'StoryForge v${{ github.ref_name }}'
+          releaseBody: |
+            ## StoryForge v${{ github.ref_name }}
+
+            **AI 驱动的专业智能视频剪辑工具**
+
+            ### 新功能
+            - 完整 AI 视频分析
+            - 智能剪辑工作流
+            - 多模型支持 (GPT-5.4, Claude 4.6, Gemini 3.1, etc.)
+
+            ### 支持平台
+            - Windows (x64)
+            - macOS (Intel/Apple Silicon)
+            - Linux (x64)
+
+            ### 下载
+            请在页面底部下载对应平台的安装包。
+          releaseDraft: true
+          prerelease: false
+
+  docs:
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        run: npm install -g pnpm
+
+      - name: Install deps
+        run: pnpm install
+
+      - name: Deploy Docs
+        run: |
+          pnpm docs:build
+          cp -r docs/.vitepress/dist docs/.vitepress/dist 2>/dev/null || true
+
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/.vitepress/dist
+          publish_branch: gh-pages

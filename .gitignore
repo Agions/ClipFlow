@@ -87,3 +87,8 @@ TEST_REPORT.md
 TYPES_MIGRATION.md
 TYPES_UNIFICATION.md
 TIMELINE_REFACTOR.md
+
+# VitePress
+.vitepress/cache/
+.vitepress/dist/
+
