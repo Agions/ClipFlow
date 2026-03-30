@@ -37,7 +37,7 @@ export const validateApiKey = async (provider: string, apiKey: string): Promise<
         await axios.post(
           'https://api.anthropic.com/v1/messages',
           {
-            model: 'claude-3.7-sonnet',
+            model: 'claude-sonnet-4.6',
             max_tokens: 1,
             messages: [{ role: 'user', content: 'ping' }],
           },
@@ -99,7 +99,7 @@ export const validateApiKey = async (provider: string, apiKey: string): Promise<
         // 智谱清言 - 使用 chat/completions 验证
         await axios.post(
           'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-          { model: 'glm-4-plus', messages: [{ role: 'user', content: 'hi' }] },
+          { model: 'glm-5', messages: [{ role: 'user', content: 'hi' }] },
           {
             headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
             timeout: 10000,
@@ -111,7 +111,7 @@ export const validateApiKey = async (provider: string, apiKey: string): Promise<
         // Moonshot Kimi - 使用 chat/completions 验证
         await axios.post(
           'https://api.moonshot.cn/v1/chat/completions',
-          { model: 'kimi-2', messages: [{ role: 'user', content: 'hi' }] },
+          { model: 'kimi-k2.5', messages: [{ role: 'user', content: 'hi' }] },
           {
             headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
             timeout: 10000,

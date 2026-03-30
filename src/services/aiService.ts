@@ -103,10 +103,10 @@ export class AIServiceError extends Error {
 const MODEL_CONFIGS: Record<LegacyAIModelType, ModelConfig> = {
   openai: {
     url: 'https://api.openai.com/v1/chat/completions',
-    model: 'gpt-4.5',
+    model: 'gpt-5.4',
     headers: apiKey => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` }),
     transformRequest: prompt => ({
-      model: 'gpt-4.5',
+      model: 'gpt-5.4',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
       max_tokens: 4000,
@@ -116,14 +116,14 @@ const MODEL_CONFIGS: Record<LegacyAIModelType, ModelConfig> = {
   },
   anthropic: {
     url: 'https://api.anthropic.com/v1/messages',
-    model: 'claude-3.7-sonnet',
+    model: 'claude-sonnet-4.6',
     headers: apiKey => ({
       'Content-Type': 'application/json',
       'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
     }),
     transformRequest: prompt => ({
-      model: 'claude-3.7-sonnet',
+      model: 'claude-sonnet-4.6',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
       max_tokens: 4000,
@@ -134,8 +134,8 @@ const MODEL_CONFIGS: Record<LegacyAIModelType, ModelConfig> = {
       )?.text || '',
   },
   google: {
-    url: 'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-pro:generateContent',
-    model: 'gemini-2.0-pro',
+    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro:generateContent',
+    model: 'gemini-3.1-pro',
     headers: (__apiKey: string) => ({ 'Content-Type': 'application/json' }),
     transformRequest: prompt => ({
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
@@ -173,10 +173,10 @@ const MODEL_CONFIGS: Record<LegacyAIModelType, ModelConfig> = {
   },
   chatglm: {
     url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-    model: 'glm-4-plus',
+    model: 'glm-5',
     headers: apiKey => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` }),
     transformRequest: prompt => ({
-      model: 'glm-4-plus',
+      model: 'glm-5',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
       max_tokens: 4096,
@@ -185,10 +185,10 @@ const MODEL_CONFIGS: Record<LegacyAIModelType, ModelConfig> = {
   },
   deepseek: {
     url: 'https://api.deepseek.com/v1/chat/completions',
-    model: 'deepseek-v3',
+    model: 'deepseek-v3.2',
     headers: apiKey => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` }),
     transformRequest: prompt => ({
-      model: 'deepseek-v3',
+      model: 'deepseek-v3.2',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
       max_tokens: 4000,
@@ -198,10 +198,10 @@ const MODEL_CONFIGS: Record<LegacyAIModelType, ModelConfig> = {
   },
   moonshot: {
     url: 'https://api.moonshot.cn/v1/chat/completions',
-    model: 'kimi-2',
+    model: 'kimi-k2.5',
     headers: apiKey => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` }),
     transformRequest: prompt => ({
-      model: 'kimi-2',
+      model: 'kimi-k2.5',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
       max_tokens: 4000,
