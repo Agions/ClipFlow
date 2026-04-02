@@ -6,13 +6,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Layout,
-  Row,
-  Col,
   Button,
   Space,
   Tooltip,
   Divider,
-  Drawer,
   Tabs,
   Slider,
   Select,
@@ -98,7 +95,7 @@ export const EditorPage: React.FC = () => {
         videoRef.current.pause();
       }
     }
-  }, [state.isPlaying]);
+  }, [state.isPlaying, operations]);
 
   // 同步播放位置
   useEffect(() => {
@@ -176,7 +173,17 @@ export const EditorPage: React.FC = () => {
           <Button icon={<ScissorOutlined />} onClick={handleSplit} />
         </Tooltip>
         <Tooltip title="复制">
-          <Button icon={<CopyOutlined />} />
+          <Button
+            icon={<CopyOutlined />}
+            onClick={() => {
+              if (state.selectedClipId) {
+                operations.copyClip(state.selectedClipId);
+                notify.success('已复制片段');
+              } else {
+                notify.warning('请先选择一个片段');
+              }
+            }}
+          />
         </Tooltip>
         <Tooltip title="删除">
           <Button icon={<DeleteOutlined />} onClick={handleDelete} />
@@ -364,7 +371,9 @@ export const EditorPage: React.FC = () => {
                         width: `${((item.endTime - item.startTime) / (state.timeline?.duration || 1)) * 100}%`,
                       }}
                     >
-                      <span className={styles.textContent}>{item.content.slice(0, 20)}...</span>
+                      <span className={styles.textContent}>
+                        {item.content.length > 15 ? `${item.content.slice(0, 15)}…` : item.content}
+                      </span>
                     </motion.div>
                   )
                 )}
@@ -396,7 +405,7 @@ export const EditorPage: React.FC = () => {
         </TabPane>
         <TabPane tab="效果" key="effects">
           <div className={styles.panelContent}>
-            <p>转场效果</p>
+            <p style={{ color: '#888', fontSize: 12 }}>选择转场效果应用到选中片段</p>
             <div className={styles.effectGrid}>
               {TRANSITION_OPTIONS.map(effect => (
                 <Button
@@ -404,8 +413,9 @@ export const EditorPage: React.FC = () => {
                   className={styles.effectButton}
                   onClick={() => {
                     if (state.selectedClipId) {
-                      // 添加效果
                       notify.info(`添加效果: ${effect.label}`);
+                    } else {
+                      notify.warning('请先选择一个片段');
                     }
                   }}
                 >
