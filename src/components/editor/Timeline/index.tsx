@@ -126,6 +126,17 @@ const Timeline: React.FC<TimelineProps> = ({
     return null;
   }, [selectedClipId, normalizedTracks]);
 
+  // Build clip lookup map for O(1) access
+  const clipMap = useMemo(() => {
+    const map = new Map<string, { clip: typeof normalizedTracks[0]['clips'][0]; trackId: string }>();
+    for (const track of normalizedTracks) {
+      for (const clip of track.clips) {
+        map.set(clip.id, { clip, trackId: track.id });
+      }
+    }
+    return map;
+  }, [normalizedTracks]);
+
   // Update tracks when initial tracks change
   useEffect(() => {
     if (initialTracks) {
@@ -184,19 +195,16 @@ const Timeline: React.FC<TimelineProps> = ({
 
   const handleClipSelect = useCallback((clipId: string) => {
     setSelectedClipId(clipId);
-    
-    // 查找 clip 并通知外部
-    for (const track of normalizedTracks) {
-      const clip = track.clips.find(c => c.id === clipId);
-      if (clip) {
-        onClipSelect?.({
-          ...clip,
-          trackId: track.id,
-        } as Clip);
-        break;
-      }
+
+    // 使用 clipMap 快速查找（O(1)）
+    const found = clipMap.get(clipId);
+    if (found) {
+      onClipSelect?.({
+        ...found.clip,
+        trackId: found.trackId,
+      } as Clip);
     }
-  }, [normalizedTracks, onClipSelect]);
+  }, [clipMap, onClipSelect]);
 
   const handleClipUpdate = useCallback((clipId: string, updates: Partial<Clip>) => {
     const newTracks = tracks.map(track => ({
@@ -286,6 +294,10 @@ const Timeline: React.FC<TimelineProps> = ({
       return;
     }
 
+    // 从 clipMap 获取原片段所在轨道类型
+    const original = clipMap.get(copiedClip.id);
+    if (!original) return;
+
     const newClip: Clip = {
       ...copiedClip,
       id: generateId(),
@@ -294,20 +306,20 @@ const Timeline: React.FC<TimelineProps> = ({
       endTime: currentTime + (copiedClip.endTime - copiedClip.startTime),
     };
 
-    // 找到对应的轨道并添加
-    const trackIndex = tracks.findIndex(t => t.type === copiedClip.type);
-    if (trackIndex >= 0) {
+    // 找到对应轨道并添加
+    const insertIndex = tracks.findIndex(t => t.id === original.trackId);
+    if (insertIndex >= 0) {
       const newTracks = [...tracks];
-      newTracks[trackIndex] = {
-        ...newTracks[trackIndex],
-        clips: [...newTracks[trackIndex].clips, newClip],
+      newTracks[insertIndex] = {
+        ...newTracks[insertIndex],
+        clips: [...newTracks[insertIndex].clips, newClip],
       };
       setTracks(newTracks);
       onTrackUpdate?.(newTracks);
       setSelectedClipId(newClip.id);
       message.success('已粘贴片段');
     }
-  }, [copiedClip, currentTime, tracks, onTrackUpdate]);
+  }, [copiedClip, clipMap, currentTime, tracks, onTrackUpdate]);
 
   const handleDeleteClip = useCallback(() => {
     if (!selectedClipId) return;

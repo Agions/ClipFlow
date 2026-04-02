@@ -37,9 +37,12 @@ const TimelineRuler: React.FC<TimelineRulerProps> = memo(({
   scrollLeft,
   onSeek,
 }) => {
+  // 容器宽度（默认 1200，与可见区域配合）
+  const containerWidth = 1200
+
   // 计算可见范围
   const visibleStart = scrollLeft / scale.pixelsPerSecond
-  const visibleEnd = (scrollLeft + window.innerWidth) / scale.pixelsPerSecond
+  const visibleEnd = (scrollLeft + containerWidth) / scale.pixelsPerSecond
 
   // 生成刻度点
   const ticks = useMemo(() => {
@@ -96,7 +99,7 @@ const TimelineRuler: React.FC<TimelineRulerProps> = memo(({
       >
         {ticks.map(({ time, type }) => {
           const x = time * scale.pixelsPerSecond
-          const isVisible = x >= scrollLeft - 50 && x <= scrollLeft + window.innerWidth + 50
+          const isVisible = x >= scrollLeft - 50 && x <= scrollLeft + containerWidth + 50
           if (!isVisible) return null
 
           return (
