@@ -3,7 +3,7 @@
  * 管理应用配置、API密钥及系统设置
  *
  * @author Agions
- * @version 2.0
+ * @version 1.2.0
  */
 import React, { useState, useEffect, useContext } from 'react';
 import { Tabs, Card, Skeleton, Typography } from 'antd';
@@ -29,6 +29,7 @@ import {
 import { useModelStore } from '@/store';
 import { notify } from '@/shared';
 import { PROJECT_SAVE_BEHAVIOR_KEY, type ProjectSaveBehavior } from '@/shared/constants/settings';
+import packageJson from '../../../package.json';
 import styles from './index.module.less';
 
 const { Title, Paragraph } = Typography;
@@ -215,7 +216,7 @@ const Settings: React.FC = () => {
                 {t('app.name')}{' '}
                 是一款专业的短视频剪辑工具，集成了AI技术，帮助创作者更高效地创建优质内容。
               </Paragraph>
-              <Paragraph>版本: 1.0.0 | 作者: Agions</Paragraph>
+              <Paragraph>版本: {packageJson.version} | 作者: Agions</Paragraph>
             </Card>
           </Tabs.TabPane>
 

@@ -13,7 +13,8 @@ const { Title, Text, Paragraph } = Typography;
 // 模型类型定义
 export type ModelCategory = 'text' | 'code' | 'image' | 'video' | 'all';
 
-export interface AIModel {
+/** Display model shape used internally by AIModelSelector */
+export interface DisplayAIModel {
   id: string;
   name: string;
   provider: ModelProvider;
