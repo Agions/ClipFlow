@@ -1,22 +1,43 @@
 /**
  * Editor Store - 编辑器状态
  * 包含: 视频、脚本、语音、预览状态、时间线操作
+ *
+ * 类型说明：
+ * - VideoData / ScriptData / VoiceData: 编辑器会话级数据（内存，不持久化）
+ * - VideoSegment: 来自 @/core/types
+ * - EditorPanel: 来自 @/core/types
  */
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { VideoData, ScriptData, VoiceData, EditorPanel, VideoSegment } from './types';
+import type { VideoSegment, EditorPanel } from '@/core/types';
 
-/**
- * 时间线选中项
- */
+// ============================================
+// Local types (not used outside this store)
+// ============================================
+
+export interface VideoData {
+  id: string;
+  url: string;
+  duration: number;
+}
+
+export interface ScriptData {
+  id: string;
+  content: string;
+}
+
+export interface VoiceData {
+  id: string;
+  url: string;
+}
+
+/** 时间线选中项 */
 export interface TimelineSelection {
   segmentId?: string;
   multipleIds: string[];
 }
 
-/**
- * 编辑器历史记录
- */
+/** 编辑器历史记录 */
 export interface EditorHistory {
   past: VideoSegment[][];
   future: VideoSegment[][];
