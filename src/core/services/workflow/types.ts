@@ -19,6 +19,7 @@ export type WorkflowStep =
   | 'script-generate'
   | 'script-dedup'
   | 'script-edit'
+  | 'subtitle'
   | 'ai-clip'
   | 'timeline-edit'
   | 'preview'
@@ -202,6 +203,7 @@ export const STEP_PROGRESS: Record<WorkflowStep, number> = {
   'script-generate': 40,
   'script-dedup': 50,
   'script-edit': 60,
+  subtitle: 63,
   'ai-clip': 65,
   'timeline-edit': 70,
   preview: 90,

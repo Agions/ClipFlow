@@ -320,6 +320,7 @@ export class WorkflowEngine {
       'script-generate': 15,
       'script-dedup':    5,
       'script-edit':     5,
+      subtitle:         5,
       'ai-clip':        20,
       'timeline-edit':  15,
       preview:           5,

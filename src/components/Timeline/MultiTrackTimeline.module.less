@@ -1,0 +1,485 @@
+/**
+ * MultiTrackTimeline 样式
+ * Cinematic Dark × Warm Amber 主题
+ */
+
+@film-amber: #d4a574;
+@film-amber-light: #e8c9a8;
+@film-amber-glow: rgba(212, 165, 116, 0.35);
+
+@ink-black: #0d0d0f;
+@ink-deep: #141418;
+@ink-charcoal: #1c1c22;
+@ink-surface: #242430;
+
+@border-subtle: rgba(255, 255, 255, 0.06);
+@border-default: rgba(255, 255, 255, 0.1);
+
+@text-primary: #f8f8f2;
+@text-secondary: #a8a8b3;
+@text-muted: #6b6b7a;
+
+@bg-void: #08080a;
+@bg-elevated: #141418;
+@bg-surface: #1c1c22;
+@bg-card: rgba(28, 28, 34, 0.7);
+
+@radius-md: 8px;
+@radius-lg: 12px;
+
+.multiTrackTimeline {
+  display: flex;
+  flex-direction: column;
+  background: @bg-elevated;
+  border-radius: @radius-lg;
+  overflow: hidden;
+  user-select: none;
+}
+
+// ============================================
+// 工具栏
+// ============================================
+.toolbar {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: @bg-surface;
+  border-bottom: 1px solid @border-subtle;
+
+  :global(.ant-btn) {
+    font-size: 12px;
+  }
+}
+
+.zoomLabel {
+  font-size: 12px;
+  color: @text-secondary;
+  min-width: 44px;
+  text-align: center;
+}
+
+// ============================================
+// 时间显示
+// ============================================
+.timeDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: @bg-void;
+  border-bottom: 1px solid @border-subtle;
+}
+
+.currentTime {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  color: @film-amber;
+  letter-spacing: 0.5px;
+}
+
+.separator {
+  color: @text-muted;
+}
+
+.totalTime {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  color: @text-muted;
+}
+
+// ============================================
+// 时间轴主体
+// ============================================
+.timelineWrapper {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+// ============================================
+// 左侧轨道头区域
+// ============================================
+.trackHeadersColumn {
+  width: 140px;
+  flex-shrink: 0;
+  background: @bg-surface;
+  border-right: 1px solid @border-default;
+  z-index: 10;
+}
+
+.rulerHeaderSpacer {
+  height: 32px;
+  border-bottom: 1px solid @border-subtle;
+}
+
+// ============================================
+// 轨道头部
+// ============================================
+.trackHeader {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 12px;
+  border-left: 3px solid;
+  background: @bg-surface;
+  border-bottom: 1px solid @border-subtle;
+  transition: background-color 0.15s;
+  cursor: default;
+
+  &:hover {
+    background: @ink-charcoal;
+  }
+}
+
+.trackName {
+  font-size: 12px;
+  font-weight: 500;
+  color: @text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.trackControls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: @text-muted;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.15s;
+  padding: 0;
+
+  &:hover {
+    background: @ink-surface;
+    color: @text-primary;
+  }
+
+  &.active {
+    color: @film-amber;
+    background: rgba(212, 165, 116, 0.15);
+  }
+}
+
+.resizeHandle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  cursor: ns-resize;
+  background: transparent;
+  transition: background-color 0.15s;
+
+  &:hover,
+  &.resizing {
+    background: @film-amber;
+  }
+}
+
+.trackMenuTrigger {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+// ============================================
+// 右侧轨道内容区域
+// ============================================
+.tracksContentArea {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: relative;
+  background: @ink-black;
+  cursor: pointer;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: @bg-void;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: @ink-surface;
+    border-radius: 3px;
+  }
+}
+
+.tracksScrollArea {
+  position: relative;
+  min-height: 100%;
+}
+
+.trackRow {
+  position: relative;
+  border-bottom: 1px solid @border-subtle;
+  background: @ink-charcoal;
+
+  &.trackHidden {
+    opacity: 0.4;
+  }
+}
+
+// ============================================
+// 时间刻度
+// ============================================
+.timeRuler {
+  position: sticky;
+  top: 0;
+  height: 32px;
+  background: @bg-surface;
+  border-bottom: 1px solid @border-subtle;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.tick {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  background: @border-default;
+
+  &.major {
+    height: 16px;
+    background: @text-muted;
+  }
+
+  &.minor {
+    height: 8px;
+    top: 8px;
+    background: @border-subtle;
+  }
+}
+
+.tickLabel {
+  position: absolute;
+  top: 16px;
+  left: 4px;
+  font-size: 10px;
+  color: @text-muted;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+// ============================================
+// 播放头
+// ============================================
+.playhead {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  z-index: 20;
+  pointer-events: auto;
+  cursor: ew-resize;
+}
+
+.playheadHead {
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 13px;
+  height: 13px;
+  background: @film-amber;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  cursor: ew-resize;
+}
+
+.playheadLine {
+  position: absolute;
+  top: 13px;
+  left: 0;
+  width: 1px;
+  bottom: 0;
+  background: @film-amber;
+  box-shadow: 0 0 8px @film-amber-glow;
+}
+
+// ============================================
+// 片段
+// ============================================
+.clip {
+  position: absolute;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  transition: box-shadow 0.15s, opacity 0.15s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+  }
+
+  &.selected {
+    box-shadow: 0 0 0 2px @film-amber, 0 2px 8px rgba(0, 0, 0, 0.5);
+    z-index: 3;
+  }
+
+  &.locked {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.clipHandleLeft,
+.clipHandleRight {
+  position: absolute;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  cursor: ew-resize;
+  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.clipHandleLeft {
+  left: 0;
+  border-radius: 4px 0 0 4px;
+}
+
+.clipHandleRight {
+  right: 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.clip:hover .clipHandleLeft,
+.clip:hover .clipHandleRight,
+.clip.selected .clipHandleLeft,
+.clip.selected .clipHandleRight {
+  opacity: 1;
+}
+
+.clipContent {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 6px;
+  cursor: move;
+  position: relative;
+}
+
+.clipName {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.keyframeIndicators {
+  position: absolute;
+  bottom: 2px;
+  left: 4px;
+  right: 4px;
+  height: 4px;
+}
+
+.keyframeDot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+// ============================================
+// 属性面板
+// ============================================
+.propertiesPanel {
+  position: fixed;
+  right: 24px;
+  top: 120px;
+  width: 280px;
+  background: @bg-surface;
+  border: 1px solid @border-default;
+  border-radius: @radius-lg;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.propertiesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: @ink-charcoal;
+  border-bottom: 1px solid @border-subtle;
+  font-size: 13px;
+  font-weight: 500;
+  color: @text-primary;
+}
+
+.propertiesBody {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.propRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  label {
+    font-size: 11px;
+    color: @text-muted;
+    min-width: 40px;
+  }
+}
+
+.propValue {
+  font-size: 12px;
+  color: @text-primary;
+  flex: 1;
+}
+
+.propTime {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: @film-amber;
+}
+
+.propertiesFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid @border-subtle;
+  background: @bg-elevated;
+}

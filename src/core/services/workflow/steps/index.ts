@@ -8,3 +8,4 @@ export * from './aiClipStep';
 export * from './timelineStep';
 export * from './exportStep';
 export * from './musicStep';
+export * from './subtitleStep';

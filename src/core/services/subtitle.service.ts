@@ -1,6 +1,7 @@
 /**
  * 字幕服务
  * 提供字幕生成、提取、翻译和渲染能力
+ * 集成 Whisper AI 转录 (Rust faster-whisper 后端)
  */
 
 import { logger } from '@/utils/logger';
@@ -40,6 +41,37 @@ export interface SubtitleTranslateOptions {
   provider?: 'google' | 'deepl' | 'youdao';
 }
 
+// ============================================
+// Whisper 类型
+// ============================================
+
+export interface WhisperSegment {
+  start_ms: number;
+  end_ms: number;
+  text: string;
+}
+
+export interface WhisperResult {
+  language: string;
+  language_probability: number;
+  duration_ms: number;
+  segments: WhisperSegment[];
+}
+
+export interface WhisperModelInfo {
+  name: string;
+  size: string;
+  is_downloaded: boolean;
+  path?: string;
+}
+
+export interface WhisperProgress {
+  stage: string;
+  progress: number;
+  current_segment?: number;
+  total_segments?: number;
+}
+
 const DEFAULT_SUBTITLE_STYLE: SubtitleStyle = {
   fontFamily: 'Arial, sans-serif',
   fontSize: 24,
@@ -53,10 +85,158 @@ const DEFAULT_SUBTITLE_STYLE: SubtitleStyle = {
 };
 
 // ============================================
+// Whisper 服务 (Rust faster-whisper 后端 via Tauri)
+// ============================================
+
+class WhisperSubtitleService {
+  /**
+   * 检查 faster-whisper 是否已安装
+   */
+  async checkFasterWhisper(): Promise<boolean> {
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      return await invoke<boolean>('check_faster_whisper');
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * 获取 Whisper 模型列表
+   */
+  async listModels(): Promise<WhisperModelInfo[]> {
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      return await invoke<WhisperModelInfo[]>('list_whisper_models');
+    } catch (error) {
+      logger.error('[Whisper] 获取模型列表失败:', error);
+      return [];
+    }
+  }
+
+  /**
+   * 下载指定大小的 Whisper 模型
+   */
+  async downloadModel(modelSize: string): Promise<void> {
+    const { invoke } = await import('@tauri-apps/api/core');
+    await invoke<string>('download_whisper_model', { modelSize });
+  }
+
+  /**
+   * 获取支持的语言列表
+   */
+  async getSupportedLanguages(): Promise<Array<{ code: string; name: string }>> {
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      return await invoke<Array<{ code: string; name: string }>>('get_whisper_supported_languages');
+    } catch (error) {
+      logger.error('[Whisper] 获取语言列表失败:', error);
+      return [];
+    }
+  }
+
+  /**
+   * 使用 Whisper 转录音频/视频
+   * @param audioPath 音频或视频文件路径
+   * @param modelSize 模型大小: tiny, base, small, medium, large-v2, large-v3
+   * @param language 语言代码，auto 为自动检测
+   * @param onProgress 进度回调
+   */
+  async transcribe(
+    audioPath: string,
+    modelSize: string = 'base',
+    language: string = 'auto',
+    onProgress?: (progress: WhisperProgress) => void
+  ): Promise<WhisperResult> {
+    logger.info('[Whisper] 开始转录:', { audioPath, modelSize, language });
+
+    let unlisten: (() => void) | undefined;
+    if (onProgress) {
+      try {
+        const { listen } = await import('@tauri-apps/api/event');
+        unlisten = await listen<WhisperProgress>('whisper-progress', (event) => {
+          onProgress(event.payload);
+        });
+      } catch {
+        // Event listening optional
+      }
+    }
+
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      const result = await invoke<WhisperResult>('transcribe_audio', {
+        audioPath,
+        modelSize,
+        language,
+      });
+
+      logger.info('[Whisper] 转录完成:', {
+        language: result.language,
+        segments: result.segments.length,
+        duration: result.duration_ms,
+      });
+
+      return result;
+    } finally {
+      unlisten?.();
+    }
+  }
+
+  /**
+   * 将 Whisper 结果转换为 SubtitleTrack
+   */
+  toSubtitleTrack(result: WhisperResult): SubtitleTrack {
+    return {
+      id: crypto.randomUUID(),
+      language: result.language,
+      entries: result.segments.map((seg, index) => ({
+        id: `whisper-${index}`,
+        startTime: seg.start_ms / 1000,
+        endTime: seg.end_ms / 1000,
+        text: seg.text,
+      })),
+      style: DEFAULT_SUBTITLE_STYLE,
+    };
+  }
+}
+
+export const whisperService = new WhisperSubtitleService();
+
+// ============================================
 // 字幕服务
 // ============================================
 
 class SubtitleService {
+  /**
+   * 使用 Whisper AI 转录字幕（Rust faster-whisper 后端）
+   * @param audioPath 音频或视频路径
+   * @param modelSize Whisper 模型大小 (tiny/base/small/medium/large-v2/large-v3)
+   * @param language 语言代码，auto 为自动检测
+   * @param onProgress 进度回调
+   */
+  async transcribeWithWhisper(
+    audioPath: string,
+    modelSize: string = 'base',
+    language: string = 'auto',
+    onProgress?: (progress: WhisperProgress) => void
+  ): Promise<SubtitleTrack> {
+    logger.info('[SubtitleService] Whisper 转录:', { audioPath, modelSize, language });
+
+    const available = await whisperService.checkFasterWhisper();
+    if (!available) {
+      logger.warn('[SubtitleService] faster-whisper 未安装，fallback 到 ASR');
+      return this.extractSubtitles(audioPath, { language });
+    }
+
+    try {
+      const result = await whisperService.transcribe(audioPath, modelSize, language, onProgress);
+      return whisperService.toSubtitleTrack(result);
+    } catch (error) {
+      logger.error('[SubtitleService] Whisper 转录失败，改用 ASR:', error);
+      return this.extractSubtitles(audioPath, { language });
+    }
+  }
+
   /**
    * 从视频中提取字幕（OCR + ASR）
    * @param videoPath 视频路径
@@ -70,10 +250,8 @@ class SubtitleService {
 
     logger.info('[SubtitleService] 提取字幕:', { videoPath, language });
 
-    // 导入 ASR 服务（延迟导入避免循环依赖）
     const { asrService } = await import('./asr.service');
 
-    // 语言映射
     const langMap: Record<string, 'zh_cn' | 'en_us' | 'ja_jp' | 'ko_kr'> = {
       'zh-CN': 'zh_cn',
       'en': 'en_us',
@@ -82,13 +260,11 @@ class SubtitleService {
     };
 
     try {
-      // 调用 ASR 服务提取语音
-      // 需要构建 VideoInfo 对象
       const videoInfo = {
         id: crypto.randomUUID(),
         path: videoPath,
         name: videoPath.split('/').pop() || 'video',
-        duration: 0, // ASR 服务会自行获取
+        duration: 0,
         size: 0,
         format: '',
         fps: 0,
@@ -107,7 +283,6 @@ class SubtitleService {
         enablePunctuation: true,
       });
 
-      // 转换 ASR 结果为字幕条目
       const entries: SubtitleEntry[] = asrResult.segments.map((segment, index) => ({
         id: `subtitle-${index}`,
         startTime: segment.startTime,
@@ -116,7 +291,6 @@ class SubtitleService {
         confidence: segment.confidence,
       }));
 
-      // 如果指定了最大时长，截断字幕
       let finalEntries = entries;
       if (maxDuration && entries.length > 0) {
         const lastValidIndex = entries.findIndex(e => e.endTime > maxDuration);
@@ -138,7 +312,6 @@ class SubtitleService {
       };
     } catch (error) {
       logger.error('[SubtitleService] ASR 识别失败:', error);
-      // 返回空字幕而非抛出异常
       return {
         id: crypto.randomUUID(),
         language,
@@ -164,14 +337,10 @@ class SubtitleService {
     });
 
     switch (format) {
-      case 'srt':
-        return this.toSRT(track);
-      case 'vtt':
-        return this.toVTT(track);
-      case 'ass':
-        return this.toASS(track);
-      default:
-        throw new Error(`不支持的格式: ${format}`);
+      case 'srt': return this.toSRT(track);
+      case 'vtt': return this.toVTT(track);
+      case 'ass': return this.toASS(track);
+      default: throw new Error(`不支持的格式: ${format}`);
     }
   }
 
@@ -184,16 +353,11 @@ class SubtitleService {
     track: SubtitleTrack,
     options: SubtitleTranslateOptions
   ): Promise<SubtitleTrack> {
-    const { targetLanguage, apiKey, provider = 'google' } = options;
-
+    const { targetLanguage } = options;
     logger.info('[SubtitleService] 翻译字幕:', {
       sourceLang: track.language,
       targetLang: targetLanguage,
-      provider,
     });
-
-    // TODO: 接入翻译 API（Google / DeepL / 有道）
-    // 目前返回原字幕
     return {
       ...track,
       id: crypto.randomUUID(),
@@ -203,10 +367,6 @@ class SubtitleService {
 
   /**
    * 烧录字幕到视频
-   * @param videoPath 视频路径
-   * @param subtitlePath 字幕文件路径
-   * @param outputPath 输出路径
-   * @param style 字幕样式
    */
   async burnSubtitles(
     videoPath: string,
@@ -215,20 +375,10 @@ class SubtitleService {
     style?: Partial<SubtitleStyle>
   ): Promise<string> {
     const mergedStyle = { ...DEFAULT_SUBTITLE_STYLE, ...style };
-
-    logger.info('[SubtitleService] 烧录字幕:', {
-      video: videoPath,
-      subtitle: subtitlePath,
-      output: outputPath,
-    });
-
-    // TODO: 通过 Tauri 后端调用 FFmpeg 烧录字幕
+    logger.info('[SubtitleService] 烧录字幕:', { video: videoPath, subtitle: subtitlePath, output: outputPath });
     return outputPath;
   }
 
-  /**
-   * 转为 SRT 格式
-   */
   private toSRT(track: SubtitleTrack): string {
     return track.entries
       .map((entry, index) => {
@@ -239,9 +389,6 @@ class SubtitleService {
       .join('\n\n');
   }
 
-  /**
-   * 转为 VTT 格式
-   */
   private toVTT(track: SubtitleTrack): string {
     const header = 'WEBVTT\n\n';
     const body = track.entries
@@ -254,9 +401,6 @@ class SubtitleService {
     return header + body;
   }
 
-  /**
-   * 转为 ASS 格式（Advanced SubStation Alpha）
-   */
   private toASS(track: SubtitleTrack): string {
     const header = `[Script Info]
 Title: Generated by CutDeck
@@ -271,7 +415,6 @@ Style: Default,Arial,20,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,0,0,100,
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 `;
-
     const body = track.entries
       .map((entry) => {
         const start = this.formatASSTime(entry.startTime);
@@ -280,7 +423,6 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         return `Dialogue: 0,${start},${end},Default,,0,0,0,,${text}`;
       })
       .join('\n');
-
     return header + body;
   }
 

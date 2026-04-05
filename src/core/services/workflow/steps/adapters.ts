@@ -25,6 +25,7 @@ import {
   executeAIClipStep,
   executeTimelineStep,
   executeExportStep,
+  executeSubtitleStep,
 } from './index';
 
 // ============================================
@@ -199,6 +200,34 @@ const exportExecutor: IStepExecutor = {
 // Registry
 // ============================================
 
+const subtitleExecutor: IStepExecutor = {
+  step: 'subtitle',
+  async execute(ctx: StepContext) {
+    const { data, config, updateData, reportProgress } = ctx;
+    if (!data.videoInfo) throw new Error('缺少视频信息');
+
+    // Check if faster-whisper is available
+    const { whisperService } = await import('@/core/services/subtitle.service');
+    const available = await whisperService.checkFasterWhisper();
+    if (!available) {
+      // Whisper not available, skip silently
+      throw new SkipRequest('faster-whisper not installed');
+    }
+
+    const cfg = config as any;
+    const result = await executeSubtitleStep(
+      data.videoInfo,
+      ctx.projectId,
+      {
+        model: cfg?.whisperModel || 'base',
+        language: cfg?.whisperLanguage || 'auto',
+      },
+      reportProgress,
+    );
+    updateData({ whisperSubtitleSegments: result.segments });
+  },
+};
+
 const STEP_EXECUTORS: Record<string, IStepExecutor> = {
   upload: uploadExecutor,
   analyze: analyzeExecutor,
@@ -206,6 +235,7 @@ const STEP_EXECUTORS: Record<string, IStepExecutor> = {
   'script-generate': scriptGenerateExecutor,
   'script-dedup': scriptDedupExecutor,
   'script-edit': scriptEditExecutor,
+  subtitle: subtitleExecutor,
   'ai-clip': aiClipExecutor,
   'timeline-edit': timelineEditExecutor,
   preview: previewExecutor,
