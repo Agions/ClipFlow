@@ -1,59 +1,130 @@
-/* ClipFlow X - AI Video Editor Cinema Director Styles */
-/* 电影导演工作室风格 - AI 视频编辑器 */
+/**
+ * CutDeck — AIVideoEditor Page Styles
+ * AI Cinema Studio Design
+ */
 
-@film-amber: #d4a574;
-@film-amber-light: #e8c9a8;
-@film-amber-glow: rgba(212, 165, 116, 0.35);
-
-@ink-black: #0d0d0f;
-@ink-deep: #141418;
-@ink-charcoal: #1c1c22;
-@ink-surface: #242430;
-
-@border-subtle: rgba(255, 255, 255, 0.06);
-@border-default: rgba(255, 255, 255, 0.1);
-
-@text-primary: #f8f8f2;
-@text-secondary: #a8a8b3;
-@text-muted: #6b6b7a;
-@text-dim: #45455a;
-
-@bg-void: #08080a;
-@bg-primary: #0d0d0f;
-@bg-elevated: #141418;
-@bg-surface: #1c1c22;
-@bg-card: rgba(28, 28, 34, 0.7);
-
+// Design tokens
+@bg-base: #0C0D14;
+@bg-surface: #141520;
+@bg-elevated: #1C1D2E;
+@bg-overlay: #24263A;
+@border-subtle: #1E2030;
+@border-default: #2A2D42;
+@border-strong: #3D4166;
+@accent: #FF9F43;
+@accent-light: #FFBE76;
+@accent-dark: #E8891C;
+@accent-glow: rgba(255, 159, 67, 0.2);
+@accent-glow-strong: rgba(255, 159, 67, 0.35);
+@cyan: #00D4FF;
+@cyan-light: #66E3FF;
+@cyan-dark: #00A8CC;
+@cyan-glow: rgba(0, 212, 255, 0.2);
+@text-primary: #F0F0F5;
+@text-secondary: #8888A0;
+@text-tertiary: #55556A;
+@font-display: 'Outfit', system-ui, sans-serif;
+@font-body: 'Figtree', system-ui, sans-serif;
+@radius-sm: 4px;
 @radius-md: 8px;
 @radius-lg: 12px;
 @radius-xl: 16px;
+@transition-fast: 120ms;
+@transition-default: 200ms;
+@transition-slow: 350ms;
 
-@shadow-glow-amber: 0 0 30px var(--film-amber-glow);
+// ── Editor Shell ──
 
 .editorContainer {
-  height: 100%;
+  height: calc(100vh - 56px);
   display: flex;
   flex-direction: column;
-  background: @bg-void;
-  color: @text-primary;
-  animation: fadeIn 0.3s ease;
+  background: @bg-base;
+  animation: fadeInUp 0.4s ease-out both;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* 顶部功能卡片区域 */
+// ── Three-Zone Layout ──
+
+.editorBody {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  gap: 0;
+}
+
+// ── Left: AI Workflow Panel ──
+
+.workflowPanel {
+  width: 260px;
+  min-width: 260px;
+  background: @bg-surface;
+  border-right: 1px solid @border-subtle;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width @transition-slow;
+}
+
+.panelHeader {
+  padding: 16px 20px;
+  border-bottom: 1px solid @border-subtle;
+  flex-shrink: 0;
+
+  h3 {
+    font-family: @font-display;
+    font-size: 13px;
+    font-weight: 600;
+    color: @text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+}
+
+// ── Center: Preview Area ──
+
+.previewArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: @bg-base;
+  padding: 24px;
+  gap: 16px;
+  overflow: auto;
+}
+
+// ── Right: Clip Panel ──
+
+.clipPanel {
+  width: 300px;
+  min-width: 300px;
+  background: @bg-surface;
+  border-left: 1px solid @border-subtle;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width @transition-slow;
+}
+
+// ── Function Tab Cards ──
+
 .tabHeader {
   padding: 20px 24px;
-  background: @bg-elevated;
+  background: @bg-surface;
   border-bottom: 1px solid @border-subtle;
 }
 
 .functionCards {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   justify-content: center;
   flex-wrap: wrap;
 }
@@ -61,436 +132,185 @@
 .functionCard {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 28px;
-  background: @bg-card;
-  border: 1px solid @border-subtle;
+  gap: 12px;
+  padding: 14px 20px;
+  background: @bg-elevated;
+  border: 1px solid @border-default;
   border-radius: @radius-lg;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  min-width: 260px;
-  backdrop-filter: blur(20px);
+  transition: all @transition-default;
+  min-width: 220px;
 
   &:hover {
-    border-color: rgba(212, 165, 116, 0.3);
-    transform: translateY(-2px);
-    box-shadow: @shadow-glow-amber;
+    border-color: @accent;
+    box-shadow: 0 0 16px @accent-glow;
+    transform: translateY(-1px);
   }
 
   &.active {
-    border-color: @film-amber;
-    background: linear-gradient(135deg, rgba(212, 165, 116, 0.12) 0%, rgba(212, 165, 116, 0.05) 100%);
-    box-shadow: @shadow-glow-amber, 0 8px 32px rgba(0, 0, 0, 0.2);
+    border-color: @accent;
+    background: rgba(255, 159, 67, 0.08);
+    box-shadow: 0 0 20px @accent-glow-strong;
 
     .functionIcon {
-      color: @film-amber;
-      transform: scale(1.1);
-      filter: drop-shadow(0 0 8px @film-amber-glow);
+      color: @accent;
     }
 
     .functionName {
-      color: @film-amber;
+      color: @accent;
     }
   }
 }
 
 .functionIcon {
-  font-size: 28px;
-  color: @text-muted;
-  transition: all 0.25s ease;
+  font-size: 22px;
+  color: @text-tertiary;
+  transition: color @transition-default;
+  flex-shrink: 0;
 }
 
 .functionInfo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .functionName {
-  font-size: 16px;
+  font-family: @font-display;
+  font-size: 13px;
   font-weight: 600;
   color: @text-primary;
-  font-family: var(--font-display, 'Outfit', sans-serif);
+  transition: color @transition-default;
+  white-space: nowrap;
 }
 
 .functionDesc {
-  font-size: 12px;
-  color: @text-muted;
+  font-size: 11px;
+  color: @text-tertiary;
+  white-space: nowrap;
 }
 
-/* 主要工作区 */
-.workspace {
-  flex: 1;
-  overflow: auto;
-  padding: 24px;
-  background: @bg-void;
-}
-
-/* AI 剪辑面板 */
-.aiClipPanel {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 24px;
-  height: 100%;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* 视频预览区 */
-.previewSection {
-  background: @bg-card;
-  border-radius: @radius-xl;
-  border: 1px solid @border-subtle;
-  overflow: hidden;
-  backdrop-filter: blur(20px);
-
-  .previewHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-    border-bottom: 1px solid @border-subtle;
-
-    h3 {
-      font-family: var(--font-display, 'Outfit', sans-serif);
-      font-weight: 600;
-      color: @text-primary;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-
-      .anticon {
-        color: @film-amber;
-      }
-    }
-  }
-
-  .previewContent {
-    position: relative;
-    aspect-ratio: 16/9;
-    background: @ink-black;
-
-    /* 微妙光晕 */
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at center, rgba(212, 165, 116, 0.05) 0%, @ink-black 60%);
-      pointer-events: none;
-    }
-  }
-}
-
-/* 控制按钮组 */
-.controlButtons {
-  display: flex;
-  gap: 12px;
-  padding: 16px 20px;
-  border-top: 1px solid @border-subtle;
-  background: @bg-elevated;
-
-  :global {
-    .ant-btn {
-      font-family: var(--font-display, 'Outfit', sans-serif);
-      font-weight: 500;
-      border-radius: @radius-md;
-      height: 40px;
-      transition: all 0.2s ease;
-
-      &.ant-btn-primary {
-        background: linear-gradient(135deg, @film-amber 0%, #c49464 100%) !important;
-        border: none !important;
-        color: @ink-black !important;
-        box-shadow: @shadow-glow-amber;
-
-        &:hover {
-          filter: brightness(1.1);
-          transform: translateY(-1px);
-        }
-      }
-
-      &:not(.ant-btn-primary) {
-        background: @bg-surface;
-        border-color: @border-default;
-        color: @text-secondary;
-
-        &:hover {
-          border-color: @film-amber;
-          color: @film-amber;
-        }
-      }
-    }
-  }
-}
-
-/* 右侧面板 */
-.sidePanel {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* 设置面板 */
-.settingsPanel {
-  background: @bg-card;
-  border-radius: @radius-xl;
-  border: 1px solid @border-subtle;
-  backdrop-filter: blur(20px);
-  overflow: hidden;
-
-  .panelHeader {
-    padding: 16px 20px;
-    border-bottom: 1px solid @border-subtle;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    h4 {
-      font-family: var(--font-display, 'Outfit', sans-serif);
-      font-weight: 600;
-      color: @text-primary;
-      margin: 0;
-    }
-  }
-
-  .panelContent {
-    padding: 20px;
-  }
-}
-
-/* 表单样式 */
-:global {
-  .ant-form-item {
-    margin-bottom: 16px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-
-    .ant-form-item-label {
-      padding-bottom: 6px;
-
-      > label {
-        color: @text-secondary;
-        font-size: 13px;
-        font-family: var(--font-body, 'DM Sans', sans-serif);
-      }
-    }
-  }
-
-  .ant-select-selector {
-    background: @bg-surface !important;
-    border-color: @border-default !important;
-    border-radius: @radius-md !important;
-    color: @text-primary !important;
-    height: 36px !important;
-
-    &:hover {
-      border-color: rgba(212, 165, 116, 0.5) !important;
-    }
-  }
-
-  .ant-select-selection-item {
-    color: @text-primary !important;
-    line-height: 34px !important;
-  }
-
-  .ant-input,
-  .ant-input-number {
-    background: @bg-surface !important;
-    border-color: @border-default !important;
-    border-radius: @radius-md !important;
-    color: @text-primary !important;
-    height: 36px;
-
-    &::placeholder {
-      color: @text-muted !important;
-    }
-
-    &:focus,
-    &:hover {
-      border-color: @film-amber !important;
-      box-shadow: 0 0 0 2px @film-amber-glow !important;
-    }
-  }
-
-  .ant-slider {
-    .ant-slider-rail {
-      background: @bg-surface;
-    }
-
-    .ant-slider-track {
-      background: @film-amber;
-    }
-
-    .ant-slider-handle {
-      background: @film-amber;
-      border-color: @film-amber;
-
-      &::after {
-        box-shadow: 0 0 8px @film-amber-glow;
-      }
-    }
-  }
-
-  .ant-switch {
-    background: @bg-surface;
-
-    &-checked {
-      background: @film-amber !important;
-      box-shadow: @shadow-glow-amber;
-    }
-  }
-
-  .ant-radio-wrapper {
-    color: @text-secondary;
-  }
-
-  .ant-radio-checked .ant-radio-inner {
-    border-color: @film-amber !important;
-
-    &::after {
-      background: @film-amber;
-    }
-  }
-}
-
-/* 进度条 */
-.progressSection {
-  :global {
-    .ant-progress {
-      .ant-progress-text {
-        color: @text-primary;
-      }
-    }
-
-    .ant-progress-bg {
-      background: @film-amber !important;
-    }
-  }
-}
-
-/* AI 状态指示 */
-.aiStatus {
+.tabLabel {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: @bg-surface;
+  gap: 6px;
+}
+
+// ── Steps Panel ──
+
+.stepsPanel {
+  padding: 16px;
+  flex: 1;
+}
+
+.stepItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
   border-radius: @radius-md;
-  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all @transition-default;
+  position: relative;
 
-  .statusDot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: @film-amber;
-    animation: pulse 2s infinite;
+  &:hover {
+    background: @bg-elevated;
   }
 
-  @keyframes pulse {
-    0%, 100% {
-      opacity: 1;
-      box-shadow: 0 0 0 0 @film-amber-glow;
+  &.active {
+    background: rgba(255, 159, 67, 0.08);
+
+    .stepIcon {
+      color: @accent;
+      box-shadow: 0 0 12px @accent-glow;
     }
-    50% {
-      opacity: 0.8;
-      box-shadow: 0 0 0 6px transparent;
+
+    .stepTitle {
+      color: @accent;
     }
   }
 
-  .statusText {
-    font-size: 13px;
-    color: @text-secondary;
-  }
-}
-
-/* 快捷操作 */
-.quickActions {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-
-  .actionBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 12px;
-    background: @bg-surface;
-    border: 1px solid @border-default;
-    border-radius: @radius-md;
-    color: @text-secondary;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-      border-color: @film-amber;
-      color: @film-amber;
-      background: rgba(212, 165, 116, 0.05);
-    }
-
-    .anticon {
-      font-size: 16px;
+  &.done {
+    .stepIcon {
+      color: @cyan;
+      background: rgba(0, 212, 255, 0.1);
     }
   }
 }
 
-/* 标签页内容区 */
-.tabContent {
-  padding: 24px;
-  animation: slideIn 0.3s ease;
+.stepIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: @bg-elevated;
+  border: 1px solid @border-default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: @text-tertiary;
+  flex-shrink: 0;
+  transition: all @transition-default;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(10px);
+.stepContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.stepTitle {
+  font-family: @font-display;
+  font-size: 13px;
+  font-weight: 600;
+  color: @text-primary;
+  transition: color @transition-default;
+}
+
+.stepDesc {
+  font-size: 11px;
+  color: @text-tertiary;
+  margin-top: 2px;
+}
+
+// ── Clip Cards ──
+
+.clipCard {
+  padding: 12px;
+  background: @bg-elevated;
+  border: 1px solid @border-subtle;
+  border-radius: @radius-md;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all @transition-default;
+
+  &:hover {
+    border-color: @cyan;
+    box-shadow: 0 0 12px @cyan-glow;
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+
+  &.selected {
+    border-color: @accent;
+    box-shadow: 0 0 12px @accent-glow;
   }
 }
 
-/* 响应式 */
+// ── Responsive ──
+
+@media (max-width: 1280px) {
+  .workflowPanel { width: 60px; min-width: 60px; }
+  .clipPanel { width: 260px; min-width: 260px; }
+  .panelHeader h3 { display: none; }
+  .stepContent { display: none; }
+  .stepDesc { display: none; }
+}
+
+@media (max-width: 1024px) {
+  .clipPanel { display: none; }
+  .editorBody { justify-content: center; }
+}
+
 @media (max-width: 768px) {
-  .tabHeader {
-    padding: 16px;
-  }
-
-  .functionCards {
-    flex-direction: column;
-  }
-
-  .functionCard {
-    min-width: 100%;
-  }
-
-  .workspace {
-    padding: 16px;
-  }
-
-  .aiClipPanel {
-    grid-template-columns: 1fr;
-  }
-
-  .controlButtons {
-    flex-wrap: wrap;
-
-    :global .ant-btn {
-      flex: 1;
-      min-width: 120px;
-    }
-  }
+  .workflowPanel { display: none; }
+  .functionCards { flex-direction: column; align-items: stretch; }
+  .functionCard { min-width: unset; }
 }

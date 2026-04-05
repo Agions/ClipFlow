@@ -1,285 +1,413 @@
-/* ClipFlow X - Cinema Director Layout Styles */
-/* 电影导演工作室风格布局 */
+/**
+ * CutDeck Layout — AI Cinema Studio Design
+ */
 
-@import '../styles/variables.less';
+// Design tokens (mirror global.css)
+@bg-base: #0C0D14;
+@bg-surface: #141520;
+@bg-elevated: #1C1D2E;
+@bg-overlay: #24263A;
+@border-subtle: #1E2030;
+@border-default: #2A2D42;
+@border-strong: #3D4166;
+@accent: #FF9F43;
+@accent-light: #FFBE76;
+@accent-dark: #E8891C;
+@accent-glow: rgba(255, 159, 67, 0.25);
+@cyan: #00D4FF;
+@cyan-glow: rgba(0, 212, 255, 0.2);
+@text-primary: #F0F0F5;
+@text-secondary: #8888A0;
+@text-tertiary: #55556A;
+@font-display: 'Outfit', system-ui, sans-serif;
+@font-body: 'Figtree', system-ui, sans-serif;
+@radius-sm: 4px;
+@radius-md: 8px;
+@radius-lg: 12px;
+@radius-xl: 16px;
+@radius-full: 9999px;
+@transition-fast: 120ms;
+@transition-default: 200ms;
+@transition-slow: 350ms;
+@ease-smooth: cubic-bezier(0.23, 1, 0.32, 1);
 
-// 电影胶片调色板 - Cinema Film Palette
-@film-amber: #d4a574;
-@film-amber-light: #e8c9a8;
-@film-amber-glow: rgba(212, 165, 116, 0.35);
+// Layout dimensions
+@sidebar-width: 220px;
+@sidebar-collapsed-width: 64px;
+@topbar-height: 56px;
 
-@ink-black: #0d0d0f;
-@ink-deep: #141418;
-@ink-charcoal: #1c1c22;
-@ink-surface: #242430;
-
-@neon-cyan: #00f5d4;
-@neon-magenta: #f72585;
-
-@border-subtle: rgba(255, 255, 255, 0.06);
-@border-default: rgba(255, 255, 255, 0.1);
-
-@text-primary: #f8f8f2;
-@text-secondary: #a8a8b3;
-@text-muted: #6b6b7a;
-
-@bg-void: #08080a;
-@bg-primary: #0d0d0f;
-@bg-elevated: #141418;
-@bg-surface: #1c1c22;
-
-@shadow-glow-amber: 0 0 30px var(--film-amber-glow);
-
-.layout {
+.shell {
+  display: flex;
   min-height: 100vh;
+  background: @bg-base;
 }
 
-.sider {
+// ── Left Sidebar ──
+
+.sidebar {
+  width: @sidebar-width;
+  min-height: 100vh;
+  background: @bg-surface;
+  border-right: 1px solid @border-subtle;
+  display: flex;
+  flex-direction: column;
   position: fixed;
   left: 0;
-  height: 100vh;
-  overflow: auto;
-  z-index: 100;
-  background: linear-gradient(180deg, @bg-elevated 0%, @bg-primary 100%);
-  border-right: 1px solid @border-subtle;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  top: 0;
+  bottom: 0;
+  z-index: 200;
+  transition: width @transition-slow @ease-smooth;
+  overflow: hidden;
 
-  /* 滚动条样式 */
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
+  &.collapsed {
+    width: @sidebar-collapsed-width;
 
-  &::-webkit-scrollbar-thumb {
-    background-color: @border-default;
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
+    .logo { justify-content: center; padding: 0; }
+    .nav { padding: 0; }
+    .navItem { justify-content: center; padding: 0; width: 40px; height: 40px; border-radius: @radius-md; margin: 2px auto; }
+    .sidebarBottom { justify-content: center; }
   }
 }
 
-/* Logo 区域 - 电影胶片风格 */
+// Logo
 .logo {
-  height: @layout-header-height;
+  height: @topbar-height;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  border-bottom: 1px solid @border-subtle;
+  cursor: pointer;
+  transition: all @transition-default;
+  flex-shrink: 0;
+
+  &:hover { background: @bg-elevated; }
+}
+
+.logoIcon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: @radius-md;
+  overflow: hidden;
+}
+
+.logoText {
+  font-family: @font-display;
+  font-size: 16px;
+  font-weight: 700;
+  color: @text-primary;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  background: linear-gradient(135deg, @accent 0%, @accent-light 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// New Project Button
+.newProjectBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 @spacing-lg;
-  border-bottom: 1px solid @border-subtle;
-  margin: 0;
-  overflow: hidden;
-  transition: all 0.3s;
-  position: relative;
+  gap: 8px;
+  margin: 12px;
+  padding: 9px 16px;
+  background: linear-gradient(135deg, @accent 0%, @accent-dark 100%);
+  color: #0C0D14;
+  border: none;
+  border-radius: @radius-md;
+  font-family: @font-body;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all @transition-default;
+  white-space: nowrap;
+  flex-shrink: 0;
 
-  /* 微光底部线条 */
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 15%;
-    right: 15%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, @film-amber-glow, transparent);
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px @accent-glow;
   }
 
-  h4 {
-    background: linear-gradient(90deg, @film-amber 0%, @film-amber-light 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-weight: @font-weight-bold;
-    font-size: 18px;
-    letter-spacing: -0.5px;
+  &:active {
+    transform: translateY(0);
   }
 }
 
-/* 菜单样式 - 电影导演风格 */
-.menu {
-  border-right: none;
-  padding: @spacing-lg @spacing-sm;
+.newProjectBtnIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 12px auto;
+  background: linear-gradient(135deg, @accent 0%, @accent-dark 100%);
+  color: #0C0D14;
+  border: none;
+  border-radius: @radius-md;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all @transition-default;
+  flex-shrink: 0;
 
-  :global {
-    .ant-menu-item {
-      border-radius: @radius-md;
-      margin: @spacing-sm 0;
-      height: 48px;
-      line-height: 48px;
-      font-weight: @font-weight-normal;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      color: @text-secondary;
-      position: relative;
+  &:hover {
+    box-shadow: 0 4px 16px @accent-glow;
+    transform: translateY(-1px);
+  }
+}
 
-      &:hover {
-        background-color: rgba(212, 165, 116, 0.08);
-        color: @text-primary;
-        transform: translateX(4px);
-      }
+// Navigation
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 
-      &.ant-menu-item-selected {
-        background: linear-gradient(90deg, rgba(212, 165, 116, 0.15) 0%, rgba(212, 165, 116, 0.05) 100%);
-        font-weight: @font-weight-semibold;
-        color: @film-amber;
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  height: 40px;
+  border-radius: @radius-md;
+  background: transparent;
+  border: none;
+  color: @text-secondary;
+  font-family: @font-body;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all @transition-default;
+  position: relative;
+  text-align: left;
+  width: 100%;
 
-        /* 左侧高亮条 - 胶片卷轴意象 */
-        &::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 10px;
-          bottom: 10px;
-          width: 3px;
-          background: linear-gradient(180deg, @film-amber, #c49464);
-          border-radius: 0 3px 3px 0;
-          box-shadow: 0 0 12px @film-amber-glow;
-        }
+  &:hover {
+    background: @bg-elevated;
+    color: @text-primary;
+  }
 
-        .anticon {
-          color: @film-amber;
-          filter: drop-shadow(0 0 6px @film-amber-glow);
-        }
-      }
+  &.active {
+    background: rgba(255, 159, 67, 0.1);
+    color: @accent;
 
-      .anticon {
-        transition: all 0.25s ease;
-        font-size: 18px;
-        margin-right: 12px;
-      }
+    .navIcon {
+      color: @accent;
     }
   }
 }
 
-/* 内容区域 */
-.content {
-  padding: @container-padding;
-  overflow: auto;
-  background: @bg-void;
-  min-height: calc(100vh - @layout-header-height);
-  margin-left: @layout-sider-width;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+.navIcon {
+  font-size: 16px;
+  flex-shrink: 0;
+  color: @text-tertiary;
+  transition: color @transition-default;
+}
 
-  /* 微妙网格背景 */
-  background-image: 
-    linear-gradient(rgba(212, 165, 116, 0.01) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(212, 165, 116, 0.01) 1px, transparent 1px);
-  background-size: 40px 40px;
+.navLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  .siderCollapsed & {
-    margin-left: 80px;
+.navIndicator {
+  position: absolute;
+  right: 8px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: @accent;
+  box-shadow: 0 0 8px @accent;
+  animation: sparkPulse 2s ease-in-out infinite;
+}
+
+@keyframes sparkPulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+// Sidebar Bottom
+.sidebarBottom {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 16px;
+  border-top: 1px solid @border-subtle;
+  flex-shrink: 0;
+}
+
+.collapseBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid @border-default;
+  border-radius: @radius-md;
+  color: @text-tertiary;
+  cursor: pointer;
+  transition: all @transition-default;
+  font-size: 14px;
+
+  &:hover {
+    background: @bg-elevated;
+    color: @text-primary;
+    border-color: @border-strong;
   }
 }
 
-.contentWrapper {
-  max-width: @content-max-width;
-  margin: 0 auto;
-  background: @bg-elevated;
-  padding: @container-padding;
-  border-radius: @radius-lg;
-  border: 1px solid @border-subtle;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  min-height: calc(100vh - 112px);
-  backdrop-filter: blur(20px);
-}
+// ── Top Bar ──
 
-/* 折叠按钮 */
-.collapseButton {
-  position: absolute;
-  bottom: @spacing-xl;
-  width: 100%;
-  text-align: center;
-}
-
-/* 顶部导航栏 */
-.header {
+.topbar {
+  height: @topbar-height;
+  background: @bg-surface;
+  border-bottom: 1px solid @border-subtle;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: @bg-elevated;
-  padding: 0 @container-padding;
-  border-bottom: 1px solid @border-subtle;
-  height: @layout-header-height;
-  position: sticky;
+  padding: 0 24px;
+  position: fixed;
   top: 0;
-  z-index: 99;
-  margin-left: @layout-sider-width;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-
-  .siderCollapsed & {
-    margin-left: 80px;
-  }
+  left: @sidebar-width;
+  right: 0;
+  z-index: 100;
+  transition: left @transition-slow @ease-smooth;
 }
 
-/* 页面标题 */
-.headerTitle {
-  font-size: 18px;
-  font-weight: @font-weight-semibold;
+.pageTitle {
+  font-family: @font-display;
+  font-size: 15px;
+  font-weight: 600;
   color: @text-primary;
-  position: relative;
-  padding-left: @spacing-xl;
-  font-family: var(--font-display, 'Outfit', sans-serif);
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 18px;
-    background: linear-gradient(180deg, @film-amber, #c49464);
-    border-radius: 2px;
-    box-shadow: 0 0 10px @film-amber-glow;
-  }
+  letter-spacing: -0.01em;
 }
 
-/* 头部控制区 */
-.headerControls {
+.topbarRight {
   display: flex;
   align-items: center;
-  gap: @spacing-sm;
+  gap: 4px;
+}
 
-  .ant-btn {
-    color: @text-secondary;
-    transition: all 0.2s ease;
+.iconBtn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: @radius-md;
+  color: @text-tertiary;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all @transition-fast;
 
-    &:hover {
-      background-color: rgba(212, 165, 116, 0.1);
-      color: @film-amber;
-    }
-  }
-
-  .userButton {
-    padding: @spacing-sm @spacing-lg;
-    border-radius: @radius-md;
-    transition: all 0.3s;
-
-    &:hover {
-      background-color: rgba(212, 165, 116, 0.1);
-    }
+  &:hover {
+    background: @bg-elevated;
+    color: @text-primary;
   }
 }
 
-/* 用户头像样式 */
-.userAvatar {
-  background: linear-gradient(135deg, @film-amber 0%, #c49464 100%) !important;
-  box-shadow: @shadow-glow-amber !important;
+.userBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  background: transparent;
+  border: 1px solid @border-default;
+  border-radius: @radius-full;
+  cursor: pointer;
+  transition: all @transition-default;
+  margin-left: 4px;
+
+  &:hover {
+    background: @bg-elevated;
+    border-color: @border-strong;
+  }
 }
 
-/* 响应式适配 */
-@media (max-width: 768px) {
+.avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, @accent 0%, @accent-dark 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0C0D14;
+  font-family: @font-display;
+}
+
+.userName {
+  font-family: @font-body;
+  font-size: 12px;
+  font-weight: 500;
+  color: @text-secondary;
+}
+
+// ── Main Content ──
+
+.content {
+  flex: 1;
+  margin-left: @sidebar-width;
+  margin-top: @topbar-height;
+  padding: 24px;
+  min-height: calc(100vh - @topbar-height);
+  background: @bg-base;
+  transition: margin-left @transition-slow @ease-smooth;
+
+  &.contentExpanded {
+    margin-left: @sidebar-collapsed-width;
+  }
+}
+
+// Responsive
+@media (max-width: 1024px) {
+  .sidebar {
+    width: @sidebar-collapsed-width;
+
+    .logo { justify-content: center; padding: 0; }
+    .logoText { display: none; }
+    .newProjectBtn { display: none; }
+    .navItem { justify-content: center; padding: 0; width: 40px; height: 40px; border-radius: @radius-md; margin: 2px auto; }
+    .navLabel { display: none; }
+    .navIndicator { display: none; }
+    .sidebarBottom { justify-content: center; }
+  }
+
+  .topbar {
+    left: @sidebar-collapsed-width;
+  }
+
   .content {
-    padding: @spacing-md;
-    margin-left: 0;
+    margin-left: @sidebar-collapsed-width;
+
+    &.contentExpanded {
+      margin-left: @sidebar-collapsed-width;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    left: 0;
+    padding: 0 16px;
   }
 
-  .header {
+  .content {
     margin-left: 0;
-    padding: 0 @spacing-md;
+    padding: 16px;
   }
 
-  .contentWrapper {
-    padding: @spacing-md;
-    border-radius: @radius-md;
+  .userName {
+    display: none;
   }
 }

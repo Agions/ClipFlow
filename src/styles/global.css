@@ -1,81 +1,91 @@
 /**
- * CutDeck 全局样式
- * 基于 Cinematic Dark 设计系统
+ * CutDeck Design System v2 — Global Styles
+ * AI Cinema Studio
  */
 
 /* ============================================================================
-   CSS 变量定义
+   Google Fonts
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ============================================================================
+   CSS Variables
    ============================================================================ */
 
 :root {
-  /* 主色 */
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-primary-active: #1e40af;
-  --color-primary-light: #60a5fa;
-  
-  /* 强调色 */
-  --color-accent: #f59e0b;
-  --color-accent-hover: #d97706;
-  --color-accent-light: #fcd34d;
-  
-  /* 功能色 */
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-  --color-info: #3b82f6;
-  
-  /* 背景色 */
-  --bg-base: #0c0a09;
-  --bg-primary: #111110;
-  --bg-secondary: #1a1918;
-  --bg-tertiary: #272524;
-  --bg-elevated: #312e2b;
-  
-  /* 边框色 */
-  --border-subtle: #292524;
-  --border-default: #3f3a36;
-  --border-strong: #57534e;
-  
-  /* 文字色 */
-  --text-primary: #fafaf9;
-  --text-secondary: #a8a29e;
-  --text-tertiary: #78716c;
-  --text-disabled: #57534e;
-  
-  /* 发光效果 */
-  --glow-blue: rgba(37, 99, 235, 0.4);
-  --glow-gold: rgba(245, 158, 11, 0.4);
-  
-  /* 字体 */
-  --font-display: 'Outfit', 'SF Pro Display', -apple-system, sans-serif;
-  --font-body: 'Inter', 'SF Pro Text', -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
-  
-  /* 圆角 */
+  /* Background */
+  --bg-base: #0C0D14;
+  --bg-surface: #141520;
+  --bg-elevated: #1C1D2E;
+  --bg-overlay: #24263A;
+
+  /* Borders */
+  --border-subtle: #1E2030;
+  --border-default: #2A2D42;
+  --border-strong: #3D4166;
+
+  /* Accent — Amber */
+  --accent: #FF9F43;
+  --accent-light: #FFBE76;
+  --accent-dark: #E8891C;
+  --accent-glow: rgba(255, 159, 67, 0.25);
+  --accent-glow-strong: rgba(255, 159, 67, 0.4);
+
+  /* Cyan */
+  --cyan: #00D4FF;
+  --cyan-light: #66E3FF;
+  --cyan-dark: #00A8CC;
+  --cyan-glow: rgba(0, 212, 255, 0.2);
+
+  /* Functional */
+  --success: #4ADE80;
+  --warning: #FBBF24;
+  --error: #F87171;
+  --info: #60A5FA;
+
+  /* Text */
+  --text-primary: #F0F0F5;
+  --text-secondary: #8888A0;
+  --text-tertiary: #55556A;
+
+  /* Fonts */
+  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --font-body: 'Figtree', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Radius */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+  --radius-2xl: 24px;
   --radius-full: 9999px;
-  
-  /* 阴影 */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5), 0 8px 16px rgba(0, 0, 0, 0.3);
-  
-  /* 动画 */
-  --transition-fast: 100ms;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.7);
+
+  /* Glow */
+  --glow-accent: 0 0 24px rgba(255, 159, 67, 0.3), 0 0 48px rgba(255, 159, 67, 0.1);
+  --glow-cyan: 0 0 24px rgba(0, 212, 255, 0.3), 0 0 48px rgba(0, 212, 255, 0.1);
+  --glow-card: 0 0 0 1px rgba(255, 255, 255, 0.05);
+
+  /* Transitions */
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-smooth: cubic-bezier(0.23, 1, 0.32, 1);
+  --transition-fast: 120ms;
   --transition-default: 200ms;
-  --transition-slow: 300ms;
+  --transition-slow: 350ms;
 }
 
 /* ============================================================================
-   基础样式
+   Reset
    ============================================================================ */
 
-* {
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -83,6 +93,7 @@
 
 html {
   font-size: 14px;
+  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -97,22 +108,21 @@ body {
 }
 
 /* ============================================================================
-   排版
+   Typography
    ============================================================================ */
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
   color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
-h1 { font-size: 2.5rem; letter-spacing: -0.02em; }
-h2 { font-size: 2rem; letter-spacing: -0.01em; }
-h3 { font-size: 1.5rem; }
-h4 { font-size: 1.25rem; }
-h5 { font-size: 1rem; }
-h6 { font-size: 0.875rem; }
+h1 { font-size: 2.4rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.4rem; }
+h4 { font-size: 1.1rem; }
 
 p {
   color: var(--text-secondary);
@@ -120,321 +130,190 @@ p {
 }
 
 a {
-  color: var(--color-primary-light);
+  color: var(--cyan);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: opacity var(--transition-fast);
 }
 
 a:hover {
-  color: var(--color-primary);
+  opacity: 0.8;
 }
 
 code {
   font-family: var(--font-mono);
   font-size: 0.875em;
-  background: var(--bg-tertiary);
-  padding: 0.125em 0.375em;
-  border-radius: var(--radius-sm);
-}
-
-/* ============================================================================
-   按钮
-   ============================================================================ */
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 20px;
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: var(--radius-md);
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition-default);
-  outline: none;
-  white-space: nowrap;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background: var(--color-primary);
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--color-primary-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px var(--glow-blue);
-}
-
-.btn-primary:active:not(:disabled) {
-  background: var(--color-primary-active);
-  transform: translateY(0);
-}
-
-.btn-accent {
-  background: var(--color-accent);
-  color: #0c0a09;
-}
-
-.btn-accent:hover:not(:disabled) {
-  background: var(--color-accent-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px var(--glow-gold);
-}
-
-.btn-ghost {
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-default);
-}
-
-.btn-ghost:hover:not(:disabled) {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border-color: var(--border-strong);
-}
-
-.btn-icon {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border-radius: var(--radius-md);
-}
-
-/* ============================================================================
-   卡片
-   ============================================================================ */
-
-.card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  transition: all var(--transition-default);
-}
-
-.card:hover {
-  border-color: var(--border-default);
-  box-shadow: var(--shadow-md);
-}
-
-.card-elevated {
   background: var(--bg-elevated);
-  box-shadow: var(--shadow-lg);
-}
-
-.card-interactive:hover {
-  transform: translateY(-2px);
-  border-color: var(--color-primary);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--color-primary);
+  padding: 0.1em 0.4em;
+  border-radius: var(--radius-sm);
+  color: var(--cyan-light);
 }
 
 /* ============================================================================
-   输入框
+   Scrollbar
    ============================================================================ */
 
-.input {
-  width: 100%;
-  padding: 10px 14px;
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  outline: none;
-  transition: all var(--transition-fast);
-}
-
-.input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--glow-blue);
-}
-
-.input::placeholder {
-  color: var(--text-tertiary);
-}
-
-/* ============================================================================
-   进度条
-   ============================================================================ */
-
-.progress {
-  width: 100%;
+::-webkit-scrollbar {
+  width: 6px;
   height: 6px;
-  background: var(--bg-tertiary);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
   border-radius: var(--radius-full);
-  overflow: hidden;
 }
 
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
-  border-radius: var(--radius-full);
-  transition: width var(--transition-slow);
-}
-
-.progress-bar-animated {
-  background: linear-gradient(
-    90deg,
-    var(--color-primary) 0%,
-    var(--color-accent) 50%,
-    var(--color-primary) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2s linear infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
 }
 
 /* ============================================================================
-   徽章
+   Selection
    ============================================================================ */
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border-radius: var(--radius-full);
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-}
-
-.badge-primary {
-  background: rgba(37, 99, 235, 0.2);
-  color: var(--color-primary-light);
-}
-
-.badge-accent {
-  background: rgba(245, 158, 11, 0.2);
-  color: var(--color-accent-light);
-}
-
-.badge-success {
-  background: rgba(16, 185, 129, 0.2);
-  color: var(--color-success);
+::selection {
+  background: var(--accent-glow-strong);
+  color: var(--text-primary);
 }
 
 /* ============================================================================
-   动画
+   Focus
    ============================================================================ */
 
-.animate-fadeIn {
-  animation: fadeIn var(--transition-default) ease-out;
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
-.animate-slideUp {
-  animation: slideUp var(--transition-default) ease-out;
-}
-
-.animate-scaleIn {
-  animation: scaleIn var(--transition-default) ease-out;
-}
+/* ============================================================================
+   Keyframe Animations
+   ============================================================================ */
 
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
 
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes neuralPulse {
+  0% { opacity: 0.4; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.4; transform: scale(0.98); }
+}
+
+@keyframes sparkPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
 /* ============================================================================
-   滚动条
+   Utility Classes
    ============================================================================ */
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+.animate-fade-in { animation: fadeIn var(--transition-default) ease-out both; }
+.animate-fade-in-up { animation: fadeInUp var(--transition-slow) var(--ease-smooth) both; }
+.animate-fade-in-scale { animation: fadeInScale var(--transition-slow) var(--ease-spring) both; }
+.animate-slide-left { animation: slideInLeft var(--transition-slow) var(--ease-smooth) both; }
+.animate-slide-right { animation: slideInRight var(--transition-slow) var(--ease-smooth) both; }
+.animate-neural { animation: neuralPulse 2s ease-in-out infinite; }
+.animate-spark { animation: sparkPulse 1.5s ease-in-out infinite; }
+.animate-spin { animation: spin 1s linear infinite; }
+.animate-breathe { animation: breathe 3s ease-in-out infinite; }
+
+/* Stagger delays */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }
+
+/* ============================================================================
+   Glass Effect
+   ============================================================================ */
+
+.glass {
+  background: rgba(20, 21, 32, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-subtle);
 }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-full);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
-  border-radius: var(--radius-full);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-tertiary);
+.glass-strong {
+  background: rgba(20, 21, 32, 0.95);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border: 1px solid var(--border-default);
 }
 
 /* ============================================================================
-   工具类
+   Glow Border
    ============================================================================ */
 
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-center { justify-content: center; }
-.justify-between { justify-content: space-between; }
-.gap-1 { gap: 4px; }
-.gap-2 { gap: 8px; }
-.gap-3 { gap: 12px; }
-.gap-4 { gap: 16px; }
-.gap-6 { gap: 24px; }
-.gap-8 { gap: 32px; }
-
-.text-center { text-align: center; }
-.text-secondary { color: var(--text-secondary); }
-.text-accent { color: var(--color-accent); }
-
-.w-full { width: 100%; }
-.h-full { height: 100%; }
-
-.p-2 { padding: 8px; }
-.p-3 { padding: 12px; }
-.p-4 { padding: 16px; }
-.p-6 { padding: 24px; }
-
-.mt-2 { margin-top: 8px; }
-.mt-4 { margin-top: 16px; }
-.mb-2 { margin-bottom: 8px; }
-.mb-4 { margin-bottom: 16px; }
-
-.rounded { border-radius: var(--radius-md); }
-.rounded-lg { border-radius: var(--radius-lg); }
-.rounded-full { border-radius: var(--radius-full); }
-
-.shadow { box-shadow: var(--shadow-md); }
-.shadow-lg { box-shadow: var(--shadow-lg); }
-
-.truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.glow-border-accent {
+  border: 1px solid var(--accent);
+  box-shadow: var(--glow-accent);
 }
 
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
+.glow-border-cyan {
+  border: 1px solid var(--cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* ============================================================================
+   Shimmer / Loading
+   ============================================================================ */
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface) 0%,
+    var(--bg-elevated) 50%,
+    var(--bg-surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
 }
