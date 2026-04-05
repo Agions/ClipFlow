@@ -317,3 +317,87 @@ code {
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
+
+/* ============================================================================
+   Scanlines Texture
+   ============================================================================ */
+
+.scanlines {
+  position: relative;
+}
+
+.scanlines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ============================================================================
+   Ant Design Tooltip Overrides — AI Cinema Studio Dark Theme
+   ============================================================================ */
+
+.ant-tooltip .ant-tooltip-inner {
+  background-color: var(--bg-elevated) !important;
+  background-image: none !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  line-height: 1.5 !important;
+  padding: 6px 12px !important;
+}
+
+.ant-tooltip .ant-tooltip-arrow::before,
+.ant-tooltip .ant-tooltip-arrow::after {
+  background-color: var(--bg-elevated) !important;
+}
+
+.ant-tooltip .ant-tooltip-arrow::before {
+  border-color: var(--border-default) !important;
+}
+
+.ant-tooltip-placement-top .ant-tooltip-arrow,
+.ant-tooltip-placement-topLeft .ant-tooltip-arrow,
+.ant-tooltip-placement-topRight .ant-tooltip-arrow {
+  border-top-color: var(--bg-elevated) !important;
+}
+
+.ant-tooltip-placement-bottom .ant-tooltip-arrow,
+.ant-tooltip-placement-bottomLeft .ant-tooltip-arrow,
+.ant-tooltip-placement-bottomRight .ant-tooltip-arrow {
+  border-bottom-color: var(--bg-elevated) !important;
+}
+
+.ant-tooltip-placement-left .ant-tooltip-arrow,
+.ant-tooltip-placement-leftTop .ant-tooltip-arrow,
+.ant-tooltip-placement-leftBottom .ant-tooltip-arrow {
+  border-left-color: var(--bg-elevated) !important;
+}
+
+.ant-tooltip-placement-right .ant-tooltip-arrow,
+.ant-tooltip-placement-rightTop .ant-tooltip-arrow,
+.ant-tooltip-placement-rightBottom .ant-tooltip-arrow {
+  border-right-color: var(--bg-elevated) !important;
+}
+
+/* Tooltip with accent glow */
+.ant-tooltip--accent .ant-tooltip-inner {
+  border-color: var(--accent) !important;
+  box-shadow: var(--shadow-md), 0 0 12px var(--accent-glow) !important;
+}
+
+.ant-tooltip--accent .ant-tooltip-arrow::before,
+.ant-tooltip--accent .ant-tooltip-arrow::after {
+  background-color: var(--bg-elevated) !important;
+}
