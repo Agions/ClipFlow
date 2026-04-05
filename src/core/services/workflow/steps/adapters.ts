@@ -32,7 +32,7 @@ import {
 // ============================================
 
 const uploadExecutor: IStepExecutor = {
-  readonly step: 'upload',
+  step: 'upload',
   async execute(ctx: StepContext) {
     const { projectId, config, updateData, reportProgress } = ctx;
     const videoFile = (config as any).videoFile as File;
@@ -43,7 +43,7 @@ const uploadExecutor: IStepExecutor = {
 };
 
 const analyzeExecutor: IStepExecutor = {
-  readonly step: 'analyze',
+  step: 'analyze',
   async execute(ctx: StepContext) {
     const { data, projectId, reportProgress } = ctx;
     if (!data.videoInfo) throw new Error('缺少视频信息');
@@ -53,7 +53,7 @@ const analyzeExecutor: IStepExecutor = {
 };
 
 const templateSelectExecutor: IStepExecutor = {
-  readonly step: 'template-select',
+  step: 'template-select',
   async execute(ctx: StepContext) {
     const { data, config, reportProgress } = ctx;
     if (!data.videoAnalysis) throw new Error('缺少视频分析结果');
@@ -65,7 +65,7 @@ const templateSelectExecutor: IStepExecutor = {
 };
 
 const scriptGenerateExecutor: IStepExecutor = {
-  readonly step: 'script-generate',
+  step: 'script-generate',
   async execute(ctx: StepContext) {
     const { data, config, reportProgress } = ctx;
     if (!data.videoInfo || !data.videoAnalysis || !data.selectedTemplate) {
@@ -87,7 +87,7 @@ const scriptGenerateExecutor: IStepExecutor = {
 };
 
 const scriptDedupExecutor: IStepExecutor = {
-  readonly step: 'script-dedup',
+  step: 'script-dedup',
   async execute(ctx: StepContext) {
     const { data, config, reportProgress } = ctx;
     if (!data.generatedScript) throw new Error('缺少待去重脚本');
@@ -105,7 +105,7 @@ const scriptDedupExecutor: IStepExecutor = {
 };
 
 const scriptEditExecutor: IStepExecutor = {
-  readonly step: 'script-edit',
+  step: 'script-edit',
   async execute(_ctx: StepContext) {
     // script-edit 是人工介入步骤，引擎不自动执行
     throw new SkipRequest('script-edit');
@@ -113,7 +113,7 @@ const scriptEditExecutor: IStepExecutor = {
 };
 
 const aiClipExecutor: IStepExecutor = {
-  readonly step: 'ai-clip',
+  step: 'ai-clip',
   async execute(ctx: StepContext) {
     const { data, config, reportProgress } = ctx;
     if (!data.videoInfo) throw new Error('缺少视频信息');
@@ -124,7 +124,7 @@ const aiClipExecutor: IStepExecutor = {
 };
 
 const timelineEditExecutor: IStepExecutor = {
-  readonly step: 'timeline-edit',
+  step: 'timeline-edit',
   async execute(ctx: StepContext) {
     const { data, config, reportProgress } = ctx;
     const script =
@@ -156,7 +156,7 @@ const timelineEditExecutor: IStepExecutor = {
 };
 
 const previewExecutor: IStepExecutor = {
-  readonly step: 'preview',
+  step: 'preview',
   async execute(ctx: StepContext) {
     const { reportProgress } = ctx;
     reportProgress(50);
@@ -165,7 +165,7 @@ const previewExecutor: IStepExecutor = {
 };
 
 const exportExecutor: IStepExecutor = {
-  readonly step: 'export',
+  step: 'export',
   async execute(ctx: StepContext) {
     const { data, reportProgress } = ctx;
     const script =
