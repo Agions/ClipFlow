@@ -1,3 +1,28 @@
+## [1.4.0] - 2026-04-06
+
+### 🏗️ 核心流程架构升级
+
+- **aiClipExecutor**: `executeAIClipStep` 返回值现写入 `WorkflowData.aiClipResult`，AI 剪辑结果不再丢失
+- **musicExecutor**: `music` 步骤已注册，配乐结果写入 `WorkflowData.musicStepOutput`
+- **subtitleExecutor**: 改进 skip 消息为"ASR 服务未安装，跳过字幕识别"
+
+### 🔧 类型安全强化
+
+- `adapters.ts`: 移除 3 处 `as any`，`WorkflowConfig` 新增 `videoFile` + `whisperConfig` 字段
+- `ai.service.ts`: `Promise.allSettled` 显式类型化，移除 map 回调 `s:any` / `k:any`
+
+### 🐛 Bug 修复
+
+- `VisionService.extractKeyframes`: **补全缺失方法**（此前调用恒返回 rejected，keyframes 永远为空）
+
+### ✨ Lint 修复
+
+- `FilterThumb` / `MultiTrackTimeline` / `WaveformCanvas`: 添加 `displayName`
+- `Layout.tsx`: `Tooltip` 从 `antd` 而非 `@ant-design/icons` 导入
+- `MultiTrackTimeline.tsx`: 修复 `clip={` 重复属性 JSX 语法错误
+
+---
+
 ## [1.3.0] - 2026-04-05
 
 ### 🎨 UI 全面升级 — AI Cinema Studio
