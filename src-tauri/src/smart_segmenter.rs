@@ -300,7 +300,7 @@ impl SmartSegmenter {
 
     fn compute_energy_profile(&self, audio_path: &str, window_ms: u64) -> Result<Vec<(u64, f32)>, String> {
         let sample_rate = 44100u32;
-        let window_samples = (window_ms * sample_rate as u64 / 1000.0) as usize;
+        let window_samples = (window_ms as f64 * sample_rate as f64 / 1000.0) as usize;
 
         // Extract PCM
         let pcm_data = match self.extract_pcm(audio_path) {
@@ -408,9 +408,9 @@ impl SmartSegmenter {
         // Don't forget the last segment
         if let Some(start) = segment_start {
             if let Some((_, last_energy)) = energy_data.last() {
-                let duration = last_energy.saturating_sub(start);
+                let duration = (*last_energy as u64).saturating_sub(start);
                 if duration >= min_duration_ms {
-                    segments.push((start, *last_energy));
+                    segments.push((start, *last_energy as u64));
                 }
             }
         }

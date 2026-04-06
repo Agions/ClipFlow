@@ -7,7 +7,7 @@ use anyhow::Context;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 use std::process::Command;
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 
 // ============================================
 // Types
