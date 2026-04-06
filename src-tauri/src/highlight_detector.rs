@@ -382,6 +382,7 @@ impl HighlightDetector {
         merged
             .into_iter()
             .sorted_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal))
+            .into_iter()
             .take(top_n)
             .collect()
     }
@@ -496,18 +497,19 @@ fn chrono_like_timestamp() -> u128 {
 
 // Extension trait for sorting
 trait Sorted {
-    fn sorted_by<F>(self, cmp: F) -> Self
+    fn sorted_by<F>(self, cmp: F) -> Vec<Self::Item>
     where
-        F: FnMut(&Self::Item, &Self::Item) -> std::cmp::Ordering;
+        F: FnMut(&Self::Item, &Self::Item) -> std::cmp::Ordering,
+        Self: Iterator;
 }
 
 impl<T: Iterator> Sorted for T {
-    fn sorted_by<F>(mut self, mut cmp: F) -> Self
+    fn sorted_by<F>(self, cmp: F) -> Vec<T::Item>
     where
         F: FnMut(&T::Item, &T::Item) -> std::cmp::Ordering
     {
         let mut v: Vec<_> = self.collect();
         v.sort_by(cmp);
-        v.into_iter()
+        v
     }
 }
