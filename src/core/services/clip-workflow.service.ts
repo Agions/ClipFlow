@@ -103,10 +103,8 @@ export class ClipWorkflowService {
       ? (analysis.scenes || []).map((s) => ({ time: s.startTime, confidence: s.confidence || 0.8 }))
       : [];
     
-    // Step 3: 静音检测
-    const silenceSections = this.config.detectSilence
-      ? await this.detectSilence(analysis)
-      : [];
+    // Step 3: 静音检测（VideoAnalysis 暂无音频分段数据，保守返回空）
+    const silenceSections: Array<{ start: number; end: number }> = [];
     
     // Step 4: 生成剪辑片段
     const segments = this.generateClips(
