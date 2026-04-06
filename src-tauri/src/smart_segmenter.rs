@@ -408,7 +408,7 @@ impl SmartSegmenter {
         // Don't forget the last segment
         if let Some(start) = segment_start {
             if let Some((last_time, last_energy)) = energy_data.last() {
-                let duration = (*last_energy).saturating_sub(start as f32);
+                let duration = *last_energy - start as f32;
                 if duration >= min_duration_ms as f32 {
                     segments.push((start, *last_time));
                 }
