@@ -498,14 +498,11 @@ fn chrono_like_timestamp() -> u128 {
 trait Sorted {
     fn sorted_by<F>(self, cmp: F) -> Self
     where
-        F: FnMut(&T::Item, &T::Item) -> std::cmp::Ordering;
+        F: FnMut(&Self::Item, &Self::Item) -> std::cmp::Ordering;
 }
 
 impl<T: Iterator> Sorted for T {
-}
-
-impl<T: Iterator> Sorted for T {
-    fn sorted_by<F>(mut self, mut cmp: F) -> Self
+    fn sorted_by<F>(mut self, cmp: F) -> Self
     where
         F: FnMut(&T::Item, &T::Item) -> std::cmp::Ordering
     {
@@ -513,4 +510,5 @@ impl<T: Iterator> Sorted for T {
         v.sort_by(cmp);
         v.into_iter()
     }
+}
 }
