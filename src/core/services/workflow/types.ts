@@ -9,6 +9,8 @@ import type {
 } from '@/core/types';
 import type { OriginalityReport } from '@/core/templates/dedup';
 import type { ContentFingerprint, UniquenessCheckResult } from '@/core/services/uniqueness.service';
+import type { ClipAnalysisResult } from '@/core/services/aiClip/types';
+import type { MusicStepOutput } from '../steps/musicStep';
 import type { WorkflowMode } from '@/core/workflow/featureBlueprint';
 
 // 工作流步骤
@@ -21,6 +23,7 @@ export type WorkflowStep =
   | 'script-edit'
   | 'subtitle'
   | 'ai-clip'
+  | 'music'
   | 'timeline-edit'
   | 'preview'
   | 'export';
@@ -131,6 +134,10 @@ export interface WorkflowData {
     passed: boolean;
   };
   originalOverlayPlan?: TimelineData['originalOverlayPlan'];
+  /** AI 剪辑结果（ai-clip 步骤产出） */
+  aiClipResult?: ClipAnalysisResult;
+  /** 配乐结果（music 步骤产出） */
+  musicStepOutput?: MusicStepOutput;
 }
 
 // 工作流状态
@@ -184,6 +191,12 @@ export interface WorkflowConfig {
     targetDuration?: number;
     pacingStyle: 'fast' | 'normal' | 'slow';
   };
+  musicConfig?: {
+    enabled: boolean;
+    skipMusic?: boolean;
+    preferredGenre?: string;
+    preferredMood?: string;
+  };
 }
 
 // 工作流事件回调
@@ -205,6 +218,7 @@ export const STEP_PROGRESS: Record<WorkflowStep, number> = {
   'script-edit': 60,
   subtitle: 63,
   'ai-clip': 65,
+  music: 67,
   'timeline-edit': 70,
   preview: 90,
   export: 95,

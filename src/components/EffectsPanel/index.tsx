@@ -267,6 +267,7 @@ const FilterThumb: React.FC<FilterThumbProps> = React.memo(
     </button>
   )
 );
+FilterThumb.displayName = 'FilterThumb';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Component

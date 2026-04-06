@@ -1,6 +1,7 @@
 import { logger } from '@/utils/logger';
 import { aiClipService } from '../../aiClip.service';
 import type { VideoInfo } from '@/core/types';
+import type { ClipAnalysisResult } from '../../aiClip/types';
 
 export interface AIClipConfig {
   enabled: boolean;
@@ -12,12 +13,17 @@ export interface AIClipConfig {
   pacingStyle: 'fast' | 'normal' | 'slow';
 }
 
+/**
+ * 执行 AI 剪辑步骤
+ * @returns ClipAnalysisResult 或 null（未启用时）
+ * @throws AI 剪辑失败时抛出错误，由 WorkflowEngine 重试
+ */
 export async function executeAIClipStep(
   videoInfo: VideoInfo,
   aiClipConfig: AIClipConfig,
   updateProgress?: (progress: number) => void
-): Promise<void> {
-  if (!aiClipConfig?.enabled) return;
+): Promise<ClipAnalysisResult | null> {
+  if (!aiClipConfig?.enabled) return null;
 
   const clipConfig = {
     detectSceneChange: aiClipConfig.detectSceneChange ?? true,
@@ -33,20 +39,23 @@ export async function executeAIClipStep(
     pacingStyle: aiClipConfig.pacingStyle ?? 'normal',
   };
 
-  try {
-    if (aiClipConfig.autoClip) {
-      await aiClipService.smartClip(
-        videoInfo,
-        clipConfig.targetDuration,
-        clipConfig.pacingStyle
-      );
-    } else {
-      await aiClipService.analyzeVideo(videoInfo, clipConfig);
-    }
+  let result: ClipAnalysisResult;
 
-    updateProgress?.(68);
-  } catch (error) {
-    logger.error('AI 剪辑步骤失败:', { error });
-    // AI 剪辑失败不中断整个工作流
+  if (aiClipConfig.autoClip) {
+    result = await aiClipService.smartClip(
+      videoInfo,
+      clipConfig.targetDuration,
+      clipConfig.pacingStyle
+    );
+  } else {
+    result = await aiClipService.analyzeVideo(videoInfo, clipConfig);
   }
+
+  updateProgress?.(68);
+  logger.info('[executeAIClipStep] AI 剪辑步骤完成', {
+    cutPoints: result.cutPoints.length,
+    suggestions: result.suggestions.length,
+  });
+
+  return result;
 }

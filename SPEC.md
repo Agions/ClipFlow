@@ -1,6 +1,6 @@
 # CutDeck 架构文档
 
-> 最后更新：2026-04-04 | v1.2.0
+> 最后更新：2026-04-06 | v1.3.0
 
 ---
 
@@ -95,7 +95,7 @@ WorkflowEngine（状态机）
 React 连接 → useWorkflowEngine() hook
 ```
 
-**已注册步骤**：`upload / analyze / template-select / script-generate / script-dedup / script-edit / ai-clip / timeline-edit / preview / export`
+**已注册步骤**：`upload / analyze / template-select / script-generate / script-dedup / script-edit / subtitle / ai-clip / music / timeline-edit / preview / export`
 
 ---
 
@@ -127,6 +127,8 @@ React 连接 → useWorkflowEngine() hook
 | `WorkflowService` | v1.2.0 | `WorkflowEngine` + `createWorkflowEngine()` |
 | `store/types.ts` | v1.2.0 | `@/core/types`（通用类型）+ `editorStore.ts` 内联（Store 私有类型） |
 | `IVideoProcessor` 直接实现 | v1.2.0 | 继承 `BaseVideoProcessor` |
+| `executeAIClipStep` 返回 void | <v1.3.0 | 返回 `ClipAnalysisResult | null`，结果写入 `WorkflowData.aiClipResult` |
+| `musicStep` 未注册 | <v1.3.0 | `musicExecutor` 已注册，结果写入 `WorkflowData.musicStepOutput` |
 
 ---
 

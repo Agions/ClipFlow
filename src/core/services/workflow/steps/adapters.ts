@@ -21,12 +21,12 @@ import {
   executeTemplateStep,
   executeScriptGenerateStep,
   executeDedupStep,
-  executeUniquenessStep,
   executeAIClipStep,
   executeTimelineStep,
   executeExportStep,
   executeSubtitleStep,
 } from './index';
+import { musicStep, type MusicStepInput } from './musicStep';
 
 // ============================================
 // Step Executors
@@ -49,7 +49,7 @@ const analyzeExecutor: IStepExecutor = {
     const { data, projectId, reportProgress } = ctx;
     if (!data.videoInfo) throw new Error('缺少视频信息');
     const result = await executeAnalyzeStep(data.videoInfo, projectId, reportProgress);
-    updateData({ videoAnalysis: result.analysis });
+    ctx.updateData({ videoAnalysis: result.analysis });
   },
 };
 
@@ -58,10 +58,9 @@ const templateSelectExecutor: IStepExecutor = {
   async execute(ctx: StepContext) {
     const { data, config, reportProgress } = ctx;
     if (!data.videoAnalysis) throw new Error('缺少视频分析结果');
-    // reportProgress 作为 mock，templateSelect 不报告外部进度
     reportProgress(50);
     const result = await executeTemplateStep(data.videoAnalysis, (config as any).preferredTemplate);
-    updateData({ selectedTemplate: result.template });
+    ctx.updateData({ selectedTemplate: result.template });
   },
 };
 
@@ -83,7 +82,7 @@ const scriptGenerateExecutor: IStepExecutor = {
       cfg.mode || 'ai-commentary',
       reportProgress,
     );
-    updateData({ generatedScript: result.script });
+    ctx.updateData({ generatedScript: result.script });
   },
 };
 
@@ -98,7 +97,7 @@ const scriptDedupExecutor: IStepExecutor = {
       cfg.dedupConfig,
       reportProgress,
     );
-    updateData({
+    ctx.updateData({
       dedupedScript: result.script,
       originalityReport: result.report,
     });
@@ -119,8 +118,48 @@ const aiClipExecutor: IStepExecutor = {
     const { data, config, reportProgress } = ctx;
     if (!data.videoInfo) throw new Error('缺少视频信息');
     const cfg = config as WorkflowConfig;
-    if (!cfg.aiClipConfig?.enabled) throw new SkipRequest('ai-clip');
-    await executeAIClipStep(data.videoInfo, cfg.aiClipConfig, reportProgress);
+    if (!cfg.aiClipConfig?.enabled) throw new SkipRequest('ai-clip 未启用');
+
+    const result = await executeAIClipStep(data.videoInfo, cfg.aiClipConfig, reportProgress);
+    if (result) {
+      ctx.updateData({ aiClipResult: result });
+    }
+  },
+};
+
+const musicExecutor: IStepExecutor = {
+  step: 'music',
+  async execute(ctx: StepContext) {
+    const { data, config, reportProgress } = ctx;
+    const cfg = config as WorkflowConfig;
+
+    if (!cfg.musicConfig?.enabled) throw new SkipRequest('music 未启用');
+    if (cfg.musicConfig?.skipMusic) {
+      ctx.updateData({
+        musicStepOutput: {
+          tracks: [],
+          totalDuration: 0,
+          recommendations: [],
+          usedSource: 'none',
+          requiresUserAction: false,
+        },
+      });
+      return;
+    }
+
+    if (!data.videoInfo) throw new Error('缺少视频信息用于配乐');
+
+    const input: MusicStepInput = {
+      videoDuration: data.videoInfo.duration,
+      preferredGenre: cfg.musicConfig?.preferredGenre,
+      preferredMood: cfg.musicConfig?.preferredMood,
+    };
+
+    reportProgress(30);
+    const musicResult = await musicStep(input);
+    reportProgress(100);
+
+    ctx.updateData({ musicStepOutput: musicResult });
   },
 };
 
@@ -148,7 +187,7 @@ const timelineEditExecutor: IStepExecutor = {
       },
       reportProgress,
     );
-    updateData({
+    ctx.updateData({
       timeline,
       alignmentReport: timeline.alignment,
       originalOverlayPlan: timeline.originalOverlayPlan,
@@ -159,8 +198,7 @@ const timelineEditExecutor: IStepExecutor = {
 const previewExecutor: IStepExecutor = {
   step: 'preview',
   async execute(ctx: StepContext) {
-    const { reportProgress } = ctx;
-    reportProgress(50);
+    ctx.reportProgress(50);
     // preview 是 UI 步骤，这里只占位
   },
 };
@@ -203,15 +241,14 @@ const exportExecutor: IStepExecutor = {
 const subtitleExecutor: IStepExecutor = {
   step: 'subtitle',
   async execute(ctx: StepContext) {
-    const { data, config, updateData, reportProgress } = ctx;
+    const { data, config, reportProgress } = ctx;
     if (!data.videoInfo) throw new Error('缺少视频信息');
 
     // Check if faster-whisper is available
     const { whisperService } = await import('@/core/services/subtitle.service');
     const available = await whisperService.checkFasterWhisper();
     if (!available) {
-      // Whisper not available, skip silently
-      throw new SkipRequest('faster-whisper not installed');
+      throw new SkipRequest('ASR 服务未安装，跳过字幕识别');
     }
 
     const cfg = config as any;
@@ -224,7 +261,7 @@ const subtitleExecutor: IStepExecutor = {
       },
       reportProgress,
     );
-    updateData({ whisperSubtitleSegments: result.segments });
+    ctx.updateData({ whisperSubtitleSegments: result.segments });
   },
 };
 
@@ -237,6 +274,7 @@ const STEP_EXECUTORS: Record<string, IStepExecutor> = {
   'script-edit': scriptEditExecutor,
   subtitle: subtitleExecutor,
   'ai-clip': aiClipExecutor,
+  music: musicExecutor,
   'timeline-edit': timelineEditExecutor,
   preview: previewExecutor,
   export: exportExecutor,

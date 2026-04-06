@@ -297,6 +297,7 @@ const WaveformCanvas: React.FC<WaveformCanvasProps> = React.memo(
     );
   }
 );
+WaveformCanvas.displayName = 'WaveformCanvas';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Timeline segment (draggable handles)

@@ -882,7 +882,7 @@ export const MultiTrackTimeline: React.FC<MultiTrackTimelineProps> = memo(({
                 {track.clips.map((clip) => (
                   <ClipRenderer
                     key={clip.id}
-                    clip={                    clip={clip}
+                    clip={clip}
                     track={track}
                     zoom={localZoom}
                     scrollX={localScrollX}
@@ -911,5 +911,6 @@ export const MultiTrackTimeline: React.FC<MultiTrackTimelineProps> = memo(({
     </div>
   );
 });
+MultiTrackTimeline.displayName = 'MultiTrackTimeline';
 
 export default MultiTrackTimeline;
