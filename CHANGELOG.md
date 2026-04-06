@@ -1,3 +1,33 @@
+## [1.6.4] - 2026-04-06
+
+### 📁 文件结构优化
+
+- **Hooks 重复定义合并**: `src/shared/hooks/index.ts` + `src/core/utils/hooks.ts` → `src/hooks/index.ts`
+- 统一为单一 hooks 导出入口，消除三处分散定义，净减少 350 行重复代码
+
+---
+
+## [1.6.3] - 2026-04-06
+
+### 🏗️ 核心架构优化
+
+- **VisionService 并行分析**: `detectObjects` + `analyzeEmotions` 并行执行（Promise.all），耗时减半
+- **消除冗余调用**: `analyzeVideo` 已返回 scenes，`detectScenes` 调用消除
+- **移除死代码**: 删除 `detectScenes` + `detectSilence` 私有方法（-36 行）
+- **optimizeScenes Map 查表**: 嵌套 filter.find O(n²) → 预建 Map O(n)
+
+---
+
+## [1.6.2] - 2026-04-06
+
+### ⚡ 性能优化
+
+- **WaveformCanvas**: `segments.find` O(n) → Map 查表 O(1)，大量字幕时每帧减少数万次遍历
+- **cacheManager**: `JSON.parse(JSON.stringify)` → `structuredClone`（引擎级优化）
+- **exportCache**: 移除 pretty-print
+
+---
+
 ## [1.6.1] - 2026-04-06
 
 ### ⚡ 性能优化
