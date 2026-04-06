@@ -138,6 +138,9 @@ export class WorkflowEngine {
   // ---- Derived ----
   get state(): Readonly<EngineState> { return this._state; }
 
+  /** 获取当前工作流数据 */
+  getData(): WorkflowData { return this._data; }
+
   // ---- Subscriber ----
   subscribe(fn: EngineSubscriber): () => void {
     this.subscribers.add(fn);

@@ -173,7 +173,7 @@ export function useWorkflowEngine(options: UseWorkflowEngineOptions = {}) {
    * 直接获取当前 engine data（运行时读取）
    */
   const getData = useCallback((): WorkflowData => {
-    return getEngine().state as any as WorkflowData;
+    return getEngine().getData();
   }, []);
 
   // ============================================

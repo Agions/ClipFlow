@@ -96,7 +96,7 @@ export class WorkflowPersistenceService {
    */
   static saveStepData(projectId: string, step: WorkflowStep, data: Partial<WorkflowData>): void {
     try {
-      workflowCacheManager.completeStep(projectId, step as any, data);
+      workflowCacheManager.completeStep(projectId, step, data);
       
       // 同时持久化
       const key = `${STORAGE_KEY_PREFIX}${projectId}_step_${step}`;

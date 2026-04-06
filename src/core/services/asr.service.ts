@@ -253,7 +253,8 @@ class ASRService extends BaseService {
   ): Promise<ASRResult | null> {
     return new Promise((resolve) => {
       // 检查 Web Speech API 是否可用
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const SpeechRecognition = ((window as unknown) as { SpeechRecognition?: typeof SpeechRecognition }).SpeechRecognition
+        || ((window as unknown) as { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition;
       if (!SpeechRecognition) {
         resolve(null);
         return;

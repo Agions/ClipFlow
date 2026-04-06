@@ -4,12 +4,12 @@
  * 支持用户自主上传音乐
  */
 import { logger } from '@/utils/logger';
-import { autoMusicService, type MusicTrack, type MusicMatchResult } from '../auto-music.service';
+import { autoMusicService, type MusicTrack, type MusicMatchResult, type MusicGenre, type MusicMood } from '../auto-music.service';
 
 export interface MusicStepInput {
   videoDuration: number;
-  preferredGenre?: string;
-  preferredMood?: string;
+  preferredGenre?: MusicGenre;
+  preferredMood?: MusicMood;
   /** 用户上传的音乐文件 */
   userUploadedTracks?: MusicTrack[];
   /** 是否跳过配乐 */
@@ -71,8 +71,8 @@ export async function musicStep(input: MusicStepInput): Promise<MusicStepOutput>
     // 尝试从预设库推荐
     const result = await autoMusicService.recommendMusic({
       videoDuration: input.videoDuration,
-      preferredGenre: input.preferredGenre as any,
-      preferredMood: input.preferredMood as any,
+      preferredGenre: input.preferredGenre,
+      preferredMood: input.preferredMood,
     });
 
     // 如果有推荐结果，直接使用
@@ -128,15 +128,15 @@ export function getMusicLibrary() {
  */
 export async function uploadUserMusic(file: File, metadata: {
   name?: string;
-  genre?: string;
-  mood?: string[];
+  genre?: MusicGenre;
+  mood?: MusicMood[];
   tags?: string[];
 }): Promise<MusicTrack> {
   return autoMusicService.uploadMusic({
     file,
     name: metadata.name,
-    genre: metadata.genre as any,
-    mood: metadata.mood as any,
+    genre: metadata.genre ?? 'electronic',
+    mood: metadata.mood ?? ['neutral'],
     tags: metadata.tags,
   });
 }

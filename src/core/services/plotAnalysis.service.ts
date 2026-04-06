@@ -8,7 +8,7 @@ import { logger } from '@/utils/logger';
 import { aiService } from './ai.service';
 import { visionService } from './vision.service';
 import { asrService } from './asr.service';
-import type { VideoInfo, Scene, Emotion, KeyMoment } from '@/core/types';
+import type { VideoInfo, Scene, Emotion, KeyMoment, AIModel } from '@/core/types';
 
 // ============================================
 // 类型定义
@@ -401,7 +401,12 @@ ${transcript ? `语音内容：\n${transcript.slice(0, 2000)}` : ''}
 
     try {
       const result = await aiService.generateText(
-        { id: 'llm-understanding', provider: 'openai', model: 'gpt-4' } as any,
+        {
+          id: 'llm-understanding',
+          name: 'GPT-4 LLM Understanding',
+          provider: 'openai' as const,
+          model: 'gpt-4',
+        } satisfies AIModel,
         { enabled: true, apiKey: '', temperature: 0.3, maxTokens: 800 },
         prompt
       );
