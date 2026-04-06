@@ -1,3 +1,12 @@
+## [1.6.5] - 2026-04-07
+
+### 🐛 Bug 修复
+
+- **package.json 版本同步**: 修复 v1.6.4 发布后 package.json 仍为 v1.6.0 的版本不一致问题
+- **Rust 死代码清理**: 移除 `segment_by_energy` 中未使用变量 `next_duration`、`mid_point`、`segment_energy_sum/count`，消除编译警告
+
+---
+
 ## [1.6.4] - 2026-04-06
 
 ### 📁 文件结构优化
