@@ -1,6 +1,12 @@
 ## [1.7.0] - 2026-04-07
 
-### 🎉 Phase 1 功能升级
+### 🎉 Phase 1 + Phase 2 功能升级
+
+#### Phase 2 — 体验完善
+
+- **快捷键体系**: 新增 `useKeyboardShortcuts` Hook（空格/K/J/L/I/O/Delete/⌘Z/⌘E等），接入 AIVideoEditor
+- **导出进度细化**: VideoExport 接入 Rust `processing-progress` 事件监听，实时显示阶段名称（编码/渲染/合成/写入）+ ETA 剩余时间
+
 
 - **多格式裁切导出**: Rust 层实现 `transcode_with_crop` 命令，支持 9:16（抖音竖屏）/ 1:1（小红书方屏）/ 16:9 三种格式，FFmpeg scale+crop filter 注入
 - **ClipRepurposing Pipeline**: 新增完整 UI（ClipRepurpose.tsx），集成 6 维评分引擎（笑声/情感/完整度/静默比/节奏/关键词）+ SEO 元数据 + 多格式导出

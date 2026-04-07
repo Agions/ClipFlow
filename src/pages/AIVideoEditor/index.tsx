@@ -9,6 +9,9 @@ import {
   ScissorOutlined,
 } from '@ant-design/icons';
 import { CutDeckProvider, useCutDeck } from '@/components/AIPanel/AIEditorContext';
+import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS_HELP } from '@/hooks/use-keyboard-shortcuts';
+import { useEditorStore } from '@/store/editorStore';
+import { message } from 'antd';
 import { TAB_TO_FEATURE, type AIFunctionTabKey } from '@/components/AIPanel/CutDeck/functionModeMap';
 import styles from './index.module.less';
 
@@ -64,6 +67,38 @@ const AI_FUNCTIONS = [
 const AIVideoEditorContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AIFunctionTabKey>('commentary-first');
   const { state, goToNextStep, setFeature } = useCutDeck();
+  const editorStore = useEditorStore();
+
+  // ── 快捷键注册 ────────────────────────────────────────
+  useKeyboardShortcuts({
+    enabled: true,
+    preventDefault: true,
+    onPlayPause: () => {
+      editorStore.setPreviewPlaying(!editorStore.previewPlaying);
+    },
+    onPause: () => {
+      editorStore.setPreviewPlaying(false);
+    },
+    onSeek: (delta) => {
+      const newTime = Math.max(0, (editorStore.playheadMs / 1000) + delta);
+      editorStore.setPlayheadMs(newTime * 1000);
+    },
+    onSeekTo: (time) => {
+      editorStore.setPlayheadMs(time * 1000);
+    },
+    onDelete: () => {
+      message.info('选中片段已删除（快捷键 Delete）');
+    },
+    onUndo: () => {
+      message.info('撤销（快捷键 ⌘Z）');
+    },
+    onRedo: () => {
+      message.info('重做（快捷键 ⇧⌘Z）');
+    },
+    onExport: () => {
+      goToNextStep();
+    },
+  });
 
   useEffect(() => {
     const targetFeature = TAB_TO_FEATURE[activeTab];

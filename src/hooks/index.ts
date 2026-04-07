@@ -6,6 +6,7 @@
 
 // 时间线 & 编辑
 export { useTimeline, usePlayback, useHistory, useSelection, useZoom } from './use-timeline';
+export { useKeyboardShortcuts, KEYBOARD_SHORTCUTS_HELP } from './use-keyboard-shortcuts';
 
 // ============================================================
 // 通用 React Hooks（合并自 src/shared/hooks + src/core/utils/hooks）
