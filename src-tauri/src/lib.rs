@@ -633,10 +633,17 @@ fn transcode_with_crop(input: TranscodeCropInput) -> Result<String, String> {
         cmd.arg("-t").arg(dur.to_string());
     }
 
-    // 构建裁切 FFmpeg filter
-    let vf_filter = match input.aspect.as_str() {
-        "9:16" => "scale=1080:1920:force_original_aspect_ratio=decrease,crop=1080:1920:(iw-1080)/2:(ih-1920)/2,setsar=1".to_string(),
-        "1:1"  => "scale=min(iw,ih):min(iw,ih),crop=min(iw,ih):min(iw,ih),setsar=1".to_string(),
+    // 构建 FFmpeg filter（16:9 不裁切，仅缩放；9:16/1:1 裁切居中）
+    let vf_filter: String = match input.aspect.as_str() {
+        "9:16" => format!(
+            "scale=1080:1920:force_original_aspect_ratio=decrease,crop=1080:1920:(iw-1080)/2:(ih-1920)/2,setsar=1"
+        ),
+        "1:1"  => format!(
+            "scale='min(iw\\,ih):min(iw\\,ih)',crop='min(iw\\,ih):min(iw\\,ih)',setsar=1"
+        ),
+        "16:9" => format!(
+            "scale=1920:1080:force_original_aspect_ratio=decrease,crop=1920:1080:(iw-1920)/2:(ih-1080)/2,setsar=1"
+        ),
         _       => return Err("不支持的宽高比，仅支持 9:16、1:1、16:9".to_string()),
     };
     cmd.arg("-vf").arg(vf_filter);
