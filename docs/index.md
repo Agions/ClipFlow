@@ -4,7 +4,7 @@ layout: home
 hero:
   name: CutDeck
   text: AI 驱动的专业视频剪辑工具
-  tagline: 上传长视频 · AI 分析高光 · 输出精彩片段
+  tagline: 上传长视频 · AI 分析高光 · 一键拆条 · 多格式导出
   image:
     src: /logo.svg
     alt: CutDeck Logo
@@ -17,9 +17,9 @@ hero:
       link: /features
 
 features:
-  - icon: 🕐
-    title: AI 高光检测
-    details: 本地 AI 分析视频内容，自动识别最具传播力的精彩片段
+  - icon: 🎯
+    title: AI 智能拆条
+    details: 长视频自动拆多个精彩短片段，6维AI评分 + SEO + 多格式导出（9:16/1:1/16:9）
   - icon: 🎬
     title: 智能多轨剪辑
     details: 多轨道时间轴 + FFmpeg 专业渲染管线，支持 12+ 视频特效

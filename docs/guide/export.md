@@ -75,6 +75,32 @@ Apple QuickTime 格式，适合 Final Cut Pro 和 macOS 生态。
 
 ---
 
+## 多格式裁切导出（v1.7.0 新增）
+
+Rust 层 FFmpeg scale+crop filter，无需前端二次转码，直接输出多平台适配尺寸：
+
+| 格式 | 比例 | 输出尺寸 | 推荐场景 |
+|------|------|----------|----------|
+| **竖屏** | 9:16 | 1080×1920 | 抖音 / 快手 / TikTok / Instagram Reels |
+| **方屏** | 1:1 | 1080×1080 | 小红书 / Instagram Feed |
+| **横屏** | 16:9 | 1920×1080 | B站 / YouTube / 微博视频 |
+
+FFmpeg filter 实现：
+
+```bash
+# 竖屏 9:16（从原始画面中心裁切）
+scale=1080:1920:force_original_aspect_ratio=decrease,crop=1080:1920:(iw-1080)/2:(ih-1920)/2
+
+# 方屏 1:1（取 min(iw,ih) 边长裁切中心）
+scale=min(iw,ih):min(iw,ih),crop=min(iw,ih):min(iw,ih)
+```
+
+::: tip AI 拆条 × 多格式导出
+在 **AI 拆条**流程中，选中片段后可以一次性导出多个格式（如同时生成竖屏+方屏版本），实现「一鱼多吃」。
+:::
+
+---
+
 ## 专业软件项目格式
 
 ### 剪映草稿 (.draft)
