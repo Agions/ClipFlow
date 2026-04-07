@@ -159,7 +159,7 @@ CutDeck/
 |----------|------|
 | 🐛 报告 Bug | [GitHub Issues](https://github.com/Agions/CutDeck/issues) |
 | 📝 完善文档 | 直接提交 PR |
-| 💡 功能建议 | [GitHub Discussions](https://github.com/Agions/CutDeck/discussions) |
+| 💡 功能建议 | [GitHub Issues](https://github.com/Agions/CutDeck/issues)（Discussions 需在仓库 Settings → Features 中开启） |
 | 🔧 提交代码 | 提交 Pull Request |
 
 参考 [贡献指南](docs/contributing.md) 了解更多。
