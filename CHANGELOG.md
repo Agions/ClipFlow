@@ -1,3 +1,14 @@
+## [1.7.0] - 2026-04-07
+
+### 🎉 Phase 1 功能升级
+
+- **多格式裁切导出**: Rust 层实现 `transcode_with_crop` 命令，支持 9:16（抖音竖屏）/ 1:1（小红书方屏）/ 16:9 三种格式，FFmpeg scale+crop filter 注入
+- **ClipRepurposing Pipeline**: 新增完整 UI（ClipRepurpose.tsx），集成 6 维评分引擎（笑声/情感/完整度/静默比/节奏/关键词）+ SEO 元数据 + 多格式导出
+- **AI 字幕生成**: SubtitleEditor 接入 Whisper ASR 服务，支持模型选择 + 语言设置 + 一键生成字幕
+- **主流程串联**: AI 拆条步骤完整接入主流程（project-create → video-upload → ai-analyze → clip-repurpose → script-generate → video-synthesize → export）
+
+---
+
 ## [1.6.5] - 2026-04-07
 
 ### 🐛 Bug 修复
