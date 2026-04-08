@@ -2,7 +2,8 @@
  * 步骤6: 导出视频 — AI Cinema Studio Redesign
  */
 import React, { useState, useEffect } from 'react';
-import { listen, UnlistenFn, invoke } from '@tauri-apps/api/event';
+import { listen, type UnlistenFn } from '@tauri-apps/api/event';
+import { invoke } from '@tauri-apps/api/core';
 import { useCutDeck } from '../AIEditorContext';
 import { notify } from '@/shared';
 import type { ExportSettings } from '@/core/types';
