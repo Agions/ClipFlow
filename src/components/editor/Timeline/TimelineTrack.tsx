@@ -4,6 +4,7 @@
  */
 import React, { memo, useCallback, useMemo } from 'react'
 import { Badge } from 'antd'
+import { LockOutlined, UnlockOutlined } from '@ant-design/icons'
 import type { TimelineTrack as TimelineTrackType, TimelineClip as TimelineClipType, TimelineScale } from './types'
 import TimelineClip from './TimelineClip'
 
@@ -161,11 +162,12 @@ const TimelineTrack: React.FC<TimelineTrackProps> = memo(({
           {track.type === 'audio' && (
             <button
               onClick={handleMuteToggle}
+              aria-label={track.muted ? '取消静音' : '静音'}
               style={{
-                padding: '2px 6px',
-                fontSize: 10,
+                padding: '4px 8px',
+                fontSize: 12,
                 border: 'none',
-                borderRadius: 3,
+                borderRadius: 4,
                 background: track.muted ? 'var(--error-color)' : 'var(--bg-tertiary)',
                 color: track.muted ? '#fff' : 'var(--text-secondary)',
                 cursor: 'pointer',
@@ -176,17 +178,21 @@ const TimelineTrack: React.FC<TimelineTrackProps> = memo(({
           )}
           <button
             onClick={handleLockToggle}
+            aria-label={track.locked ? '解锁轨道' : '锁定轨道'}
             style={{
-              padding: '2px 6px',
-              fontSize: 10,
+              padding: '4px 8px',
+              fontSize: 12,
               border: 'none',
-              borderRadius: 3,
+              borderRadius: 4,
               background: track.locked ? 'var(--warning-color)' : 'var(--bg-tertiary)',
               color: track.locked ? '#fff' : 'var(--text-secondary)',
               cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            {track.locked ? '🔒' : '🔓'}
+            {track.locked ? <LockOutlined /> : <UnlockOutlined />}
           </button>
         </div>
       </div>

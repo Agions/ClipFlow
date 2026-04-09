@@ -1,166 +1,139 @@
-/* 全局样式 */
+/* CutDeck App-level Styles
+ * 仅放全局级别的布局、字体、选择器样式
+ * 设计 token 统一在 index.css / global.css 中定义
+ */
+
+/* ============================================================================
+   Reset & Base（与 index.css 保持一致）
+   ============================================================================ */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  transition-property: background-color, border-color, color, box-shadow, transform;
-  transition-duration: 0.3s;
-  transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
+/* ============================================================================
+   Body — 使用设计系统字体栈
+   ============================================================================ */
 body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Outfit', 'Figtree', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Noto Sans SC', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8fafc;
-  color: rgba(0, 0, 0, 0.87);
+  background-color: var(--bg-dark-0, #0C0D14);
+  color: var(--text-primary, #F0F0F5);
   font-size: 14px;
   line-height: 1.6;
   overflow-x: hidden;
 }
 
-/* 防止溢出 */
+/* ============================================================================
+   Layout
+   ============================================================================ */
 .ant-layout {
   overflow-x: hidden;
 }
 
-/* 视频相关 */
+/* ============================================================================
+   Video
+   ============================================================================ */
 video {
   max-width: 100%;
 }
 
-/* 滚动条美化 */
+/* ============================================================================
+   Scrollbar — 使用 CSS 变量
+   ============================================================================ */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: rgba(0, 0, 0, 0.02);
-  border-radius: 6px;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(24, 144, 255, 0.2);
-  border-radius: 6px;
-  transition: background-color 0.3s;
+  background-color: var(--border-focus, #3D4166);
+  border-radius: 4px;
+  transition: background-color 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(24, 144, 255, 0.4);
+  background-color: var(--text-muted, #55556A);
 }
 
-/* 暗色模式滚动条 */
-body.dark-mode ::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-body.dark-mode ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-body.dark-mode ::-webkit-scrollbar-track {
-  background-color: rgba(255, 255, 255, 0.03);
-}
-
-/* 公共动画 */
+/* ============================================================================
+   Animations
+   ============================================================================ */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes slideUp {
   from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.05); }
 }
 
 @keyframes clipflow-spin {
   from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  to   { transform: rotate(360deg); }
 }
 
-/* 加载动画 */
+/* ============================================================================
+   Loading
+   ============================================================================ */
 .page-loading {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.7);
+  inset: 0;
+  background-color: var(--bg-overlay, rgba(20, 21, 32, 0.85));
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  animation: fadeIn 0.3s;
+  animation: fadeIn 0.2s ease-out;
 }
 
-body.dark-mode .page-loading {
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-/* 性能优化：避免路由切换时对全量组件做入场动画 */
-
-/* 卡片悬浮效果 */
+/* ============================================================================
+   Card Hover — 微交互（使用设计系统 easing）
+   ============================================================================ */
 .ant-card-hoverable {
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ant-card-hoverable:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
-body.dark-mode .ant-card-hoverable:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+/* ============================================================================
+   Button Ripple — 移除全局 all transition，使用具体属性
+   ============================================================================ */
+.ant-btn {
+  position: relative;
+  overflow: hidden;
 }
 
-/* 页面内容不做全局淡入，减少左侧菜单切页卡顿 */
-
-/* 按钮点击波纹效果增强 */
-.ant-btn::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: inherit;
-  opacity: 0;
-  box-shadow: 0 0 0 6px currentColor;
-  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.ant-btn:active::after {
-  opacity: 0.2;
-  box-shadow: 0 0 0 0 currentColor;
-  transition: 0s;
-}
-
-/* 文字选中效果 */
+/* ============================================================================
+   Text Selection — 使用品牌色 Amber
+   ============================================================================ */
 ::selection {
-  background-color: rgba(30, 136, 229, 0.2);
-  color: #1E88E5;
+  background-color: rgba(255, 159, 67, 0.25);
+  color: #FFBE76;
 }
 
-body.dark-mode ::selection {
-  background-color: rgba(30, 136, 229, 0.4);
-  color: #90CAF9;
-}
-
-/* 暗色模式适配 */
+/* ============================================================================
+   Dark Mode Body — 与 ThemeContext 联动
+   ============================================================================ */
 body.dark-mode {
-  background-color: #121212;
-  color: rgba(255, 255, 255, 0.87);
+  background-color: #0C0D14;
+  color: #F0F0F5;
 }

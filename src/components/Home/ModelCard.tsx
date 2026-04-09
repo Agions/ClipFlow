@@ -165,6 +165,7 @@ const ModelCard: React.FC<ModelCardProps> = ({
                     size="small"
                     icon={<SettingOutlined />}
                     onClick={handleGoToSettings}
+                    aria-label="管理模型设置"
                   />
                 </Tooltip>
               </Space>

@@ -52,6 +52,7 @@ const Preview = forwardRef<HTMLDivElement, PreviewProps>(({ playing = false, onT
             size="small"
             icon={<ZoomOutOutlined />}
             onClick={() => setZoom((prev) => Math.max(0.5, prev - 0.1))}
+            aria-label="缩小"
           />
           <span className={styles.zoomLevel}>{zoomPercent}</span>
           <Button
@@ -59,8 +60,9 @@ const Preview = forwardRef<HTMLDivElement, PreviewProps>(({ playing = false, onT
             size="small"
             icon={<ZoomInOutlined />}
             onClick={() => setZoom((prev) => Math.min(2, prev + 0.1))}
+            aria-label="放大"
           />
-          <Button type="text" size="small" icon={<FullscreenOutlined />} />
+          <Button type="text" size="small" icon={<FullscreenOutlined />} aria-label="全屏" />
         </Space>
       </div>
     </div>
