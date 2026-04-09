@@ -20,9 +20,9 @@ export interface AIModel {
 export const AI_MODELS: AIModel[] = CORE_MODELS.map((model) => ({
   id: model.id,
   name: model.name,
-  provider: model.provider,
-  description: model.description,
-  maxTokens: model.tokenLimit,
+  provider: model.provider ?? 'openai',
+  description: model.description ?? '',
+  maxTokens: model.tokenLimit ?? 0,
 }));
 
 export const PROVIDER_NAMES: Record<ModelProvider, string> = Object.fromEntries(
