@@ -35,7 +35,7 @@ interface ModelProvider {
   requiresApiSecret?: boolean;
 }
 
-type SupportedProvider = Exclude<AIModel['provider'], 'iflytek' | 'deepseek'>;
+type SupportedProvider = NonNullable<Exclude<AIModel['provider'], 'iflytek' | 'deepseek'>>;
 
 const MODEL_PROVIDERS: Record<SupportedProvider, ModelProvider> = {
   openai: {

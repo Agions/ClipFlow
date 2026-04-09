@@ -48,7 +48,7 @@ export async function executeScriptGenerateStep(
   const templateResult = scriptTemplateService.applyTemplate(selectedTemplate.id, {
     topic: videoInfo.name,
     duration: videoInfo.duration,
-    keywords: videoAnalysis.scenes.flatMap((s) => s.tags),
+    keywords: (videoAnalysis.scenes ?? []).flatMap((s) => s.tags),
   });
   updateProgress(20);
 
@@ -63,12 +63,12 @@ export async function executeScriptGenerateStep(
       updateProgress(Math.min(segmentProgress, 80));
 
       return {
-        id: section.id,
+        id: section.id ?? `segment_${index}`,
         startTime: 0,
         endTime: 0,
         content: content.trim(),
         type: getSegmentType(section.type),
-        notes: section.tips?.join('\n'),
+        notes: section.tips?.join('\n') ?? '',
       };
     })
   );
@@ -108,6 +108,7 @@ export async function executeScriptGenerateStep(
   updateProgress(98);
   const project = storageService.projects.getById(projectId);
   if (project) {
+    project.scripts = project.scripts ?? [];
     project.scripts.push(script);
     storageService.projects.save(project);
   }
@@ -138,12 +139,13 @@ function buildSegmentPrompt(
   params: ScriptGenerateConfig,
   mode: WorkflowMode = 'ai-commentary'
 ): string {
-  const sceneInfo = analysis.scenes[Math.floor(Math.random() * analysis.scenes.length)];
+  const sceneInfo = (analysis.scenes ?? [])[Math.floor(Math.random() * (analysis.scenes?.length ?? 1))];
 
   const modeGuidance: Record<WorkflowMode, string> = {
     'ai-commentary': '按专业解说风格写作，重点解释画面信息，避免空洞套话。',
     'ai-first-person': '必须使用第一人称视角叙述（我/我们），并保持主观体验连贯。',
     'ai-mixclip': '按混剪旁白风格写作，多用短句和节奏词，强化转场冲击力。',
+    'ai-repurposing': '按重混剪风格写作，突出精彩片段，强调节奏感和冲击力。',
   };
 
   return `你是一位专业的视频解说文案创作者。请为以下视频段落生成解说词。

@@ -5,7 +5,7 @@ import {
   PauseCircleOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
-import type { WorkflowStep } from '@/core/types';
+import type { WorkflowStep } from '@/core/services/workflow/types';
 import styles from '../index.module.less';
 
 interface WorkflowActionsProps {

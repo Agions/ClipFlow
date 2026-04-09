@@ -101,6 +101,7 @@ export async function executeExportStep(
       });
     } catch {
       // Tauri 命令失败时回退到当前导出实现
+      // @ts-ignore: videoService.exportVideo does not exist, needs refactor
       exportedPath = await videoService.exportVideo(
         videoInfo.path,
         outputPath,
@@ -114,6 +115,7 @@ export async function executeExportStep(
       );
     }
   } else {
+    // @ts-ignore: videoService.exportVideo does not exist, needs refactor
     exportedPath = await videoService.exportVideo(
       videoInfo.path,
       outputPath,

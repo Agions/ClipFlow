@@ -78,8 +78,6 @@ export const useVideoEditor = (projectId: string | undefined) => {
         const newSegment: VideoSegment = {
           start: 0,
           end: metadata.duration,
-          type: 'video',
-          content: '完整视频',
         };
 
         setSegments([newSegment]);
@@ -133,8 +131,6 @@ export const useVideoEditor = (projectId: string | undefined) => {
     const newSegment: VideoSegment = {
       start: baseStart,
       end: baseEnd,
-      type: 'video',
-      content: `片段 ${segments.length + 1}`,
     };
 
     const newSegments = [...segments, newSegment];

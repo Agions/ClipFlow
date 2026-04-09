@@ -27,7 +27,7 @@ export function rewriteSegment(
   autoVariant: boolean,
   variantFn?: (content: string, similarity: number) => { content: string }
 ): ScriptSegment {
-  let content = segment.content;
+  let content = segment.content ?? '';
 
   if (autoVariant && variantFn) {
     const result = variantFn(content, similarity);
@@ -94,7 +94,7 @@ export function minorRewrite(content: string): string {
 }
 
 export function replaceTemplatePhrases(segment: ScriptSegment): ScriptSegment {
-  let content = segment.content;
+  let content = segment.content ?? '';
 
   for (const [category, phrases] of Object.entries(ALTERNATIVE_PHRASES)) {
     const originalPhrases = getOriginalPhrases(category);

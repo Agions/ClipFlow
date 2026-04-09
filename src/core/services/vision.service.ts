@@ -458,6 +458,7 @@ export class VisionService {
     // 预建查找表：sceneId → objects/emotions，避免 O(n²) 嵌套循环
     const objectMap = new Map<string, ObjectDetection[]>();
     for (const obj of objects) {
+      if (obj.sceneId == null) continue;
       const list = objectMap.get(obj.sceneId) ?? [];
       list.push(obj);
       objectMap.set(obj.sceneId, list);
@@ -520,7 +521,8 @@ export class VisionService {
         excited: '兴奋',
         calm: '平静'
       };
-      parts.push(`氛围${emotionNames[emotion.dominant] || emotion.dominant}`);
+      const emotionKey = emotion.dominant ?? 'neutral';
+      parts.push(`氛围${emotionNames[emotionKey] || emotionKey}`);
     }
 
     return parts.join('，');
@@ -589,7 +591,8 @@ export class VisionService {
     }, {} as Record<string, number>);
 
     const dominantEmotions = emotions.reduce((acc, emotion) => {
-      acc[emotion.dominant] = (acc[emotion.dominant] || 0) + 1;
+      const emotionKey = emotion.dominant ?? 'neutral';
+      acc[emotionKey] = (acc[emotionKey] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 

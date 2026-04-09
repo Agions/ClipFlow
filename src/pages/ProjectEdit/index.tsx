@@ -264,12 +264,11 @@ const ProjectEdit: React.FC = () => {
           currentSegment = {
             start: startTime,
             end: endTime,
-            type: 'narration',
-            content,
           };
           resultSegments.push(currentSegment);
         } else if (currentSegment) {
-          currentSegment.content += `\n${line.trim()}`;
+          // Append to previous segment's duration (text-based parsing)
+          currentSegment.duration += 1;
         }
       }
 
@@ -559,9 +558,7 @@ const ProjectEdit: React.FC = () => {
       if (script.length === 0) {
         script = [{
           start: 0,
-          end: Math.max(10, Math.round(metadata.duration || 10)),
-          type: 'narration',
-          content: scriptText.trim() || '请根据视频内容补充解说词。',
+          end: Math.max(10, Math.round(metadata?.duration || 10)),
         }];
       }
 

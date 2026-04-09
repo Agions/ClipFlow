@@ -86,10 +86,9 @@ async function detectKeyframes(
   interval: number
 ): Promise<Keyframe[]> {
   const count = Math.floor(videoInfo.duration / interval);
-  const keyframes = await videoService.extractKeyframes(
-    videoInfo.path,
-    videoInfo.duration,
-    Math.min(count, 20)
+  const keyframes = await visionService.extractKeyframes(
+    videoInfo as any,
+    { maxFrames: Math.min(count, 20) }
   );
 
   return keyframes.map((kf, index) => ({
@@ -208,12 +207,12 @@ function generateCutPoints(
   // 情感变化
   if (config.detectEmotion) {
     emotions.forEach((emotion) => {
-      if (emotion.intensity > 0.6) {
+      if ((emotion.intensity ?? 0) > 0.6) {
         cutPoints.push({
           id: `emotion_${emotion.id}`,
           timestamp: emotion.timestamp,
           type: 'emotion',
-          confidence: emotion.intensity,
+          confidence: emotion.intensity ?? 0,
           description: `情感变化: ${emotion.dominant}`,
           suggestedAction: 'keep',
           metadata: { emotionScore: emotion.intensity }

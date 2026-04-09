@@ -32,7 +32,8 @@ const createAgentTasks = (mode: WorkflowMode): CommentaryAgentTask[] => {
     'ai-commentary': '确保专业解说与镜头信息密切对应，优先准确性和信息密度。',
     'ai-first-person': '构建第一人称叙事连贯性，保证主观镜头与口吻一致。',
     'ai-mixclip': '强化混剪节奏，确保高能片段与短旁白节拍同步。',
-  };
+    'ai-repurposing': '突出精彩片段的冲击感，确保高能片段与短旁白节拍同步。',
+  } as Record<WorkflowMode, string>;
 
   return [
     {
@@ -123,9 +124,10 @@ export function orchestrateCommentaryAgents(input: {
   segments: ScriptSegment[];
 }): CommentaryOrchestrationResult {
   const tasks = createAgentTasks(input.mode);
-  const alignedSegments = allocateSegmentsToScenes(input.analysis.scenes, input.segments, input.mode);
-  const alignmentItems = sceneCommentaryAlignmentService.align(input.analysis.scenes, alignedSegments);
-  const overlayPlan = sceneCommentaryAlignmentService.buildOriginalOverlayPlan(input.analysis.scenes);
+  const scenes = input.analysis.scenes ?? [];
+  const alignedSegments = allocateSegmentsToScenes(scenes, input.segments, input.mode);
+  const alignmentItems = sceneCommentaryAlignmentService.align(scenes, alignedSegments);
+  const overlayPlan = sceneCommentaryAlignmentService.buildOriginalOverlayPlan(scenes);
   const averageConfidence =
     alignmentItems.reduce((sum, item) => sum + item.confidence, 0) / Math.max(alignmentItems.length, 1);
   const maxDriftSeconds = alignmentItems.reduce((max, item) => Math.max(max, item.driftSeconds), 0);

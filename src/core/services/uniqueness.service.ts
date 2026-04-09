@@ -149,8 +149,9 @@ class UniquenessService {
   private generateStructureSignature(script: ScriptData): string {
     const segments = script.segments;
     const structure = segments.map(s => {
-      const length = s.content.length;
-      const sentences = s.content.split(/[。！？]/).length;
+      const content = s.content ?? '';
+      const length = content.length;
+      const sentences = content.split(/[。！？]/).length;
       return `${s.type}:${length}:${sentences}`;
     }).join('|');
 

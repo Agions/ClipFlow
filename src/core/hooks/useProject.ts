@@ -328,8 +328,8 @@ export function useProjectList() {
     
     // 排序
     result.sort((a, b) => {
-      const aVal = a[filter.sortBy];
-      const bVal = b[filter.sortBy];
+      const aVal = a[filter.sortBy] ?? 0;
+      const bVal = b[filter.sortBy] ?? 0;
       const comparison = aVal > bVal ? 1 : -1;
       return filter.sortOrder === 'asc' ? comparison : -comparison;
     });

@@ -10,6 +10,7 @@ export function detectExactDuplicates(
   const contentMap = new Map<string, string>();
 
   for (const segment of segments) {
+    if (segment.content == null) continue;
     const normalized = normalizeText(segment.content);
 
     if (contentMap.has(normalized)) {
@@ -49,6 +50,7 @@ export function detectSemanticDuplicates(
 
   for (let i = 0; i < segments.length; i++) {
     for (let j = i + 1; j < segments.length; j++) {
+      if (segments[i].content == null || segments[j].content == null) continue;
       const similarity = calculateSimilarity(segments[i].content, segments[j].content);
 
       if (similarity >= threshold) {
@@ -81,7 +83,7 @@ export function detectTemplateContent(segments: ScriptSegment[]): DuplicateResul
   for (const segment of segments) {
     for (const [category, phrases] of Object.entries(COMMON_PHRASES)) {
       for (const phrase of phrases) {
-        if (segment.content.includes(phrase)) {
+        if (segment.content != null && segment.content.includes(phrase)) {
           duplicates.push({
             id: `dup_template_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
             type: 'template',
@@ -115,6 +117,7 @@ export function detectStructuralDuplicates(
 
   for (let i = 0; i < segments.length; i++) {
     for (let j = i + 1; j < segments.length; j++) {
+      if (segments[i].content == null || segments[j].content == null) continue;
       const structureSimilarity = calculateStructureSimilarity(
         segments[i].content,
         segments[j].content

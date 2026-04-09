@@ -4,7 +4,14 @@
  */
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-// User type inline - using any
+
+// User type
+export interface User {
+  id: string;
+  name: string;
+  email?: string;
+  avatar?: string;
+}
 
 // ==========================================
 // 类型定义
@@ -16,7 +23,7 @@ export interface UserSettings {
 
 export interface AppState {
   // 用户状态
-  user: Record<string, unknown> | null;
+  user: User | null;
   isAuthenticated: boolean;
 
   // UI 状态

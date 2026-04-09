@@ -20,8 +20,9 @@ const DEFAULT_VIDEO_EXPORT_SETTINGS: ExportSettings = {
   format: 'mp4',
   quality: 'high',
   resolution: '1080p',
-  frameRate: 30,
+  fps: 30,
   includeSubtitles: true,
+  includeWatermark: false,
   burnSubtitles: true,
 };
 

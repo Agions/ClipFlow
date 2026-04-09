@@ -163,7 +163,7 @@ const AIVideoEditorContent: React.FC = () => {
             </div>
           }
         >
-          <CutDeckComponent showSteps={true} showNavigation={true}>
+          <CutDeckComponent>
             {renderStepContent()}
           </CutDeckComponent>
         </Suspense>

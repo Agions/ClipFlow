@@ -124,7 +124,12 @@ export const EditorPage: React.FC = () => {
   // 处理导出
   const handleExport = async () => {
     try {
-      const blob = await operations.exportVideo(exportSettings);
+      const blob = await operations.exportVideo({
+        format: exportSettings.format as 'mp4' | 'webm' | 'gif',
+        quality: exportSettings.quality,
+        resolution: exportSettings.resolution as '720p' | '1080p' | '4k',
+        fps: exportSettings.fps as 24 | 30 | 60,
+      });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

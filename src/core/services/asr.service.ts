@@ -111,7 +111,7 @@ export class ASRService extends BaseService {
       fps: 0,
       format: '',
     };
-    return this.recognizeSpeech(videoInfo, options);
+    return await this.recognizeSpeech(videoInfo, options);
   }
 
   /**
@@ -137,7 +137,7 @@ export class ASRService extends BaseService {
       let result = await this.tryWebSpeechASR(videoInfo, opts);
       if (!result) {
         logger.warn('[ASRService] Web Speech API 不可用，使用模拟结果');
-        result = this.mockASR(videoInfo, opts);
+        result = await this.mockASR(videoInfo, opts);
       }
 
       logger.info(`[ASRService] 语音识别完成:`, {

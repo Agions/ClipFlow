@@ -13,7 +13,7 @@ import {
   RocketOutlined,
   AppstoreOutlined,
 } from '@ant-design/icons';
-import type { WorkflowStep } from '@/core/services/workflow';
+import type { WorkflowStep } from '@/core/types';
 import type { WorkflowMode } from '@/core/workflow/featureBlueprint';
 import { WORKFLOW_MODE_DEFINITIONS, WORKFLOW_STEP_CONFIG, getWorkflowModeSummary } from '@/core/workflow/featureBlueprint';
 

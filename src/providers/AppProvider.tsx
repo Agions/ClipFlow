@@ -203,7 +203,7 @@ const ThemeConfigurator: React.FC<{ children: ReactNode }> = ({ children }) => {
       locale={zhCN}
       theme={{
         token: themeTokens,
-        components: sharedComponentStyles,
+        components: sharedComponentStyles as unknown as Record<string, any>,
         algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
       }}
     >

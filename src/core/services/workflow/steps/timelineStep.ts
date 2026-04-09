@@ -62,7 +62,7 @@ async function autoMatchTimeline(
     mode: (options.mode || 'ai-commentary') as 'ai-commentary' | 'ai-mixclip' | 'ai-first-person',
     targetDuration: videoInfo.duration,
     autoOriginalOverlay: options.autoOriginalOverlay !== false,
-    scenes: analysis.scenes.map((scene) => ({
+    scenes: (analysis.scenes ?? []).map((scene) => ({
       id: scene.id,
       startTime: scene.startTime,
       endTime: scene.endTime,
@@ -79,7 +79,7 @@ async function autoMatchTimeline(
   const subtitleClips: TimelineData['tracks'][0]['clips'] = [];
   const effectClips: TimelineData['tracks'][0]['clips'] = [];
   const matchedScenes = script.segments.map((segment, index) =>
-    findBestMatchingScene(segment, analysis.scenes, index / script.segments.length)
+    findBestMatchingScene(segment, analysis.scenes ?? [], index / script.segments.length)
   );
   updateProgress(50);
   const averageDuration = Math.max(videoInfo.duration / script.segments.length, 0.001);
@@ -118,7 +118,7 @@ async function autoMatchTimeline(
       startTime,
       endTime,
       sourceStart: 0,
-      sourceEnd: segment.content.length,
+      sourceEnd: (segment.content ?? '').length,
       sourceId: segment.id,
       scriptSegmentId: segment.id,
     });

@@ -362,6 +362,7 @@ export class WorkflowService {
 
     const project = storageService.projects.getById(this.state.data.projectId!);
     if (project) {
+      project.scripts = project.scripts ?? [];
       const index = project.scripts.findIndex((s) => s.id === editedScript.id);
       if (index >= 0) {
         project.scripts[index] = {

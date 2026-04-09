@@ -13,8 +13,9 @@ export async function executeUploadStep(
   updateProgress: (progress: number) => void = () => {}
 ): Promise<UploadStepResult> {
   updateProgress(6);
-  const videoInfo = await videoService.getVideoInfo(videoFile);
-  const thumbnail = await videoService.generateThumbnail(videoInfo.path).catch(() => '');
+  const videoPath = (videoFile as File & { path?: string }).path ?? videoFile.name;
+  const videoInfo = await videoService.getVideoInfo(videoPath);
+  const thumbnail = await videoService.generateThumbnail(videoInfo.path, { timestamp: 0 }).catch(() => '');
   updateProgress(12);
 
   const enrichedVideoInfo: VideoInfo = {

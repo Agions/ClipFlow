@@ -38,7 +38,8 @@ export const loadProjectFromFile = async <T = ProjectFileData>(projectId: string
 };
 
 export const listProjects = async <T = ProjectFileData>(): Promise<T[]> => {
-  return listProjectsFromTauri<T>();
+  const results = await listProjectsFromTauri();
+  return results as T[];
 };
 
 export const deleteProject = async (projectId: string): Promise<boolean> => {

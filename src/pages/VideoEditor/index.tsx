@@ -153,7 +153,7 @@ const VideoEditorPage: React.FC = () => {
       const result = await exportService.exportVideo(
         videoSrc,
         outputPath,
-        exportConfig
+        exportConfig as unknown as ExportConfig
       );
 
       // 导出成功

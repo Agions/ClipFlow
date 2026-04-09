@@ -305,8 +305,6 @@ const VideoEditor: React.FC<VideoEditorProps> = ({ videoPath, segments, onEditCo
       <Card>
         <VideoPlayer
           src={videoPath}
-          currentTime={currentTime}
-          duration={duration}
           autoPlay={isPlaying}
           onTimeUpdate={handleTimeUpdate}
           onEnded={() => {}}
