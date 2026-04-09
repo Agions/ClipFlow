@@ -4,6 +4,7 @@ import { Card, Row, Col, Select, Slider, InputNumber, Switch, Button, Tooltip, S
 import { PlusOutlined, DeleteOutlined, PlayCircleOutlined, ScissorOutlined, SoundOutlined, SettingOutlined } from '@ant-design/icons';
 import { invoke } from '@tauri-apps/api/core';
 import { notify } from '@/shared';
+import type { VideoSegment } from '@/core/types';
 import styles from './VideoProcessingController.module.less';
 
 const { Option } = Select;
@@ -102,7 +103,8 @@ type SaveFilePicker = (options?: {
 // 计算片段总时长
 const calculateTotalDuration = (segments: VideoSegment[]): number => {
   return segments.reduce((total, segment) => {
-    return total + (segment.end - segment.start);
+    const s = segment as any;
+    return total + ((s.end ?? s.endTime ?? 0) - (s.start ?? s.startTime ?? 0));
   }, 0);
 };
 
@@ -289,7 +291,7 @@ const VideoProcessingController: React.FC<VideoProcessingControllerProps> = ({
     }
     
     try {
-      await processVideo(segments);
+      await processVideo(segments as any);
       notify.success('视频处理完成');
     } catch {
       // 错误已在processVideo内部处理

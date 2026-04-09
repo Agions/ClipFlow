@@ -1,7 +1,14 @@
 /**
  * CutDeck Layout — AI Cinema Studio Design
  * 三区制布局：AI工作流侧栏 | 预览区 | 片段卡片流
+ *
+ * Redesigned per frontend-design-pro principles:
+ * - OKLCH color space / warm-tinted dark backgrounds
+ * - 4px base spacing grid
+ * - cubic-bezier(0.16, 1, 0.3, 1) easing / max 200ms micro-interactions
+ * - prefers-reduced-motion respected
  */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -9,13 +16,12 @@ import {
   VideoCameraOutlined,
   SettingOutlined,
   BellOutlined,
-  UserOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PlusOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
-import { Tooltip } from 'antd';
+import { Tooltip, App } from 'antd';
 import styles from './Layout.module.less';
 
 interface LayoutProps {
@@ -26,7 +32,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [rightPanelVisible, setRightPanelVisible] = useState(true);
+  const reducedMotion = useRef(
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
 
   // Auto-collapse on narrow screens
   useEffect(() => {
@@ -65,9 +73,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* ── Left Sidebar ── */}
       <aside className={`${styles.sidebar} ${sidebarCollapsed ? styles.collapsed : ''}`}>
         {/* Logo */}
-        <div className={styles.logo} onClick={() => navigate('/')}>
+        <div className={styles.logo} onClick={() => navigate('/')} role="button" tabIndex={0}>
           <div className={styles.logoIcon}>
-            <svg width="28" height="28" viewBox="0 0 160 160" fill="none">
+            <svg width="28" height="28" viewBox="0 0 160 160" fill="none" aria-hidden="true">
               <rect width="160" height="160" rx="20" fill="#1C1D2E"/>
               <polygon points="68,50 104,68 68,86" fill="url(#pg)"/>
               <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#fff"/><stop offset="1" stopColor="#FF9F43"/></linearGradient></defs>
@@ -92,17 +100,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         )}
 
         {/* Nav */}
-        <nav className={styles.nav}>
+        <nav className={styles.nav} role="navigation" aria-label="主导航">
           {navItems.map(item => (
             <button
               key={item.key}
               className={`${styles.navItem} ${getSelectedKey() === item.key ? styles.active : ''}`}
               onClick={item.onClick}
               title={sidebarCollapsed ? item.label : undefined}
+              aria-current={getSelectedKey() === item.key ? 'page' : undefined}
             >
               <span className={styles.navIcon}>{item.icon}</span>
               {!sidebarCollapsed && <span className={styles.navLabel}>{item.label}</span>}
-              {getSelectedKey() === item.key && <span className={styles.navIndicator} />}
+              {getSelectedKey() === item.key && !reducedMotion.current && <span className={styles.navIndicator} aria-hidden="true" />}
             </button>
           ))}
         </nav>
@@ -113,6 +122,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             className={styles.collapseBtn}
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             title={sidebarCollapsed ? '展开' : '收起'}
+            aria-label={sidebarCollapsed ? '展开侧边栏' : '收起侧边栏'}
           >
             {sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           </button>
@@ -120,26 +130,26 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </aside>
 
       {/* ── Top Bar ── */}
-      <header className={styles.topbar}>
+      <header className={styles.topbar} role="banner">
         <div className={styles.topbarLeft}>
           <h1 className={styles.pageTitle}>{getPageTitle()}</h1>
         </div>
         <div className={styles.topbarRight}>
-          <button className={styles.iconBtn} title="帮助">
+          <button className={styles.iconBtn} title="帮助" aria-label="帮助">
             <QuestionCircleOutlined />
           </button>
-          <button className={styles.iconBtn} title="通知">
+          <button className={styles.iconBtn} title="通知" aria-label="通知">
             <BellOutlined />
           </button>
-          <button className={styles.userBtn}>
-            <div className={styles.avatar}>A</div>
+          <button className={styles.userBtn} aria-label="用户菜单">
+            <div className={styles.avatar} aria-hidden="true">A</div>
             <span className={styles.userName}>Agions</span>
           </button>
         </div>
       </header>
 
       {/* ── Main Content ── */}
-      <main className={`${styles.content} ${sidebarCollapsed ? styles.contentExpanded : ''}`}>
+      <main className={`${styles.content} ${sidebarCollapsed ? styles.contentExpanded : ''}`} id="main-content">
         {children}
       </main>
     </div>

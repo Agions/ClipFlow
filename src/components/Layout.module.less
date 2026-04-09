@@ -1,49 +1,62 @@
 /**
- * CutDeck Layout — AI Cinema Studio Design
+ * CutDeck Layout — Redesigned per frontend-design-pro
+ *
+ * Design tokens (OKLCH-aware):
+ * - Dark bg uses warm-tinted #0f0f0f (not pure black)
+ * - Accent amber OKLCH-based with glow
+ * - 8px base spacing grid
+ * - cubic-bezier(0.16, 1, 0.3, 1) easing for all transitions
+ * - Micro-interactions: max 200ms / Page transitions: max 300ms
+ * - prefers-reduced-motion respected (no decorative animations)
  */
 
-// Design tokens (mirror global.css)
-@bg-base: #0C0D14;
-@bg-surface: #141520;
-@bg-elevated: #1C1D2E;
-@bg-overlay: #24263A;
-@border-subtle: #1E2030;
-@border-default: #2A2D42;
-@border-strong: #3D4166;
-@accent: #FF9F43;
-@accent-light: #FFBE76;
-@accent-dark: #E8891C;
-@accent-glow: rgba(255, 159, 67, 0.25);
-@cyan: #00D4FF;
-@cyan-glow: rgba(0, 212, 255, 0.2);
-@text-primary: #F0F0F5;
-@text-secondary: #8888A0;
-@text-tertiary: #55556A;
+// ─── Design Tokens ────────────────────────────────────────────────
+@bg-base: #0f0f12;          // warm-tinted dark (not pure #000)
+@bg-surface: #16161d;        // slightly lighter surface
+@bg-elevated: #1e1e28;      // elevated / hover
+@bg-overlay: #28283a;       // overlay / active
+
+@border-subtle: #22222e;
+@border-default: #2e2e3e;
+@border-strong: #3e3e52;
+
+@accent: #e8923a;           // warm amber (replaces harsh #FF9F43)
+@accent-light: #f5b06a;
+@accent-dark: #c97a28;
+@accent-glow: color-mix(in oklch, @accent 20%, transparent);
+
+@text-primary: #eeeef2;
+@text-secondary: #8888a2;
+@text-tertiary: #55556e;
+
 @font-display: 'Outfit', system-ui, sans-serif;
 @font-body: 'Figtree', system-ui, sans-serif;
+
 @radius-sm: 4px;
 @radius-md: 8px;
 @radius-lg: 12px;
 @radius-xl: 16px;
 @radius-full: 9999px;
+
+@ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+@ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
 @transition-fast: 120ms;
 @transition-default: 200ms;
-@transition-slow: 350ms;
-@ease-smooth: cubic-bezier(0.23, 1, 0.32, 1);
+@transition-slow: 300ms;
 
-// Layout dimensions
 @sidebar-width: 220px;
 @sidebar-collapsed-width: 64px;
 @topbar-height: 56px;
 
+// ─── Layout Shell ─────────────────────────────────────────────────
 .shell {
   display: flex;
   min-height: 100vh;
   background: @bg-base;
 }
 
-// ── Left Sidebar ──
-
+// ─── Left Sidebar ─────────────────────────────────────────────────
 .sidebar {
   width: @sidebar-width;
   min-height: 100vh;
@@ -56,7 +69,9 @@
   top: 0;
   bottom: 0;
   z-index: 200;
-  transition: width @transition-slow @ease-smooth;
+  transition:
+    width @transition-slow @ease-out,
+    background @transition-default;
   overflow: hidden;
 
   &.collapsed {
@@ -64,7 +79,14 @@
 
     .logo { justify-content: center; padding: 0; }
     .nav { padding: 0; }
-    .navItem { justify-content: center; padding: 0; width: 40px; height: 40px; border-radius: @radius-md; margin: 2px auto; }
+    .navItem {
+      justify-content: center;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: @radius-md;
+      margin: 2px auto;
+    }
     .sidebarBottom { justify-content: center; }
   }
 }
@@ -78,10 +100,15 @@
   padding: 0 20px;
   border-bottom: 1px solid @border-subtle;
   cursor: pointer;
-  transition: all @transition-default;
+  transition: background @transition-default @ease-out;
   flex-shrink: 0;
 
   &:hover { background: @bg-elevated; }
+  &:focus-visible {
+    outline: 2px solid @accent;
+    outline-offset: -2px;
+    border-radius: @radius-sm;
+  }
 }
 
 .logoIcon {
@@ -114,14 +141,16 @@
   margin: 12px;
   padding: 9px 16px;
   background: linear-gradient(135deg, @accent 0%, @accent-dark 100%);
-  color: #0C0D14;
+  color: @bg-base;
   border: none;
   border-radius: @radius-md;
   font-family: @font-body;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all @transition-default;
+  transition:
+    transform @transition-default @ease-out,
+    box-shadow @transition-default @ease-out;
   white-space: nowrap;
   flex-shrink: 0;
 
@@ -133,6 +162,11 @@
   &:active {
     transform: translateY(0);
   }
+
+  &:focus-visible {
+    outline: 2px solid @accent;
+    outline-offset: 2px;
+  }
 }
 
 .newProjectBtnIcon {
@@ -143,17 +177,24 @@
   height: 40px;
   margin: 12px auto;
   background: linear-gradient(135deg, @accent 0%, @accent-dark 100%);
-  color: #0C0D14;
+  color: @bg-base;
   border: none;
   border-radius: @radius-md;
   font-size: 16px;
   cursor: pointer;
-  transition: all @transition-default;
+  transition:
+    box-shadow @transition-default @ease-out,
+    transform @transition-default @ease-out;
   flex-shrink: 0;
 
   &:hover {
     box-shadow: 0 4px 16px @accent-glow;
     transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid @accent;
+    outline-offset: 2px;
   }
 }
 
@@ -182,7 +223,9 @@
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all @transition-default;
+  transition:
+    background @transition-default @ease-out,
+    color @transition-default;
   position: relative;
   text-align: left;
   width: 100%;
@@ -193,12 +236,15 @@
   }
 
   &.active {
-    background: rgba(255, 159, 67, 0.1);
+    background: color-mix(in oklch, @accent 10%, transparent);
     color: @accent;
 
-    .navIcon {
-      color: @accent;
-    }
+    .navIcon { color: @accent; }
+  }
+
+  &:focus-visible {
+    outline: 2px solid @accent;
+    outline-offset: -2px;
   }
 }
 
@@ -215,6 +261,7 @@
   text-overflow: ellipsis;
 }
 
+// Active indicator — no bounce animation, respects reduced-motion
 .navIndicator {
   position: absolute;
   right: 8px;
@@ -223,12 +270,11 @@
   border-radius: 50%;
   background: @accent;
   box-shadow: 0 0 8px @accent;
-  animation: sparkPulse 2s ease-in-out infinite;
-}
+  // No animation — decorative only, hidden when reduced-motion
 
-@keyframes sparkPulse {
-  0%, 100% { opacity: 0.4; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); }
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
 }
 
 // Sidebar Bottom
@@ -252,7 +298,10 @@
   border-radius: @radius-md;
   color: @text-tertiary;
   cursor: pointer;
-  transition: all @transition-default;
+  transition:
+    background @transition-default @ease-out,
+    color @transition-default,
+    border-color @transition-default;
   font-size: 14px;
 
   &:hover {
@@ -260,10 +309,14 @@
     color: @text-primary;
     border-color: @border-strong;
   }
+
+  &:focus-visible {
+    outline: 2px solid @accent;
+    outline-offset: 2px;
+  }
 }
 
-// ── Top Bar ──
-
+// ─── Top Bar ──────────────────────────────────────────────────────
 .topbar {
   height: @topbar-height;
   background: @bg-surface;
@@ -277,7 +330,7 @@
   left: @sidebar-width;
   right: 0;
   z-index: 100;
-  transition: left @transition-slow @ease-smooth;
+  transition: left @transition-slow @ease-out;
 }
 
 .pageTitle {
@@ -286,6 +339,7 @@
   font-weight: 600;
   color: @text-primary;
   letter-spacing: -0.01em;
+  margin: 0;
 }
 
 .topbarRight {
@@ -305,12 +359,18 @@
   border-radius: @radius-md;
   color: @text-tertiary;
   cursor: pointer;
-  font-size: 15px;
-  transition: all @transition-fast;
+  transition:
+    background @transition-fast,
+    color @transition-fast;
 
   &:hover {
     background: @bg-elevated;
     color: @text-primary;
+  }
+
+  &:focus-visible {
+    outline: 2px solid @accent;
+    outline-offset: 2px;
   }
 }
 
@@ -323,12 +383,19 @@
   border: 1px solid @border-default;
   border-radius: @radius-full;
   cursor: pointer;
-  transition: all @transition-default;
+  transition:
+    background @transition-default @ease-out,
+    border-color @transition-default;
   margin-left: 4px;
 
   &:hover {
     background: @bg-elevated;
     border-color: @border-strong;
+  }
+
+  &:focus-visible {
+    outline: 2px solid @accent;
+    outline-offset: 2px;
   }
 }
 
@@ -342,7 +409,7 @@
   justify-content: center;
   font-size: 11px;
   font-weight: 700;
-  color: #0C0D14;
+  color: @bg-base;
   font-family: @font-display;
 }
 
@@ -353,8 +420,7 @@
   color: @text-secondary;
 }
 
-// ── Main Content ──
-
+// ─── Main Content ─────────────────────────────────────────────────
 .content {
   flex: 1;
   margin-left: @sidebar-width;
@@ -362,14 +428,14 @@
   padding: 24px;
   min-height: calc(100vh - @topbar-height);
   background: @bg-base;
-  transition: margin-left @transition-slow @ease-smooth;
+  transition: margin-left @transition-slow @ease-out;
 
   &.contentExpanded {
     margin-left: @sidebar-collapsed-width;
   }
 }
 
-// Responsive
+// ─── Responsive ────────────────────────────────────────────────────
 @media (max-width: 1024px) {
   .sidebar {
     width: @sidebar-collapsed-width;
@@ -377,22 +443,25 @@
     .logo { justify-content: center; padding: 0; }
     .logoText { display: none; }
     .newProjectBtn { display: none; }
-    .navItem { justify-content: center; padding: 0; width: 40px; height: 40px; border-radius: @radius-md; margin: 2px auto; }
+    .navItem {
+      justify-content: center;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: @radius-md;
+      margin: 2px auto;
+    }
     .navLabel { display: none; }
     .navIndicator { display: none; }
     .sidebarBottom { justify-content: center; }
   }
 
-  .topbar {
-    left: @sidebar-collapsed-width;
-  }
+  .topbar { left: @sidebar-collapsed-width; }
 
   .content {
     margin-left: @sidebar-collapsed-width;
 
-    &.contentExpanded {
-      margin-left: @sidebar-collapsed-width;
-    }
+    &.contentExpanded { margin-left: @sidebar-collapsed-width; }
   }
 }
 
@@ -407,7 +476,5 @@
     padding: 16px;
   }
 
-  .userName {
-    display: none;
-  }
+  .userName { display: none; }
 }

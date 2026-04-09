@@ -237,33 +237,41 @@ export const WorkflowMonitor: React.FC<WorkflowMonitorProps> = ({
             const isCompleted = completedSteps.includes(step.key as WorkflowStep);
             const isCurrent = step.key === currentStep;
 
+            const children: React.ReactNode = (
+              <Space direction="vertical" size={0}>
+                <Text strong={isCurrent}>{step.title}</Text>
+                {showDetails && stepConfig ? (
+                  <React.Fragment>
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {step.description}
+                    </Text>
+                    {stepConfig.skippable ? (
+                      <Tag color="blue" style={{ marginLeft: 4 }}>
+                        可跳过
+                      </Tag>
+                    ) : null}
+                  </React.Fragment>
+                ) : null}
+              </Space>
+            );
+
             return {
               key: step.key,
               dot: getStepStatusIcon(step.key as WorkflowStep, currentStep, completedSteps, status),
               color: getStepStatusColor(step.key as WorkflowStep, currentStep, completedSteps, status),
-              children: (
-                <Space direction="vertical" size={0}>
-                  <Text strong={isCurrent}>{step.title}</Text>
-                  {showDetails && stepConfig ? (
-                    <>
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        {step.description}
-                      </Text>
-                      {stepConfig.skippable ? (
-                        <Tag color="blue" style={{ marginLeft: 4 }}>
-                          可跳过
-                        </Tag>
-                      ) : null}
-                    </>
-                  ) : null}
-                </Space>
-              );
-            })}
+              children,
+            };
+          })}
         />
-      </Space>
-    </Card>
-  );
-};
+
+        </Space>
+      </Card>
+    );
+  };
+
+
+
+
 
 /**
  * 简洁版工作流监控

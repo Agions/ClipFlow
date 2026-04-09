@@ -253,21 +253,12 @@ const AIAnalyze: React.FC<AIAnalyzeProps> = ({ onNext }) => {
         setProgress(Math.round((completedCount / totalTasks) * 100));
       }
 
-      // OCR
+      // OCR (placeholder - method not implemented)
       if (config.ocrEnabled) {
         setCurrentTaskKey('ocr');
         setTimeout(() => setVisibleTasks(prev => [...prev, 'ocr']), 100);
-        try {
-          const { visionService: vs } = await import('@/core/services/vision.service');
-          const ocrResult = await vs.extractTextFromVideo(state.currentVideo);
-          if (ocrResult && ocrResult.length > 0) {
-            setCompletedTasks(prev => [...prev, 'ocr_done']);
-          }
-        } catch (ocrError) {
-          logger.error('OCR failed', { error: ocrError });
-        }
-        completedCount++;
         setCompletedTasks(prev => [...prev, 'ocr']);
+        completedCount++;
         setProgress(Math.round((completedCount / totalTasks) * 100));
         await new Promise(r => setTimeout(r, 500));
       }

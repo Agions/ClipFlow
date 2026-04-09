@@ -38,10 +38,10 @@ const toVideoSegments = (script: Script | null): VideoSegment[] =>
   })) ?? [];
 
 const toScriptSegments = (segments: VideoSegment[]): Script['content'] =>
-  segments.map((segment, index) => ({
+  segments.map((segment: any, index: number) => ({
     id: `segment_${index}_${Date.now()}`,
-    startTime: segment.start,
-    endTime: segment.end,
+    startTime: segment.start ?? segment.startTime,
+    endTime: segment.end ?? segment.endTime,
     content: segment.content ?? '',
     type: (segment.type as Script['content'][number]['type']) || 'narration'
   }));
@@ -92,10 +92,10 @@ const ScriptDetail: React.FC = () => {
         setLoadError('');
         let currentProject: ProjectWithScripts | undefined;
         if (projectId) {
-          currentProject = await loadProjectWithRetry<ProjectWithScripts>(projectId, { retries: 2, retryDelayMs: 260 });
+          currentProject = await loadProjectWithRetry(projectId, { retries: 2, retryDelayMs: 260 }) as ProjectWithScripts | undefined;
         } else {
           const allProjects = await listProjects();
-          currentProject = findProjectByScriptId(allProjects, scriptId);
+          currentProject = findProjectByScriptId(allProjects as any, scriptId) as ProjectWithScripts | undefined;
         }
 
         if (!currentProject) {
@@ -153,7 +153,7 @@ const ScriptDetail: React.FC = () => {
       const updatedScript = {
         ...script,
         content: toScriptSegments(segments),
-        fullText: segments.map((segment) => segment.content ?? '').join('\n\n'),
+        fullText: segments.map((segment: any) => (segment.content ?? '')).join('\n\n'),
         updatedAt: new Date().toISOString()
       };
 

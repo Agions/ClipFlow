@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useRef } from 'react';
-import type { VideoInfo, VideoAnalysis, TaskStatus } from '@/core/types';
+import type { VideoInfo, VideoAnalysis } from '@/core/types';
 
 export interface UseVideoReturn {
   // 视频信息
@@ -20,7 +20,7 @@ export interface UseVideoReturn {
   analysisProgress: number;
   
   // 任务状态
-  taskStatus: TaskStatus | null;
+  taskStatus: any;
   
   // 操作方法
   uploadVideo: (file: File) => Promise<VideoInfo | null>;
@@ -113,7 +113,7 @@ export function useVideo(): UseVideoReturn {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [taskStatus, setTaskStatus] = useState<TaskStatus | null>(null);
+  const [taskStatus, setTaskStatus] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -177,7 +177,7 @@ export function useVideo(): UseVideoReturn {
     setAnalysisProgress(0);
     
     // 创建任务状态
-    const task: TaskStatus = {
+    const task = {
       id: crypto.randomUUID(),
       type: 'analysis',
       status: 'running',
@@ -201,7 +201,7 @@ export function useVideo(): UseVideoReturn {
       for (const step of steps) {
         await new Promise(resolve => setTimeout(resolve, step.delay));
         setAnalysisProgress(step.progress);
-        setTaskStatus(prev => prev ? {
+        setTaskStatus((prev: any) => prev ? {
           ...prev,
           progress: step.progress,
           message: step.message,

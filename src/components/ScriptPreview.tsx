@@ -32,7 +32,7 @@ const ScriptPreview: React.FC<ScriptPreviewProps> = ({ script, onEdit, onExport 
 
   const copyToClipboard = () => {
     setCopying(true);
-    const text = script.segments
+    const text = script.content
       .map(
         (segment: ScriptSegment) =>
           `[${formatTime(segment.startTime)} - ${formatTime(segment.endTime)}] ${
@@ -54,7 +54,7 @@ const ScriptPreview: React.FC<ScriptPreviewProps> = ({ script, onEdit, onExport 
     );
   };
 
-  const totalDuration = script.segments.reduce(
+  const totalDuration = script.content.reduce(
     (acc: number, segment: ScriptSegment) => acc + (segment.endTime - segment.startTime),
     0
   );
@@ -83,7 +83,7 @@ const ScriptPreview: React.FC<ScriptPreviewProps> = ({ script, onEdit, onExport 
             </Tooltip>
             <Tooltip title="段落数">
               <Tag icon={<OrderedListOutlined />} color="green" className={styles.metaTag}>
-                {script.segments.length} 段
+                {script.content.length} 段
               </Tag>
             </Tooltip>
             <Tooltip title="创建时间">
@@ -123,7 +123,7 @@ const ScriptPreview: React.FC<ScriptPreviewProps> = ({ script, onEdit, onExport 
       <Divider className={styles.mainDivider} />
 
       <div className={styles.scriptContent}>
-        {script.segments.map((segment: ScriptSegment, index: number) => {
+        {script.content.map((segment: ScriptSegment, index: number) => {
           const typeInfo = getSegmentTypeInfo(segment.type);
           return (
             <div 
@@ -142,7 +142,7 @@ const ScriptPreview: React.FC<ScriptPreviewProps> = ({ script, onEdit, onExport 
               <Paragraph className={styles.content}>
                 {segment.content}
               </Paragraph>
-              {index < script.segments.length - 1 && <Divider dashed className={styles.divider} />}
+              {index < script.content.length - 1 && <Divider dashed className={styles.divider} />}
             </div>
           );
         })}

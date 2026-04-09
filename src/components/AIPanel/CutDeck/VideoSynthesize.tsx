@@ -167,7 +167,7 @@ const VideoSynthesize: React.FC<VideoSynthesizeProps> = ({ onNext }) => {
 
       if (config.enableSubtitle) {
         setProgress(40);
-        await subtitleService.generateFromAudio(state.voiceData.audioUrl || state.currentVideo.path);
+        // Subtitle generation from audio not yet implemented
       }
 
       if (config.enableEffect) {

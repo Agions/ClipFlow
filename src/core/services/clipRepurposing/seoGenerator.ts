@@ -14,7 +14,7 @@
 
 import type { ClipScore } from './clipScorer';
 
-export type SocialPlatform = 'youtube' | 'tiktok' | 'instagram';
+export type SocialPlatform = 'youtube' | 'tiktok' | 'instagram' | 'douyin' | 'xiaohongshu' | 'bilibili' | 'youtube_shorts';
 
 // ============================================================
 // Types
@@ -41,7 +41,7 @@ export interface SEOGenerateOptions {
 // Platform-Specific Title Templates
 // ============================================================
 
-const TITLE_TEMPLATES_ZH: Record<string, string[]> = [
+const TITLE_TEMPLATES_ZH: string[] = [
   '你绝对想不到…{hook}',
   '{hook}！看完我震惊了',
   '这{topic}技巧，学会了受用终身',
@@ -52,7 +52,7 @@ const TITLE_TEMPLATES_ZH: Record<string, string[]> = [
   '{hook}！大多数人不知道的',
 ];
 
-const TITLE_TEMPLATES_EN: Record<string, string[]> = [
+const TITLE_TEMPLATES_EN: string[] = [
   'You won\'t believe this {topic}...',
   '{hook} — here\'s why it matters',
   'The {topic} secret nobody talks about',
@@ -76,6 +76,22 @@ const PLATFORM_HASHTAGS: Record<SocialPlatform, string[]> = {
   instagram: [
     '#reels', '#instareels', '#viral', '#trending',
     '#instagram reels', '#explorepage',
+  ],
+  douyin: [
+    '#抖音', '#douyin', '#抖音热门', '#抖音创作者',
+    '#推荐', '#热门', '#流量扶持',
+  ],
+  xiaohongshu: [
+    '#小红书', '#小红书推荐', '#小红书博主', '#笔记',
+    '#种草', '#干货', '#流量扶持',
+  ],
+  bilibili: [
+    '#bilibili', '#B站', '#必剪', '#创作激励',
+    '#弹幕', '#UP主', '#热门视频',
+  ],
+  youtube_shorts: [
+    '#YouTubeShorts', '#Shorts', '#油管短视频', '#viral',
+    '#trending', '#fyp', '#foryou',
   ],
 };
 

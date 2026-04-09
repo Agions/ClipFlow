@@ -201,7 +201,7 @@ const Dashboard: React.FC = () => {
       const filtered = rawProjects.filter((p) => typeof p.id === 'string');
       const mapped: Project[] = await concurrentMap(
         filtered,
-        async (project, index) => {
+        async (project: any) => {
           const metrics = extractProjectMediaMetrics(project);
           const videoPath = resolveProjectVideoPath(project);
           const exactSizeMb = videoPath
@@ -216,7 +216,7 @@ const Dashboard: React.FC = () => {
           return {
             id: String(project.id),
             title: String(project.name || '未命名项目'),
-            thumbnail: `https://picsum.photos/seed/${project.id || index}/300/200`,
+            thumbnail: `https://picsum.photos/seed/${project.id || 'default'}/300/200`,
             updatedAt: String(project.updatedAt || project.createdAt || new Date().toISOString()),
             duration: metrics.durationSec,
             size,
@@ -407,7 +407,7 @@ const Dashboard: React.FC = () => {
             <Button
               type="text"
               icon={<CloudUploadOutlined />}
-              onClick={() => logger.info('导出', project.id)}
+              onClick={() => logger.info('导出', { projectId: project.id })}
               aria-label="导出视频"
             />
           </Tooltip>,
@@ -473,7 +473,7 @@ const Dashboard: React.FC = () => {
           <Button
             type="text"
             icon={<CloudUploadOutlined />}
-            onClick={() => logger.info('导出', project.id)}
+            onClick={() => logger.info('导出', { projectId: project.id })}
             aria-label="导出视频"
           />
         </Tooltip>,

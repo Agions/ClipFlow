@@ -8,8 +8,8 @@ import {
   PlayCircleOutlined,
   PauseCircleOutlined,
   StopOutlined,
-  SkipForwardOutlined,
-  SkipBackwardOutlined,
+  ForwardOutlined,
+  BackwardOutlined,
   PlusOutlined,
   MinusOutlined,
   ScissorOutlined,
@@ -25,7 +25,7 @@ import {
 
 export type TimelineTool = 'select' | 'cut' | 'trim' | 'speed' | 'volume' | 'text' | 'effect'
 
-interface TimelineControlsProps {
+export interface TimelineControlsProps {
   isPlaying: boolean
   currentTime: number
   duration: number
@@ -151,7 +151,7 @@ const TimelineControls: React.FC<TimelineControlsProps> = memo(({
         <Tooltip title="跳到开头">
           <Button
             type="text"
-            icon={<SkipBackwardOutlined />}
+            icon={<BackwardOutlined />}
             onClick={() => onSeek(0)}
             disabled={currentTime === 0}
           />
@@ -188,7 +188,7 @@ const TimelineControls: React.FC<TimelineControlsProps> = memo(({
         <Tooltip title="跳到结尾">
           <Button
             type="text"
-            icon={<SkipForwardOutlined />}
+            icon={<ForwardOutlined />}
             onClick={() => onSeek(duration)}
             disabled={currentTime >= duration}
           />
@@ -299,4 +299,3 @@ TimelineControls.displayName = 'TimelineControls'
 
 export default TimelineControls
 
-export type { TimelineControlsProps, TimelineTool }

@@ -70,7 +70,7 @@ const STYLE_CONFIG: Record<string, Partial<AIClipConfig>> = {
 // SmartCut 服务
 // ============================================
 
-class SmartCutService extends BaseService {
+export class SmartCutService extends BaseService {
   constructor() {
     super('SmartCutService', { timeout: 120000, retries: 1 });
   }

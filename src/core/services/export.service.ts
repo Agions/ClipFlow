@@ -100,7 +100,7 @@ export interface ExportResult {
   format: ExportFormat;
 }
 
-class ExportService {
+export class ExportService {
   private currentExportId: string | null = null;
   private config: ExportConfig | null = null;
 

@@ -127,8 +127,7 @@ const HighlightPanel: React.FC<HighlightPanelProps> = ({
               step={0.1}
               value={threshold}
               onChange={setThreshold}
-              tooltip={{ formatter: (v) => `${v?.toFixed(1)}x` }}
-              size="small"
+              tooltip={{ formatter: (v: number) => `${v.toFixed(1)}x` }}
             />
           </div>
           <div className={styles.controlGroup}>
@@ -140,8 +139,7 @@ const HighlightPanel: React.FC<HighlightPanelProps> = ({
               step={1}
               value={topN}
               onChange={setTopN}
-              tooltip={{ formatter: (v) => `${v}` }}
-              size="small"
+              tooltip={{ formatter: (v: number) => `${v}` }}
             />
           </div>
           <Button

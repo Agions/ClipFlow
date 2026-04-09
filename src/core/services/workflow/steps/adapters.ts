@@ -14,6 +14,7 @@ import { RetryRequest, SkipRequest } from '../WorkflowEngine';
 import type { IStepExecutor } from '../IStepExecutor';
 import type { StepContext } from '../WorkflowEngine';
 import type { WorkflowConfig, WorkflowStep } from '../types';
+import type { ExportSettings } from '@/core/types';
 
 import {
   executeUploadStep,
@@ -119,7 +120,7 @@ const aiClipExecutor: IStepExecutor = {
     const { data, config, reportProgress } = ctx;
     if (!data.videoInfo) throw new Error('缺少视频信息');
     const cfg = config as WorkflowConfig;
-    if (!cfg.aiClipConfig?.enabled) throw new SkipRequest('ai-clip 未启用');
+    if (!cfg.aiClipConfig?.enabled) throw new SkipRequest('ai-clip', 'ai-clip 未启用');
 
     const result = await executeAIClipStep(data.videoInfo, cfg.aiClipConfig, reportProgress);
     if (result) {
@@ -135,7 +136,7 @@ const repurposingExecutor: IStepExecutor = {
     const cfg = config as WorkflowConfig;
 
     if (!cfg.repurposingConfig?.enabled) {
-      throw new SkipRequest('内容复用未启用');
+      throw new SkipRequest('repurposing', '内容复用未启用');
     }
     if (!data.videoInfo || !data.videoAnalysis) {
       throw new Error('缺少视频信息用于内容复用');
@@ -160,7 +161,7 @@ const musicExecutor: IStepExecutor = {
     const { data, config, reportProgress } = ctx;
     const cfg = config as WorkflowConfig;
 
-    if (!cfg.musicConfig?.enabled) throw new SkipRequest('music 未启用');
+    if (!cfg.musicConfig?.enabled) throw new SkipRequest('music', 'music 未启用');
     if (cfg.musicConfig?.skipMusic) {
       ctx.updateData({
         musicStepOutput: {
@@ -178,8 +179,8 @@ const musicExecutor: IStepExecutor = {
 
     const input: MusicStepInput = {
       videoDuration: data.videoInfo.duration,
-      preferredGenre: cfg.musicConfig?.preferredGenre,
-      preferredMood: cfg.musicConfig?.preferredMood,
+      preferredGenre: cfg.musicConfig?.preferredGenre as any,
+      preferredMood: cfg.musicConfig?.preferredMood as any,
     };
 
     reportProgress(30);
@@ -245,14 +246,14 @@ const exportExecutor: IStepExecutor = {
       data.videoInfo,
       data.timeline,
       script,
-      data.exportSettings || {
+      data.exportSettings || ({
         format: 'mp4',
         quality: 'high',
         resolution: '1080p',
         frameRate: 30,
         includeSubtitles: true,
         burnSubtitles: true,
-      },
+      } as ExportSettings),
       {
         overlayMixMode: 'pip',
         overlayOpacity: 0.72,
@@ -275,7 +276,7 @@ const subtitleExecutor: IStepExecutor = {
     const { whisperService } = await import('@/core/services/subtitle.service');
     const available = await whisperService.checkFasterWhisper();
     if (!available) {
-      throw new SkipRequest('ASR 服务未安装，跳过字幕识别');
+      throw new SkipRequest('subtitle', 'ASR 服务未安装，跳过字幕识别');
     }
 
     const result = await executeSubtitleStep(

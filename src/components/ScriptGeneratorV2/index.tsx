@@ -34,12 +34,8 @@ import {
 import { motion, AnimatePresence } from '@/components/common/motion-shim';
 import { useModel, useModelCost } from '@/core/hooks';
 import ModelSelector from '@/components/ModelSelector';
-import {
-  SCRIPT_STYLES,
-  TONE_OPTIONS,
-  SCRIPT_LENGTHS,
-  TARGET_AUDIENCES
-} from '@/core/constants';
+import { SCRIPT_STYLES, SCRIPT_LENGTHS } from '@/constants';
+import { TONE_OPTIONS, TARGET_AUDIENCES } from '@/shared/constants';
 import { aiService } from '@/core/services/ai.service';
 import { formatDuration } from '@/core/utils';
 import type { ScriptData, AIModelSettings } from '@/core/types';
@@ -104,9 +100,7 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
   const estimatedCost = useMemo(() => {
     const length = form.getFieldValue('length') || 'medium';
     const lengthConfig = SCRIPT_LENGTHS.find(l => l.value === length);
-    const avgWords = lengthConfig
-      ? (parseInt(lengthConfig.words.split('-')[0]) + parseInt(lengthConfig.words.split('-')[1])) / 2
-      : 650;
+    const avgWords = lengthConfig?.wordCount ?? 650;
     return formatCost(estimateScriptCost(avgWords));
   }, [form, estimateScriptCost, formatCost]);
 
@@ -232,7 +226,7 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
         <Radio.Group optionType="button">
           {SCRIPT_LENGTHS.map(opt => (
             <Radio.Button key={opt.value} value={opt.value}>
-              <Tooltip title={`${opt.desc}，约${opt.words}`}>{opt.label}</Tooltip>
+              <Tooltip title={`${opt.desc}，约${opt.wordCount}字`}>{opt.label}</Tooltip>
             </Radio.Button>
           ))}
         </Radio.Group>

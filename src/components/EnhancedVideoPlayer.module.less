@@ -1,10 +1,16 @@
+/**
+ * Enhanced Video Player - 使用项目设计系统
+ */
+
+@ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
 .playerContainer {
   position: relative;
   width: 100%;
-  background-color: #000;
-  border-radius: 8px;
+  background-color: @black;
+  border-radius: @radius-lg;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: @shadow-lg;
   margin-bottom: 16px;
 }
 
@@ -12,7 +18,7 @@
   position: relative;
   width: 100%;
   height: 0;
-  padding-bottom: 56.25%; /* 16:9宽高比 */
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
   overflow: hidden;
 }
 
@@ -25,7 +31,7 @@
   object-fit: contain;
 }
 
-/* 中央播放按钮 */
+/* Center play button */
 .centerPlayButton {
   position: absolute;
   top: 50%;
@@ -39,37 +45,39 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition:
+    background-color @duration-base @ease-out,
+    transform @duration-base @ease-out,
+    opacity @duration-base @ease-out;
   opacity: 0;
-  color: #fff;
+  color: @white;
   font-size: 30px;
   z-index: 2;
-  
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.8);
     transform: translate(-50%, -50%) scale(1.1);
   }
-  
+
   .playerContainer:hover & {
     opacity: 1;
   }
-  
+
   &.playing {
     opacity: 0;
-    
+
     .playerContainer:hover & {
       opacity: 0.7;
     }
   }
-  
-  /* 图标样式 */
+
   :global(.anticon) {
     font-size: 30px;
-    color: #fff;
+    color: @white;
   }
 }
 
-/* 控制面板 */
+/* Control panel */
 .controls {
   position: absolute;
   bottom: 0;
@@ -77,40 +85,40 @@
   width: 100%;
   padding: 8px 12px;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
-  transition: opacity 0.3s ease;
+  transition: opacity @duration-base @ease-out;
   opacity: 0;
   z-index: 3;
-  
+
   .playerContainer:hover & {
     opacity: 1;
   }
 }
 
-/* 进度条 */
+/* Progress bar */
 .progressBar {
   width: 100%;
   padding: 0 4px;
   margin-bottom: 8px;
-  
+
   :global(.ant-slider) {
     margin: 0;
   }
-  
+
   :global(.ant-slider-rail) {
     background-color: rgba(255, 255, 255, 0.2);
   }
-  
+
   :global(.ant-slider-track) {
-    background-color: @film-amber;
+    background-color: @accent-color;
   }
-  
+
   :global(.ant-slider-handle) {
     opacity: 0;
-    border-color: @film-amber;
+    border-color: @accent-color;
     transform: scale(0.8);
-    transition: all 0.2s;
+    transition: all @duration-fast @ease-out;
   }
-  
+
   &:hover {
     :global(.ant-slider-handle) {
       opacity: 1;
@@ -119,14 +127,15 @@
   }
 }
 
-/* 控制按钮区域 */
+/* Control buttons area */
 .controlButtons {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.leftControls, .rightControls {
+.leftControls,
+.rightControls {
   display: flex;
   align-items: center;
 }
@@ -135,25 +144,25 @@
   color: rgba(255, 255, 255, 0.85);
   padding: 4px 8px;
   height: auto;
-  
+
   &:hover {
-    color: @film-amber !important; 
+    color: @accent-color !important;
     background-color: rgba(255, 255, 255, 0.1);
   }
-  
+
   :global(.anticon) {
     font-size: 16px;
   }
 }
 
-/* 时间显示 */
+/* Time display */
 .timeDisplay {
   color: rgba(255, 255, 255, 0.85);
   margin-left: 8px;
   font-size: 12px;
 }
 
-/* 音量控制 */
+/* Volume control */
 .volumeControl {
   position: relative;
   display: inline-block;
@@ -167,10 +176,10 @@
   height: 80px;
   width: 24px;
   background-color: rgba(0, 0, 0, 0.8);
-  border-radius: 4px;
+  border-radius: @radius-sm;
   padding: 8px 0;
   margin-bottom: 8px;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -183,38 +192,38 @@
     border-right: 6px solid transparent;
     border-top: 6px solid rgba(0, 0, 0, 0.8);
   }
-  
+
   :global(.ant-slider) {
     margin: 0 auto;
     height: 100%;
   }
-  
+
   :global(.ant-slider-rail) {
     background-color: rgba(255, 255, 255, 0.2);
   }
-  
+
   :global(.ant-slider-track) {
-    background-color: @film-amber;
+    background-color: @accent-color;
   }
-  
+
   :global(.ant-slider-handle) {
-    border-color: @film-amber;
+    border-color: @accent-color;
   }
 }
 
-/* 高级控制面板 */
+/* Advanced control panel */
 .advancedControls {
   margin-top: 16px;
   padding: 16px;
   background-color: rgba(0, 0, 0, 0.8);
-  border-radius: 8px;
-  color: #fff;
-  
+  border-radius: @radius-lg;
+  color: @white;
+
   .controlCard {
     background-color: rgba(255, 255, 255, 0.1);
     border: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    
+    box-shadow: @shadow-md;
+
     :global(.ant-card-head) {
       background-color: rgba(255, 255, 255, 0.05);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -222,54 +231,54 @@
       min-height: auto;
       padding: 8px 12px;
     }
-    
+
     :global(.ant-card-head-title) {
       padding: 4px 0;
       font-size: 14px;
     }
-    
+
     :global(.ant-card-body) {
       padding: 12px;
     }
-    
+
     :global(.ant-statistic-title) {
       color: rgba(255, 255, 255, 0.6);
       font-size: 12px;
       margin-bottom: 4px;
     }
-    
+
     :global(.ant-statistic-content) {
       color: rgba(255, 255, 255, 0.9);
     }
   }
 }
 
-/* 响应式布局 */
+/* Responsive */
 @media (max-width: 576px) {
   .advancedControls {
     padding: 8px;
-    
-    .ant-row {
+
+    :global(.ant-row) {
       margin: 0 !important;
     }
-    
-    .ant-col {
+
+    :global(.ant-col) {
       padding: 4px !important;
     }
   }
-  
+
   .controlCard {
     margin-bottom: 8px;
   }
 }
 
-/* 暗色主题兼容 */
+/* Dark theme compatibility */
 :global(.dark-theme) {
   .controlCard {
-    background-color: #1f1f1f;
-    
+    background-color: @bg-tertiary;
+
     :global(.ant-card-head) {
-      background-color: #141414;
+      background-color: @bg-secondary;
     }
   }
-} 
+}

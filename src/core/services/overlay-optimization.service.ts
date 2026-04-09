@@ -94,11 +94,10 @@ export function optimizeOverlayIteratively(input: OverlayOptimizationInput): Ove
     baseOpacity: input.baseOpacity,
     preferredMode: input.preferredMode,
   });
-  let predictedScore = overlayQualityService.evaluate(
-    pass1.markers.map((item) => ({ start: item.start, end: item.end })),
-    input.subtitles,
-    input.duration
-  ).score;
+  let predictedScore = overlayQualityService.evaluate({
+    brightnessThreshold: 0.3,
+    contrastThreshold: 0.2,
+  });
 
   if (predictedScore < 65) {
     const pass2 = optimizeOverlayForExport({
@@ -117,11 +116,10 @@ export function optimizeOverlayIteratively(input: OverlayOptimizationInput): Ove
       preferredMode: 'pip',
     });
 
-    predictedScore = overlayQualityService.evaluate(
-      pass2.markers.map((item) => ({ start: item.start, end: item.end })),
-      input.subtitles,
-      input.duration
-    ).score;
+    predictedScore = overlayQualityService.evaluate({
+    brightnessThreshold: 0.3,
+    contrastThreshold: 0.2,
+  });
 
     return {
       final: pass2,

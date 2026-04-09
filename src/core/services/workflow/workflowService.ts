@@ -382,14 +382,15 @@ export class WorkflowService {
   async stepExport(settings: WorkflowData['exportSettings']): Promise<string> {
     this.updateState({ step: 'export', progress: 95 });
 
-    const exportSettings: ExportSettings = settings || {
+    const exportSettings: ExportSettings = (settings || {
       format: 'mp4',
       quality: 'high',
       resolution: '1080p',
-      frameRate: 30,
+      fps: 30,
       includeSubtitles: true,
+      includeWatermark: false,
       burnSubtitles: true,
-    };
+    }) as ExportSettings;
 
     const activeScript =
       this.state.data.editedScript || this.state.data.uniqueScript || this.state.data.generatedScript;
@@ -463,7 +464,7 @@ export class WorkflowService {
         })
         .filter(Boolean) as ScriptData['segments'];
 
-      const items = sceneCommentaryAlignmentService.align(scenes, timedSegments);
+      const items = sceneCommentaryAlignmentService.align(scenes as any, timedSegments);
       const averageConfidence =
         items.reduce((sum, item) => sum + item.confidence, 0) / Math.max(items.length, 1);
       const maxDriftSeconds = items.reduce((max, item) => Math.max(max, item.driftSeconds), 0);
@@ -650,7 +651,10 @@ export class WorkflowService {
       'script-generate': 40,
       'script-dedup': 50,
       'script-edit': 60,
+      subtitle: 55,
       'ai-clip': 65,
+      repurposing: 68,
+      music: 63,
       'timeline-edit': 70,
       preview: 90,
       export: 95,

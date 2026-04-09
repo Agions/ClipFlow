@@ -139,12 +139,18 @@ export function useWindowSize() {
 /**
  * 异步状态 Hook
  */
-export function useAsyncState<T>() {
+export function useAsyncState<T>(): {
+  data: T | null;
+  loading: boolean;
+  error: Error | null;
+  execute: (promise: Promise<T>) => Promise<T>;
+  reset: () => void;
+} {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const execute = useCallback(async (promise: Promise<T>) => {
+  const execute = useCallback(async (promise: Promise<T>): Promise<T> => {
     setLoading(true);
     setError(null);
     

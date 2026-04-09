@@ -152,7 +152,7 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
 
       // 调用 AI 服务生成脚本
       setProgress(10);
-      setCurrentStep('正在调用 AI 服务...');
+      setProgress(10); // AI 服务调用中
 
       const result = await aiService.generateScript(
         modelSettings,
@@ -169,23 +169,23 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
       );
 
       setProgress(70);
-      setCurrentStep('正在处理结果...');
+      setProgress(70); // 处理结果
 
       // 更新脚本
-      setScript({
+      setGeneratedScript({
         id: result.id,
         title: result.title,
         content: result.content,
         segments: result.segments,
         metadata: result.metadata,
-      });
+      } as ScriptData);
 
       setProgress(100);
       notify.success('脚本生成成功');
 
     } catch (error) {
       logger.error('脚本生成失败:', { error });
-      notify.error(error, '脚本生成失败');
+      notify.error(String(error), '脚本生成失败');
     } finally {
       setIsGenerating(false);
     }

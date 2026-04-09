@@ -71,8 +71,8 @@ export const useAIClipAssistant = (
       notify.success('视频分析完成！');
       setCurrentStep(2);
     } catch (_err) {
-      setError(err instanceof Error ? err.message : '分析失败');
-      notify.error(err, '视频分析失败');
+      setError(_err instanceof Error ? _err.message : '分析失败');
+      notify.error(_err, '视频分析失败');
     } finally {
       setAnalyzing(false);
     }
@@ -96,8 +96,8 @@ export const useAIClipAssistant = (
       notify.success('智能剪辑完成！');
       setCurrentStep(3);
     } catch (_err) {
-      setError(err instanceof Error ? err.message : '剪辑失败');
-      notify.error(err, '智能剪辑失败');
+      setError(_err instanceof Error ? _err.message : '剪辑失败');
+      notify.error(_err, '智能剪辑失败');
     } finally {
       setAnalyzing(false);
     }

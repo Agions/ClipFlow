@@ -31,13 +31,13 @@ const TemplateStep: React.FC<TemplateStepProps> = ({
             >
               <Paragraph ellipsis={{ rows: 2 }}>{template.description}</Paragraph>
               <Space wrap>
-                {template.tags.map((tag) => (
+                {(template as any).tags.map((tag) => (
                   <span key={tag} className={styles.tag}>
                     {tag}
                   </span>
                 ))}
               </Space>
-              {template.recommended && (
+              {(template as any).recommended && (
                 <div className={styles.recommendedBadge}>推荐</div>
               )}
             </Card>

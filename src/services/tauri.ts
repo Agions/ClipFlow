@@ -70,10 +70,10 @@ export const ensureAppDataDir = async (): Promise<void> => {
     // 先尝试使用Rust函数检查目录
     try {
       const dirPath = await invoke('check_app_data_directory');
-      logger.info('Rust目录检查成功:', dirPath);
+      logger.info('Rust目录检查成功', { dirPath });
       return;
     } catch (rustError) {
-      logger.warn('Rust目录检查失败，回退到前端检查:', rustError);
+      logger.warn('Rust目录检查失败，回退到前端检查', { rustError });
     }
     
     // 前端备用检查
@@ -81,16 +81,16 @@ export const ensureAppDataDir = async (): Promise<void> => {
     try {
       dirExists = await exists(appDir, { baseDir: BaseDirectory.AppData });
     } catch (existsError) {
-      logger.error('检查目录是否存在时出错:', existsError);
+      logger.error('检查目录是否存在时出错', { existsError });
       throw new Error(`检查目录出错: ${existsError instanceof Error ? existsError.message : '未知错误'}`);
     }
     
     if (!dirExists) {
-      logger.info('应用数据目录不存在，创建目录:', appDir);
+      logger.info('应用数据目录不存在，创建目录', { appDir });
       try {
         await mkdir(appDir, { baseDir: BaseDirectory.AppData, recursive: true });
       } catch (createError) {
-        logger.error('创建目录失败:', createError);
+        logger.error('创建目录失败', { createError });
         throw new Error(`创建目录失败: ${createError instanceof Error ? createError.message : '未知错误'}`);
       }
       
@@ -101,7 +101,7 @@ export const ensureAppDataDir = async (): Promise<void> => {
           throw new Error('无法创建应用数据目录，请检查权限');
         }
       } catch (verifyError) {
-        logger.error('验证目录是否创建成功时出错:', verifyError);
+        logger.error('验证目录是否创建成功时出错', { verifyError });
         throw new Error(`验证目录出错: ${verifyError instanceof Error ? verifyError.message : '未知错误'}`);
       }
       logger.info('应用数据目录创建成功');
@@ -109,7 +109,7 @@ export const ensureAppDataDir = async (): Promise<void> => {
     
     return;
   } catch (error) {
-    logger.error('创建应用数据目录失败:', error);
+    logger.error('创建应用数据目录失败', { error });
     throw error;
   }
 };
@@ -125,13 +125,13 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
 
   try {
     // 确保目录存在
-    await ensureAppDataDir().catch(_err => {
-      logger.error('确保应用数据目录存在时出错:', _err);
-      throw new Error(`应用数据目录错误: ${_err.message || '未知错误'}`);
+    await ensureAppDataDir().catch(err => {
+      logger.error('确保应用数据目录存在时出错', { err });
+      throw new Error(`应用数据目录错误: ${err.message || '未知错误'}`);
     });
     
     const projectPath = `CutDeck/${normalizedProjectId}.json`;
-    logger.info('正在保存项目文件:', projectPath);
+    logger.info('正在保存项目文件', { projectPath });
     
     // 准备项目数据
     let projectData: string;
@@ -150,8 +150,8 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
       if (!projectData) {
         throw new Error('项目数据序列化为空');
       }
-    } catch (_err) {
-      logger.error('序列化项目数据失败:', _err);
+    } catch (err) {
+      logger.error('序列化项目数据失败', { err });
       throw new Error('无法序列化项目数据');
     }
     
@@ -165,18 +165,18 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
       logger.info('文件写入成功 (通过Rust函数)');
       return;
     } catch (rustErr) {
-      logger.warn('通过Rust保存文件失败，尝试使用JS API保存:', rustErr);
+      logger.warn('通过Rust保存文件失败，尝试使用JS API保存', { rustErr });
       // 继续使用JS API作为备选方案
     }
     
     // 检查文件是否已存在
     const fileExists = await exists(projectPath, { baseDir: BaseDirectory.AppData })
-      .catch(__err => {
-        logger.error('检查文件是否存在时出错:', __err);
+      .catch(err => {
+        logger.error('检查文件是否存在时出错', { err });
         return false;
       });
       
-    logger.info(`项目文件${fileExists ? '已存在' : '不存在'}，准备${fileExists ? '更新' : '新建'}`);
+    logger.info(`项目文件${fileExists ? '已存在' : '不存在'}，准备${fileExists ? '更新' : '新建'}`, { fileExists });
     
     // 执行写入
     try {
@@ -187,7 +187,7 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
       );
       logger.info('文件写入完成');
     } catch (writeErr) {
-      logger.error('文件写入失败:', writeErr);
+      logger.error('文件写入失败', { writeErr });
       
       // 尝试备用方法保存
       try {
@@ -195,10 +195,10 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
         const backupPath = `${configDir}${normalizedProjectId}.json`;
         await writeTextFile(backupPath, projectData);
         emitProjectsChanged();
-        logger.info('使用备用路径保存成功:', backupPath);
+        logger.info('使用备用路径保存成功', { backupPath });
         return;
       } catch (backupErr) {
-        logger.error('备用保存也失败:', backupErr);
+        logger.error('备用保存也失败', { backupErr });
         const writeErrMessage = writeErr instanceof Error ? writeErr.message : '未知错误';
         throw new Error(`文件写入失败: ${writeErrMessage}`);
       }
@@ -218,10 +218,10 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
     }
     
     emitProjectsChanged();
-    logger.info('项目文件保存成功:', projectPath);
+    logger.info('项目文件保存成功', { projectPath });
     return;
   } catch (error) {
-    logger.error('保存项目文件失败:', error);
+    logger.error('保存项目文件失败', { error });
     throw error;
   }
 };
@@ -284,7 +284,7 @@ export const loadProjectFromFile = async <T = ProjectFileData>(projectId: string
     lastError = legacyRootError;
   }
 
-  logger.error('读取项目文件失败:', lastError);
+  logger.error('读取项目文件失败', { lastError });
   throw (lastError || new Error(`读取项目失败: ${projectId}`));
 };
 
@@ -572,7 +572,7 @@ export const listProjects = async (): Promise<ProjectFileData[]> => {
         .map(normalizeListedProject)
         .filter((item): item is ProjectFileData => item !== null);
       if (normalized.length > 0) {
-        logger.info('[listProjects] Rust 项目列表获取成功:', normalized.length);
+        logger.info('[listProjects] Rust 项目列表获取成功', { count: normalized.length });
         return normalized;
       }
       logger.warn('[listProjects] Rust 项目列表为空，切换到文件扫描兜底');
@@ -619,10 +619,10 @@ export const deleteProject = async (projectId: string): Promise<boolean> => {
     if (!normalizedProjectId) return false;
     await invoke('delete_project_file', { projectId: normalizedProjectId });
     emitProjectsChanged();
-    logger.info('项目删除成功:', projectId);
+    logger.info('项目删除成功', { projectId });
     return true;
   } catch (error) {
-    logger.error('删除项目出错:', error);
+    logger.error('删除项目出错', { error });
     return false;
   }
 };
@@ -638,7 +638,7 @@ export const getFileSizeBytes = async (path: string): Promise<number> => {
     const bytes = await invoke<number>('get_file_size', { path });
     return Number.isFinite(bytes) ? bytes : 0;
   } catch (error) {
-    logger.warn('获取文件大小失败:', path, error);
+    logger.warn('获取文件大小失败', { path, error });
     return 0;
   }
 };

@@ -14,7 +14,7 @@ import { logger } from '@/utils/logger';
 import { WORKFLOW_MODE_DEFINITIONS, WORKFLOW_STEP_CONFIG, type WorkflowMode } from '@/core/workflow/featureBlueprint';
 import { ALIGNMENT_GATE_THRESHOLD } from '@/core/workflow/alignmentGate';
 import type { WorkflowState, WorkflowData, WorkflowConfig, WorkflowCallbacks, WorkflowStep } from './types';
-import type { StepExecutor, StepResult } from './IStepExecutor';
+import type { IStepExecutor as StepExecutor, StepResult } from './IStepExecutor';
 
 // ============================================
 // Engine State
@@ -107,7 +107,9 @@ export class RetryRequest extends Error {
 
 export class SkipRequest extends Error {
   readonly isSkip = true;
-  constructor(public readonly step: WorkflowStep) { super(`Skip step: ${step}`); }
+  constructor(public readonly step: WorkflowStep, public readonly reason?: string) { 
+    super(reason ? `Skip step: ${step} (${reason})` : `Skip step: ${step}`); 
+  }
 }
 
 // ============================================
@@ -139,7 +141,7 @@ export class WorkflowEngine {
   get state(): Readonly<EngineState> { return this._state; }
 
   /** 获取当前工作流数据 */
-  getData(): WorkflowData { return this._data; }
+  getData(): WorkflowData { return (this as any)._data; }
 
   // ---- Subscriber ----
   subscribe(fn: EngineSubscriber): () => void {

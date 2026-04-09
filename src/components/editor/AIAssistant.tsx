@@ -15,7 +15,8 @@ import {
   Progress,
   Collapse,
   Divider,
-  Switch
+  Switch,
+  message,
 } from 'antd';
 import {
   RobotOutlined,
@@ -30,7 +31,7 @@ import {
   CloseCircleOutlined
 } from '@ant-design/icons';
 import { AI_MODELS as CORE_AI_MODELS, DEFAULT_MODEL_ID } from '@/core/config/models.config';
-import type { ModelProvider } from '@/core/types';
+import type { ModelProvider, AIModel } from '@/core/types';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { getAvailableModelsFromApiKeys, resolveDefaultModelId } from '@/core/utils/model-availability';
 import styles from './AIAssistant.module.less';
@@ -72,8 +73,8 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
 
   // AI model options
   const models = useMemo(() => {
-    const configuredModels = getAvailableModelsFromApiKeys(apiKeys, CORE_AI_MODELS);
-    return configuredModels.map((model) => ({
+    const configuredModels = getAvailableModelsFromApiKeys(apiKeys, CORE_AI_MODELS as any);
+    return (configuredModels as any).map((model: AIModel) => ({
       id: model.id,
       name: model.name,
       provider: model.provider,
@@ -105,11 +106,10 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
     
     try {
       const { aiService } = await import('@/core/services/ai.service');
-      const { selectedModelId, apiKeys } = // get from context or props
-        {};
       
       const model = CORE_AI_MODELS.find(m => m.id === selectedModelId) || CORE_AI_MODELS[0];
-      const settings = { enabled: true, apiKey: (apiKeys || {})[model.provider] || '', temperature: 0.7, maxTokens: 2000 };
+      const providerKey = (apiKeys || {})[model.provider as ModelProvider];
+      const settings = { enabled: true, apiKey: (providerKey?.key) || '', temperature: 0.7, maxTokens: 2000 };
       
       const response = await aiService.generateText(model, currentPrompt, settings);
       
@@ -158,7 +158,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       setProgress(100);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
-      notify.error('字幕生成失败: ' + errorMsg);
+      message.error('字幕生成失败: ' + errorMsg);
     } finally {
       setProcessing(false);
       if (progressIntervalRef.current) {
@@ -186,7 +186,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
       setProgress(100);
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
-      notify.error('智能剪辑失败: ' + errorMsg);
+      message.error('智能剪辑失败: ' + errorMsg);
     } finally {
       setProcessing(false);
       if (progressIntervalRef.current) {

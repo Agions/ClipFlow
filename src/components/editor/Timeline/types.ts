@@ -25,13 +25,19 @@ export interface TimelineTrack {
   selected?: boolean;
 }
 
+// Type alias for backward compatibility
+export type Track = TimelineTrack;
+
 // Clip interface (internal for timeline)
 export interface TimelineClip {
   id: string;
   trackId: string;
   name: string;
+  type: string;
   startTime: number;
   endTime: number;
+  startMs: number;
+  endMs: number;
   sourceStart: number;
   sourceEnd: number;
   duration: number;
@@ -50,8 +56,11 @@ export interface Clip {
   id: string;
   trackId: string;
   name: string;
+  type: string;
   startTime: number;
   endTime: number;
+  startMs: number;
+  endMs: number;
   sourceStart: number;
   sourceEnd: number;
   duration: number;

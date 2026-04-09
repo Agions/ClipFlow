@@ -127,7 +127,7 @@ export const storage = {
 export const sessionStorage = {
   get<T>(key: string, defaultValue?: T): T | null {
     try {
-      const item = sessionStorage.getItem(key);
+      const item = globalThis.sessionStorage.getItem(key);
       if (item === null) return defaultValue ?? null;
       return JSON.parse(item) as T;
     } catch {
@@ -137,7 +137,7 @@ export const sessionStorage = {
 
   set<T>(key: string, value: T): boolean {
     try {
-      sessionStorage.setItem(key, JSON.stringify(value));
+      globalThis.sessionStorage.setItem(key, JSON.stringify(value));
       return true;
     } catch {
       return false;
@@ -146,7 +146,7 @@ export const sessionStorage = {
 
   remove(key: string): boolean {
     try {
-      sessionStorage.removeItem(key);
+      globalThis.sessionStorage.removeItem(key);
       return true;
     } catch {
       return false;

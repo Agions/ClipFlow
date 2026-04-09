@@ -1,4 +1,4 @@
-import { Script } from '@/types';
+import { Script, ScriptSegment } from '@/types';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
@@ -44,12 +44,12 @@ export const exportScriptToPDF = (script: Script, projectName: string) => {
   doc.text(`最后更新: ${new Date(script.updatedAt).toLocaleString()}`, 14, 35);
   
   // 计算总时长
-  const totalDuration = script.segments.reduce(
+  const totalDuration = script.content.reduce(
     (acc: number, segment: ScriptSegment) => acc + (segment.endTime - segment.startTime),
     0
   );
   doc.text(`总时长: ${Math.floor(totalDuration / 60)}分${totalDuration % 60}秒`, 14, 40);
-  doc.text(`段落数: ${script.segments.length}`, 14, 45);
+  doc.text(`段落数: ${script.content.length}`, 14, 45);
   
   // 格式化时间函数
   const formatTime = (seconds: number): string => {
@@ -59,7 +59,7 @@ export const exportScriptToPDF = (script: Script, projectName: string) => {
   };
   
   // 准备表格数据
-  const tableData = script.segments.map((segment) => [
+  const tableData = script.content.map((segment) => [
     `${formatTime(segment.startTime)} - ${formatTime(segment.endTime)}`,
     segment.type === 'narration' ? '旁白' : 
     segment.type === 'dialogue' ? '对话' : '描述',

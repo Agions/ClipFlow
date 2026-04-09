@@ -77,8 +77,8 @@ const TimelineTrack: React.FC<TimelineTrackProps> = memo(({
     if (!virtualContainerWidth || !clips.length) return clips;
 
     const buffer = 3; // 每侧额外渲染 buffer 个 clips
-    const visibleStartMs = virtualScrollLeft / scale;
-    const visibleEndMs = (virtualScrollLeft + virtualContainerWidth) / scale;
+    const visibleStartMs = virtualScrollLeft / scale.pixelsPerSecond;
+    const visibleEndMs = (virtualScrollLeft + virtualContainerWidth) / scale.pixelsPerSecond;
 
     // 二分查找第一个可能可见的 clip
     let lo = 0, hi = clips.length - 1;

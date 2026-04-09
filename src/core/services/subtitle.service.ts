@@ -206,7 +206,7 @@ export const whisperService = new WhisperSubtitleService();
 // 字幕服务
 // ============================================
 
-class SubtitleService {
+export class SubtitleService {
   /**
    * 使用 Whisper AI 转录字幕（Rust faster-whisper 后端）
    * @param audioPath 音频或视频路径

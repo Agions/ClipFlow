@@ -24,6 +24,7 @@ interface MotionProps extends React.HTMLAttributes<HTMLDivElement> {
   whileHover?: CSSProperties;
   whileTap?: CSSProperties;
   className?: string;
+  layout?: boolean;
 }
 
 // 内部组件实现

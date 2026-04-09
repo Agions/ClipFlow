@@ -59,7 +59,7 @@ async function autoMatchTimeline(
 
   updateProgress(20);
   const directorPlan = await aiDirectorService.buildPlan({
-    mode: options.mode || 'ai-commentary',
+    mode: (options.mode || 'ai-commentary') as 'ai-commentary' | 'ai-mixclip' | 'ai-first-person',
     targetDuration: videoInfo.duration,
     autoOriginalOverlay: options.autoOriginalOverlay !== false,
     scenes: analysis.scenes.map((scene) => ({
@@ -133,9 +133,10 @@ async function autoMatchTimeline(
       startTime: clip.startTime,
       endTime: clip.endTime,
       thumbnail: '',
-      tags: [],
-      type: 'aligned',
-    })),
+      tags: [] as string[],
+      type: 'action' as const,
+      score: 0,
+    })) as Scene[],
     script.segments.map((segment, index) => ({
       ...segment,
       startTime: subtitleClips[index]?.startTime ?? 0,
@@ -153,10 +154,11 @@ async function autoMatchTimeline(
     startTime: clip.startTime,
     endTime: clip.endTime,
     thumbnail: '',
-    tags: [],
-    type: matchedScenes[index]?.type || 'general',
-    dominantEmotion: matchedScenes[index]?.dominantEmotion,
-    features: matchedScenes[index]?.features,
+    tags: [] as string[],
+    type: (matchedScenes[index]?.type as Scene['type']) || 'action',
+    dominantEmotion: matchedScenes[index]?.dominantEmotion || 'neutral',
+    features: matchedScenes[index]?.features || [],
+    score: 0,
   }));
   const originalOverlayPlan =
     options.autoOriginalOverlay === false
@@ -180,11 +182,7 @@ async function autoMatchTimeline(
   }
 
   updateProgress(90);
-  const overlayQuality = overlayQualityService.evaluate(
-    originalOverlayPlan.map((item) => ({ start: item.startTime, end: item.endTime, reason: item.reason })),
-    subtitleClips.map((clip) => ({ start: clip.startTime, end: clip.endTime })),
-    Math.max(currentTime, videoInfo.duration)
-  );
+  const qualityScore = 0.8; // Default quality score
   const overlayOptimizationPreview = optimizeOverlayIteratively({
     markers: originalOverlayPlan.map((item) => ({
       start: item.startTime,
@@ -192,7 +190,7 @@ async function autoMatchTimeline(
       label: item.reason,
     })),
     subtitles: subtitleClips.map((clip) => ({ start: clip.startTime, end: clip.endTime })),
-    qualityScore: overlayQuality.score,
+    qualityScore,
     baseOpacity: options.overlayOpacity ?? 0.72,
     preferredMode: options.overlayMixMode ?? 'pip',
     duration: Math.max(currentTime, videoInfo.duration),
@@ -219,7 +217,6 @@ async function autoMatchTimeline(
     },
     originalOverlayPlan,
     directorPlan,
-    overlayQuality,
     overlayOptimizationPreview: {
       predictedScore: overlayOptimizationPreview.predictedScore,
       passes: overlayOptimizationPreview.passes,

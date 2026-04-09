@@ -10,4 +10,4 @@ export { default as VideoSynthesize } from './VideoSynthesize';
 export { default as VideoExport } from './VideoExport';
 
 // 导出类型
-export type { AIFunctionType } from './ScriptGenerate';
+export type { AIFunctionType } from './functionModeMap';

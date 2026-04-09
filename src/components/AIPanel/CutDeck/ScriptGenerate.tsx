@@ -168,8 +168,8 @@ const ScriptGenerate: React.FC<ScriptGenerateProps> = ({ onNext }) => {
     try {
       const topic = state.analysis?.summary || '视频内容解说';
 
-      const availableModels = getAvailableModelsFromApiKeys(apiKeys, CORE_AI_MODELS);
-      const resolvedModelId = resolveDefaultModelId(defaultModel, availableModels);
+      const availableModels = getAvailableModelsFromApiKeys(apiKeys, CORE_AI_MODELS as any) as any[];
+      const resolvedModelId = resolveDefaultModelId(defaultModel, availableModels as any[]);
       const model = (
         availableModels.find((item) => item.id === resolvedModelId) ||
         CORE_AI_MODELS.find((item) => item.id === DEFAULT_MODEL_ID) ||
@@ -201,7 +201,7 @@ const ScriptGenerate: React.FC<ScriptGenerateProps> = ({ onNext }) => {
           length: config.length,
           audience: '通用',
           language: 'zh-CN',
-          keywords: state.analysis?.scenes?.map(s => s.type).filter((type): type is string => Boolean(type)) || [],
+          keywords: state.analysis?.scenes?.map(s => s.type as string).filter((type): type is string => Boolean(type)) || [],
           videoDuration: state.currentVideo?.duration,
         }
       );

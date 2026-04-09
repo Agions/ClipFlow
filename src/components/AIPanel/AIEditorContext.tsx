@@ -29,6 +29,7 @@ export interface CutDeckState {
     'project-create': boolean;
     'video-upload': boolean;
     'ai-analyze': boolean;
+    'clip-repurpose': boolean;
     'script-generate': boolean;
     'video-synthesize': boolean;
     'export': boolean;

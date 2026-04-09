@@ -141,7 +141,7 @@ const VideoEditorPage: React.FC = () => {
       };
 
       // 设置导出配置
-      exportService.setConfig(exportConfig);
+      exportService.setConfig(exportConfig as unknown as ExportConfig);
 
       // 输出路径
       const outputPath = `export/${Date.now()}.${outputFormat}`;
@@ -158,10 +158,10 @@ const VideoEditorPage: React.FC = () => {
 
       // 导出成功
       notify.success(`视频导出成功: ${result.outputPath}`);
-      logger.info('导出成功:', result);
+      logger.info('导出成功', { result });
     } catch (error) {
       logger.error('导出失败:', error);
-      notify.error(error, '导出失败，请重试');
+      notify.error(String(error), '导出失败');
     } finally {
       if (aliveRef.current) {
         setIsExporting(false);
@@ -171,7 +171,7 @@ const VideoEditorPage: React.FC = () => {
 
   // AI 分析完成
   const handleAnalysisComplete = useCallback((result: ClipAnalysisResult) => {
-    logger.info('AI 剪辑分析完成:', result);
+    logger.info('AI 剪辑分析完成', { result });
     notify.success(`检测到 ${result.cutPoints.length} 个剪辑点`);
   }, []);
 
@@ -199,14 +199,9 @@ const VideoEditorPage: React.FC = () => {
           {/* 视频预览区 */}
           <Col span={16}>
             <VideoPlayer
-              videoSrc={videoSrc}
-              currentTime={currentTime}
-              duration={duration}
-              isPlaying={isPlaying}
+              src={videoSrc}
               onTimeUpdate={setCurrentTime}
-              onDurationChange={setDuration}
-              onPlayStateChange={setIsPlaying}
-              onLoadVideo={handleLoadVideo}
+              onEnded={() => {}}
             />
 
             <Timeline

@@ -1,11 +1,13 @@
 /**
  * AI 视频预览样式
+ * 使用项目设计系统变量
  */
+
 .container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #0a0a0a;
+  background: @bg-primary;
 }
 
 /* 视频预览区 */
@@ -21,7 +23,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000;
+  background: @black;
   position: relative;
 }
 
@@ -31,19 +33,22 @@
   align-items: center;
   gap: 12px;
   padding: 40px;
-  border: 2px dashed #333;
-  border-radius: 8px;
+  border: 2px dashed @border-secondary;
+  border-radius: @radius-md;
   cursor: pointer;
-  transition: border-color 0.2s;
-}
+  transition:
+    border-color @duration-base @ease-out,
+    background @duration-base @ease-out;
 
-.placeholder:hover {
-  border-color: #d4a574;
+  &:hover {
+    border-color: @accent-color;
+    background: @bg-hover;
+  }
 }
 
 .playIcon {
   font-size: 48px;
-  color: #666;
+  color: @text-tertiary;
 }
 
 /* 播放控制 */
@@ -52,17 +57,17 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: #1a1a1a;
-  border-top: 1px solid #333;
+  background: @bg-secondary;
+  border-top: 1px solid @border-primary;
 }
 
 .controls .ant-btn {
-  color: #ccc !important;
+  color: @text-secondary !important;
 }
 
 .playBtn {
   font-size: 24px !important;
-  color: #d4a574 !important;
+  color: @accent-color !important;
 }
 
 .progress {
@@ -76,18 +81,18 @@
 }
 
 .progress .ant-slider-track {
-  background: #d4a574;
+  background: @accent-color;
 }
 
 .progress .ant-slider-handle {
-  border-color: #d4a574;
+  border-color: @accent-color;
 }
 
 /* 时间轴 */
 .timeline {
   height: 200px;
-  background: #141414;
-  border-top: 1px solid #333;
+  background: @bg-tertiary;
+  border-top: 1px solid @border-primary;
   display: flex;
   flex-direction: column;
 }
@@ -97,7 +102,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid @border-primary;
 }
 
 .timelineContent {
@@ -112,15 +117,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px dashed #333;
-  border-radius: 4px;
+  border: 1px dashed @border-secondary;
+  border-radius: @radius-sm;
 }
 
 /* AI 建议区 */
 .aiSuggestions {
   padding: 8px 16px;
-  background: rgba(24, 144, 255, 0.1);
-  border-top: 1px solid rgba(24, 144, 255, 0.3);
+  background: @info-bg;
+  border-top: 1px solid @primary-color;
 }
 
 .suggestionsList {

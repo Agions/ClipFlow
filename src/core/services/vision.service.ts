@@ -225,11 +225,13 @@ export class VisionService {
         id: `scene_${i}_${Date.now()}`,
         startTime,
         endTime,
+        type: 'action' as const,
+        score: 0,
         thumbnail,
         description: '',
-        tags: [],
+        tags: [] as string[],
         confidence: 0
-      });
+      } as Scene);
     }
 
     return scenes;
@@ -256,12 +258,17 @@ export class VisionService {
 
         return {
           ...scene,
-          type: matchedType.id,
+          type: matchedType.id as Scene['type'],
           description: matchedType.description,
           tags: [...matchedType.keywords, ...features.tags],
           confidence: matchedType.confidence,
-          features
-        };
+          features: [
+            `brightness:${features.brightness}`,
+            `motion:${features.motion}`,
+            `complexity:${features.complexity}`,
+            ...features.tags
+          ]
+        } as Scene;
       })
     );
   }
@@ -384,13 +391,12 @@ export class VisionService {
           category,
           label: `${category} ${i + 1}`,
           confidence: Math.random() * 0.3 + 0.7,
-          bbox: {
-            x: Math.random() * 0.6,
-            y: Math.random() * 0.6,
-            width: Math.random() * 0.3 + 0.1,
-            height: Math.random() * 0.3 + 0.1
-          },
-          timestamp: scene.startTime
+          bbox: [
+            Math.random() * 0.6,
+            Math.random() * 0.6,
+            Math.random() * 0.3 + 0.1,
+            Math.random() * 0.3 + 0.1
+          ] as [number, number, number, number]
         });
       }
     }
@@ -409,10 +415,10 @@ export class VisionService {
       const baseEmotions = [...EMOTION_DIMENSIONS];
 
       // 基于场景类型调整情感
-      if (scene.type === 'intro') {
+      if ((scene.type as string) === 'intro') {
         baseEmotions.find(e => e.id === 'excited')!.score = 0.7;
         baseEmotions.find(e => e.id === 'positive')!.score = 0.6;
-      } else if (scene.type === 'emotion') {
+      } else if ((scene.type as string) === 'emotion') {
         baseEmotions.find(e => e.id === 'excited')!.score = 0.8;
         baseEmotions.find(e => e.id === 'positive')!.score = 0.5;
       } else {
@@ -577,7 +583,8 @@ export class VisionService {
     }, {} as Record<string, number>);
 
     const objectCategories = objects.reduce((acc, obj) => {
-      acc[obj.category] = (acc[obj.category] || 0) + 1;
+      const key = Array.isArray(obj.category) ? obj.category[0] : obj.category;
+      acc[key || 'unknown'] = (acc[key || 'unknown'] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 

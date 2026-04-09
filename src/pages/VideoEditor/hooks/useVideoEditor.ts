@@ -78,7 +78,7 @@ export const useVideoEditor = (projectId: string | undefined) => {
         const newSegment: VideoSegment = {
           start: 0,
           end: metadata.duration,
-          type: 'video',
+          type: ('video' as any),
           content: '完整视频',
         };
 
@@ -133,7 +133,7 @@ export const useVideoEditor = (projectId: string | undefined) => {
     const newSegment: VideoSegment = {
       start: baseStart,
       end: baseEnd,
-      type: 'video',
+      type: ('video' as any),
       content: `片段 ${segments.length + 1}`,
     };
 
@@ -193,7 +193,7 @@ export const useVideoEditor = (projectId: string | undefined) => {
       const newSegments: VideoSegment[] = result.segments.map(seg => ({
         start: seg.sourceStart,
         end: seg.sourceEnd,
-        type: 'video',
+        type: ('video' as any),
         content: `片段 ${segments.length + 1}`,
       }));
 

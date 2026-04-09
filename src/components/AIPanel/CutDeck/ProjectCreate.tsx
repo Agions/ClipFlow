@@ -98,8 +98,6 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({ onNext }) => {
         templateId: selectedMode,
         templateName: MODE_OPTIONS.find(m => m.id === selectedMode)?.name || 'AI解说',
         description: normalizedDescription || undefined,
-        videoPath: '',
-        videoUrl: undefined,
         status: 'draft',
         videos: [],
         scripts: [],

@@ -6,7 +6,7 @@ import type { VideoSegment } from '@/core/types';
 
 export interface BatchItem {
   id: string;
-  segments: VideoSegment[];
+  segments: Array<{ start: number; end: number; type?: string; content?: string }>;
   name: string;
   completed: boolean;
 }

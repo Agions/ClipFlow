@@ -73,10 +73,10 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
     const segment = segments[index];
 
     editForm.setFieldsValue({
-      start: segment.start,
-      end: segment.end,
-      type: segment.type || 'narration',
-      content: segment.content || '',
+      start: (segment as any).start ?? segment.startTime,
+      end: (segment as any).end ?? segment.endTime,
+      type: (segment as any).type || 'narration',
+      content: (segment as any).content || '',
     });
 
     setEditingIndex(index);
@@ -90,11 +90,13 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
 
       const newSegments = [...segments];
       const segment: VideoSegment = {
-        start,
-        end,
-        type: values.type,
-        content: values.content,
-      };
+        startTime: start,
+        endTime: end,
+        duration: end - start,
+        sourceIndex: 0,
+      } as any;
+      (segment as any).type = values.type;
+      (segment as any).content = values.content;
 
       if (editingIndex !== null) {
         if (editingIndex < segments.length) {

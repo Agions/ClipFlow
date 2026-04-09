@@ -4,7 +4,7 @@
  */
 
 import { BaseService, ServiceError } from './base.service';
-import type { AIModel, AIModelSettings, ScriptData, ScriptSegment, VideoAnalysis } from '@/core/types';
+import type { AIModel, AIModelSettings, ScriptData, ScriptSegment, VideoAnalysis, VideoInfo } from '@/core/types';
 import { LLM_MODELS, DEFAULT_LLM_MODEL, MODEL_RECOMMENDATIONS } from '@/core/constants';
 import { visionService } from './vision.service';
 
@@ -49,6 +49,18 @@ const MODEL_PROVIDERS: Record<SupportedProvider, ModelProvider> = {
   google: {
     name: 'Google',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta'
+  },
+  azure: {
+    name: 'Azure OpenAI',
+    baseUrl: ''
+  },
+  local: {
+    name: 'Local Model',
+    baseUrl: ''
+  },
+  custom: {
+    name: 'Custom Provider',
+    baseUrl: ''
   },
   alibaba: {
     name: '阿里通义千问',
@@ -188,15 +200,13 @@ export class AIService extends BaseService {
         const response = await this.callAPI(model, settings, prompt);
         
         // 并行调用视觉分析服务获取真实数据
-        type ScenesResult = { scenes: Array<{ id: string; startTime: number; endTime: number; thumbnail?: string; description?: string; tags?: string[] }> };
-        type KeyframesResult = Array<{ id: string; timestamp: number; thumbnail?: string; description?: string }>;
         const [scenesResult, keyframesResult] = await Promise.allSettled([
-          visionService.detectScenesAdvanced(videoInfo as VideoInfo, { minSceneDuration: 3, threshold: 0.3 }),
-          visionService.extractKeyframes(videoInfo as VideoInfo, { maxFrames: 20 }),
-        ]) as PromiseAllSettledResult<[ScenesResult, KeyframesResult]>;
+          visionService.detectScenesAdvanced(videoInfo as any, { minSceneDuration: 3, threshold: 0.3 }),
+          visionService.extractKeyframes(videoInfo as any, { maxFrames: 20 }),
+        ]);
 
-        const scenes = scenesResult.status === 'fulfilled'
-          ? scenesResult.value.scenes.map((s) => ({
+        const scenes = scenesResult.status === 'fulfilled' && (scenesResult.value as any).scenes
+          ? (scenesResult.value as any).scenes.map((s: any) => ({
               id: s.id || crypto.randomUUID(),
               startTime: s.startTime,
               endTime: s.endTime,
@@ -205,8 +215,8 @@ export class AIService extends BaseService {
               tags: s.tags || [],
             }))
           : [];
-        const keyframes = keyframesResult.status === 'fulfilled'
-          ? keyframesResult.value.map((k, idx) => ({
+        const keyframes = keyframesResult.status === 'fulfilled' && Array.isArray(keyframesResult.value)
+          ? (keyframesResult.value as any[]).map((k: any, idx: number) => ({
               id: k.id || `kf_${idx}`,
               timestamp: k.timestamp || 0,
               thumbnail: k.thumbnail || '',
@@ -597,14 +607,16 @@ ${script}
    * 获取推荐的模型
    */
   getRecommendedModels(task: keyof typeof MODEL_RECOMMENDATIONS): typeof LLM_MODELS[keyof typeof LLM_MODELS][] {
-    return [...(MODEL_RECOMMENDATIONS[task] ?? [DEFAULT_LLM_MODEL])];
+    const modelId = MODEL_RECOMMENDATIONS[task] ?? DEFAULT_LLM_MODEL;
+    const model = LLM_MODELS.find(m => m.id === modelId);
+    return model ? [model] : [];
   }
 
   /**
    * 获取模型信息
    */
   getModelInfo(modelId: string): typeof LLM_MODELS[keyof typeof LLM_MODELS] | null {
-    return Object.values(LLM_MODELS).find(m => m.modelId === modelId) || null;
+    return LLM_MODELS.find(m => m.id === modelId) || null;
   }
 
   /**

@@ -22,8 +22,10 @@ import type { Scene } from '@/core/types';
 // ============================================================
 
 export interface CandidateClip {
+  id?: string;
   startTime: number;   // 秒
   endTime: number;     // 秒
+  duration?: number;   // 秒
   sceneType: string;   // 场景类型标签
   transcript: string; // 原始转录文本
   audioEnergy?: number; // 音频能量（0-1，可选）
@@ -38,6 +40,7 @@ export interface ClipScore {
   silenceRatio: number;
   speakingPace: number;
   keywordBoost: number;
+  dimensions?: { width: number; height: number };
   reasons: string[]; // 可读原因描述
 }
 

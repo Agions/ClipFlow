@@ -81,7 +81,7 @@ const LANGUAGE_MAP: Record<string, string> = {
 // ASR 服务
 // ============================================
 
-class ASRService extends BaseService {
+export class ASRService extends BaseService {
   private isInitialized = false;
 
   constructor() {

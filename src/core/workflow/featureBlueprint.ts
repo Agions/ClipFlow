@@ -98,7 +98,7 @@ export const WORKFLOW_MODE_DEFINITIONS: Record<WorkflowMode, WorkflowModeDefinit
     steps: [
       'upload',
       'analyze',
-      'repurposing',
+      'ai-clip',
       'preview',
       'export',
     ],

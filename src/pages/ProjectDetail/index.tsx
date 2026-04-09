@@ -60,8 +60,8 @@ const toVideoSegments = (script: Script | null): VideoSegment[] =>
   script?.content.map((segment) => ({
     start: segment.startTime,
     end: segment.endTime,
-    type: segment.type,
-    content: segment.content
+    type: (segment as any).type,
+    content: (segment as any).content
   })) ?? [];
 
 const toScriptSegments = (segments: VideoSegment[]) =>
@@ -69,8 +69,8 @@ const toScriptSegments = (segments: VideoSegment[]) =>
     id: uuidv4(),
     startTime: segment.start,
     endTime: segment.end,
-    content: segment.content ?? '',
-    type: (segment.type as Script['content'][number]['type']) || 'narration'
+    content: (segment as any).content ?? '',
+    type: ((segment as any).type as Script['content'][number]['type']) || 'narration'
   }));
 
 const StepFallback: React.FC = () => (
@@ -348,7 +348,7 @@ const ProjectDetail: React.FC = () => {
     const updatedScript: Script = {
       ...activeScript,
       content: toScriptSegments(updatedSegments),
-      fullText: updatedSegments.map((segment) => segment.content ?? '').join('\n\n'),
+      fullText: updatedSegments.map((segment) => (segment as any).content ?? '').join('\n\n'),
       updatedAt: new Date().toISOString()
     };
     const updatedProject = {

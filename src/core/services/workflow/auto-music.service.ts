@@ -5,6 +5,9 @@
 
 import { logger } from '@/utils/logger';
 
+export type MusicGenre = string;
+export type MusicMood = string;
+
 export interface MusicTrack {
   id: string;
   name: string;

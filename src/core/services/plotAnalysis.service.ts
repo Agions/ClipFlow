@@ -8,7 +8,7 @@ import { logger } from '@/utils/logger';
 import { aiService } from './ai.service';
 import { visionService } from './vision.service';
 import { asrService } from './asr.service';
-import type { VideoInfo, Scene, Emotion, KeyMoment, AIModel } from '@/core/types';
+import type { VideoInfo, Scene, Emotion, EmotionAnalysis, KeyMoment, AIModel } from '@/core/types';
 
 // ============================================
 // 类型定义
@@ -213,10 +213,10 @@ class PlotAnalysisService {
   /**
    * 情感分析
    */
-  private async analyzeEmotions(videoInfo: VideoInfo, scenes: Scene[]): Promise<Emotion[]> {
+  private async analyzeEmotions(videoInfo: VideoInfo, scenes: Scene[]): Promise<EmotionAnalysis[]> {
     try {
-      const result = await visionService.detectEmotions(videoInfo);
-      return result || [];
+      const result = await visionService.detectScenesAdvanced(videoInfo, { detectEmotions: true });
+      return (result?.emotions || []).map(e => ({ id: e.id || '', timestamp: 0, emotion: e.dominant || 'neutral', confidence: e.intensity || 0.5, emotions: e.emotions, dominant: e.dominant, intensity: e.intensity, category: e.category, sceneId: e.sceneId }));
     } catch (error) {
       logger.warn('情感分析失败:', { error });
       return [];
@@ -231,14 +231,14 @@ class PlotAnalysisService {
     scenes: Scene[],
     keyframes: string[],
     transcript: string,
-    emotions: Emotion[],
+    emotions: EmotionAnalysis[],
     config: PlotAnalysisConfig
   ): PlotNode[] {
     const nodes: PlotNode[] = [];
 
     for (const scene of scenes.slice(0, config.maxNodes)) {
       const nodeType = this.inferPlotNodeType(scene, emotions);
-      const emotionalTone = this.getSceneEmotionalTone(scene.timestamp, emotions);
+      const emotionalTone = this.getSceneEmotionalTone(scene.startTime, emotions);
 
       nodes.push({
         id: crypto.randomUUID(),
@@ -263,12 +263,12 @@ class PlotAnalysisService {
   /**
    * 推断剧情节点类型
    */
-  private inferPlotNodeType(scene: Scene, emotions: Emotion[]): PlotNodeType {
+  private inferPlotNodeType(scene: Scene, emotions: EmotionAnalysis[]): PlotNodeType {
     const sceneEmotions = emotions.filter(
-      e => e.timestamp >= scene.startTime && e.timestamp <= scene.endTime
+      e => (e.timestamp || 0) >= scene.startTime && (e.timestamp || 0) <= scene.endTime
     );
 
-    const dominantEmotion = sceneEmotions[0]?.emotion || 'neutral';
+    const dominantEmotion = sceneEmotions[0]?.emotion || sceneEmotions[0]?.dominant || 'neutral';
 
     if (scene.type === 'action' || (scene.motionScore && scene.motionScore > 0.7)) {
       return 'action';
@@ -292,16 +292,16 @@ class PlotAnalysisService {
   /**
    * 获取场景情感色调
    */
-  private getSceneEmotionalTone(timestamp: number, emotions: Emotion[]): string {
+  private getSceneEmotionalTone(timestamp: number, emotions: EmotionAnalysis[]): string {
     const nearbyEmotions = emotions.filter(
-      e => Math.abs(e.timestamp - timestamp) < 5
+      e => Math.abs((e.timestamp || 0) - timestamp) < 5
     );
 
     if (nearbyEmotions.length === 0) return 'neutral';
 
     const emotionCounts: Record<string, number> = {};
     for (const e of nearbyEmotions) {
-      const type = e.emotion || 'neutral';
+      const type = e.emotion || e.dominant || 'neutral';
       emotionCounts[type] = (emotionCounts[type] || 0) + 1;
     }
 
@@ -356,7 +356,7 @@ class PlotAnalysisService {
    * 生成节点标签
    */
   private generateNodeTags(scene: Scene, type: PlotNodeType): string[] {
-    const tags = [type];
+    const tags: string[] = [type];
 
     if (scene.features) {
       tags.push(...scene.features.slice(0, 2));
@@ -407,8 +407,8 @@ ${transcript ? `语音内容：\n${transcript.slice(0, 2000)}` : ''}
           provider: 'openai' as const,
           model: 'gpt-4',
         } satisfies AIModel,
-        { enabled: true, apiKey: '', temperature: 0.3, maxTokens: 800 },
-        prompt
+        prompt,
+        { enabled: true, apiKey: '', temperature: 0.3, maxTokens: 800 }
       );
 
       const jsonMatch = result.match(/\{[\s\S]*\}/);

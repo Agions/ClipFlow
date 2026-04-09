@@ -131,7 +131,7 @@ const VideoExport: React.FC<VideoExportProps> = ({ onComplete }) => {
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       setExportError(msg);
-      notify.error(`导出失败: ${msg}`);
+      notify.error(msg, '导出失败');
     } finally {
       setExporting(false);
     }

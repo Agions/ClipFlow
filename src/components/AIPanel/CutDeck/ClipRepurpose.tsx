@@ -23,6 +23,7 @@ import {
 } from '@ant-design/icons';
 import { motion } from '@/components/common/motion-shim';
 import { ClipRepurposingPipeline } from '@/core/services/clipRepurposing/pipeline';
+import type { VideoInfo, VideoAnalysis } from '@/core/types';
 import type {
   RepurposingClip,
   PipelineStage,
@@ -58,9 +59,19 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = ({ onNext }) => {
   const { state } = useCutDeck();
   const { currentVideo, analysis } = state;
   const videoPath = currentVideo?.path ?? '';
-  const videoInfo = currentVideo
-    ? { duration: currentVideo.duration, width: currentVideo.width ?? 1920, height: currentVideo.height ?? 1080 }
-    : { duration: 0, width: 1920, height: 1080 };
+  const videoInfo: VideoInfo = currentVideo
+    ? {
+        id: currentVideo.id || `video_${Date.now()}`,
+        name: currentVideo.name || 'video',
+        path: currentVideo.path,
+        duration: currentVideo.duration,
+        width: currentVideo.width ?? 1920,
+        height: currentVideo.height ?? 1080,
+        size: currentVideo.size || 0,
+        fps: 30,
+        format: 'mp4',
+      }
+    : { id: '', name: '', path: '', duration: 0, width: 1920, height: 1080, size: 0, fps: 30, format: 'mp4' };
   const [platform, setPlatform] = useState<SocialPlatform>('douyin');
   const [selectedFormats, setSelectedFormats] = useState<AspectRatio[]>(['9:16', '1:1']);
   const [targetCount, setTargetCount] = useState(5);
@@ -101,8 +112,8 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = ({ onNext }) => {
       };
 
       const result = await pipeline.run(
-        { path: videoPath, duration: videoInfo.duration },
-        analysis ?? {},
+        videoInfo,
+        analysis ?? ({} as VideoAnalysis),
         options
       );
 
@@ -155,7 +166,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = ({ onNext }) => {
     } finally {
       setExporting(false);
     }
-  }, [results, selectedClips, selectedFormats, videoPath, onComplete]);
+  }, [results, selectedClips, selectedFormats, videoPath, onNext]);
 
   const toggleClip = (id: string) => {
     setSelectedClips(prev => {

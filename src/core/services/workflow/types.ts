@@ -10,7 +10,7 @@ import type {
 import type { OriginalityReport } from '@/core/templates/dedup';
 import type { ContentFingerprint, UniquenessCheckResult } from '@/core/services/uniqueness.service';
 import type { ClipAnalysisResult } from '@/core/services/aiClip/types';
-import type { MusicStepOutput } from '../steps/musicStep';
+import type { MusicStepOutput } from './steps/musicStep';
 import type { RepurposingResult } from '../clipRepurposing/pipeline';
 import type { WorkflowMode } from '@/core/workflow/featureBlueprint';
 
@@ -105,6 +105,7 @@ export interface WorkflowData {
     };
   };
   alignmentReport?: TimelineData['alignment'];
+  whisperSubtitleSegments?: any;
   alignmentGateReport?: {
     threshold: {
       minConfidence: number;

@@ -24,14 +24,13 @@ import styles from './Timeline.module.less';
 import { notify } from '@/shared';
 
 // Types, Constants, Utils
-import type { TimelineProps, Track, Clip, TrackType, Keyframe, TimelineScale } from './types';
+import type { TimelineProps, Track, Clip, TrackType, Keyframe, TimelineScale, Transition, ClipProperties, TimelineClip } from './types';
 import { TRACK_COLORS, TRANSITION_TYPES } from './constants';
 import { generateId, formatTime } from './utils';
 
 // 子组件
 import TimelineRuler from './TimelineRuler';
 import TimelineTrack from './TimelineTrack';
-import TimelineClip from './TimelineClip';
 import TimelineControls, { TimelineTool } from './TimelineControls';
 import TimelinePlayhead from './TimelinePlayhead';
 import KeyframePanel from './KeyframePanel';
@@ -63,7 +62,7 @@ const Timeline: React.FC<TimelineProps> = ({
   const [zoom, setZoom] = useState(100); // 缩放比例
   const [snapEnabled, setSnapEnabled] = useState(true);
   const [selectedClipId, setSelectedClipId] = useState<string | null>(null);
-  const [copiedClip, setCopiedClip] = useState<Clip | null>(null);
+  const [copiedClip, setCopiedClip] = useState<TimelineClip | null>(null);
   const [showKeyframePanel, setShowKeyframePanel] = useState(false);
   const [currentTool, setCurrentTool] = useState<TimelineTool>('select');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -90,12 +89,15 @@ const Timeline: React.FC<TimelineProps> = ({
       id: track.id,
       name: track.name,
       type: track.type as TrackType,
-      clips: (track.clips || []).map(clip => ({
+      clips: (track.clips || []).map((clip): TimelineClip => ({
         id: clip.id || '',
         trackId: clip.trackId || track.id,
         name: clip.name || '未命名片段',
+        type: (clip as any).type || 'video',
         startTime: clip.startTime || 0,
         endTime: clip.endTime || 0,
+        startMs: (clip as any).startMs || (clip.startTime || 0) * 1000,
+        endMs: (clip as any).endMs || (clip.endTime || 0) * 1000,
         sourceStart: clip.sourceStart || 0,
         sourceEnd: clip.sourceEnd || 0,
         duration: clip.duration || 0,
@@ -112,9 +114,9 @@ const Timeline: React.FC<TimelineProps> = ({
         },
       })),
       height: 60,
-      muted: track.isMuted ?? false,
-      locked: track.isLocked ?? false,
-      visible: track.isVisible ?? true,
+      muted: track.muted ?? false,
+      locked: track.locked ?? false,
+      visible: track.visible ?? true,
       volume: track.volume ?? 100,
       selected: false,
     }));
@@ -263,9 +265,9 @@ const Timeline: React.FC<TimelineProps> = ({
       name: `${typeNames[type]}轨道 ${typeCount}`,
       type,
       clips: [],
-      isMuted: false,
-      isLocked: false,
-      isVisible: true,
+      muted: false,
+      locked: false,
+      visible: true,
       volume: 100,
     };
 
@@ -323,12 +325,14 @@ const Timeline: React.FC<TimelineProps> = ({
     const original = clipMap.get(copiedClip.id);
     if (!original) return;
 
-    const newClip: Clip = {
+    const newClip: TimelineClip = {
       ...copiedClip,
       id: generateId(),
       name: `${copiedClip.name} (副本)`,
       startTime: currentTime,
       endTime: currentTime + (copiedClip.endTime - copiedClip.startTime),
+      startMs: currentTime * 1000,
+      endMs: (currentTime + (copiedClip.endTime - copiedClip.startTime)) * 1000,
     };
 
     // 找到对应轨道并添加

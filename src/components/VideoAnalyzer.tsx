@@ -80,7 +80,7 @@ const VideoAnalyzer: React.FC<VideoAnalyzerProps> = ({
       // TODO: 实际关键时刻和情感分析应由 AI 模型完成
       // 临时使用均匀分布生成关键帧
       const keyMoments: KeyMoment[] = [];
-      const emotions: Emotion[] = [];
+      const emotions: Emotion[] = ((videoAnalysis as any)?.emotions || []) as Emotion[];
       
       const numKeyMoments = Math.min(8, Math.ceil(videoMetadata.duration / 30));
       const interval = videoMetadata.duration / (numKeyMoments + 1);

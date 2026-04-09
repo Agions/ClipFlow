@@ -39,11 +39,11 @@ interface AIModelSelectorProps {
   respectApiKeyConfig?: boolean;
 }
 
-const toDisplayModel = (model: CoreAIModel): AIModel => ({
+const toDisplayModel = (model: CoreAIModel): DisplayAIModel => ({
   id: model.id,
   name: model.name,
   provider: model.provider,
-  category: model.category.filter((item): item is Exclude<ModelCategory, 'all'> => item !== 'audio'),
+  category: (Array.isArray(model.category) ? model.category : [model.category]).filter((item): item is Exclude<ModelCategory, 'all'> => item !== 'audio'),
   description: model.description,
   features: model.features,
   tokenLimit: model.tokenLimit,
@@ -187,8 +187,7 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
                         animate={{ scale: 1 }}
                         transition={{ 
                           duration: 0.5,
-                          repeat: Infinity,
-                          repeatType: "reverse"
+                          delay: 0
                         }}
                         style={{ display: 'inline-block' }}
                       >
@@ -203,7 +202,7 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                   >
                     <CheckCircleFilled className={styles.checkIcon} />
                   </motion.div>
