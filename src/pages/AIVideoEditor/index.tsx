@@ -87,13 +87,32 @@ const AIVideoEditorContent: React.FC = () => {
       editorStore.setPlayheadMs(time * 1000);
     },
     onDelete: () => {
-      message.info('选中片段已删除（快捷键 Delete）');
+      const { selectedClipId, removeClipFromTrack } = editorStore;
+      if (selectedClipId) {
+        removeClipFromTrack(selectedClipId);
+        message.success('片段已删除');
+      } else {
+        message.warning('请先选择要删除的片段');
+      }
+    },
+    onInPoint: () => {
+      editorStore.setInPoint();
+      message.success(`入点: ${(editorStore.playheadMs / 1000).toFixed(1)}s`);
+    },
+    onOutPoint: () => {
+      editorStore.setOutPoint();
+      message.success(`出点: ${(editorStore.playheadMs / 1000).toFixed(1)}s`);
+    },
+    onSelectAll: () => {
+      editorStore.selectAllClips();
     },
     onUndo: () => {
-      message.info('撤销（快捷键 ⌘Z）');
+      editorStore.undo();
+      editorStore.undoTrack();
     },
     onRedo: () => {
-      message.info('重做（快捷键 ⇧⌘Z）');
+      editorStore.redo();
+      editorStore.redoTrack();
     },
     onExport: () => {
       goToNextStep();

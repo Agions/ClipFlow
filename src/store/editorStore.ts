@@ -76,6 +76,9 @@ export interface EditorState {
   snapThreshold: number; // 吸附阈值 (ms)
   selectedClipId?: string;
   selectedTrackId?: string;
+  // I/O 入出点（毫秒）
+  inPointMs?: number;
+  outPointMs?: number;
   
   // 历史记录 (撤销/重做)
   history: EditorHistory;
@@ -121,6 +124,9 @@ export interface EditorState {
   updateKeyframe: (clipId: string, keyframeId: string, updates: Partial<Keyframe>) => void;
   setTimelineSelection: (clipId?: string, trackId?: string) => void;
   clearTimelineSelection: () => void;
+  setInPoint: () => void;
+  setOutPoint: () => void;
+  selectAllClips: () => void;
   setTimelineDuration: (ms: number) => void;
   setSnapEnabled: (enabled: boolean) => void;
   saveTrackHistory: () => void;
@@ -165,6 +171,8 @@ const initialState = {
   snapEnabled: true,
   snapThreshold: 100,
   selectedClipId: undefined,
+  inPointMs: undefined,
+  outPointMs: undefined,
   selectedTrackId: undefined,
   history: {
     past: [],
@@ -421,6 +429,18 @@ export const useEditorStore = create<EditorState>()(
       
       clearTimelineSelection: () =>
         set({ selectedClipId: undefined, selectedTrackId: undefined }),
+
+      setInPoint: () => set({ inPointMs: get().playheadMs }),
+
+      setOutPoint: () => set({ outPointMs: get().playheadMs }),
+
+      selectAllClips: () => {
+        const allClipIds = get().timelineTracks.flatMap(t => t.clips.map(c => c.id));
+        if (allClipIds.length === 0) return;
+        const firstId = allClipIds[0];
+        const firstTrack = get().timelineTracks.find(t => t.clips.some(c => c.id === firstId));
+        set({ selectedClipId: firstId, selectedTrackId: firstTrack?.id });
+      },
       
       setTimelineDuration: (ms) => set({ timelineDuration: Math.max(0, ms) }),
       setSnapEnabled: (enabled) => set({ snapEnabled: enabled }),

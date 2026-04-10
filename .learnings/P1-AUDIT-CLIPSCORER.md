@@ -92,3 +92,21 @@ AIVideoEditor
 2. **[P1]** `scoreLaughter` 和 `scoreEmotion` 增加音频能量加权（`audioEnergy` 字段）
 3. **[P1]** 补全 douyin hashtag 映射，扩展 xiaohongshu hashtag 至 20+
 4. **[P2]** 硬编码路径替换为 Tauri path API
+
+---
+
+## P1 修复完成（2026-04-10 下午）
+
+### 修复 1：clipScorer audioEnergy 加权
+- `scoreLaughter()` 和 `scoreEmotion()` 现在接收 `clip.audioEnergy`
+- 高音频能量段（>0.5）额外加权 25-30 分
+- 追加笑声关键词：哈哈哈、笑死、太好笑
+
+### 修复 2：SEO 多平台 hashtag 扩展
+- douyin: 7 → 15 个（新增：上热门、必看、种草、干货、好物推荐、生活小技巧、真实分享等）
+- xiaohongshu: 7 → 20 个（新增：真实分享、穿搭、美妆、护肤、生活技巧、家居、母婴、职场、美食、旅行、健身、Plog）
+
+### 修复 3：硬编码路径
+- Rust 新增 `get_export_dir` 命令（使用 dirs crate，返回平台下载目录）
+- pipeline.ts：`/tmp/cutdeck-exports` → `invoke('get_export_dir')`
+- ClipRepurpose.tsx：`/tmp/CutDeck/...` → `invoke('get_export_dir')`
