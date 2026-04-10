@@ -9,6 +9,7 @@ import { notify } from '@/shared';
 import { logger } from '@/utils/logger';
 import type { AIAnalyzeProps, Scene } from '@/core/types';
 import styles from './AIAnalyze.module.css';
+import HighlightList from './HighlightList';
 
 // 格式化时间
 const formatTime = (seconds: number): string => {
@@ -391,6 +392,13 @@ const AIAnalyze: React.FC<AIAnalyzeProps> = memo(({ onNext }) => {
               )}
             </ul>
           </div>
+
+          {/* 高光时刻 — Rust highlight_detector.rs */}
+          {state.currentVideo && (
+            <div style={{ marginTop: 16 }}>
+              <HighlightList videoInfo={state.currentVideo} />
+            </div>
+          )}
 
           <div className={styles.actionBar}>
             <button className={`${styles.actionBtn} ${styles.actionBtnSecondary}`} onClick={handleReAnalyze}>
