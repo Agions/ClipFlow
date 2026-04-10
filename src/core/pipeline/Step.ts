@@ -131,7 +131,7 @@ export function reportProgress(
 
 /**
  * 创建标准化的 Step 包装器
- * 将普通 async 函数转为符合 Step 接口的对象
+ * 支持 sync 或 async 执行函数
  */
 export function createStep<TInput, TOutput>(
   meta: StepMeta,
@@ -139,11 +139,15 @@ export function createStep<TInput, TOutput>(
     input: TInput,
     context: PipelineContext,
     options?: StepOptions,
-  ) => Promise<TOutput>,
+  ) => TOutput | Promise<TOutput>,
 ): Step<TInput, TOutput> {
   return {
     meta: { required: true, ...meta },
-    execute: executor,
+    // 统一转为 async execute 以符合 Step 接口
+    execute: async (input, context, options) => {
+      const result = executor(input, context, options);
+      return result instanceof Promise ? result : Promise.resolve(result);
+    },
   };
 }
 

@@ -16,13 +16,16 @@ import { logger } from '@/utils/logger';
 import type { VideoInfo, VideoAnalysis } from '@/core/types';
 import type { CandidateClip, ClipScore } from './clipScorer';
 import type { SEOMetadata, SocialPlatform } from './seoGenerator';
-import type { AspectRatio } from './multiFormatExport';
+import type { AspectRatio, ExportTask } from './multiFormatExport';
 
-import { ClipScorer, clipScorer } from './clipScorer';
-import { SEOGenerator } from './seoGenerator';
-import { multiFormatExporter, type ExportTask } from './multiFormatExport';
-import { invoke } from '@tauri-apps/api/core';
-import { visionService } from '@/core/services/vision.service';
+// Step-based pipeline components
+import {
+  buildCandidatesStep,
+  scoreClipsStep,
+  generateSEOStep,
+  prepareExportStep,
+} from '@/core/pipeline/steps';
+import type { PipelineContext } from '@/core/pipeline/Step';
 
 // ============================================================
 // Types
@@ -87,16 +90,13 @@ export const DEFAULT_REPURPOSING_OPTIONS: Required<RepurposingOptions> = {
 // ============================================================
 
 export class ClipRepurposingPipeline {
-  private scorer: ClipScorer;
-  private seoGenerator: SEOGenerator;
-
-  constructor() {
-    this.scorer = clipScorer;
-    this.seoGenerator = new SEOGenerator('zh');
-  }
-
   /**
-   * 执行完整的拆条管道
+   * 执行完整的拆条管道（基于 Step 架构）
+   *
+   * Step 序列：
+   *   BuildCandidates → ScoreClips → [GenerateSEO] → [PrepareExport]
+   *
+   * @deprecated 外部可直接使用 Step 对象组合以获得更好的可测试性
    */
   async run(
     videoInfo: VideoInfo,
@@ -107,7 +107,16 @@ export class ClipRepurposingPipeline {
       ...DEFAULT_REPURPOSING_OPTIONS,
       ...options,
     };
-    const { onProgress } = opts;
+
+    const ctx: PipelineContext = {
+      stepIndex: 0,
+      completedSteps: [],
+      meta: { videoId: videoInfo.id },
+    };
+
+    const stepOptions = {
+      onProgress: opts.onProgress,
+    };
 
     logger.info('[ClipRepurposingPipeline] 开始执行', {
       videoDuration: videoInfo.duration,
@@ -115,47 +124,68 @@ export class ClipRepurposingPipeline {
       platform: opts.platform,
     });
 
-    // ── Stage 1: 构建候选片段（含 Rust 高光检测）────────────
-    onProgress('analyzing', 10, '识别高光候选片段...');
-    const candidates = await this.buildCandidates(videoInfo, analysis);
-    logger.info(`[ClipRepurposingPipeline] 生成 ${candidates.length} 个候选片段`);
+    // ── Step 1: 构建候选片段 ──────────────────────────────
+    ctx.stepIndex = 0;
+    opts.onProgress('analyzing', 10, '识别高光候选片段...');
+    const candidates = await buildCandidatesStep.execute(
+      { videoInfo, analysis },
+      ctx,
+      stepOptions,
+    );
 
-    // ── Stage 2: 多维评分 ─────────────────────────────────
-    onProgress('scoring', 30, '多维评分排序...');
-    const scored = this.scorer.topClips(candidates);
-    logger.info(`[ClipRepurposingPipeline] 评分完成，top ${scored.length} 个片段`);
-
-    // ── Stage 3: SEO 元数据生成 ───────────────────────────
-    let seoResults: SEOMetadata[] = [];
-    if (opts.generateSEO) {
-      onProgress('generating_seo', 50, '生成 SEO 元数据...');
-      seoResults = this.seoGenerator.generateBatch(scored, {
-        platform: opts.platform,
-        includeNativeHashtags: true,
-      });
-      logger.info('[ClipRepurposingPipeline] SEO 元数据生成完成');
+    if (candidates.length === 0) {
+      logger.warn('[ClipRepurposingPipeline] 无候选片段，按均匀时长切分');
+      // Fallback：均匀切分
+      const uniform = buildUniformCandidates(videoInfo.duration, 30, 90);
+      candidates.push(...uniform);
     }
 
-    // ── Stage 4: 准备导出任务 ─────────────────────────────
-    const exportTasks: Map<string, ExportTask[]> = new Map();
+    logger.info(`[ClipRepurposingPipeline] 生成 ${candidates.length} 个候选片段`);
+    ctx.completedSteps.push(buildCandidatesStep.meta.name);
+
+    // ── Step 2: 多维评分 ─────────────────────────────────
+    ctx.stepIndex = 1;
+    opts.onProgress('scoring', 30, '多维评分排序...');
+    const scored = await scoreClipsStep.execute(
+      { candidates, targetCount: opts.targetClipCount },
+      ctx,
+      stepOptions,
+    );
+    logger.info(`[ClipRepurposingPipeline] 评分完成，top ${scored.length} 个片段`);
+    ctx.completedSteps.push(scoreClipsStep.meta.name);
+
+    // ── Step 3: SEO 元数据生成 ───────────────────────────
+    let seoResults: SEOMetadata[] = [];
+    if (opts.generateSEO) {
+      ctx.stepIndex = 2;
+      opts.onProgress('generating_seo', 50, '生成 SEO 元数据...');
+      seoResults = await generateSEOStep.execute(
+        { clips: scored, platform: opts.platform },
+        ctx,
+        stepOptions,
+      );
+      logger.info('[ClipRepurposingPipeline] SEO 元数据生成完成');
+      ctx.completedSteps.push(generateSEOStep.meta.name);
+    }
+
+    // ── Step 4: 准备导出任务 ─────────────────────────────
+    let exportTasks = new Map<string, ExportTask[]>();
     if (opts.multiFormat && opts.exportFormats.length > 0) {
-      onProgress('exporting', 70, '准备导出任务...');
-      // 动态获取导出目录（优先用户指定，否则调用 Rust get_export_dir）
-      const exportDir = opts.outputDir
-        ?? await invoke<string>('get_export_dir').catch(() => '/tmp/CutDeck');
-      for (const clip of scored) {
-        const tasks = multiFormatExporter.prepareExportTasks({
-          clipId: `clip_${clip.clip.startTime}_${clip.clip.endTime}`,
-          sourceVideoPath: videoInfo.path ?? videoInfo.id,
-          startTime: clip.clip.startTime,
-          endTime: clip.clip.endTime,
+      ctx.stepIndex = 3;
+      opts.onProgress('exporting', 70, '准备导出任务...');
+      exportTasks = await prepareExportStep.execute(
+        {
+          videoInfo,
+          clips: scored,
           formats: opts.exportFormats,
-          outputDir: exportDir,
+          outputDir: opts.outputDir,
           quality: 'high',
-        });
-        exportTasks.set(clip.clip.startTime.toString(), tasks);
-      }
+        },
+        ctx,
+        stepOptions,
+      );
       logger.info('[ClipRepurposingPipeline] 导出任务准备完成');
+      ctx.completedSteps.push(prepareExportStep.meta.name);
     }
 
     // ── 组装结果 ──────────────────────────────────────────
@@ -167,7 +197,7 @@ export class ClipRepurposingPipeline {
     }));
 
     const totalOutputDuration = scored.reduce(
-      (sum, s) => sum + (s.clip.endTime - s.clip.startTime), 0
+      (sum, s) => sum + ((s.clip.endTime ?? 0) - (s.clip.startTime ?? 0)), 0
     );
 
     logger.info('[ClipRepurposingPipeline] 管道完成', {
@@ -183,145 +213,34 @@ export class ClipRepurposingPipeline {
       exportedFormats: opts.multiFormat ? opts.exportFormats : ['9:16'],
     };
   }
+}
 
-  // ============================================================
-  // Private
-  // ============================================================
+// ============================================================
+// Fallback: 均匀切分（无任何候选数据时）
+// ============================================================
 
-  /**
-   * 从 VideoAnalysis 构建候选片段
-   *
-   * 策略：
-   * 1. 以场景边界为主要断点
-   * 2. 结合 ASR 情感峰值（如果有）
-   * 3. 每个候选片段满足 min-max 时长约束
-   */
-  private async buildCandidates(videoInfo: VideoInfo, analysis: VideoAnalysis): Promise<CandidateClip[]> {
-    const { scenes = [] } = analysis;
-    const candidates: CandidateClip[] = [];
+function buildUniformCandidates(
+  totalDuration: number,
+  minDuration: number,
+  idealDuration: number,
+): CandidateClip[] {
+  const clips: CandidateClip[] = [];
+  let cursor = 0;
 
-    // ── 接入 Rust 高光检测 ──────────────────────────────────
-    // 使用 FFmpeg scdet + 音频能量分析，识别高光片段
-    const highlights = await visionService.detectHighlights(videoInfo, {
-      topN: 15,
-      minDurationMs: 500,
-      detectScene: true,
-      threshold: 1.5,
+  while (cursor < totalDuration) {
+    const remaining = totalDuration - cursor;
+    if (remaining < minDuration) break;
+    const clipDuration = Math.min(idealDuration, remaining);
+    clips.push({
+      startTime: cursor,
+      endTime: cursor + clipDuration,
+      sceneType: 'uniform',
+      transcript: '',
     });
-
-    // 将高光片段作为高质量候选（优先级高于场景边界）
-    for (const h of highlights) {
-      candidates.push({
-        startTime: h.startTime,
-        endTime: h.endTime,
-        sceneType: 'highlight',
-        transcript: this.extractSceneTranscript(analysis, h.startTime, h.endTime),
-        audioEnergy: h.audioScore,
-      });
-    }
-
-    // ── 场景边界候选（补充） ───────────────────────────────
-    if (scenes.length > 0) {
-      for (const scene of scenes) {
-        const duration = scene.endTime - scene.startTime;
-
-        // 跳过太短或与现有高光高度重叠的
-        if (duration < 10) continue;
-
-        const overlaps = highlights.some(
-          h => h.startTime < scene.endTime && h.endTime > scene.startTime
-        );
-        if (overlaps) continue; // 高光已覆盖，跳过重复场景
-
-        // 时长过长：拆分为多个候选
-        if (duration > 120) {
-          const subClips = this.splitLongScene(scene.startTime, scene.endTime, 60, 90);
-          candidates.push(...subClips);
-          continue;
-        }
-
-        candidates.push({
-          startTime: scene.startTime,
-          endTime: scene.endTime,
-          sceneType: scene.type ?? 'scene',
-          transcript: this.extractSceneTranscript(analysis, scene.startTime, scene.endTime),
-        });
-      }
-    }
-
-    // 无任何数据时：按时间均匀切分
-    if (candidates.length === 0) {
-      return this.buildUniformCandidates(videoInfo.duration, 30, 90);
-    }
-
-    return candidates;
+    cursor += clipDuration;
   }
 
-  /**
-   * 拆分长场景为多个候选片段
-   */
-  private splitLongScene(
-    start: number,
-    end: number,
-    minDuration: number,
-    idealDuration: number,
-  ): CandidateClip[] {
-    const clips: CandidateClip[] = [];
-    let cursor = start;
-
-    while (cursor < end) {
-      const clipEnd = Math.min(cursor + idealDuration, end);
-      clips.push({
-        startTime: cursor,
-        endTime: clipEnd,
-        sceneType: 'split',
-        transcript: '',
-      });
-      cursor = clipEnd;
-    }
-
-    return clips;
-  }
-
-  /**
-   * 按均匀时长切分（无场景数据时的 fallback）
-   */
-  private buildUniformCandidates(
-    totalDuration: number,
-    minDuration: number,
-    idealDuration: number,
-  ): CandidateClip[] {
-    const clips: CandidateClip[] = [];
-    let cursor = 0;
-
-    while (cursor < totalDuration) {
-      const remaining = totalDuration - cursor;
-      if (remaining < minDuration) break;
-
-      const clipDuration = Math.min(idealDuration, remaining);
-      clips.push({
-        startTime: cursor,
-        endTime: cursor + clipDuration,
-        sceneType: 'uniform',
-        transcript: '',
-      });
-      cursor += clipDuration;
-    }
-
-    return clips;
-  }
-
-  /**
-   * 从 analysis 中提取指定时间范围的文本（如果有 ASR 数据）
-   */
-  private extractSceneTranscript(
-    analysis: VideoAnalysis,
-    startTime: number,
-    endTime: number,
-  ): string {
-    // 目前从 summary 中近似（未来可接入 ASR 字幕数据）
-    return analysis.summary ?? '';
-  }
+  return clips;
 }
 
 export const clipRepurposingPipeline = new ClipRepurposingPipeline();
