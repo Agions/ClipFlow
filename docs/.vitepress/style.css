@@ -57,6 +57,8 @@ html.dark {
 }
 
 
+/* LIGHT MODE — only active when dark mode is OFF */
+:root:not(.dark) {
 /* ============================================
    LIGHT MODE — Force Readable Colors
    (must come before all other styles)
@@ -193,6 +195,8 @@ body {
 
 /* Custom containers */
 .vp-doc .custom-block { background: #f9fafb !important; }
+
+}
 
 /* ============================================
    Global Resets & Base
