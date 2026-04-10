@@ -277,7 +277,7 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({ onNext }) => {
       </div>
 
       <div className={styles.hintAlert}>
-        <strong>💡 提示：</strong> 选择创作模式后，AI 将根据该模式生成最适合的文案和效果
+        <strong><span aria-hidden="true">💡</span> 提示：</strong> 选择创作模式后，AI 将根据该模式生成最适合的文案和效果
       </div>
     </div>
   );

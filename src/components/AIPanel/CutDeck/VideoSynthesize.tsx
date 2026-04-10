@@ -217,11 +217,11 @@ const VideoSynthesize: React.FC<VideoSynthesizeProps> = ({ onNext }) => {
       <div className={styles.stepContent}>
         <div className={styles.stepTitle}>
           <div className={styles.stepTitleLeft}>
-            <h2>⚙️ 视频合成配置</h2>
+            <h2><span aria-hidden="true">⚙️</span> 视频合成配置</h2>
           </div>
         </div>
         <div className={styles.warningAlert}>
-          ⚠️ 请先上传视频
+          <span aria-hidden="true">⚠️</span> 请先上传视频
           <button
             className={styles.warningAlertBtn}
             onClick={() => dispatch({ type: 'SET_STEP', payload: 'video-upload' })}
@@ -238,11 +238,11 @@ const VideoSynthesize: React.FC<VideoSynthesizeProps> = ({ onNext }) => {
       <div className={styles.stepContent}>
         <div className={styles.stepTitle}>
           <div className={styles.stepTitleLeft}>
-            <h2>⚙️ 视频合成配置</h2>
+            <h2><span aria-hidden="true">⚙️</span> 视频合成配置</h2>
           </div>
         </div>
         <div className={styles.warningAlert}>
-          ⚠️ 请先生成文案
+          <span aria-hidden="true">⚠️</span> 请先生成文案
           <button
             className={styles.warningAlertBtn}
             onClick={() => dispatch({ type: 'SET_STEP', payload: 'script-generate' })}
@@ -276,10 +276,10 @@ const VideoSynthesize: React.FC<VideoSynthesizeProps> = ({ onNext }) => {
             <div className={styles.synthesizeProgressPercent}>{progress}%</div>
           </div>
           <div className={styles.synthesizeProgressLabel}>
-            {progress < 30 ? '🎤 生成配音中...' :
-             progress < 60 ? '📝 生成字幕中...' :
-             progress < 80 ? '✨ 应用特效中...' :
-             '🔗 音画同步中...'}
+            {progress < 30 ? <><span aria-hidden="true">🎤</span> 生成配音中...</> :
+             progress < 60 ? <><span aria-hidden="true">📝</span> 生成字幕中...</> :
+             progress < 80 ? <><span aria-hidden="true">✨</span> 应用特效中...</> :
+             <><span aria-hidden="true">🔗</span> 音画同步中...</>}
           </div>
           <div className={styles.synthesizeProgressSub}>请耐心等待...</div>
         </div>
@@ -293,7 +293,7 @@ const VideoSynthesize: React.FC<VideoSynthesizeProps> = ({ onNext }) => {
       <div className={styles.stepContent}>
         <div className={styles.stepTitle}>
           <div className={styles.stepTitleLeft}>
-            <h2>🎬 视频合成完成</h2>
+            <h2><span aria-hidden="true">🎬</span> 视频合成完成</h2>
             <span className={styles.statusBadge}>
               <span className={styles.statusBadgeDot} />
               已合成
@@ -336,7 +336,7 @@ const VideoSynthesize: React.FC<VideoSynthesizeProps> = ({ onNext }) => {
     <div className={styles.stepContent}>
       <div className={styles.stepTitle}>
         <div className={styles.stepTitleLeft}>
-          <h2>⚙️ 视频合成配置</h2>
+          <h2><span aria-hidden="true">⚙️</span> 视频合成配置</h2>
         </div>
       </div>
 

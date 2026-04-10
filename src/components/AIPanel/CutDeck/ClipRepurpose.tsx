@@ -186,7 +186,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = ({ onNext }) => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>🎬 AI 智能拆条</h2>
+        <h2 className={styles.title}><span aria-hidden="true">🎬</span> AI 智能拆条</h2>
         <p className={styles.subtitle}>长视频 → 多段精彩短片段，自动识别高光 · 多维评分 · 多格式导出</p>
       </div>
 
@@ -268,10 +268,10 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = ({ onNext }) => {
               strokeColor={{ '0%': '#FF9F43', '100%': '#FF6B35' }}
             />
             <p className={styles.progressStage}>
-              {stage === 'analyzing' && '🔍 识别高光片段...'}
-              {stage === 'scoring' && '📊 多维评分中...'}
-              {stage === 'generating_seo' && '✨ 生成 SEO 元数据...'}
-              {stage === 'exporting' && '📦 准备导出...'}
+              {stage === 'analyzing' && <><span aria-hidden="true">🔍</span> 识别高光片段...</>}
+              {stage === 'scoring' && <><span aria-hidden="true">📊</span> 多维评分中...</>}
+              {stage === 'generating_seo' && <><span aria-hidden="true">✨</span> 生成 SEO 元数据...</>}
+              {stage === 'exporting' && <><span aria-hidden="true">📦</span> 准备导出...</>}
             </p>
           </div>
         )}

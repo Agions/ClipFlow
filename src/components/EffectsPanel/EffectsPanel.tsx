@@ -263,7 +263,7 @@ const FilterThumb: React.FC<FilterThumbProps> = React.memo(
       >
         {/* Gradient thumbnail simulating video frame */}
         <div className={styles.filterThumbBg} />
-        <span className={styles.filterThumbIcon}>{item.icon}</span>
+        <span className={styles.filterThumbIcon} aria-hidden="true">{item.icon}</span>
       </div>
 
       {/* Name label */}
@@ -577,7 +577,7 @@ const EffectsPanel: React.FC<EffectsPanelProps> = ({
                   <span className={styles.spinner} aria-hidden="true" />
                   生成中…
                 </>
-              ) : '⚡ 生成预览'}
+              ) : <><span aria-hidden="true">⚡</span> 生成预览</>}
             </button>
             <button
               type="button"

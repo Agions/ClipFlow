@@ -231,12 +231,12 @@ const VideoExport: React.FC<VideoExportProps> = ({ onComplete }) => {
             <div className={styles.progressPercent}>{progress}%</div>
           </div>
           <div className={styles.progressLabel}>
-            {progressStage || (
-              progress < 30 ? '🎬 视频编码中...' :
-              progress < 60 ? '🔊 音频编码中...' :
-              progress < 90 ? '💾 生成文件...' :
-              '✨ 导出完成！'
-            )}
+            {progressStage || (() => {
+              if (progress < 30) return <><span aria-hidden="true">🎬</span> 视频编码中...</>;
+              if (progress < 60) return <><span aria-hidden="true">🔊</span> 音频编码中...</>;
+              if (progress < 90) return <><span aria-hidden="true">💾</span> 生成文件...</>;
+              return <><span aria-hidden="true">✨</span> 导出完成！</>;
+            })()}
           </div>
           <div className={styles.progressSub}>
             {etaSeconds !== null && etaSeconds > 0
@@ -301,7 +301,7 @@ const VideoExport: React.FC<VideoExportProps> = ({ onComplete }) => {
                     <div className={styles.formatCheck}>
                       <div className={styles.formatCheckDot} />
                     </div>
-                    <span className={styles.formatEmoji}>{fmt.emoji}</span>
+                    <span className={styles.formatEmoji} aria-hidden="true">{fmt.emoji}</span>
                     <span className={styles.formatName}>{fmt.label}</span>
                     <span className={styles.formatDesc}>{fmt.desc}</span>
                   </div>
