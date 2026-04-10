@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
 :root {
   /* Brand: Cinematic Dark × Warm Amber */
   --sf-indigo: #1a1a2e;
@@ -26,8 +28,8 @@
   --vp-code-bg: #fef3c7;
 
   /* Fonts */
-  --vp-font-family-base: 'IBM Plex Sans', 'Inter', system-ui, -apple-system, sans-serif;
-  --vp-font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --vp-font-family-base: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --vp-font-family-mono: 'JetBrains Mono', monospace;
 }
 
 html.dark {
@@ -49,11 +51,242 @@ html.dark {
   --vp-code-bg: #1a1a2e;
 }
 
-html.dark {
+.dark {
+  /* Hero — amber brand gradient in dark mode */
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #2684ff 0%, #9f7aea 50%, #2684ff 100%);
+  --vp-home-hero-name-background: linear-gradient(135deg, #f8fafc 0%, #fcd34d 30%, #f59e0b 70%, #d97706 100%);
   -webkit-background-clip: text;
   background-clip: text;
+}
+
+
+
+/* ============================================
+   Hero — Professional Typography
+   ============================================ */
+
+/* Hero name — large, bold, brand gradient */
+.VPHero .name {
+  font-family: 'Syne', system-ui, sans-serif !important;
+  font-size: clamp(2.5rem, 6vw, 4rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1.05 !important;
+  margin: 0 !important;
+  color: transparent !important;
+  background: linear-gradient(135deg, #f8fafc 0%, #fcd34d 35%, #f59e0b 70%, #d97706 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+/* Hero tagline — secondary, readable */
+.VPHero .tagline {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
+  font-size: clamp(0.9rem, 2vw, 1.1rem) !important;
+  font-weight: 400 !important;
+  color: var(--vp-c-text-2) !important;
+  letter-spacing: 0.01em !important;
+  max-width: 480px;
+  margin: 0 auto !important;
+  line-height: 1.7 !important;
+}
+
+/* Hero text block */
+.VPHero .text {
+  font-size: 1rem !important;
+  color: var(--vp-c-text-2) !important;
+  margin-top: 0.5rem !important;
+}
+
+/* Hero actions */
+.VPHero .actions {
+  margin-top: 2rem !important;
+  gap: 0.75rem !important;
+}
+
+/* Hero image */
+.VPHero .image-container {
+  margin-top: 0 !important;
+}
+
+/* Feature icons — use text/emoji at proper size */
+.VPFeature .icon {
+  font-size: 1.75rem !important;
+  margin-bottom: 0.75rem !important;
+  display: block !important;
+  line-height: 1 !important;
+}
+
+/* Feature title */
+.VPFeature .title {
+  font-family: 'Syne', system-ui, sans-serif !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  color: var(--vp-c-text-1) !important;
+  margin: 0 0 0.4rem !important;
+}
+
+/* Feature description */
+.VPFeature .details {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
+  font-size: 0.8rem !important;
+  color: var(--vp-c-text-3) !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+}
+
+/* Doc page — Typography scale */
+.vp-doc h1 {
+  font-family: 'Syne', system-ui, sans-serif !important;
+  font-size: 2rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.15 !important;
+  margin: 0 0 1.5rem !important;
+  padding-bottom: 0.75rem !important;
+  border-bottom: 1px solid var(--vp-c-divider) !important;
+  background: linear-gradient(90deg, var(--sf-amber, #f59e0b) 0%, transparent 60%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+.vp-doc h2 {
+  font-family: 'Syne', system-ui, sans-serif !important;
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  margin: 2.5rem 0 1rem !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid var(--vp-c-divider) !important;
+  color: var(--vp-c-text-1) !important;
+}
+
+.vp-doc h3 {
+  font-family: 'Syne', system-ui, sans-serif !important;
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  margin: 2rem 0 0.75rem !important;
+  color: var(--vp-c-text-1) !important;
+}
+
+.vp-doc h4 {
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  color: var(--vp-c-text-1) !important;
+}
+
+.vp-doc p {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
+  line-height: 1.85 !important;
+  margin-bottom: 1rem !important;
+  color: var(--vp-c-text-2) !important;
+}
+
+.vp-doc li {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
+  line-height: 1.75 !important;
+  color: var(--vp-c-text-2) !important;
+}
+
+.vp-doc strong {
+  font-weight: 600 !important;
+  color: var(--vp-c-text-1) !important;
+}
+
+/* Code — mono, refined */
+.vp-doc div[class*="language-"] {
+  border-radius: 10px !important;
+  border: 1px solid rgba(245, 158, 11, 0.1) !important;
+  margin: 1.5rem 0 !important;
+  background: #090910 !important;
+}
+
+.vp-doc :not(pre) > code {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.85em !important;
+  background: rgba(245, 158, 11, 0.1) !important;
+  color: #fbbf24 !important;
+  padding: 0.2em 0.45em !important;
+  border-radius: 5px !important;
+  border: 1px solid rgba(245, 158, 11, 0.18) !important;
+}
+
+/* Table — refined */
+.vp-doc table {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--vp-c-border) !important;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
+  font-size: 0.875rem !important;
+}
+
+.vp-doc table th {
+  font-family: 'Syne', system-ui, sans-serif !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  background: rgba(245, 158, 11, 0.06) !important;
+  color: var(--sf-amber, #f59e0b) !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.vp-doc table td {
+  padding: 0.65rem 1rem !important;
+  color: var(--vp-c-text-2) !important;
+  border-bottom-color: var(--vp-c-divider) !important;
+}
+
+.vp-doc table tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* Custom containers — tip/info/warning/danger */
+.vp-doc .custom-block {
+  border-radius: 8px !important;
+  border: 1px solid !important;
+  padding: 1rem 1.25rem !important;
+  margin: 1.5rem 0 !important;
+}
+
+.vp-doc .custom-block.tip {
+  background: rgba(245, 158, 11, 0.06) !important;
+  border-color: rgba(245, 158, 11, 0.22) !important;
+}
+.vp-doc .custom-block.tip .custom-block-title { color: #f59e0b !important; }
+
+.vp-doc .custom-block.info {
+  background: rgba(59, 130, 246, 0.06) !important;
+  border-color: rgba(59, 130, 246, 0.22) !important;
+}
+.vp-doc .custom-block.info .custom-block-title { color: #60a5fa !important; }
+
+.vp-doc .custom-block.warning {
+  background: rgba(251, 191, 36, 0.06) !important;
+  border-color: rgba(251, 191, 36, 0.22) !important;
+}
+.vp-doc .custom-block.warning .custom-block-title { color: #fbbf24 !important; }
+
+.vp-doc .custom-block.danger {
+  background: rgba(239, 68, 68, 0.06) !important;
+  border-color: rgba(239, 68, 68, 0.22) !important;
+}
+.vp-doc .custom-block.danger .custom-block-title { color: #f87171 !important; }
+
+.vp-doc .custom-block p {
+  font-size: 0.875rem !important;
+  margin: 0 !important;
+}
+
+/* Smooth scrolling */
+html { scroll-behavior: smooth !important; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .VPFeature {
+    transition: none !important;
+  }
 }
 
 
