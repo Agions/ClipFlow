@@ -37,6 +37,9 @@ features:
     details: Tauri 2 + React 18，原生性能体验，轻量安装包
 ---
 
+<div id="cutdeck-root">
+
+
 <div class="cutdeck-section cutdeck-section--dark">
 
 <div class="cutdeck-section-header">
@@ -170,5 +173,6 @@ cutdeck export --format mp4 --quality high</div>
 <a href="/guide/quick-start" class="footer-btn footer-btn-secondary">
 阅读文档 →
 </a>
+</div>
 </div>
 </div>
