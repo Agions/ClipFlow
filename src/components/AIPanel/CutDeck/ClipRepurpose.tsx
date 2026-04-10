@@ -11,7 +11,7 @@
  *   bg-base: #0C0D14 | accent: #FF9F43 | cyan: #00D4FF
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { useCutDeck } from '../AIEditorContext';
 import { Button, Progress, Tag, Checkbox, Select, message } from 'antd';
 import {
@@ -55,7 +55,7 @@ interface ClipRepurposeProps {
   onNext?: () => void;
 }
 
-const ClipRepurpose: React.FC<ClipRepurposeProps> = ({ onNext }) => {
+const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
   const { state } = useCutDeck();
   const { currentVideo, analysis } = state;
   const videoPath = currentVideo?.path ?? '';
@@ -375,7 +375,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = ({ onNext }) => {
       )}
     </div>
   );
-};
+});
 
 // Helper: 时间格式化
 function formatTime(seconds: number): string {

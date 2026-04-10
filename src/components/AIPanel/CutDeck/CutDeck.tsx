@@ -8,7 +8,7 @@
  * - 字体：Outfit（标题）+ Figtree（正文）
  * - 玻璃拟态：rgba(20, 21, 32, 0.8) + backdrop-filter: blur(20px)
  */
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, memo } from 'react';
 import {
   PlusOutlined,
   VideoCameraOutlined,
@@ -186,7 +186,7 @@ const StepList: React.FC<StepListProps> = ({
 // 主组件
 // ============================================================================
 
-const CutDeck: React.FC<CutDeckProps> = ({ children }) => {
+const CutDeck: React.FC<CutDeckProps> = memo(({ children }) => {
   const { state, setStep } = useCutDeck();
   const { currentStep, stepStatus } = state;
   const activeStepRef = useRef<HTMLDivElement | null>(null);
@@ -245,6 +245,6 @@ const CutDeck: React.FC<CutDeckProps> = ({ children }) => {
       </main>
     </div>
   );
-};
+});
 
 export default CutDeck;

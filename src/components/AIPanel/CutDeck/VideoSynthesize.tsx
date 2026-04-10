@@ -3,7 +3,7 @@
  * 数据输入: video, script, voice
  * 数据输出: synthesis (最终合成视频)
  */
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, memo } from 'react';
 import { useCutDeck } from '../AIEditorContext';
 import { voiceSynthesisService } from '@/core/services/voice-synthesis.service';
 import { videoEffectService } from '@/core/services/video-effect.service';
@@ -64,7 +64,7 @@ const SUBTITLE_POSITIONS = [
   { value: 'top', label: '顶部' },
 ];
 
-const VideoSynthesize: React.FC<VideoSynthesizeProps> = ({ onNext }) => {
+const VideoSynthesize: React.FC<VideoSynthesizeProps> = memo(({ onNext }) => {
   const { state, setVoice, setSynthesis, goToNextStep, dispatch } = useCutDeck();
   const [synthesizing, setSynthesizing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -638,6 +638,6 @@ const VideoSynthesize: React.FC<VideoSynthesizeProps> = ({ onNext }) => {
       </div>
     </div>
   );
-};
+});
 
 export default VideoSynthesize;

@@ -2,7 +2,7 @@
  * 步骤4: 生成文案 — AI Cinema Studio Redesign
  * 三大核心功能：AI视频解说 / AI第一人称 / AI混剪
  */
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, memo } from 'react';
 import { useCutDeck } from '../AIEditorContext';
 import { aiService } from '@/core/services/ai.service';
 import type { ScriptData, AIModel, AIModelSettings, ModelProvider } from '@/core/types';
@@ -95,7 +95,7 @@ interface ScriptGenerateProps {
   onNext?: () => void;
 }
 
-const ScriptGenerate: React.FC<ScriptGenerateProps> = ({ onNext }) => {
+const ScriptGenerate: React.FC<ScriptGenerateProps> = memo(({ onNext }) => {
   const {
     state,
     setNarrationScript,
@@ -585,6 +585,6 @@ const ScriptGenerate: React.FC<ScriptGenerateProps> = ({ onNext }) => {
       </div>
     </div>
   );
-};
+});
 
 export default ScriptGenerate;

@@ -2,7 +2,7 @@
  * 步骤3: AI 分析 — AI Cinema Studio Redesign
  * 神经网络可视化 + 进度大数字 + 逐项 stagger 动画
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { useCutDeck } from '../AIEditorContext';
 import { visionService } from '@/core/services/vision.service';
 import { notify } from '@/shared';
@@ -125,7 +125,7 @@ const CheckIcon = () => (
   </svg>
 );
 
-const AIAnalyze: React.FC<AIAnalyzeProps> = ({ onNext }) => {
+const AIAnalyze: React.FC<AIAnalyzeProps> = memo(({ onNext }) => {
   const { state, setAnalysis, goToNextStep, dispatch } = useCutDeck();
 
   const [analyzing, setAnalyzing] = useState(false);
@@ -566,6 +566,6 @@ const AIAnalyze: React.FC<AIAnalyzeProps> = ({ onNext }) => {
       </div>
     </div>
   );
-};
+});
 
 export default AIAnalyze;

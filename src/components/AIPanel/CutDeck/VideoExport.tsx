@@ -1,7 +1,7 @@
 /**
  * 步骤6: 导出视频 — AI Cinema Studio Redesign
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/core';
 import { useCutDeck } from '../AIEditorContext';
@@ -42,7 +42,7 @@ const FPS_OPTIONS = [
   { value: 60, label: '60 fps' },
 ] as const;
 
-const VideoExport: React.FC<VideoExportProps> = ({ onComplete }) => {
+const VideoExport: React.FC<VideoExportProps> = memo(({ onComplete }) => {
   const { state, setExportSettings, dispatch } = useCutDeck();
   const [exporting, setExporting] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -475,6 +475,6 @@ const VideoExport: React.FC<VideoExportProps> = ({ onComplete }) => {
       </div>
     </div>
   );
-};
+});
 
 export default VideoExport;

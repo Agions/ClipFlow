@@ -3,7 +3,7 @@
  * 数据输出: project (ProjectData)
  * 流转到: VideoUpload
  */
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { useCutDeck } from '../AIEditorContext';
 import type { ProjectData } from '@/core/types';
 import { saveProjectToFile } from '@/services/tauri';
@@ -74,7 +74,7 @@ const createDefaultProjectName = () => {
   return `未命名项目-${timestamp}`;
 };
 
-const ProjectCreate: React.FC<ProjectCreateProps> = ({ onNext }) => {
+const ProjectCreate: React.FC<ProjectCreateProps> = memo(({ onNext }) => {
   const { state, setProject, goToNextStep } = useCutDeck();
   const { addRecentProject } = useSettings();
   const [loading, setLoading] = useState(false);
@@ -281,6 +281,6 @@ const ProjectCreate: React.FC<ProjectCreateProps> = ({ onNext }) => {
       </div>
     </div>
   );
-};
+});
 
 export default ProjectCreate;

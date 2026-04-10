@@ -4,7 +4,7 @@
  * 数据输出: video (VideoInfo) + duration/width/height
  * 流转到: AIAnalyze
  */
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, memo } from 'react';
 import { useCutDeck } from '../AIEditorContext';
 import { logger } from '@/utils/logger';
 import { formatDuration, formatFileSize, notify } from '@/shared';
@@ -35,7 +35,7 @@ interface VideoUploadProps {
   onNext?: () => void;
 }
 
-const VideoUpload: React.FC<VideoUploadProps> = ({ onNext }) => {
+const VideoUpload: React.FC<VideoUploadProps> = memo(({ onNext }) => {
   const { state, setVideo, goToNextStep } = useCutDeck();
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -424,6 +424,6 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onNext }) => {
       )}
     </div>
   );
-};
+});
 
 export default VideoUpload;
