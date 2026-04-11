@@ -74,7 +74,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
   // AI model options
   const models = useMemo(() => {
     const configuredModels = getAvailableModelsFromApiKeys(apiKeys, CORE_AI_MODELS as any);
-    return (configuredModels as any).map((model: AIModel) => ({
+    return (configuredModels as AIModel[]).map((model: AIModel) => ({
       id: model.id,
       name: model.name,
       provider: model.provider,

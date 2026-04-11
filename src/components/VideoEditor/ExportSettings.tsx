@@ -147,7 +147,7 @@ const ExportSettings: React.FC<ExportSettingsProps> = ({
                 <Col span={16}>
                   <Slider
                     value={audioVolume}
-                    onChange={(value) => onSettingsChange({ audioVolume: value })}
+                    onChange={(value: number) => onSettingsChange({ audioVolume: value })}
                     min={0}
                     max={150}
                     step={5}

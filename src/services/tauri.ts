@@ -69,7 +69,7 @@ export const ensureAppDataDir = async (): Promise<void> => {
     
     // 先尝试使用Rust函数检查目录
     try {
-      const dirPath = await invoke('check_app_data_directory');
+      const dirPath = await invoke<string>('check_app_data_directory');
       logger.info('Rust目录检查成功', { dirPath });
       return;
     } catch (rustError) {

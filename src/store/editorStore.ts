@@ -150,9 +150,9 @@ export interface EditorState {
  * 初始状态
  */
 const initialState = {
-  video: null,
-  script: null,
-  voice: null,
+  video: null as VideoData | null,
+  script: null as ScriptData | null,
+  voice: null as VoiceData | null,
   segments: [] as VideoSegment[],
   activePanel: 'video' as EditorPanel,
   previewPlaying: false,
@@ -160,8 +160,8 @@ const initialState = {
   volume: 1,
   muted: false,
   selection: {
-    segmentId: undefined,
-    multipleIds: [],
+    segmentId: undefined as string | undefined,
+    multipleIds: [] as string[],
   },
   zoom: 1,
   scrollPosition: 0,
@@ -170,19 +170,19 @@ const initialState = {
   timelineDuration: 60000,
   snapEnabled: true,
   snapThreshold: 100,
-  selectedClipId: undefined,
-  inPointMs: undefined,
-  outPointMs: undefined,
-  selectedTrackId: undefined,
+  selectedClipId: undefined as string | undefined,
+  inPointMs: undefined as number | undefined,
+  outPointMs: undefined as number | undefined,
+  selectedTrackId: undefined as string | undefined,
   history: {
-    past: [],
-    future: [],
+    past: [] as VideoSegment[][],
+    future: [] as VideoSegment[][],
   },
   trackHistory: {
-    past: [],
-    future: [],
+    past: [] as VideoSegment[][],
+    future: [] as VideoSegment[][],
   },
-};
+} as unknown as EditorState;
 
 /**
  * Editor Store

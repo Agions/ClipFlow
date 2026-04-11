@@ -63,12 +63,12 @@ const defaultSettings: UserSettings = {
 // ==========================================
 export const useAppStore = create<AppState>()(
   persist(
-    (set) => ({
+    (set): AppState => ({
       // 初始状态
-      user: null,
+      user: null as User | null,
       isAuthenticated: false,
       sidebarCollapsed: false,
-      theme: 'light',
+      theme: 'light' as const,
       notifications: 0,
       autoSave: true,
       userSettings: defaultSettings,

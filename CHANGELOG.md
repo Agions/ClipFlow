@@ -1,3 +1,19 @@
+## [1.9.1] - 2026-04-11
+
+### 🔧 Code Quality
+
+- **TypeScript strict 模式启用**：59 个 strict/implicitAny 错误全部修复，跨 15 个文件
+  - `useVideo.ts`：新增 `TaskStatusInfo` 类型定义，消除 `taskStatus: any`
+  - `AIAssistant.tsx`：修复 `getAvailableModelsFromApiKeys` 参数类型
+  - `asr.service.ts`：解决 `SpeechRecognition` 循环引用类型
+  - `clipRepurposing/pipeline.ts`：`StepOptions` 类型兼容修复
+  - `trackManager.ts`/`aiService.ts`：数组字面量类型强化
+  - `appStore`/`editorStore`/`projectStore`：Zustand store 状态类型标注
+  - `logger.ts`：上下文参数 `Record<string, unknown>` → `unknown`
+  - `tauri.ts`：Tauri invoke 返回值类型标注
+
+---
+
 ## [1.9.0] - 2026-04-10
 
 ### ✨ Features

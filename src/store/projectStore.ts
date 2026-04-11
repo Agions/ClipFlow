@@ -63,7 +63,7 @@ export const useProjectStore = create<ProjectState>()(
     (set, get) => ({
       // 初始状态
       projects: [] as Project[],
-      currentProject: null,
+      currentProject: null as Project | null,
       loading: false,
       sortBy: 'updatedAt',
       sortOrder: 'desc',

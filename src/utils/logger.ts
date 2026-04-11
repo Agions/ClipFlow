@@ -16,13 +16,13 @@ interface LogEntry {
   level: LogLevel;
   message: string;
   timestamp: string;
-  context?: Record<string, unknown>;
+  context?: unknown;
 }
 
 const logs: LogEntry[] = [];
 const MAX_LOGS = 1000;
 
-const write = (level: LogLevel, message: string, context?: Record<string, unknown>) => {
+const write = (level: LogLevel, message: string, context?: unknown) => {
   if (!shouldLog(level)) return;
 
   const entry: LogEntry = {
@@ -46,10 +46,10 @@ const write = (level: LogLevel, message: string, context?: Record<string, unknow
 };
 
 export const logger = {
-  debug: (message: string, context?: Record<string, unknown>) => write('debug', message, context),
-  info: (message: string, context?: Record<string, unknown>) => write('info', message, context),
-  warn: (message: string, context?: Record<string, unknown>) => write('warn', message, context),
-  error: (message: string, context?: Record<string, unknown>) => write('error', message, context),
+  debug: (message: string, context?: unknown) => write('debug', message, context),
+  info: (message: string, context?: unknown) => write('info', message, context),
+  warn: (message: string, context?: unknown) => write('warn', message, context),
+  error: (message: string, context?: unknown) => write('error', message, context),
   
   // 获取日志历史
   getLogs: (level?: LogLevel): LogEntry[] => {

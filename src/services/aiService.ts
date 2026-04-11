@@ -460,7 +460,7 @@ export const generateScriptWithAI = async (
       return undefined;
     };
 
-    const analysis = {
+    const analysis: AnalysisInput = {
       title: '视频内容',
       duration: videoMetadata.duration,
       summary: keyFramesDescriptions.join('\n'),

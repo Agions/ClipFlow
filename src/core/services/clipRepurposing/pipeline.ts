@@ -25,7 +25,7 @@ import {
   generateSEOStep,
   prepareExportStep,
 } from '@/core/pipeline/steps';
-import type { PipelineContext } from '@/core/pipeline/Step';
+import type { PipelineContext, StepOptions } from '@/core/pipeline/Step';
 
 // ============================================================
 // Types
@@ -114,9 +114,8 @@ export class ClipRepurposingPipeline {
       meta: { videoId: videoInfo.id },
     };
 
-    const stepOptions = {
-      onProgress: opts.onProgress,
-    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const stepOptions = { onProgress: opts.onProgress } as any;
 
     logger.info('[ClipRepurposingPipeline] 开始执行', {
       videoDuration: videoInfo.duration,

@@ -97,7 +97,7 @@ export function generateTimelineFromScript(
       sourceEnd: video.endTime,
       startTime: currentTime,
       endTime: currentTime + (video.endTime - video.startTime),
-      effects: []
+      effects: [] as never[]
     };
 
     addClipFn(videoTrackId, videoClip, currentTime);

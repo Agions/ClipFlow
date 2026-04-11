@@ -4,7 +4,19 @@
  */
 
 import { useState, useCallback, useRef } from 'react';
-import type { VideoInfo, VideoAnalysis } from '@/core/types';
+import type { VideoInfo, VideoAnalysis, Scene } from '@/core/types';
+
+interface TaskStatusInfo {
+  id?: string;
+  type?: string;
+  status: 'idle' | 'running' | 'completed' | 'failed' | 'cancelled';
+  progress: number;
+  message?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  completedAt?: string;
+  error?: string;
+}
 
 export interface UseVideoReturn {
   // 视频信息
@@ -20,7 +32,7 @@ export interface UseVideoReturn {
   analysisProgress: number;
   
   // 任务状态
-  taskStatus: any;
+  taskStatus: TaskStatusInfo | null;
   
   // 操作方法
   uploadVideo: (file: File) => Promise<VideoInfo | null>;
@@ -113,7 +125,7 @@ export function useVideo(): UseVideoReturn {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [taskStatus, setTaskStatus] = useState<any>(null);
+  const [taskStatus, setTaskStatus] = useState<TaskStatusInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -177,7 +189,7 @@ export function useVideo(): UseVideoReturn {
     setAnalysisProgress(0);
     
     // 创建任务状态
-    const task = {
+    const task: TaskStatusInfo = {
       id: crypto.randomUUID(),
       type: 'analysis',
       status: 'running',
@@ -201,7 +213,7 @@ export function useVideo(): UseVideoReturn {
       for (const step of steps) {
         await new Promise(resolve => setTimeout(resolve, step.delay));
         setAnalysisProgress(step.progress);
-        setTaskStatus((prev: any) => prev ? {
+        setTaskStatus((prev) => prev ? {
           ...prev,
           progress: step.progress,
           message: step.message,
@@ -313,21 +325,23 @@ function formatDuration(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-function generateMockScenes(duration: number) {
-  const scenes = [];
+function generateMockScenes(duration: number): Scene[] {
+  const scenes: Scene[] = [];
   const sceneCount = Math.floor(duration / 30);
-  
+
   for (let i = 0; i < sceneCount; i++) {
     scenes.push({
       id: crypto.randomUUID(),
       startTime: i * 30,
       endTime: Math.min((i + 1) * 30, duration),
+      type: 'action',
+      score: 0.8,
       thumbnail: '',
       description: `场景 ${i + 1}`,
       tags: ['场景', `片段${i + 1}`]
     });
   }
-  
+
   return scenes;
 }
 

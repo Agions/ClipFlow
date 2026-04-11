@@ -103,7 +103,7 @@ export const BasicSettings: React.FC<BasicSettingsProps> = ({
                     max={20000}
                     step={500}
                     value={customSettings.bitrate}
-                    onChange={bitrate => onCustomSettingsChange({ bitrate })}
+                    onChange={(bitrate: number) => onCustomSettingsChange({ bitrate })}
                   />
                 </Col>
                 <Col span={6}>

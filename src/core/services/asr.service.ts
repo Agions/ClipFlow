@@ -279,15 +279,17 @@ export class ASRService extends BaseService {
   ): Promise<ASRResult | null> {
     return new Promise((resolve) => {
       // 检查 Web Speech API 是否可用
-      const SpeechRecognition = ((window as unknown) as { SpeechRecognition?: typeof SpeechRecognition }).SpeechRecognition
-        || ((window as unknown) as { webkitSpeechRecognition?: typeof SpeechRecognition }).webkitSpeechRecognition;
-      if (!SpeechRecognition) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const SpeechRecognitionCtor = ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition) as
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (new (...args: any[]) => any) | undefined;
+      if (!SpeechRecognitionCtor) {
         resolve(null);
         return;
       }
 
       try {
-        const recognition = new SpeechRecognition();
+        const recognition = new SpeechRecognitionCtor();
         recognition.lang = opts.language.replace('_', '-');
         recognition.continuous = true;
         recognition.interimResults = false;

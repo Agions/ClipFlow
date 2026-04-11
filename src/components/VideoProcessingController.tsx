@@ -388,7 +388,7 @@ const VideoProcessingController: React.FC<VideoProcessingControllerProps> = ({
                             max={20000}
                             step={500}
                             value={customSettings.bitrate}
-                            onChange={bitrate => updateCustomSettings({ bitrate })}
+                            onChange={(bitrate: number) => updateCustomSettings({ bitrate })}
                           />
                         </Col>
                         <Col span={6}>

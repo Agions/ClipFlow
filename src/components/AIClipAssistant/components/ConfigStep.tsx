@@ -155,7 +155,7 @@ const ConfigStep: React.FC<ConfigStepProps> = ({
               min={10}
               max={Math.min(300, videoInfo.duration)}
               value={config.targetDuration || videoInfo.duration}
-              onChange={(v) => onConfigChange({ targetDuration: v })}
+              onChange={(v: number) => onConfigChange({ targetDuration: v })}
               marks={{
                 30: '30s',
                 60: '1min',
