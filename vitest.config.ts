@@ -4,18 +4,29 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [react() as any],
+  plugins: [react()],
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    exclude: ['node_modules', 'dist', '.git', 'src/test/**/fixtures/**'],
+    exclude: [
+      'node_modules',
+      'dist',
+      '.git',
+      'src/test/**/fixtures/**',
+      'src/_DEAD/__tests__/common.test.ts',
+      'src/_DEAD/__tests__/format.test.ts',
+      'src/_DEAD/__tests__/logger.test.ts',
+      'src/_DEAD/__tests__/model-availability.test.ts',
+      'src/_DEAD/__tests__/project-id.test.ts',
+      'src/_DEAD/__tests__/route-preload.test.ts',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       reportsDirectory: './coverage',
-      exclude: ['node_modules', 'src/test', '**/*.d.ts', '**/*.config.*', '**/vite-env.d.ts'],
+      exclude: ['node_modules', 'src/test', 'src/_DEAD/**', '**/*.d.ts', '**/*.config.*', '**/vite-env.d.ts', 'src/_DEAD/__tests__/common.test.ts', 'src/_DEAD/__tests__/format.test.ts', 'src/_DEAD/__tests__/logger.test.ts', 'src/_DEAD/__tests__/model-availability.test.ts', 'src/_DEAD/__tests__/project-id.test.ts', 'src/_DEAD/__tests__/route-preload.test.ts'],
       include: ['src/**/*.{ts,tsx}'],
       thresholds: {
         lines: 50,
