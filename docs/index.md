@@ -9,7 +9,7 @@ hero:
   text: AI 智能视频剪辑工具
   tagline: 长视频自动拆条为爆款短片 · 多格式导出 · 本地 Whisper 字幕
   image:
-    src: /CutDeck/logo.svg
+    src: /logo.svg
     alt: CutDeck
   actions:
     - theme: brand
