@@ -32,7 +32,7 @@ export const useModelStore = create<AppState>()(
         azure: { enabled: false },
         local: { enabled: false },
         custom: { enabled: false },
-      } as any,
+      } as Record<AIModelType, AIModelSettings>,
 
       // 设置选中的 AI 模型
       setSelectedAIModel: (model: AIModelType) => set({ selectedAIModel: model }),
