@@ -400,11 +400,7 @@ const Timeline: React.FC<TimelineProps> = ({
       <div
         ref={tracksContainerRef}
         className={styles.tracksContainer}
-        onScroll={(e) => {
-          const left = e.currentTarget.scrollLeft;
-          scrollLeftRef.current = left;
-          setScrollLeft(left);
-        }}
+        onScroll={handleTracksScroll}
         onClick={(e) => {
           // 点击空白区域取消选中
           if (e.target === e.currentTarget) {

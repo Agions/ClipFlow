@@ -1,6 +1,12 @@
 /**
- * CutDeck Dashboard — re-export from Dashboard.tsx
+ * Dashboard 模块导出
  */
+
+// 主组件
 export { default } from './Dashboard';
-export * from './types';
+
+// Hooks
 export { useDashboard } from './hooks/useDashboard';
+
+// 类型
+export * from './types';
