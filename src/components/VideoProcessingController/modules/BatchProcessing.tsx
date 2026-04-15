@@ -16,7 +16,7 @@ interface BatchProcessingProps {
   onAddBatchItem: () => void;
   onRemoveBatchItem: (id: string) => void;
   onStartBatchProcessing: () => void;
-  calculateTotalDuration: (segments: VideoSegment[]) => number;
+  calculateTotalDuration: (segments: Array<{ start?: number; end?: number }>) => number;
 }
 
 export const BatchProcessing: React.FC<BatchProcessingProps> = ({
@@ -106,7 +106,7 @@ export const BatchProcessing: React.FC<BatchProcessingProps> = ({
                 </div>
                 <div className="batchItemInfo">
                   <div>片段数量: {item.segments.length}</div>
-                  <div>总时长: {calculateTotalDuration(item.segments as any)}秒</div>
+                  <div>总时长: {calculateTotalDuration(item.segments)}秒</div>
                 </div>
               </div>
             </div>

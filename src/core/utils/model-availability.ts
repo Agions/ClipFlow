@@ -16,7 +16,7 @@ export const getConfiguredProviders = (apiKeys: ApiKeyMap): Set<ModelProvider> =
   );
 };
 
-export const getAvailableModelsFromApiKeys = <T extends { provider: ModelProvider; isAvailable?: boolean }>(
+export const getAvailableModelsFromApiKeys = <T extends { provider?: ModelProvider; isAvailable?: boolean }>(
   apiKeys: ApiKeyMap,
   modelCatalog: T[] = AI_MODELS as unknown as T[]
 ): T[] => {
