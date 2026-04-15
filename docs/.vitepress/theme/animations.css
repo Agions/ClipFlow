@@ -1,0 +1,605 @@
+/* ========================================
+   CutDeck Docs - Animation System
+   ======================================== */
+
+/* ---------- Animation Keyframes ---------- */
+
+/* Fade In Up - 主入场动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade In Down */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade In Left */
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Fade In Right */
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scale In */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Slide In from Bottom */
+@keyframes slideInBottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Pulse Glow - 呼吸光晕 */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 180, 50, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 180, 50, 0.6);
+  }
+}
+
+/* Gradient Shift - 渐变流动 */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Float - 悬浮效果 */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Shimmer - 流光效果 */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Rotate - 旋转 */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Bounce */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Typing Cursor */
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* ---------- Animation Utility Classes ---------- */
+
+/* 基础动画类 */
+.anim-fade-in {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.anim-fade-in-down {
+  animation: fadeInDown 0.6s ease-out forwards;
+}
+
+.anim-fade-in-left {
+  animation: fadeInLeft 0.6s ease-out forwards;
+}
+
+.anim-fade-in-right {
+  animation: fadeInRight 0.6s ease-out forwards;
+}
+
+.anim-scale-in {
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+.anim-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.anim-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.anim-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* 延迟动画 (用于交错效果) */
+.anim-delay-100 { animation-delay: 100ms; }
+.anim-delay-200 { animation-delay: 200ms; }
+.anim-delay-300 { animation-delay: 300ms; }
+.anim-delay-400 { animation-delay: 400ms; }
+.anim-delay-500 { animation-delay: 500ms; }
+.anim-delay-600 { animation-delay: 600ms; }
+.anim-delay-700 { animation-delay: 700ms; }
+.anim-delay-800 { animation-delay: 800ms; }
+
+/* 动画持续时间 */
+.anim-duration-fast { animation-duration: 0.3s; }
+.anim-duration-normal { animation-duration: 0.6s; }
+.anim-duration-slow { animation-duration: 1s; }
+
+/* ---------- Hero 区域动画 ---------- */
+
+.VPHome {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hero 背景动效 */
+.VPHome::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(255, 180, 50, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255, 180, 50, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 180, 50, 0.03) 0%, transparent 70%);
+  animation: gradientShift 15s ease infinite;
+  background-size: 200% 200%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Hero 内容容器 */
+.VPHero {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero 标题动画 */
+.VPHero .title {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.VPHero .name {
+  animation: fadeInUp 0.8s ease-out 0.1s forwards;
+  opacity: 0;
+}
+
+.VPHero .text {
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.VPHero .tagline {
+  animation: fadeInUp 0.8s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+/* Hero 按钮动画 */
+.VPHero .actions {
+  animation: fadeInUp 0.8s ease-out 0.4s forwards;
+  opacity: 0;
+}
+
+.VPHero .action.primary {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.VPHero .action.primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 3s linear infinite;
+  background-size: 200% 100%;
+}
+
+.VPHero .action.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 180, 50, 0.4);
+}
+
+.VPHero .action.alt {
+  transition: all 0.3s ease;
+}
+
+.VPHero .action.alt:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 180, 50, 0.1);
+}
+
+/* Hero 图片动画 */
+.VPHero .image-container {
+  animation: scaleIn 1s ease-out 0.5s forwards;
+  opacity: 0;
+}
+
+.VPHero .image-container img {
+  animation: float 4s ease-in-out infinite;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+}
+
+/* ---------- Features 区域动画 ---------- */
+
+.VPFeatures {
+  position: relative;
+}
+
+.VPFeature {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.VPFeature::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 180, 50, 0.1) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.VPFeature:hover::before {
+  opacity: 1;
+}
+
+.VPFeature:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 180, 50, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.VPFeature .icon {
+  transition: transform 0.4s ease;
+}
+
+.VPFeature:hover .icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Feature 入场动画 - 交错效果 */
+.VPFeatures .item:nth-child(1) { animation: fadeInUp 0.6s ease-out 0.1s forwards; opacity: 0; }
+.VPFeatures .item:nth-child(2) { animation: fadeInUp 0.6s ease-out 0.2s forwards; opacity: 0; }
+.VPFeatures .item:nth-child(3) { animation: fadeInUp 0.6s ease-out 0.3s forwards; opacity: 0; }
+.VPFeatures .item:nth-child(4) { animation: fadeInUp 0.6s ease-out 0.4s forwards; opacity: 0; }
+.VPFeatures .item:nth-child(5) { animation: fadeInUp 0.6s ease-out 0.5s forwards; opacity: 0; }
+.VPFeatures .item:nth-child(6) { animation: fadeInUp 0.6s ease-out 0.6s forwards; opacity: 0; }
+
+/* ---------- 滚动动画 (Intersection Observer 触发) ---------- */
+
+/* 初始状态 - 等待滚动触发 */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.scroll-animate.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-animate-fade {
+  opacity: 0;
+  transition: opacity 0.8s ease-out;
+}
+
+.scroll-animate-fade.is-visible {
+  opacity: 1;
+}
+
+.scroll-animate-scale {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.8s ease-out;
+}
+
+.scroll-animate-scale.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* 滚动触发的交错动画 */
+.scroll-stagger > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+
+.scroll-stagger.is-visible > *:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0ms; }
+.scroll-stagger.is-visible > *:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 100ms; }
+.scroll-stagger.is-visible > *:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 200ms; }
+.scroll-stagger.is-visible > *:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 300ms; }
+.scroll-stagger.is-visible > *:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 400ms; }
+.scroll-stagger.is-visible > *:nth-child(6) { opacity: 1; transform: translateY(0); transition-delay: 500ms; }
+
+/* ---------- 代码块动画 ---------- */
+
+.vp-code-group .tabs {
+  transition: all 0.3s ease;
+}
+
+.vp-code-group .tabs input:checked + label {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* 代码复制按钮 */
+.vp-copy-code {
+  position: relative;
+  overflow: hidden;
+}
+
+.vp-copy-code::after {
+  content: 'Copied!';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(82, 196, 26, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.vp-copy-code.copied::after {
+  transform: translateY(0);
+}
+
+/* ---------- 导航栏动画 ---------- */
+
+.VPNav {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.VPNav:hover {
+  background: rgba(9, 9, 16, 0.95);
+}
+
+/* 侧边栏动画 */
+.VPSidebar {
+  transition: all 0.3s ease;
+}
+
+.VPSidebarItem.is-active > .item > .text {
+  color: rgb(255, 180, 50);
+}
+
+/* ---------- Footer 动画 ---------- */
+
+.VPFooter {
+  position: relative;
+}
+
+.VPFooter::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 180, 50, 0.5),
+    transparent
+  );
+  animation: shimmer 3s linear infinite;
+  background-size: 200% 100%;
+}
+
+/* ---------- 打字机效果 ---------- */
+
+.typing-cursor::after {
+  content: '|';
+  animation: blink 1s step-end infinite;
+}
+
+/* ---------- 特殊光效 ---------- */
+
+/* 霓虹边框 */
+.neon-border {
+  position: relative;
+}
+
+.neon-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #ffb432, #ff6b35, #ffb432);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  filter: blur(8px);
+}
+
+.neon-border:hover::before {
+  opacity: 0.7;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* 悬浮粒子背景 (可选) */
+.particle-bg {
+  position: relative;
+}
+
+.particle-bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, rgba(255, 180, 50, 0.3), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255, 180, 50, 0.2), transparent),
+    radial-gradient(2px 2px at 50px 160px, rgba(255, 180, 50, 0.3), transparent),
+    radial-gradient(2px 2px at 90px 40px, rgba(255, 180, 50, 0.2), transparent),
+    radial-gradient(2px 2px at 130px 80px, rgba(255, 180, 50, 0.3), transparent);
+  background-size: 200px 200px;
+  animation: float 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---------- 响应式动画 ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .VPHero .image-container {
+    animation: scaleIn 0.5s ease-out forwards;
+  }
+  
+  .VPFeatures .item {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ---------- 加载动画 ---------- */
+
+/* 骨架屏闪烁 */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0px,
+    rgba(255, 255, 255, 0.1) 40px,
+    rgba(255, 255, 255, 0.05) 80px
+  );
+  background-size: 200px 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+/* 加载旋转器 */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 180, 50, 0.1);
+  border-top-color: rgb(255, 180, 50);
+  border-radius: 50%;
+  animation: rotate 1s linear infinite;
+}

@@ -48,197 +48,158 @@ features:
 footer: false
 ---
 
-<div class="cd-home">
+<!-- 增强型首页内容 -->
 
-<!-- Hero Tag -->
-<div class="cd-hero-tag">
-  <span class="cd-hero-tag-inner">
-    <svg width="8" height="8" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><circle cx="4" cy="4" r="3.5" fill="#10B981"/></svg>
-    v1.9.1 已发布
-  </span>
-</div>
+<style>
+/* Hero 区域覆盖样式 */
+.VPHero {
+  padding-top: 80px !important;
+}
 
-<!-- Social Proof Bar -->
-<div class="cd-proof-bar">
-  <span class="cd-proof-item">
-    <svg class="cd-proof-dot" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><circle cx="4" cy="4" r="3.5" fill="#F59E0B"/></svg>
-    MIT License
-  </span>
-  <span class="cd-proof-sep">·</span>
-  <span class="cd-proof-item">
-    <svg class="cd-proof-dot" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><circle cx="4" cy="4" r="3.5" fill="#60A5FA"/></svg>
-    Rust + FFmpeg 渲染
-  </span>
-  <span class="cd-proof-sep">·</span>
-  <span class="cd-proof-item">
-    <svg class="cd-proof-dot" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><circle cx="4" cy="4" r="3.5" fill="#8B5CF6"/></svg>
-    TypeScript Strict
-  </span>
-  <span class="cd-proof-sep">·</span>
-  <span class="cd-proof-item">
-    <svg class="cd-proof-dot" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg"><circle cx="4" cy="4" r="3.5" fill="#10B981"/></svg>
-    本地 Whisper ASR
-  </span>
-</div>
+.VPHero .tagline {
+  font-size: 1.2em !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  max-width: 600px;
+  margin: 0 auto;
+}
 
-<!-- Comparison Table -->
-<section class="cd-section">
-  <h2 class="cd-section-title">与"传统剪辑软件"对比</h2>
-  <div class="cd-compare-table">
-    <div class="cd-compare-row cd-compare-header">
-      <div></div>
-      <div><strong>传统 Premiere / Final Cut</strong></div>
-      <div><strong>CutDeck</strong></div>
-    </div>
-    <div class="cd-compare-row">
-      <div class="cd-compare-dim">上手难度</div>
-      <div class="cd-compare-old">专业门槛高，需数周学习</div>
-      <div class="cd-compare-new"><span class="cd-compare-highlight">5 分钟上手，AI 自动完成</span></div>
-    </div>
-    <div class="cd-compare-row">
-      <div class="cd-compare-dim">拆条效率</div>
-      <div class="cd-compare-old">手动逐帧查找，30 分钟+</div>
-      <div class="cd-compare-new"><span class="cd-compare-highlight">AI 自动识别，3 分钟完成</span></div>
-    </div>
-    <div class="cd-compare-row">
-      <div class="cd-compare-dim">字幕制作</div>
-      <div class="cd-compare-old">手动听写 + 时间轴，耗时费眼</div>
-      <div class="cd-compare-new"><span class="cd-compare-highlight">本地 Whisper 自动生成，断网可用</span></div>
-    </div>
-    <div class="cd-compare-row">
-      <div class="cd-compare-dim">批量处理</div>
-      <div class="cd-compare-old">逐个手动导出，效率极低</div>
-      <div class="cd-compare-new"><span class="cd-compare-highlight">批量队列并行处理，全自动</span></div>
-    </div>
-    <div class="cd-compare-row">
-      <div class="cd-compare-dim">费用</div>
-      <div class="cd-compare-old">订阅制 ¥0/月起，Adobe 全套 ¥500+/月</div>
-      <div class="cd-compare-new"><span class="cd-compare-highlight">免费开源，API 费用极低</span></div>
-    </div>
-  </div>
-</section>
+/* 统计数字动画 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 700px;
+  margin: 60px auto 0;
+  padding: 0 20px;
+}
 
-<!-- Workflow -->
-<section class="cd-section">
-  <h2 class="cd-section-title">工作流程</h2>
-  <div class="cd-workflow">
-    <div class="cd-workflow-step">
-      <div class="cd-workflow-num">1</div>
-      <div class="cd-workflow-body">
-        <div class="cd-workflow-title">导入长视频</div>
-        <div class="cd-workflow-desc">拖入 MP4 / MOV / AVI / MKV，系统自动分析</div>
-      </div>
-    </div>
-    <div class="cd-workflow-arrow"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 8h8M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div class="cd-workflow-step">
-      <div class="cd-workflow-num">2</div>
-      <div class="cd-workflow-body">
-        <div class="cd-workflow-title">AI 6 维评分拆条</div>
-        <div class="cd-workflow-desc">画质 / 笑点 / 泪点 / 爽点 / 知识 / 共鸣，自动排序分发</div>
-      </div>
-    </div>
-    <div class="cd-workflow-arrow"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 8h8M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div class="cd-workflow-step">
-      <div class="cd-workflow-num">3</div>
-      <div class="cd-workflow-body">
-        <div class="cd-workflow-title">本地 Whisper 字幕</div>
-        <div class="cd-workflow-desc">faster-whisper 推理，精准时间轴对齐，断网可用</div>
-      </div>
-    </div>
-    <div class="cd-workflow-arrow"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 8h8M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div class="cd-workflow-step">
-      <div class="cd-workflow-num">4</div>
-      <div class="cd-workflow-body">
-        <div class="cd-workflow-title">一键导出</div>
-        <div class="cd-workflow-desc">H.264/H.265 MP4 / 剪映草稿 / JSON，多平台直出</div>
-      </div>
-    </div>
-  </div>
-</section>
+.stat-item {
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 180, 50, 0.05);
+  border: 1px solid rgba(255, 180, 50, 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
 
-<!-- Stats -->
-<div class="cd-stats-bar">
-  <div class="cd-stat">
-    <div class="cd-stat-value">6</div>
-    <div class="cd-stat-label">AI 评分维度</div>
-  </div>
-  <div class="cd-stat-divider"></div>
-  <div class="cd-stat">
-    <div class="cd-stat-value">3</div>
-    <div class="cd-stat-label">导出格式</div>
-  </div>
-  <div class="cd-stat-divider"></div>
-  <div class="cd-stat">
-    <div class="cd-stat-value">12+</div>
-    <div class="cd-stat-label">视频特效</div>
-  </div>
-  <div class="cd-stat-divider"></div>
-  <div class="cd-stat">
-    <div class="cd-stat-value">5</div>
-    <div class="cd-stat-label">AI Provider</div>
-  </div>
-</div>
+.stat-item:hover {
+  background: rgba(255, 180, 50, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(255, 180, 50, 0.1);
+}
 
-</div>
+.stat-number {
+  font-size: 2.5em;
+  font-weight: 700;
+  color: #ffb432;
+  line-height: 1;
+  margin-bottom: 8px;
+}
 
-<script setup>
-import { onMounted } from 'vue'
+.stat-label {
+  font-size: 0.9em;
+  color: rgba(255, 255, 255, 0.6);
+}
 
-onMounted(() => {
-  // Staggered entrance for feature cards
-  const cards = document.querySelectorAll('.VPFeature')
-  cards.forEach((card, i) => {
-    card.style.opacity = '0'
-    card.style.transform = 'translateY(16px)'
-    card.style.transition = `opacity 0.4s ease ${i * 0.08}s, transform 0.4s ease ${i * 0.08}s`
-    requestAnimationFrame(() => {
-      card.style.opacity = '1'
-      card.style.transform = 'translateY(0)'
-    })
-  })
+/* 特性区域样式 */
+.VPFeatures {
+  padding: 80px 0 !important;
+}
 
-  // Workflow steps entrance
-  const steps = document.querySelectorAll('.cd-workflow-step')
-  steps.forEach((step, i) => {
-    step.style.opacity = '0'
-    step.style.transform = 'translateY(12px)'
-    step.style.transition = `opacity 0.35s ease ${0.1 + i * 0.1}s, transform 0.35s ease ${0.1 + i * 0.1}s`
-    requestAnimationFrame(() => {
-      step.style.opacity = '1'
-      step.style.transform = 'translateY(0)'
-    })
-  })
+.VPFeatures::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 180, 50, 0.3), transparent);
+}
 
-  // Stats entrance
-  const statsBar = document.querySelector('.cd-stats-bar')
-  if (statsBar) {
-    statsBar.style.opacity = '0'
-    statsBar.style.transition = 'opacity 0.4s ease 0.4s'
-    requestAnimationFrame(() => {
-      statsBar.style.opacity = '1'
-    })
+/* CTA 区域 */
+.home-cta {
+  text-align: center;
+  padding: 80px 20px;
+  position: relative;
+}
+
+.home-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 180, 50, 0.3), transparent);
+}
+
+.cta-title {
+  font-size: 2em;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.cta-subtitle {
+  font-size: 1.1em;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 30px;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* 代码预览区域 */
+.code-preview {
+  max-width: 800px;
+  margin: 60px auto 0;
+  padding: 0 20px;
+}
+
+.code-preview pre {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 180, 50, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
-
-  // Proof bar entrance
-  const proofBar = document.querySelector('.cd-proof-bar')
-  if (proofBar) {
-    proofBar.style.opacity = '0'
-    proofBar.style.transition = 'opacity 0.4s ease 0.1s'
-    requestAnimationFrame(() => {
-      proofBar.style.opacity = '1'
-    })
+  
+  .stat-number {
+    font-size: 1.8em;
   }
+  
+  .cta-title {
+    font-size: 1.5em;
+  }
+}
+</style>
 
-  // Comparison table entrance
-  const rows = document.querySelectorAll('.cd-compare-row')
-  rows.forEach((row, i) => {
-    row.style.opacity = '0'
-    row.style.transform = 'translateY(8px)'
-    row.style.transition = `opacity 0.3s ease ${0.15 + i * 0.06}s, transform 0.3s ease ${0.15 + i * 0.06}s`
-    requestAnimationFrame(() => {
-      row.style.opacity = '1'
-      row.style.transform = 'translateY(0)'
-    })
-  })
-})
-</script>
+<!-- 统计数据 -->
+<div class="stats-grid">
+  <div class="stat-item">
+    <div class="stat-number">6+</div>
+    <div class="stat-label">AI 评分维度</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">12+</div>
+    <div class="stat-label">视频特效</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">3</div>
+    <div class="stat-label">一键分发平台</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">MIT</div>
+    <div class="stat-label">开源协议</div>
+  </div>
+</div>
