@@ -28,7 +28,9 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --include=dev
+        run: npm ci --include=dev
+        env:
+          NODE_ENV: development
 
       - name: Build VitePress
         run: npm run docs:build
