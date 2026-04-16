@@ -27,7 +27,9 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          rm -rf node_modules
+          npm install --include=dev
         env:
           NODE_ENV: development
 
