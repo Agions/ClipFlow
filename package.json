@@ -14,7 +14,7 @@
     "build:prod": "vite build --mode production",
     "preview": "vite preview",
     "docs:dev": "vitepress dev docs",
-    "tauri": "tauri",
+    "tauri": "./node_modules/.bin/tauri",
     "tauri:build:dmg": "bash scripts/build-dmg.sh",
     "type-check": "tsc --noEmit",
     "lint": "eslint src --max-warnings 250",
