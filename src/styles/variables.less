@@ -1,13 +1,12 @@
 /**
- * ClipFlow 设计系统变量 — LESS 语法
+ * CutDeck 设计系统变量 — LESS 语法
  *
- * ⚠️ 已迁移：主 token 已移至 src/styles/design-system.css（CSS custom properties）
- * 本文件保留用于：
+ * 职责：
  *   1. LESS 组件兼容（直接 @import 'variables.less' 的 .less 文件）
- *   2. 旧版组件逐步迁移
+ *   2. 通过 var() 引用 design-system.css 中的 CSS custom properties
  *
- * 迁移原则：
- *   @xxx   ← 直接值（保留，仍被旧 .less 文件使用）
+ * 使用原则：
+ *   @xxx   ← 直接值（保留，被旧 .less 文件使用）
  *   @use   ← 引用 design-system.css 中的 CSS var()
  *
  * 新增组件请使用 CSS custom properties（design-system.css）
@@ -21,7 +20,7 @@
 
 // =============================================
 // 科技暗黑背景色系统
-// ⚠️ 迁移至 CSS: --color-bg-*
+// ✅ 统一使用 OKLCH 语义化分层（与 design-system.css 一致）
 // =============================================
 @bg-primary:   #0a0a0f;
 @bg-secondary: #12121a;
@@ -37,18 +36,19 @@
 @border-active:    #4a4a5a;
 
 // =============================================
-// 主色调 (科技霓虹 — 旧版)
-// ⚠️ 新版主色已迁移至 design-system.css OKLCH 系统
+// 主色调 (琥珀色 — OKLCH 统一系统)
+// ✅ 与 design-system.css --color-primary 统一
 // =============================================
-@primary-color:   #6366f1;
-@primary-hover:   #7c7ff7;
-@primary-active:  #5558e3;
+@primary-color:   #d4a574;
+@primary-hover:   #e8c9a8;
+@primary-active:  #c49660;
 
 // =============================================
 // 渐变色
+// ✅ 统一使用琥珀色系
 // =============================================
-@gradient-primary:   linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-@gradient-hero:      linear-gradient(135deg, #667eea 0%, #764ba2 50%, #a855f7 100%);
+@gradient-primary:   linear-gradient(135deg, #d4a574 0%, #a855f7 100%);
+@gradient-hero:      linear-gradient(135deg, #d4a574 0%, #764ba2 50%, #a855f7 100%);
 @gradient-cyber:     linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
 @gradient-neon-pink: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
 
@@ -81,9 +81,10 @@
 @neon-orange:  #f97316;
 
 // =============================================
-// 发光效果
+// 发光效果（琥珀色）
+// ✅ 统一使用琥珀色发光
 // =============================================
-@glow-primary:   0 0 20px rgba(99, 102, 241, 0.5);
+@glow-primary:   0 0 20px rgba(212, 165, 116, 0.5);
 @glow-cyan:      0 0 20px rgba(6, 182, 212, 0.5);
 @glow-pink:      0 0 20px rgba(244, 63, 94, 0.5);
 @glow-purple:    0 0 20px rgba(168, 85, 247, 0.5);
@@ -154,7 +155,7 @@
 @shadow-neon-blue:   0 0 10px rgba(0, 210, 255, 0.3), 0 0 20px rgba(0, 210, 255, 0.2);
 @shadow-neon-purple: 0 0 10px rgba(168, 85, 247, 0.3), 0 0 20px rgba(168, 85, 247, 0.2);
 @shadow-neon-pink:   0 0 10px rgba(236, 72, 153, 0.3), 0 0 20px rgba(236, 72, 153, 0.2);
-@shadow-glow-primary: 0 0 15px rgba(99, 102, 241, 0.4), 0 0 30px rgba(99, 102, 241, 0.2);
+@shadow-glow-primary: 0 0 15px rgba(212, 165, 116, 0.4), 0 0 30px rgba(212, 165, 116, 0.2);
 
 // =============================================
 // 玻璃拟态
@@ -187,9 +188,9 @@
 // 侧边栏
 @sidebar-bg:          @bg-secondary;
 @sidebar-hover:       @bg-hover;
-@sidebar-active:      rgba(99, 102, 241, 0.15);
-@sidebar-text:         @text-secondary;
-@sidebar-text-active: @primary-color;
+@sidebar-active:      rgba(212, 165, 116, 0.15);  // 琥珀色透明
+@sidebar-text:        @text-secondary;
+@sidebar-text-active: @primary-color;              // 琥珀色
 
 // 顶部工具栏
 @toolbar-height:  56px;
