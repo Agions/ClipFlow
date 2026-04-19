@@ -1,1 +1,1 @@
-// Vitest setup placeholder for shared test config.
+import '@testing-library/jest-dom';

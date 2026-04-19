@@ -19,4 +19,4 @@ export const resolveLegacyModel = (provider: ModelProvider): LegacyAIModelType =
   PROVIDER_TO_LEGACY_MODEL[provider] ?? 'deepseek';
 
 export const getLegacyModelCompatMap = (): Readonly<Record<ModelProvider, LegacyAIModelType>> =>
-  PROVIDER_TO_LEGACY_MODEL;
+  Object.freeze({ ...PROVIDER_TO_LEGACY_MODEL });
