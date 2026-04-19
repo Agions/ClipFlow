@@ -4,6 +4,7 @@
  */
 
 import { tauri } from '@/core/tauri/TauriBridge';
+import { logger } from '@/utils/logger';
 import type {
   VideoInfo,
   Scene,
@@ -701,7 +702,7 @@ export class VisionService {
     const videoPath = videoInfo.path;
 
     if (!videoPath) {
-      console.info('[VisionService] detectHighlights: videoInfo.path is empty');
+      logger.info('[VisionService] detectHighlights: videoInfo.path is empty');
       return [];
     }
 
@@ -732,7 +733,7 @@ export class VisionService {
         motionScore: h.motion_score,
       }));
     } catch (error) {
-      console.info('[VisionService] detectHighlights failed:', error);
+      logger.info('[VisionService] detectHighlights failed:', error);
       return [];
     }
   }
