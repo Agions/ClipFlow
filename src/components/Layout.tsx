@@ -78,7 +78,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <svg width="28" height="28" viewBox="0 0 160 160" fill="none" aria-hidden="true">
               <rect width="160" height="160" rx="20" fill="#1C1D2E"/>
               <polygon points="68,50 104,68 68,86" fill="url(#pg)"/>
-              <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#fff"/><stop offset="1" stopColor="#FF9F43"/></linearGradient></defs>
+              <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#fff"/><stop offset="1" stopColor="#d4a574"/></linearGradient></defs>
             </svg>
           </div>
           {!sidebarCollapsed && <span className={styles.logoText}>CutDeck</span>}
