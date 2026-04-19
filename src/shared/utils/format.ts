@@ -58,7 +58,11 @@ export function formatFriendlyDuration(seconds: number): string {
     result += `${hours}小时`;
   }
 
-  if (minutes > 0 || hours > 0) {
+  if (hours > 0 && minutes > 0) {
+    result += `${minutes}分钟`;
+  } else if (hours > 0) {
+    // skip zero minutes
+  } else if (minutes > 0) {
     result += `${minutes}分钟`;
   }
 

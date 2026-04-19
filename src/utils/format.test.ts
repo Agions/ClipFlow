@@ -53,11 +53,11 @@ describe('formatFriendlyDuration (Chinese format)', () => {
   });
 
   it('should format hours and minutes (no seconds when hours present)', () => {
-    expect(formatFriendlyDuration(7200)).toBe('2小时0分钟');
+    expect(formatFriendlyDuration(7200)).toBe('2小时');
   });
 
   it('should format hours and minutes when hours present', () => {
-    expect(formatFriendlyDuration(7200)).toBe('2小时0分钟');
+    expect(formatFriendlyDuration(7200)).toBe('2小时');
     expect(formatFriendlyDuration(7322)).toBe('2小时2分钟'); // seconds not shown when hours present
   });
 });
