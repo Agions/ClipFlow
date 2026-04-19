@@ -1,281 +1,134 @@
 /**
- * Editor Store - 编辑器状态
- * 包含: 视频、脚本、语音、预览状态、时间线操作
+ * Editor Store
  *
- * 类型说明：
- * - VideoData / ScriptData / VoiceData: 编辑器会话级数据（内存，不持久化）
- * - VideoSegment: 来自 @/core/types
- * - EditorPanel: 来自 @/core/types
+ * Domains:
+ * - Media state      : video, script, voice data
+ * - Segment state    : single-track clips (legacy)
+ * - Timeline state   : multi-track clips, playhead, snap
+ * - History          : undo/redo for segments and timeline
+ *
+ * All types are defined in ./editorTypes.ts
  */
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+
+import type { EditorStore, EditorState, VideoData, ScriptData, VoiceData, TimelineSelection } from './editorTypes';
 import type { VideoSegment, EditorPanel } from '@/core/types';
 import type { TimelineTrack, TimelineClip, Keyframe, TrackType } from '@/components/Timeline/types';
+import {
+  MAX_HISTORY_SIZE,
+  DEFAULT_SNAP_THRESHOLD_MS,
+  DEFAULT_ZOOM,
+  ZOOM_MIN,
+  ZOOM_MAX,
+  VOLUME_MIN,
+  VOLUME_MAX,
+} from './editorTypes';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Constants (magic numbers extracted)
-// ─────────────────────────────────────────────────────────────────────────────
-const MAX_HISTORY_SIZE = 19;          // Undo/redo stack depth
-const DEFAULT_SNAP_THRESHOLD_MS = 100; // Snap-to-edge threshold (ms)
-const DEFAULT_ZOOM = 1;               // Zoom level
-const ZOOM_MIN = 0.1;
-const ZOOM_MAX = 10;
-const VOLUME_MIN = 0;
-const VOLUME_MAX = 1;
-const SEEK_STEP_SECONDS = 5;          // Keyboard seek step
-const SEEK_LONG_SECONDS = 10;          // J/L long seek step
-const VOLUME_STEP = 0.1;              // Arrow up/down volume change
-
-// ============================================
-// Local types (not used outside this store)
-// ============================================
-
-export interface VideoData {
-  id: string;
-  url: string;
-  duration: number;
-}
-
-export interface ScriptData {
-  id: string;
-  content: string;
-}
-
-export interface VoiceData {
-  id: string;
-  url: string;
-}
-
-/** 时间线选中项 */
-export interface TimelineSelection {
-  segmentId?: string;
-  multipleIds: string[];
-}
-
-/** 编辑器历史记录 */
-export interface EditorHistory {
-  past: VideoSegment[][];
-  future: VideoSegment[][];
-}
-
-/**
- * Editor Store 状态
- */
-export interface EditorState {
-  // 当前编辑状态
-  video: VideoData | null;
-  script: ScriptData | null;
-  voice: VoiceData | null;
-  
-  // 视频片段 (单轨模式, 向后兼容)
-  segments: VideoSegment[];
-  
-  // UI 状态
-  activePanel: EditorPanel;
-  previewPlaying: boolean;
-  currentTime: number;
-  volume: number;
-  muted: boolean;
-  
-  // 时间线
-  selection: TimelineSelection;
-  zoom: number; // 缩放级别 0.1 - 10
-  scrollPosition: number; // 滚动位置
-  
-  // 多轨道时间线状态
-  playheadMs: number; // 播放头位置 (ms)
-  timelineTracks: TimelineTrack[]; // 多轨道列表
-  timelineDuration: number; // 时间线总时长 (ms)
-  snapEnabled: boolean; // 是否启用吸附
-  snapThreshold: number; // 吸附阈值 (ms)
-  selectedClipId?: string;
-  selectedTrackId?: string;
-  // I/O 入出点（毫秒）
-  inPointMs?: number;
-  outPointMs?: number;
-  
-  // 历史记录 (撤销/重做)
-  history: EditorHistory;
-  // 多轨道历史
-  trackHistory: { past: TimelineTrack[][]; future: TimelineTrack[][] };
-
-  // Actions - 基本操作
-  setVideo: (video: VideoData | null) => void;
-  setScript: (script: ScriptData | null) => void;
-  setVoice: (voice: VoiceData | null) => void;
-  setActivePanel: (panel: EditorPanel) => void;
-  setPreviewPlaying: (playing: boolean) => void;
-  setCurrentTime: (time: number) => void;
-  setVolume: (volume: number) => void;
-  setMuted: (muted: boolean) => void;
-  
-  // Actions - 片段操作
-  addSegment: (segment: VideoSegment) => void;
-  updateSegment: (id: string, data: Partial<VideoSegment>) => void;
-  deleteSegment: (id: string) => void;
-  reorderSegments: (fromIndex: number, toIndex: number) => void;
-  clearSegments: () => void;
-  
-  // Actions - 时间线
-  setSelection: (selection: Partial<TimelineSelection>) => void;
-  clearSelection: () => void;
-  setZoom: (zoom: number) => void;
-  setScrollPosition: (position: number) => void;
-  
-  // Actions - 多轨道
-  setPlayheadMs: (ms: number) => void;
-  setTimelineTracks: (tracks: TimelineTrack[]) => void;
-  addTimelineTrack: (type: TrackType, name?: string) => string;
-  removeTimelineTrack: (trackId: string) => void;
-  updateTimelineTrack: (trackId: string, updates: Partial<TimelineTrack>) => void;
-  addClipToTrack: (trackId: string, clip: Omit<TimelineClip, 'id' | 'trackId'>) => string;
-  removeClipFromTrack: (clipId: string) => void;
-  updateClip: (clipId: string, updates: Partial<TimelineClip>) => void;
-  moveClip: (clipId: string, targetTrackId: string, newStartMs: number, newEndMs?: number) => void;
-  splitClip: (clipId: string, splitMs: number) => void;
-  addKeyframe: (clipId: string, keyframe: Omit<Keyframe, 'id'>) => string;
-  removeKeyframe: (clipId: string, keyframeId: string) => void;
-  updateKeyframe: (clipId: string, keyframeId: string, updates: Partial<Keyframe>) => void;
-  setTimelineSelection: (clipId?: string, trackId?: string) => void;
-  clearTimelineSelection: () => void;
-  setInPoint: () => void;
-  setOutPoint: () => void;
-  selectAllClips: () => void;
-  setTimelineDuration: (ms: number) => void;
-  setSnapEnabled: (enabled: boolean) => void;
-  saveTrackHistory: () => void;
-  
-  // Actions - 历史记录
-  undo: () => void;
-  redo: () => void;
-  undoTrack: () => void;
-  redoTrack: () => void;
-  saveHistory: () => void;
-  canUndo: () => boolean;
-  canRedo: () => boolean;
-  canUndoTrack: () => boolean;
-  canRedoTrack: () => boolean;
-  
-  // Actions
-  reset: () => void;
-}
-
-/**
- * 初始状态
- */
-const initialState = {
-  video: null as VideoData | null,
-  script: null as ScriptData | null,
-  voice: null as VoiceData | null,
-  segments: [] as VideoSegment[],
-  activePanel: 'video' as EditorPanel,
+// =========================================
+// Initial state
+// =========================================
+const initialState: EditorState = {
+  video: null,
+  script: null,
+  voice: null,
+  segments: [],
+  activePanel: 'video',
   previewPlaying: false,
   currentTime: 0,
   volume: 1,
   muted: false,
-  selection: {
-    segmentId: undefined as string | undefined,
-    multipleIds: [] as string[],
-  },
+  selection: { segmentId: undefined, multipleIds: [] },
   zoom: DEFAULT_ZOOM,
   scrollPosition: 0,
   playheadMs: 0,
-  timelineTracks: [] as TimelineTrack[],
+  timelineTracks: [],
   timelineDuration: 60000,
   snapEnabled: true,
   snapThreshold: DEFAULT_SNAP_THRESHOLD_MS,
-  selectedClipId: undefined as string | undefined,
-  inPointMs: undefined as number | undefined,
-  outPointMs: undefined as number | undefined,
-  selectedTrackId: undefined as string | undefined,
-  history: {
-    past: [] as VideoSegment[][],
-    future: [] as VideoSegment[][],
-  },
-  trackHistory: {
-    past: [] as VideoSegment[][],
-    future: [] as VideoSegment[][],
-  },
-} as unknown as EditorState;
+  selectedClipId: undefined,
+  selectedTrackId: undefined,
+  inPointMs: undefined,
+  outPointMs: undefined,
+  history: { past: [], future: [] },
+  trackHistory: { past: [], future: [] },
+} as const;
 
-/**
- * Editor Store
- */
-export const useEditorStore = create<EditorState>()(
+// =========================================
+// Store
+// =========================================
+export const useEditorStore = create<EditorStore>()(
   persist(
     (set, get) => ({
       ...initialState,
 
-      // 基本操作
+      // ─── Media ─────────────────────────────────────────────────────────────
       setVideo: (video) => set({ video }),
       setScript: (script) => set({ script }),
       setVoice: (voice) => set({ voice }),
       setActivePanel: (activePanel) => set({ activePanel }),
       setPreviewPlaying: (previewPlaying) => set({ previewPlaying }),
       setCurrentTime: (currentTime) => set({ currentTime }),
-      setVolume: (volume) => set({ volume: Math.max(VOLUME_MIN, Math.min(VOLUME_MAX, volume)) }),
+      setVolume: (volume) =>
+        set({ volume: Math.max(VOLUME_MIN, Math.min(VOLUME_MAX, volume)) }),
       setMuted: (muted) => set({ muted }),
-      
-      // 片段操作
+
+      // ─── Segments ───────────────────────────────────────────────────────────
       addSegment: (segment) => {
         get().saveHistory();
-        set((state) => ({ segments: [...state.segments, segment] }));
+        set((s) => ({ segments: [...s.segments, segment] }));
       },
-      
+
       updateSegment: (id, data) => {
         get().saveHistory();
-        set((state) => ({
-          segments: state.segments.map((s) =>
-            s.id === id ? { ...s, ...data } : s
-          ),
+        set((s) => ({
+          segments: s.segments.map((seg) => (seg.id === id ? { ...seg, ...data } : seg)),
         }));
       },
-      
+
       deleteSegment: (id) => {
         get().saveHistory();
-        set((state) => ({
-          segments: state.segments.filter((s) => s.id !== id),
-        }));
+        set((s) => ({ segments: s.segments.filter((seg) => seg.id !== id) }));
       },
-      
+
       reorderSegments: (fromIndex, toIndex) => {
         get().saveHistory();
-        set((state) => {
-          const segments = [...state.segments];
+        set((s) => {
+          const segments = [...s.segments];
           const [removed] = segments.splice(fromIndex, 1);
           segments.splice(toIndex, 0, removed);
           return { segments };
         });
       },
-      
+
       clearSegments: () => {
         get().saveHistory();
         set({ segments: [] });
       },
-      
-      // 时间线
+
+      // ─── UI ─────────────────────────────────────────────────────────────────
       setSelection: (selection) =>
-        set((state) => ({
-          selection: { ...state.selection, ...selection },
-        })),
-      
-      clearSelection: () =>
-        set({ selection: { segmentId: undefined, multipleIds: [] } }),
-      
+        set((s) => ({ selection: { ...s.selection, ...selection } })),
+
+      clearSelection: () => set({ selection: { segmentId: undefined, multipleIds: [] } }),
+
       setZoom: (zoom) => set({ zoom: Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom)) }),
       setScrollPosition: (scrollPosition) => set({ scrollPosition }),
-      
-      // 多轨道时间线
+
+      // ─── Timeline ───────────────────────────────────────────────────────────
       setPlayheadMs: (ms) => set({ playheadMs: Math.max(0, ms) }),
+
       setTimelineTracks: (tracks) => {
-        get().saveHistory();
+        get().saveTrackHistory();
         set({ timelineTracks: tracks });
       },
-      
+
       addTimelineTrack: (type, name) => {
         const id = `track-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-        const typeNames: Record<string, string> = { video: '视频', audio: '音频', subtitle: '字幕', effect: '效果' };
-        const count = get().timelineTracks.filter(t => t.type === type).length;
+        const typeNames: Record<string, string> = {
+          video: '视频', audio: '音频', subtitle: '字幕', effect: '效果',
+        };
+        const count = get().timelineTracks.filter((t) => t.type === type).length;
         const track: TimelineTrack = {
           id,
           type,
@@ -286,27 +139,28 @@ export const useEditorStore = create<EditorState>()(
           visible: true,
           height: type === 'subtitle' ? 50 : 60,
         };
-        set((state) => ({ timelineTracks: [...state.timelineTracks, track] }));
+        set((s) => ({ timelineTracks: [...s.timelineTracks, track] }));
         return id;
       },
-      
+
       removeTimelineTrack: (trackId) => {
         get().saveTrackHistory();
-        set((state) => ({ timelineTracks: state.timelineTracks.filter(t => t.id !== trackId) }));
+        set((s) => ({ timelineTracks: s.timelineTracks.filter((t) => t.id !== trackId) }));
       },
-      
-      updateTimelineTrack: (trackId, updates) => {
-        set((state) => ({
-          timelineTracks: state.timelineTracks.map(t => t.id === trackId ? { ...t, ...updates } : t),
-        }));
-      },
-      
+
+      updateTimelineTrack: (trackId, updates) =>
+        set((s) => ({
+          timelineTracks: s.timelineTracks.map((t) =>
+            t.id === trackId ? { ...t, ...updates } : t
+          ),
+        })),
+
       addClipToTrack: (trackId, clipData) => {
         const id = `clip-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
         const clip: TimelineClip = { ...clipData, id, trackId };
         get().saveTrackHistory();
-        set((state) => ({
-          timelineTracks: state.timelineTracks.map(t =>
+        set((s) => ({
+          timelineTracks: s.timelineTracks.map((t) =>
             t.id === trackId ? { ...t, clips: [...t.clips, clip] } : t
           ),
           selectedClipId: id,
@@ -314,69 +168,62 @@ export const useEditorStore = create<EditorState>()(
         }));
         return id;
       },
-      
+
       removeClipFromTrack: (clipId) => {
         get().saveTrackHistory();
-        set((state) => ({
-          timelineTracks: state.timelineTracks.map(t => ({
+        set((s) => ({
+          timelineTracks: s.timelineTracks.map((t) => ({
             ...t,
-            clips: t.clips.filter(c => c.id !== clipId),
+            clips: t.clips.filter((c) => c.id !== clipId),
           })),
-          selectedClipId: state.selectedClipId === clipId ? undefined : state.selectedClipId,
-          selectedTrackId: state.selectedClipId === clipId ? undefined : state.selectedTrackId,
+          selectedClipId: s.selectedClipId === clipId ? undefined : s.selectedClipId,
+          selectedTrackId: s.selectedClipId === clipId ? undefined : s.selectedTrackId,
         }));
       },
-      
-      updateClip: (clipId, updates) => {
-        set((state) => ({
-          timelineTracks: state.timelineTracks.map(t => ({
+
+      updateClip: (clipId, updates) =>
+        set((s) => ({
+          timelineTracks: s.timelineTracks.map((t) => ({
             ...t,
-            clips: t.clips.map(c => c.id === clipId ? { ...c, ...updates } : c),
+            clips: t.clips.map((c) => (c.id === clipId ? { ...c, ...updates } : c)),
           })),
-        }));
-      },
-      
+        })),
+
       moveClip: (clipId, targetTrackId, newStartMs, newEndMs) => {
         get().saveTrackHistory();
-        set((state) => {
+        set((s) => {
           let clipToMove: TimelineClip | undefined;
-          const afterRemove = state.timelineTracks.map(t => {
-            const clip = t.clips.find(c => c.id === clipId);
-            if (clip) {
-              clipToMove = { ...clip, trackId: targetTrackId };
-              return { ...t, clips: t.clips.filter(c => c.id !== clipId) };
-            }
-            return t;
+          const afterRemove = s.timelineTracks.map((t) => {
+            const clip = t.clips.find((c) => c.id === clipId);
+            if (clip) { clipToMove = { ...clip, trackId: targetTrackId }; }
+            return clip ? { ...t, clips: t.clips.filter((c) => c.id !== clipId) } : t;
           });
-          if (!clipToMove) return state;
+          if (!clipToMove) return s;
           const duration = clipToMove.endMs - clipToMove.startMs;
           return {
-            timelineTracks: afterRemove.map(t => {
-              if (t.id === targetTrackId) {
-                return {
-                  ...t,
-                  clips: [...t.clips, {
-                    ...clipToMove!,
-                    startMs: newStartMs,
-                    endMs: newEndMs ?? (newStartMs + duration),
-                  }],
-                };
-              }
-              return t;
-            }),
+            timelineTracks: afterRemove.map((t) =>
+              t.id === targetTrackId
+                ? {
+                    ...t,
+                    clips: [
+                      ...t.clips,
+                      { ...clipToMove!, startMs: newStartMs, endMs: newEndMs ?? newStartMs + duration },
+                    ],
+                  }
+                : t
+            ),
           };
         });
       },
-      
+
       splitClip: (clipId, splitMs) => {
         get().saveTrackHistory();
-        set((state) => ({
-          timelineTracks: state.timelineTracks.map(t => {
-            const idx = t.clips.findIndex(c => c.id === clipId);
+        set((s) => ({
+          timelineTracks: s.timelineTracks.map((t) => {
+            const idx = t.clips.findIndex((c) => c.id === clipId);
             if (idx === -1) return t;
             const clip = t.clips[idx];
             if (splitMs <= clip.startMs || splitMs >= clip.endMs) return t;
-            const duration = clip.endMs - clip.startMs;
             const offset = splitMs - clip.startMs;
             const sourceSplit = clip.sourceStartMs + offset;
             const leftClip: TimelineClip = { ...clip, endMs: splitMs, sourceEndMs: sourceSplit };
@@ -393,150 +240,139 @@ export const useEditorStore = create<EditorState>()(
           }),
         }));
       },
-      
+
       addKeyframe: (clipId, kfData) => {
         const id = `kf-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
         const keyframe: Keyframe = { ...kfData, id };
-        set((state) => ({
-          timelineTracks: state.timelineTracks.map(t => ({
+        set((s) => ({
+          timelineTracks: s.timelineTracks.map((t) => ({
             ...t,
-            clips: t.clips.map(c =>
-              c.id === clipId
-                ? { ...c, keyframes: [...(c.keyframes || []), keyframe] }
-                : c
+            clips: t.clips.map((c) =>
+              c.id === clipId ? { ...c, keyframes: [...(c.keyframes || []), keyframe] } : c
             ),
           })),
         }));
         return id;
       },
-      
-      removeKeyframe: (clipId, keyframeId) => {
-        set((state) => ({
-          timelineTracks: state.timelineTracks.map(t => ({
+
+      removeKeyframe: (clipId, keyframeId) =>
+        set((s) => ({
+          timelineTracks: s.timelineTracks.map((t) => ({
             ...t,
-            clips: t.clips.map(c =>
+            clips: t.clips.map((c) =>
               c.id === clipId
-                ? { ...c, keyframes: (c.keyframes || []).filter(kf => kf.id !== keyframeId) }
+                ? { ...c, keyframes: (c.keyframes || []).filter((kf) => kf.id !== keyframeId) }
                 : c
             ),
           })),
-        }));
-      },
-      
-      updateKeyframe: (clipId, keyframeId, updates) => {
-        set((state) => ({
-          timelineTracks: state.timelineTracks.map(t => ({
+        })),
+
+      updateKeyframe: (clipId, keyframeId, updates) =>
+        set((s) => ({
+          timelineTracks: s.timelineTracks.map((t) => ({
             ...t,
-            clips: t.clips.map(c =>
+            clips: t.clips.map((c) =>
               c.id === clipId
                 ? {
                     ...c,
-                    keyframes: (c.keyframes || []).map(kf =>
+                    keyframes: (c.keyframes || []).map((kf) =>
                       kf.id === keyframeId ? { ...kf, ...updates } : kf
                     ),
                   }
                 : c
             ),
           })),
-        }));
-      },
-      
+        })),
+
       setTimelineSelection: (clipId, trackId) =>
         set({ selectedClipId: clipId, selectedTrackId: trackId }),
-      
+
       clearTimelineSelection: () =>
         set({ selectedClipId: undefined, selectedTrackId: undefined }),
 
       setInPoint: () => set({ inPointMs: get().playheadMs }),
-
       setOutPoint: () => set({ outPointMs: get().playheadMs }),
 
       selectAllClips: () => {
-        const allClipIds = get().timelineTracks.flatMap(t => t.clips.map(c => c.id));
+        const allClipIds = get().timelineTracks.flatMap((t) => t.clips.map((c) => c.id));
         if (allClipIds.length === 0) return;
         const firstId = allClipIds[0];
-        const firstTrack = get().timelineTracks.find(t => t.clips.some(c => c.id === firstId));
+        const firstTrack = get().timelineTracks.find((t) => t.clips.some((c) => c.id === firstId));
         set({ selectedClipId: firstId, selectedTrackId: firstTrack?.id });
       },
-      
+
       setTimelineDuration: (ms) => set({ timelineDuration: Math.max(0, ms) }),
       setSnapEnabled: (enabled) => set({ snapEnabled: enabled }),
-      
-      // 历史记录
+
+      // ─── History ────────────────────────────────────────────────────────────
       saveHistory: () =>
-        set((state) => ({
+        set((s) => ({
           history: {
-            past: [...state.history.past.slice(-MAX_HISTORY_SIZE), state.segments],
+            past: [...s.history.past.slice(-MAX_HISTORY_SIZE), s.segments],
             future: [],
           },
         })),
-      
+
       saveTrackHistory: () =>
-        set((state) => ({
+        set((s) => ({
           trackHistory: {
-            past: [...state.trackHistory.past.slice(-MAX_HISTORY_SIZE), state.timelineTracks],
+            past: [...s.trackHistory.past.slice(-MAX_HISTORY_SIZE), s.timelineTracks],
             future: [],
           },
         })),
-      
+
       undo: () =>
-        set((state) => {
-          if (state.history.past.length === 0) return state;
-          const previous = state.history.past[state.history.past.length - 1];
+        set((s) => {
+          if (s.history.past.length === 0) return s;
+          const previous = s.history.past[s.history.past.length - 1];
           return {
             segments: previous,
-            history: {
-              past: state.history.past.slice(0, -1),
-              future: [state.segments, ...state.history.future],
-            },
+            history: { past: s.history.past.slice(0, -1), future: [s.segments, ...s.history.future] },
           };
         }),
-      
+
       redo: () =>
-        set((state) => {
-          if (state.history.future.length === 0) return state;
-          const next = state.history.future[0];
+        set((s) => {
+          if (s.history.future.length === 0) return s;
+          const next = s.history.future[0];
           return {
             segments: next,
-            history: {
-              past: [...state.history.past, state.segments],
-              future: state.history.future.slice(1),
-            },
+            history: { past: [...s.history.past, s.segments], future: s.history.future.slice(1) },
           };
         }),
-      
+
       undoTrack: () =>
-        set((state) => {
-          if (state.trackHistory.past.length === 0) return state;
-          const previous = state.trackHistory.past[state.trackHistory.past.length - 1];
+        set((s) => {
+          if (s.trackHistory.past.length === 0) return s;
+          const previous = s.trackHistory.past[s.trackHistory.past.length - 1];
           return {
             timelineTracks: previous,
             trackHistory: {
-              past: state.trackHistory.past.slice(0, -1),
-              future: [state.timelineTracks, ...state.trackHistory.future],
+              past: s.trackHistory.past.slice(0, -1),
+              future: [s.timelineTracks, ...s.trackHistory.future],
             },
           };
         }),
-      
+
       redoTrack: () =>
-        set((state) => {
-          if (state.trackHistory.future.length === 0) return state;
-          const next = state.trackHistory.future[0];
+        set((s) => {
+          if (s.trackHistory.future.length === 0) return s;
+          const next = s.trackHistory.future[0];
           return {
             timelineTracks: next,
             trackHistory: {
-              past: [...state.trackHistory.past, state.timelineTracks],
-              future: state.trackHistory.future.slice(1),
+              past: [...s.trackHistory.past, s.timelineTracks],
+              future: s.trackHistory.future.slice(1),
             },
           };
         }),
-      
+
       canUndo: () => get().history.past.length > 0,
       canRedo: () => get().history.future.length > 0,
       canUndoTrack: () => get().trackHistory.past.length > 0,
       canRedoTrack: () => get().trackHistory.future.length > 0,
-      
-      reset: () => set({ ...initialState }),
+
+      reset: () => set({ ...initialState } as EditorStore),
     }),
     {
       name: 'cutdeck-editor',
@@ -550,3 +386,6 @@ export const useEditorStore = create<EditorState>()(
     }
   )
 );
+
+// Re-export types for consumers
+export type { TimelineSelection } from './editorTypes';
