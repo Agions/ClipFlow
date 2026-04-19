@@ -1,4 +1,12 @@
-import { logger } from '@/utils/logger';
+/**
+ * ProjectEdit — 项目编辑页
+ *
+ * 结构：
+ *   components/steps/   — 三个步骤组件（VideoStep / AnalyzeStep / ScriptStep）
+ *   hooks/              — useProjectAutoSave auto-save 逻辑
+ *   projectEditUtils.ts — 纯工具函数
+ *   index.tsx           — 主组件（状态编排）
+ */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
@@ -15,41 +23,51 @@ import {
   Switch,
   Tag,
 } from 'antd';
-import { ArrowLeftOutlined, SaveOutlined, VideoCameraOutlined, EditOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import VideoSelector from '@/components/VideoSelector';
-import ScriptEditor from '@/components/ScriptEditor';
+import {
+  ArrowLeftOutlined,
+  SaveOutlined,
+  VideoCameraOutlined,
+  EditOutlined,
+  CheckCircleOutlined,
+} from '@ant-design/icons';
+
 import { VideoMetadata, analyzeVideo, extractKeyFrames } from '@/services/video';
-import type { VideoSegment } from '@/services/video';
 import type { ScriptSegment } from '@/core/types';
 import { generateScriptWithAI, analyzeKeyFramesWithAI } from '@/services/aiService';
 import { loadProjectWithRetry, saveProjectToFile } from '@/services/tauri';
-import { normalizeProjectFile } from '@/core/utils/project-file';
-import type { ProjectFileLike } from '@/core/utils/project-file';
-import { PROJECT_SAVE_BEHAVIOR_KEY, type ProjectSaveBehavior } from '@/shared/constants/settings';
 import { notify } from '@/shared';
 import { useSettings } from '@/context/SettingsContext';
 import { v4 as uuid } from 'uuid';
+import { logger } from '@/utils/logger';
+
+import { VideoStep } from './components/steps/VideoStep';
+import { AnalyzeStep } from './components/steps/AnalyzeStep';
+import { ScriptStep } from './components/steps/ScriptStep';
+import { useProjectAutoSave } from './hooks/useProjectAutoSave';
+import {
+  type ProjectData,
+  type ProjectSaveBehavior,
+  PROJECT_SAVE_BEHAVIOR_KEY,
+  PROJECT_AUTO_SAVE_KEY,
+  normalizeProjectData,
+  createDefaultProjectName,
+  buildDraftFingerprint,
+  parseScriptText,
+} from './projectEditUtils';
+
 import styles from './index.module.less';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
+
 const STEP_ITEMS = [
   { title: '选择视频', icon: <VideoCameraOutlined />, description: '上传视频文件' },
   { title: '分析内容', icon: <EditOutlined />, description: '分析视频生成脚本' },
   { title: '编辑脚本', icon: <CheckCircleOutlined />, description: '编辑和优化脚本' },
 ];
 
-interface ProjectData extends ProjectFileLike<unknown, { path?: string }> {
-  id: string;
-  name: string;
-  description: string;
-  videoPath: string;
-  createdAt: string;
-  updatedAt: string;
-  metadata?: VideoMetadata;
-  keyFrames?: string[];
-  script?: ScriptSegment[];
-}
-
+// ─────────────────────────────────────────────────────────────────────────────
+// Header
+// ─────────────────────────────────────────────────────────────────────────────
 interface ProjectEditHeaderProps {
   isNewProject: boolean;
   loading: boolean;
@@ -59,108 +77,66 @@ interface ProjectEditHeaderProps {
   autoSaveEnabled: boolean;
   onBack: () => void;
   onSave: () => void;
-  onSaveBehaviorChange: (value: ProjectSaveBehavior) => void;
+  onSaveBehaviorChange: (v: ProjectSaveBehavior) => void;
   onAutoSaveToggle: (checked: boolean) => void;
 }
 
-const ProjectEditHeader = React.memo((props: ProjectEditHeaderProps) => {
-  const {
-    isNewProject,
-    loading,
-    initialLoading,
-    saving,
-    saveBehavior,
-    autoSaveEnabled,
-    onBack,
-    onSave,
-    onSaveBehaviorChange,
-    onAutoSaveToggle,
-  } = props;
-
-  return (
-    <div className={styles.header}>
-      <Button type="text" icon={<ArrowLeftOutlined />} onClick={onBack}>返回</Button>
-      <Title level={3}>{isNewProject ? '创建新项目' : '编辑项目'}</Title>
-      <Space size="middle">
-        <div className={styles.saveBehaviorControl}>
-          <span className={styles.saveBehaviorLabel}>保存后：</span>
-          <Select<ProjectSaveBehavior>
-            size="small"
-            value={saveBehavior}
-            onChange={onSaveBehaviorChange}
-            options={[
-              { value: 'stay', label: '留在编辑页' },
-              { value: 'detail', label: '跳转项目详情' },
-            ]}
-          />
-        </div>
-        <div className={styles.saveBehaviorControl}>
-          <span className={styles.saveBehaviorLabel}>自动保存：</span>
-          <Switch size="small" checked={autoSaveEnabled} onChange={onAutoSaveToggle} />
-        </div>
-        <Button
-          type="primary"
-          icon={<SaveOutlined />}
-          onClick={onSave}
-          loading={saving}
-          disabled={loading || initialLoading}
-        >
-          保存项目
-        </Button>
-      </Space>
-    </div>
-  );
-});
+const ProjectEditHeader = React.memo<ProjectEditHeaderProps>(({
+  isNewProject, loading, initialLoading, saving, saveBehavior,
+  autoSaveEnabled, onBack, onSave, onSaveBehaviorChange, onAutoSaveToggle,
+}) => (
+  <div className={styles.header}>
+    <Button type="text" icon={<ArrowLeftOutlined />} onClick={onBack}>返回</Button>
+    <Title level={3}>{isNewProject ? '创建新项目' : '编辑项目'}</Title>
+    <Space size="middle">
+      <div className={styles.saveBehaviorControl}>
+        <span className={styles.saveBehaviorLabel}>保存后：</span>
+        <Select<ProjectSaveBehavior>
+          size="small" value={saveBehavior} onChange={onSaveBehaviorChange}
+          options={[
+            { value: 'stay', label: '留在编辑页' },
+            { value: 'detail', label: '跳转项目详情' },
+          ]}
+        />
+      </div>
+      <div className={styles.saveBehaviorControl}>
+        <span className={styles.saveBehaviorLabel}>自动保存：</span>
+        <Switch size="small" checked={autoSaveEnabled} onChange={onAutoSaveToggle} />
+      </div>
+      <Button
+        type="primary" icon={<SaveOutlined />} onClick={onSave}
+        loading={saving} disabled={loading || initialLoading}
+      >
+        保存项目
+      </Button>
+    </Space>
+  </div>
+));
 
 ProjectEditHeader.displayName = 'ProjectEditHeader';
 
-const AutoSaveStatus = React.memo(({ content }: { content: React.ReactNode }) => (
-  <div className={styles.autoSaveStatus}>{content}</div>
-));
+// ─────────────────────────────────────────────────────────────────────────────
+// AutoSave badge
+// ─────────────────────────────────────────────────────────────────────────────
+const AutoSaveBadge = React.memo<{
+  enabled: boolean;
+  videoPath: string;
+  state: 'idle' | 'saving' | 'saved' | 'error';
+  lastAt: string;
+}>(({ enabled, videoPath, state, lastAt }) => {
+  if (!enabled) return <Tag color="default">自动保存已关闭</Tag>;
+  if (!videoPath) return <Tag color="default">未开始自动保存</Tag>;
+  if (state === 'saving') return <Tag color="processing">草稿自动保存中...</Tag>;
+  if (state === 'saved') return <Tag color="success">{lastAt ? `草稿已保存 ${lastAt}` : '草稿已保存'}</Tag>;
+  if (state === 'error') return <Tag color="error">草稿保存失败</Tag>;
+  return <Tag color="default">自动保存待触发</Tag>;
+});
 
-AutoSaveStatus.displayName = 'AutoSaveStatus';
+AutoSaveBadge.displayName = 'AutoSaveBadge';
 
-const normalizeProjectData = (project: ProjectData): ProjectData => {
-  const normalized = normalizeProjectFile(project);
-  return {
-    ...project,
-    ...normalized,
-    description: project.description || '',
-    videoPath: project.videoPath || normalized.videoUrl || '',
-    createdAt: project.createdAt || new Date().toISOString(),
-  };
-};
-
-const normalizeText = (value?: string) => value?.trim().replace(/\s+/g, ' ') || '';
-
-const createDefaultProjectName = () => {
-  const now = new Date();
-  const pad = (value: number) => String(value).padStart(2, '0');
-  const timestamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;
-  return `未命名项目-${timestamp}`;
-};
-
-const PROJECT_AUTO_SAVE_KEY = 'cutdeck-project-auto-save-enabled';
-
-const buildDraftFingerprint = (payload: {
-  id?: string;
-  name?: string;
-  description?: string;
-  videoPath?: string;
-  keyFrameCount?: number;
-  scriptCount?: number;
-  hasMetadata?: boolean;
-}) =>
-  JSON.stringify({
-    id: payload.id || '',
-    name: normalizeText(payload.name) || '',
-    description: normalizeText(payload.description),
-    videoPath: payload.videoPath || '',
-    keyFrameCount: payload.keyFrameCount || 0,
-    scriptCount: payload.scriptCount || 0,
-    hasMetadata: Boolean(payload.hasMetadata),
-  });
-
+// ─────────────────────────────────────────────────────────────────────────────
+// Main component
+// ─────────────────────────────────────────────────────────────────────────────
 const ProjectEdit: React.FC = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
@@ -172,130 +148,45 @@ const ProjectEdit: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [project, setProject] = useState<ProjectData | null>(null);
+  const [videoPath, setVideoPath] = useState('');
   const [videoSelected, setVideoSelected] = useState(false);
-  const [videoPath, setVideoPath] = useState<string>('');
   const [videoMetadata, setVideoMetadata] = useState<VideoMetadata | null>(null);
   const [keyFrames, setKeyFrames] = useState<string[]>([]);
   const [scriptSegments, setScriptSegments] = useState<ScriptSegment[]>([]);
   const [isNewProject, setIsNewProject] = useState(true);
   const [initialLoading, setInitialLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [defaultProjectName] = useState(() => createDefaultProjectName());
+  const [defaultProjectName] = useState(createDefaultProjectName);
   const [saveBehavior, setSaveBehavior] = useState<ProjectSaveBehavior>(() => {
-    try {
-      const rawValue = window.localStorage.getItem(PROJECT_SAVE_BEHAVIOR_KEY);
-      return rawValue === 'detail' ? 'detail' : 'stay';
-    } catch {
-      return 'stay';
-    }
+    try { return localStorage.getItem(PROJECT_SAVE_BEHAVIOR_KEY) === 'detail' ? 'detail' : 'stay'; }
+    catch { return 'stay'; }
   });
-  const [autoSaveState, setAutoSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
-  const [lastAutoSaveAt, setLastAutoSaveAt] = useState('');
   const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(() => {
-    try {
-      return window.localStorage.getItem(PROJECT_AUTO_SAVE_KEY) === '1';
-    } catch {
-      return false;
-    }
+    try { return localStorage.getItem(PROJECT_AUTO_SAVE_KEY) === '1'; }
+    catch { return false; }
   });
-
-  const draftTimerRef = useRef<number | null>(null);
-  const autoSaveRequestSeqRef = useRef(0);
-  const lastDraftFingerprintRef = useRef('');
-  const recentProjectTrackedRef = useRef('');
-  const draftProjectIdRef = useRef<string>(projectId || '');
-  const persistLockRef = useRef(false);
-  const analyzingLockRef = useRef(false);
-  const loadRequestSeqRef = useRef(0);
-  const mountedRef = useRef(true);
   const [reloadToken, setReloadToken] = useState(0);
 
+  // Refs
+  const persistLockRef = useRef(false);
+  const analyzingLockRef = useRef(false);
+  const draftProjectIdRef = useRef<string>(projectId || '');
+  const recentProjectTrackedRef = useRef('');
+  const mountedRef = useRef(true);
+  const reloadSeqRef = useRef(0);
+
   useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-      if (draftTimerRef.current) {
-        window.clearTimeout(draftTimerRef.current);
-      }
-    };
+    return () => { mountedRef.current = false; };
   }, []);
 
-  const canAccessStep = useCallback((step: number) => {
-    if (step <= 0) return true;
-    if (step === 1) return Boolean(videoPath);
-    if (step === 2) return Boolean(videoPath && (scriptSegments.length > 0 || keyFrames.length > 0 || videoMetadata));
-    return false;
-  }, [keyFrames.length, scriptSegments.length, videoMetadata, videoPath]);
-
-  const goToStep = useCallback((targetStep: number) => {
-    if (canAccessStep(targetStep)) {
-      setCurrentStep(targetStep);
-      return;
-    }
-
-    if (targetStep > 0 && !videoPath) {
-      notify.warning('请先选择视频后再继续。');
-      return;
-    }
-
-    if (targetStep > 1) {
-      notify.warning('请先完成视频分析后再进入脚本编辑。');
-    }
-  }, [canAccessStep, videoPath]);
-
-  const parseTimeString = (timeString: string): number => {
-    const parts = timeString.split(':').map(Number);
-    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-    if (parts.length === 2) return parts[0] * 60 + parts[1];
-    return 0;
-  };
-
-  const parseScriptText = (text: string): ScriptSegment[] => {
-    try {
-      const lines = text.split('\n').filter((line) => line.trim().length > 0);
-      const resultSegments: ScriptSegment[] = [];
-      let currentSegment: ScriptSegment | null = null;
-
-      for (const line of lines) {
-        const timeMatch = line.match(/\[(\d{1,2}:\d{2}(?::\d{2})?) - (\d{1,2}:\d{2}(?::\d{2})?)\]/);
-
-        if (timeMatch) {
-          const startTime = parseTimeString(timeMatch[1]);
-          const endTime = parseTimeString(timeMatch[2]);
-
-          currentSegment = {
-            id: `segment_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-            startTime,
-            endTime,
-            type: 'narration',
-          };
-          resultSegments.push(currentSegment);
-        } else if (currentSegment) {
-          // Append to previous segment's duration (text-based parsing)
-          // No-op for ScriptSegment since we track endTime directly
-        }
-      }
-
-      return resultSegments;
-    } catch (parseError) {
-      logger.error('解析脚本失败:', { error: parseError });
-      return [];
-    }
-  };
-
-  const buildProjectData = useCallback((): ProjectData => {
-    const formData = form.getFieldsValue();
+  // ─── Auto-save ────────────────────────────────────────────────────────────
+  const getProjectData = useCallback((): ProjectData => {
+    const { name, description } = form.getFieldsValue();
     const now = new Date().toISOString();
-    const normalizedName = normalizeText(formData.name) || defaultProjectName;
-    const normalizedDescription = normalizeText(formData.description);
-    const resolvedProjectId = project?.id || draftProjectIdRef.current || uuid();
-    if (!draftProjectIdRef.current) {
-      draftProjectIdRef.current = resolvedProjectId;
-    }
-
-    const projectData: ProjectData = {
-      id: resolvedProjectId,
-      name: normalizedName,
-      description: normalizedDescription,
+    return {
+      id: project?.id || draftProjectIdRef.current || uuid(),
+      name: (name || '').trim() || defaultProjectName,
+      description: (description || '').trim(),
       videoPath,
       videoUrl: videoPath || undefined,
       videos: videoPath ? [{ path: videoPath }] : [],
@@ -305,219 +196,132 @@ const ProjectEdit: React.FC = () => {
       keyFrames: keyFrames.length > 0 ? keyFrames : undefined,
       script: scriptSegments.length > 0 ? scriptSegments : undefined,
     };
-    return projectData;
-  }, [defaultProjectName, form, keyFrames, project, scriptSegments, videoMetadata, videoPath]);
+  }, [form, project, videoPath, videoMetadata, keyFrames, scriptSegments, defaultProjectName]);
 
-  const persistProject = useCallback(async (options?: {
-    silent?: boolean;
-    requireVideo?: boolean;
-    requireValidName?: boolean;
-  }): Promise<ProjectData | null> => {
-    const { silent = false, requireVideo = true, requireValidName = true } = options || {};
+  const persistProject = useCallback(async (opts = { silent: false, requireVideo: true, requireValidName: true }) => {
+    const { silent, requireVideo, requireValidName } = opts;
 
     if (requireVideo && !videoPath) {
       if (!silent) notify.error(null, '请先选择视频文件');
       return null;
     }
-
-    const nameInput = normalizeText(form.getFieldValue('name'));
-    if (requireValidName && nameInput && nameInput.length < 2) {
+    const nameVal = (form.getFieldValue('name') || '').trim();
+    if (requireValidName && nameVal && nameVal.length < 2) {
       if (!silent) notify.error(null, '项目名称至少2个字符');
       return null;
     }
-
     if (persistLockRef.current) {
       if (!silent) notify.info('正在保存，请稍候');
       return null;
     }
 
     persistLockRef.current = true;
-    const data = buildProjectData();
     try {
+      const data = getProjectData();
       await saveProjectToFile(data.id, data);
-      const shouldSyncProjectState = !silent || !project || project.id !== data.id;
-      if (shouldSyncProjectState) {
-        setProject(data);
-      }
       if (recentProjectTrackedRef.current !== data.id) {
         addRecentProject(data.id);
         recentProjectTrackedRef.current = data.id;
       }
-
+      setProject(data);
       if (!silent) notify.success('项目保存成功');
       return data;
     } finally {
       persistLockRef.current = false;
     }
-  }, [addRecentProject, buildProjectData, form, videoPath]);
+  }, [addRecentProject, form, getProjectData, videoPath]);
 
-  const getCurrentDraftFingerprint = useCallback(() => buildDraftFingerprint({
-    id: project?.id || projectId || '',
-    name: form.getFieldValue('name'),
-    description: form.getFieldValue('description'),
+  const { autoSaveState, lastAutoSaveAt, scheduleAutoSave, setAutoSaveState } = useProjectAutoSave({
+    enabled: autoSaveEnabled,
     videoPath,
-    keyFrameCount: keyFrames.length,
-    scriptCount: scriptSegments.length,
-    hasMetadata: Boolean(videoMetadata),
-  }), [
-    form,
-    keyFrames.length,
-    project?.id,
-    projectId,
-    scriptSegments.length,
-    videoMetadata,
-    videoPath,
-  ]);
+    getProjectData,
+    onPersist: persistProject,
+    initialLoading,
+    loading,
+    saving,
+  });
 
-  const scheduleAutoSave = useCallback(() => {
-    if (!autoSaveEnabled || initialLoading || loading || saving || !videoPath) return;
-    const currentFingerprint = getCurrentDraftFingerprint();
-    if (lastDraftFingerprintRef.current === currentFingerprint) {
-      return;
-    }
-
-    if (draftTimerRef.current) window.clearTimeout(draftTimerRef.current);
-    const requestId = ++autoSaveRequestSeqRef.current;
-    const isStale = () => !mountedRef.current || requestId !== autoSaveRequestSeqRef.current;
-
-    draftTimerRef.current = window.setTimeout(async () => {
-      try {
-        if (isStale()) return;
-        setAutoSaveState('saving');
-        const draftData = await persistProject({
-          silent: true,
-          requireVideo: true,
-          requireValidName: false,
-        });
-
-        if (isStale()) return;
-        if (!draftData) {
-          setAutoSaveState('idle');
-          return;
-        }
-        lastDraftFingerprintRef.current = currentFingerprint;
-        setLastAutoSaveAt(new Date().toLocaleTimeString('zh-CN', { hour12: false }));
-        setAutoSaveState('saved');
-      } catch (draftError) {
-        if (isStale()) return;
-        logger.error('自动保存草稿失败:', { error: draftError });
-        setAutoSaveState('error');
-      }
-    }, 900);
-  }, [autoSaveEnabled, getCurrentDraftFingerprint, initialLoading, loading, persistProject, saving, videoPath]);
-
+  // ─── Project loading ────────────────────────────────────────────────────────
   useEffect(() => {
-    const requestId = ++loadRequestSeqRef.current;
-    const isStale = () => !mountedRef.current || requestId !== loadRequestSeqRef.current;
+    const seq = ++reloadSeqRef.current;
+    const stale = () => !mountedRef.current || seq !== reloadSeqRef.current;
 
     if (!projectId) {
-      if (isStale()) return;
-      setIsNewProject(true);
-      setProject(null);
-      setError(null);
-      setInitialLoading(false);
-      setCurrentStep(0);
-      setVideoSelected(false);
-      setVideoPath('');
-      setVideoMetadata(null);
-      setKeyFrames([]);
-      setScriptSegments([]);
-      setAutoSaveState('idle');
-      setLastAutoSaveAt('');
+      if (stale()) return;
+      setIsNewProject(true); setProject(null); setError(null);
+      setInitialLoading(false); setCurrentStep(0);
+      setVideoSelected(false); setVideoPath(''); setVideoMetadata(null);
+      setKeyFrames([]); setScriptSegments([]);
       draftProjectIdRef.current = '';
-      lastDraftFingerprintRef.current = '';
       form.setFieldsValue({ name: defaultProjectName, description: '' });
       return;
     }
 
-    if (isStale()) return;
-    setInitialLoading(true);
-    setIsNewProject(false);
-    setError(null);
+    if (stale()) return;
+    setInitialLoading(true); setIsNewProject(false); setError(null);
 
     loadProjectWithRetry<ProjectData>(projectId, { retries: 2, retryDelayMs: 260 })
-      .then((projectData) => {
-        if (isStale()) return;
-        const normalizedProject = normalizeProjectData(projectData);
-        draftProjectIdRef.current = normalizedProject.id;
-        setProject(normalizedProject);
-        form.setFieldsValue({
-          name: normalizedProject.name,
-          description: normalizedProject.description,
-        });
-
-        if (normalizedProject.videoPath) {
-          setVideoPath(normalizedProject.videoPath);
-          setVideoSelected(true);
-        }
-        if (normalizedProject.metadata) setVideoMetadata(normalizedProject.metadata);
-        if (normalizedProject.keyFrames?.length) setKeyFrames(normalizedProject.keyFrames);
-
-        if (normalizedProject.script?.length) {
-          setScriptSegments(normalizedProject.script);
-          setCurrentStep(2);
-        } else if (normalizedProject.videoPath) {
-          setCurrentStep(1);
-        }
-
-        // 初始化草稿基线，避免进入编辑页后立即触发自动保存引发视觉跳动
-        lastDraftFingerprintRef.current = buildDraftFingerprint({
-          id: normalizedProject.id,
-          name: normalizedProject.name,
-          description: normalizedProject.description,
-          videoPath: normalizedProject.videoPath,
-          keyFrameCount: normalizedProject.keyFrames?.length || 0,
-          scriptCount: normalizedProject.script?.length || 0,
-          hasMetadata: Boolean(normalizedProject.metadata),
-        });
-
-        setError(null);
+      .then((data) => {
+        if (stale()) return;
+        const p = normalizeProjectData(data);
+        draftProjectIdRef.current = p.id;
+        setProject(p);
+        form.setFieldsValue({ name: p.name, description: p.description });
+        if (p.videoPath) { setVideoPath(p.videoPath); setVideoSelected(true); }
+        if (p.metadata) setVideoMetadata(p.metadata);
+        if (p.keyFrames?.length) setKeyFrames(p.keyFrames);
+        if (p.script?.length) { setScriptSegments(p.script); setCurrentStep(2); }
+        else if (p.videoPath) setCurrentStep(1);
       })
-      .catch((err: unknown) => {
-        if (isStale()) return;
-        logger.error('加载项目失败:', { error: err });
-        const detail = err instanceof Error ? err.message : String(err);
-        setError(`加载项目失败：${detail}`);
-        notify.error(err, '加载项目失败，请返回项目列表后重试');
+      .catch((e: unknown) => {
+        if (stale()) return;
+        logger.error('加载项目失败:', { error: e });
+        const msg = e instanceof Error ? e.message : String(e);
+        setError(`加载项目失败：${msg}`);
+        notify.error(e, '加载项目失败，请返回项目列表后重试');
       })
-      .finally(() => {
-        if (isStale()) return;
-        setInitialLoading(false);
-      });
-  }, [defaultProjectName, form, projectId, reloadToken]);
+      .finally(() => { if (!stale()) setInitialLoading(false); });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, reloadToken]);
 
-  useEffect(() => {
-    scheduleAutoSave();
-  }, [scheduleAutoSave]);
+  // Trigger auto-save on relevant state changes
+  useEffect(() => { scheduleAutoSave(); }, [scheduleAutoSave]);
 
-  const handleVideoSelect = (filePath: string, metadata?: VideoMetadata) => {
+  // ─── Step navigation ───────────────────────────────────────────────────────
+  const canAccessStep = useCallback((step: number) => {
+    if (step <= 0) return true;
+    if (step === 1) return Boolean(videoPath);
+    if (step === 2) return Boolean(videoPath && (scriptSegments.length > 0 || keyFrames.length > 0 || videoMetadata));
+    return false;
+  }, [videoPath, scriptSegments.length, keyFrames.length, videoMetadata]);
+
+  const goToStep = useCallback((step: number) => {
+    if (canAccessStep(step)) { setCurrentStep(step); return; }
+    if (step > 0 && !videoPath) { notify.warning('请先选择视频后再继续。'); return; }
+    if (step > 1) notify.warning('请先完成视频分析后再进入脚本编辑。');
+  }, [canAccessStep, videoPath]);
+
+  // ─── Video handlers ─────────────────────────────────────────────────────────
+  const handleVideoSelect = useCallback((filePath: string, metadata?: VideoMetadata) => {
     if (filePath === videoPath && videoSelected) {
-      if (metadata && metadata !== videoMetadata) {
-        setVideoMetadata(metadata);
-      }
+      if (metadata && metadata !== videoMetadata) setVideoMetadata(metadata);
       return;
     }
     setVideoPath(filePath);
     setVideoSelected(true);
     if (metadata) setVideoMetadata(metadata);
     if (currentStep === 0) goToStep(1);
-  };
+  }, [currentStep, goToStep, videoMetadata, videoPath, videoSelected]);
 
-  const handleVideoRemove = () => {
-    setVideoPath('');
-    setVideoSelected(false);
-    setVideoMetadata(null);
-    setKeyFrames([]);
-    setScriptSegments([]);
-    setCurrentStep(0);
-    setAutoSaveState('idle');
-    setLastAutoSaveAt('');
-  };
+  const handleVideoRemove = useCallback(() => {
+    setVideoPath(''); setVideoSelected(false); setVideoMetadata(null);
+    setKeyFrames([]); setScriptSegments([]); setCurrentStep(0);
+  }, []);
 
-  const handleAnalyzeVideo = async () => {
-    if (loading || analyzingLockRef.current) return;
-    if (!videoPath) {
-      notify.error(null, '请先选择视频');
+  // ─── Analyze ────────────────────────────────────────────────────────────────
+  const handleAnalyzeVideo = useCallback(async () => {
+    if (loading || analyzingLockRef.current || !videoPath) {
+      if (!videoPath) notify.error(null, '请先选择视频');
       return;
     }
 
@@ -527,337 +331,141 @@ const ProjectEdit: React.FC = () => {
     try {
       setLoading(true);
 
-      let metadata = videoMetadata;
-      if (!metadata) {
+      let meta = videoMetadata;
+      if (!meta) {
         stage = 'metadata';
         notify.info('正在分析视频元数据...');
-        metadata = await analyzeVideo(videoPath);
-        setVideoMetadata(metadata);
+        meta = await analyzeVideo(videoPath);
+        setVideoMetadata(meta);
       }
 
       stage = 'keyframes';
       notify.info('正在提取关键帧...');
       const frames = await extractKeyFrames(videoPath);
-      const framePaths = frames.map((frame) => frame.path);
-      if (framePaths.length === 0) {
-        throw new Error('未提取到关键帧，请尝试更换视频或检查视频时长');
-      }
-      setKeyFrames(framePaths);
+      const paths = frames.map((f) => f.path);
+      if (paths.length === 0) throw new Error('未提取到关键帧，请尝试更换视频或检查视频时长');
+      setKeyFrames(paths);
 
       stage = 'frames-ai';
       notify.info('正在分析关键帧内容...');
-      const frameDescriptions = await analyzeKeyFramesWithAI(framePaths);
+      const descriptions = await analyzeKeyFramesWithAI(paths);
 
       stage = 'script';
       notify.info('正在根据视频内容生成脚本...');
-      const scriptText = await generateScriptWithAI(metadata, frameDescriptions, {
-        style: '自然流畅',
-        tone: '专业',
-        length: 'medium',
-        purpose: '内容展示',
+      const text = await generateScriptWithAI(meta, descriptions, {
+        style: '自然流畅', tone: '专业', length: 'medium', purpose: '内容展示',
       });
 
-      let script = parseScriptText(scriptText);
+      let script = parseScriptText(text);
       if (script.length === 0) {
         script = [{
           id: `segment_${Date.now()}`,
           startTime: 0,
-          endTime: Math.max(10, Math.round(metadata?.duration || 10)),
+          endTime: Math.max(10, Math.round(meta?.duration || 10)),
         }];
       }
 
       setScriptSegments(script);
       notify.success('视频分析完成');
       goToStep(2);
-    } catch (analyzeError) {
-      logger.error('视频分析失败:', { error: analyzeError });
-      const detail = analyzeError instanceof Error ? analyzeError.message : '未知错误';
-      const stageLabel = {
-        metadata: '视频元数据分析',
-        keyframes: '关键帧提取',
-        'frames-ai': '关键帧内容理解',
-        script: '脚本生成',
-      }[stage];
-      const errorMessage = detail.includes('失败') ? detail : `${stageLabel}失败：${detail}`;
-      notify.error(analyzeError, errorMessage);
+    } catch (e: unknown) {
+      logger.error('视频分析失败:', { error: e });
+      const msg = e instanceof Error ? e.message : '未知错误';
+      const labels = { metadata: '视频元数据分析', keyframes: '关键帧提取', 'frames-ai': '关键帧内容理解', script: '脚本生成' };
+      const label = labels[stage];
+      notify.error(e, msg.includes('失败') ? msg : `${label}失败：${msg}`);
     } finally {
       setLoading(false);
       analyzingLockRef.current = false;
     }
-  };
+  }, [loading, videoMetadata, videoPath, goToStep]);
 
-  const handleSaveProject = async () => {
+  // ─── Save ─────────────────────────────────────────────────────────────────
+  const handleSaveProject = useCallback(async () => {
     if (saving) return;
-
     try {
       await form.validateFields();
       setSaving(true);
+      const data = await persistProject({ silent: false, requireVideo: true, requireValidName: true });
+      if (!data) return;
 
-      const projectData = await persistProject({
-        silent: false,
-        requireVideo: true,
-        requireValidName: true,
-      });
+      const shouldDetail = saveBehavior === 'detail';
+      const shouldBindId = Boolean(!projectId && isNewProject);
+      const target = shouldDetail ? `/project/${data.id}` : `/project/edit/${data.id}`;
 
-      if (!projectData) return;
-      lastDraftFingerprintRef.current = buildDraftFingerprint({
-        id: projectData.id,
-        name: projectData.name,
-        description: projectData.description,
-        videoPath: projectData.videoPath,
-        keyFrameCount: projectData.keyFrames?.length || 0,
-        scriptCount: projectData.script?.length || 0,
-        hasMetadata: Boolean(projectData.metadata),
-      });
-      setAutoSaveState('saved');
-      setLastAutoSaveAt(new Date().toLocaleTimeString('zh-CN', { hour12: false }));
-
-      const shouldOpenDetail = saveBehavior === 'detail';
-      const shouldBindNewIdToEditRoute = Boolean(!projectId && isNewProject);
-      const targetRoute = shouldOpenDetail
-        ? `/project/${projectData.id}`
-        : `/project/edit/${projectData.id}`;
-
-      if (shouldBindNewIdToEditRoute || shouldOpenDetail) {
+      if (shouldBindId || shouldDetail) {
         setIsNewProject(false);
-        if (location.pathname !== targetRoute) {
-          navigate(targetRoute, { replace: true });
-        }
+        if (location.pathname !== target) navigate(target, { replace: true });
       }
-    } catch (saveError) {
-      logger.error('保存项目失败:', { error: saveError });
-      notify.error(saveError, '保存项目失败，请稍后再试');
+    } catch (e) {
+      logger.error('保存项目失败:', { error: e });
+      notify.error(e, '保存项目失败，请稍后再试');
     } finally {
       setSaving(false);
     }
-  };
+  }, [form, isNewProject, location.pathname, navigate, persistProject, projectId, saveBehavior, saving]);
 
   const handleBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-      return;
-    }
+    if (window.history.length > 1) { navigate(-1); return; }
     navigate('/projects');
   };
 
-  const handleSaveBehaviorChange = (value: ProjectSaveBehavior) => {
-    setSaveBehavior(value);
-    try {
-      window.localStorage.setItem(PROJECT_SAVE_BEHAVIOR_KEY, value);
-    } catch (storageError) {
-      logger.error('保存项目跳转策略失败:', { error: storageError });
-    }
+  const handleSaveBehaviorChange = (v: ProjectSaveBehavior) => {
+    setSaveBehavior(v);
+    try { localStorage.setItem(PROJECT_SAVE_BEHAVIOR_KEY, v); } catch { /* ignore */ }
   };
 
   const handleAutoSaveToggle = (checked: boolean) => {
     setAutoSaveEnabled(checked);
-    if (!checked) {
-      if (draftTimerRef.current) {
-        window.clearTimeout(draftTimerRef.current);
-      }
-      autoSaveRequestSeqRef.current += 1;
-      setAutoSaveState('idle');
-      setLastAutoSaveAt('');
-    }
-    try {
-      window.localStorage.setItem(PROJECT_AUTO_SAVE_KEY, checked ? '1' : '0');
-    } catch (storageError) {
-      logger.error('保存自动保存开关失败:', { error: storageError });
-    }
+    if (!checked) setAutoSaveState('idle');
+    try { localStorage.setItem(PROJECT_AUTO_SAVE_KEY, checked ? '1' : '0'); } catch { /* ignore */ }
   };
 
-  const autoSaveTag = React.useMemo(() => {
-    if (!autoSaveEnabled) return <Tag color="default">自动保存已关闭</Tag>;
-    if (!videoPath) return <Tag color="default">未开始自动保存</Tag>;
-    if (autoSaveState === 'saving') return <Tag color="processing">草稿自动保存中...</Tag>;
-    if (autoSaveState === 'saved') return <Tag color="success">{lastAutoSaveAt ? `草稿已保存 ${lastAutoSaveAt}` : '草稿已保存'}</Tag>;
-    if (autoSaveState === 'error') return <Tag color="error">草稿保存失败</Tag>;
-    return <Tag color="default">自动保存待触发</Tag>;
-  }, [autoSaveEnabled, autoSaveState, lastAutoSaveAt, videoPath]);
+  const handleExportScript = (format: string) => notify.info(`导出脚本为 ${format.toUpperCase()} 格式`);
 
-  const handleExportScript = (format: string) => {
-    notify.info(`导出脚本为 ${format.toUpperCase()} 格式`);
-  };
+  const handleFormValuesChange = () => scheduleAutoSave();
 
-  const handleFormValuesChange = (changedValues: Partial<Pick<ProjectData, 'name' | 'description'>>) => {
-    if (!Object.prototype.hasOwnProperty.call(changedValues, 'name')
-      && !Object.prototype.hasOwnProperty.call(changedValues, 'description')) {
-      return;
-    }
-    scheduleAutoSave();
-  };
-
-  const stepContent = React.useMemo(() => {
-    switch (currentStep) {
-      case 0:
-        return (
-          <Card className={styles.stepCard}>
-            <Title level={4}>
-              <VideoCameraOutlined /> 选择视频
-            </Title>
-            <Paragraph>请选择要编辑的视频文件，支持 MP4、MOV、AVI 等常见格式。</Paragraph>
-            <VideoSelector
-              initialVideoPath={videoPath}
-              onVideoSelect={handleVideoSelect}
-              onVideoRemove={handleVideoRemove}
-              loading={loading}
-            />
-            <div className={styles.stepActions}>
-              <Button type="primary" onClick={() => goToStep(1)} disabled={!videoSelected}>下一步</Button>
-            </div>
-          </Card>
-        );
-
-      case 1:
-        return (
-          <Card className={styles.stepCard}>
-            <Title level={4}><EditOutlined /> 分析视频内容</Title>
-            <Paragraph>分析视频获取关键帧和内容信息，生成脚本草稿。</Paragraph>
-
-            <Spin spinning={loading} tip="正在分析视频...">
-              <div className={styles.analyzeContent}>
-                <VideoSelector
-                  initialVideoPath={videoPath}
-                  onVideoSelect={handleVideoSelect}
-                  onVideoRemove={handleVideoRemove}
-                  loading={false}
-                />
-
-                {keyFrames.length > 0 && (
-                  <div className={styles.keyFrames}>
-                    <Title level={5}>已提取 {keyFrames.length} 个关键帧</Title>
-                    <div className={styles.keyFramesList}>
-                      {keyFrames.map((frame, index) => (
-                        <img
-                          key={index}
-                          src={frame}
-                          alt={`关键帧 ${index + 1}`}
-                          className={styles.keyFrameImage}
-                          loading="lazy"
-                          decoding="async"
-                          draggable={false}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </Spin>
-
-            <div className={styles.stepActions}>
-              <Space>
-                <Button onClick={() => goToStep(0)}>上一步</Button>
-                {scriptSegments.length > 0 ? (
-                  <Button type="primary" onClick={() => goToStep(2)}>下一步</Button>
-                ) : (
-                  <Button type="primary" onClick={handleAnalyzeVideo} loading={loading}>分析视频</Button>
-                )}
-              </Space>
-            </div>
-          </Card>
-        );
-
-      case 2:
-        return (
-          <Card className={styles.stepCard}>
-            <Title level={4}><EditOutlined /> 编辑脚本</Title>
-            <Paragraph>编辑和优化自动生成的脚本内容，可以添加、删除或修改片段。</Paragraph>
-
-            <ScriptEditor
-              videoPath={videoPath}
-              initialSegments={scriptSegments}
-              onSave={setScriptSegments}
-              onExport={handleExportScript}
-            />
-
-            <div className={styles.stepActions}>
-              <Space>
-                <Button onClick={() => goToStep(1)}>上一步</Button>
-                <Button type="primary" onClick={handleSaveProject} loading={saving} disabled={loading}>保存项目</Button>
-              </Space>
-            </div>
-          </Card>
-        );
-
-      default:
-        return null;
-    }
-  }, [
-    currentStep,
-    goToStep,
-    videoPath,
-    handleVideoSelect,
-    handleVideoRemove,
-    loading,
-    videoSelected,
-    keyFrames,
-    scriptSegments,
-    handleAnalyzeVideo,
-    handleSaveProject,
-    saving,
-    handleExportScript,
-  ]);
-
+  // ─── Render ────────────────────────────────────────────────────────────────
   if (error) {
     const actions = [<Button key="back" onClick={handleBack}>返回</Button>];
-    if (projectId) {
-      actions.unshift(
-        <Button key="retry" type="primary" onClick={() => setReloadToken((v) => v + 1)}>重试</Button>
-      );
-    }
-    return (
-      <Result
-        status="error"
-        title="加载失败"
-        subTitle={error}
-        extra={actions}
-      />
+    if (projectId) actions.unshift(
+      <Button key="retry" type="primary" onClick={() => setReloadToken((v) => v + 1)}>重试</Button>
     );
+    return <Result status="error" title="加载失败" subTitle={error} extra={actions} />;
   }
 
   return (
     <div className={styles.container}>
       <Spin spinning={initialLoading} tip="加载项目中...">
         <ProjectEditHeader
-          isNewProject={isNewProject}
-          loading={loading}
-          initialLoading={initialLoading}
-          saving={saving}
-          saveBehavior={saveBehavior}
-          autoSaveEnabled={autoSaveEnabled}
-          onBack={handleBack}
-          onSave={handleSaveProject}
-          onSaveBehaviorChange={handleSaveBehaviorChange}
-          onAutoSaveToggle={handleAutoSaveToggle}
+          isNewProject={isNewProject} loading={loading} initialLoading={initialLoading}
+          saving={saving} saveBehavior={saveBehavior} autoSaveEnabled={autoSaveEnabled}
+          onBack={handleBack} onSave={handleSaveProject}
+          onSaveBehaviorChange={handleSaveBehaviorChange} onAutoSaveToggle={handleAutoSaveToggle}
         />
 
-        <AutoSaveStatus content={autoSaveTag} />
+        <div className={styles.autoSaveStatus}>
+          <AutoSaveBadge enabled={autoSaveEnabled} videoPath={videoPath} state={autoSaveState} lastAt={lastAutoSaveAt} />
+        </div>
 
         <Card className={styles.card}>
           <Form
-            form={form}
-            layout="vertical"
+            form={form} layout="vertical"
             initialValues={{ name: defaultProjectName, description: '' }}
             onValuesChange={handleFormValuesChange}
           >
             <Form.Item
-              name="name"
-              label="项目名称"
-              rules={[
-                {
-                  validator: (_, value: string) => {
-                    const normalizedValue = normalizeText(value);
-                    if (normalizedValue && normalizedValue.length < 2) {
-                      return Promise.reject(new Error('项目名称至少2个字符'));
-                    }
-                    return Promise.resolve();
-                  },
+              name="name" label="项目名称"
+              rules={[{
+                validator: (_, value: string) => {
+                  const v = (value || '').trim();
+                  if (v && v.length < 2) return Promise.reject(new Error('项目名称至少2个字符'));
+                  return Promise.resolve();
                 },
-              ]}
+              }]}
             >
               <Input placeholder="请输入项目名称" maxLength={100} />
             </Form.Item>
-
             <Form.Item name="description" label="项目描述">
               <Input.TextArea placeholder="请输入项目描述（选填）" rows={2} maxLength={500} />
             </Form.Item>
@@ -865,15 +473,34 @@ const ProjectEdit: React.FC = () => {
         </Card>
 
         <div className={styles.stepsContainer}>
-          <Steps
-            current={currentStep}
-            onChange={goToStep}
-            items={STEP_ITEMS}
-          />
+          <Steps current={currentStep} onChange={goToStep} items={STEP_ITEMS} />
         </div>
 
         <div className={styles.stepsContent}>
-          {stepContent}
+          {currentStep === 0 && (
+            <VideoStep
+              videoPath={videoPath} videoSelected={videoSelected} loading={loading}
+              onVideoSelect={handleVideoSelect} onVideoRemove={handleVideoRemove}
+              onNext={() => goToStep(1)}
+            />
+          )}
+          {currentStep === 1 && (
+            <AnalyzeStep
+              videoPath={videoPath} keyFrames={keyFrames} scriptSegmentsCount={scriptSegments.length}
+              loading={loading}
+              onVideoSelect={handleVideoSelect} onVideoRemove={handleVideoRemove}
+              onAnalyze={handleAnalyzeVideo}
+              onPrev={() => goToStep(0)} onNext={() => goToStep(2)}
+            />
+          )}
+          {currentStep === 2 && (
+            <ScriptStep
+              videoPath={videoPath} initialSegments={scriptSegments}
+              saving={saving} loading={loading}
+              onSave={setScriptSegments} onExport={handleExportScript}
+              onPrev={() => goToStep(1)} onSaveProject={handleSaveProject}
+            />
+          )}
         </div>
       </Spin>
     </div>
