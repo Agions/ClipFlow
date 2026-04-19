@@ -46,6 +46,21 @@ interface ProjectType {
   starred: boolean;
 }
 
+// Raw API/local storage project — exact shape from API or JSON
+interface RawProject {
+  id?: string;
+  name?: string;
+  title?: string;
+  thumbnail?: string;
+  description?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  starred?: boolean;
+  metadata?: { duration?: number; resolution?: string };
+  duration?: number;
+  resolution?: string;
+}
+
 interface CreateProjectFormValues {
   title: string;
   resolution: string;
@@ -70,7 +85,7 @@ const Dashboard: React.FC = () => {
       try {
         const { projectApi } = await import('@/services/api');
         const data = await projectApi.getAll();
-        const mapped: ProjectType[] = (data || []).map((p: any) => ({
+        const mapped: ProjectType[] = (data || []).map((p) => ({
           id: p.id,
           title: p.name || p.title || '',
           thumbnail: p.thumbnail || '',
@@ -86,15 +101,15 @@ const Dashboard: React.FC = () => {
         logger.warn('API 不可用，使用本地存储');
         const stored = localStorage.getItem('cutdeck_projects');
         const parsed = stored ? JSON.parse(stored) : [];
-        const mapped: ProjectType[] = (parsed || []).map((p: any) => ({
+        const mapped: ProjectType[] = (parsed || []).map((p: RawProject) => ({
           id: p.id || `local_${Date.now()}`,
           title: p.title || p.name || '未命名项目',
           thumbnail: p.thumbnail || '',
           description: p.description || '',
           createdAt: p.createdAt || new Date().toISOString(),
           updatedAt: p.updatedAt || new Date().toISOString(),
-          duration: p.duration || 0,
-          resolution: p.resolution || '1080p',
+          duration: p.duration || p.metadata?.duration || 0,
+          resolution: p.resolution || p.metadata?.resolution || '1080p',
           starred: p.starred || false,
         }));
         setProjects(mapped);

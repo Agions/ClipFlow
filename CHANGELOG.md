@@ -1,3 +1,25 @@
+## [1.9.8] - 2026-04-19
+
+### 🔒 Security
+
+- **API 密钥加密存储**：API 密钥不再明文保存到 `api_keys.json`，改用 `tauri-plugin-store` 加密存储（AES 加密的 Store 文件）
+  - `Cargo.toml`：新增 `tauri-plugin-store = "2"`
+  - `src-tauri/src/lib.rs`：注册 `tauri_plugin_store::Builder`
+  - `capabilities/default.json`：添加 `store:*` 权限
+  - `src/services/tauri.ts`：`getApiKey`/`saveApiKey` 改用加密 Store API
+
+### 🐛 Bug Fixes
+
+- **修复 VideoEditor 导出类型安全**：`export.service.ts` 的 `exportVideo` 参数改为 `Partial<ExportConfig>` + 内部补全默认值，移除下游双重 `as ExportConfig` cast
+- **修复 `handleAnalysisComplete` 闭包陷阱**：`useCallback` 依赖数组补全 `apiKeys` 和 `defaultModel`
+- **修复音量/缩放边界**：添加 `VOLUME_MIN/MAX`、`ZOOM_MIN/MAX` 常量约束，修复越界 NaN 风险
+
+### ⚙️ Code Quality
+
+- **消除 Magic Numbers**：提取 8 个命名常量（`DEFAULT_ZOOM`、`DEFAULT_SNAP_THRESHOLD_MS`、`THUMBNAIL_WIDTH` 等），所有硬编码值替换为常量
+- **网络重试机制**：`Projects` 页面 `loadProjects`/`loadAppData` 新增 `fetchWithRetry`（3 次指数退避：1s → 2s → 4s），网络抖动自动恢复
+- **Settings 类型清理**：移除 `CORE_MODELS as any` 和 `as any[]` 不安全 cast，修复上游泛型约束
+
 ## [1.9.2] - 2026-04-14
 
 ### 🔒 Security & Performance

@@ -8,7 +8,7 @@ import { notify } from '@/shared';
 import type { ClipAnalysisResult } from '@/core/services/aiClip.service';
 import { logger } from '@/utils/logger';
 import { useVideoEditor } from './hooks/useVideoEditor';
-import { exportService, ExportConfig } from '@/core/services/export.service';
+import { exportService } from '@/core/services/export.service';
 
 import Toolbar from './components/Toolbar';
 import VideoPlayer from '@/components/VideoPlayer';
@@ -127,33 +127,17 @@ const VideoEditorPage: React.FC = () => {
 
     setIsExporting(true);
     try {
-      // 构建导出配置
-      const exportConfig: Partial<ExportConfig> = {
-        format: outputFormat as 'mp4' | 'webm' | 'mov' | 'mkv',
-        quality: videoQuality as 'low' | 'medium' | 'high' | 'ultra',
-        resolution: '1080p',
-        frameRate: 30,
-        aspectRatio: '16:9',
-        audioCodec: 'aac',
-        audioBitrate: '256k',
-        sampleRate: 48000,
-        channels: 2,
-      };
-
-      // 设置导出配置
-      exportService.setConfig(exportConfig as unknown as ExportConfig);
-
       // 输出路径
       const outputPath = `export/${Date.now()}.${outputFormat}`;
 
       // 显示进度
       message.loading('正在导出视频...', 0);
 
-      // 执行导出（调用真实 Rust export_video 命令）
+      // 执行导出
       const result = await exportService.exportVideo(
         videoSrc,
         outputPath,
-        exportConfig as unknown as ExportConfig
+        {}
       );
 
       // 导出成功
@@ -173,7 +157,7 @@ const VideoEditorPage: React.FC = () => {
   const handleAnalysisComplete = useCallback((result: ClipAnalysisResult) => {
     logger.info('AI 剪辑分析完成', { result });
     notify.success(`检测到 ${result.cutPoints.length} 个剪辑点`);
-  }, []);
+  }, [logger, notify]);
 
   return (
     <Layout className={styles.editorLayout}>

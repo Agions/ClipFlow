@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { open, save } from '@tauri-apps/plugin-dialog';
 import { readTextFile, writeTextFile, BaseDirectory, mkdir, exists } from '@tauri-apps/plugin-fs';
+import { load } from '@tauri-apps/plugin-store';
 import { appConfigDir } from '@tauri-apps/api/path';
 import { open as openExternal } from '@tauri-apps/plugin-shell';
 import { normalizeProjectId, buildProjectIdCandidates } from '@/core/utils/project-id';
@@ -375,21 +376,9 @@ export const getConfigDir = async (): Promise<string> => {
  */
 export const getApiKey = async (service: string): Promise<string> => {
   try {
-    const configDir = await getConfigDir();
-    if (!configDir) return '';
-    
-    const configPath = `${configDir}api_keys.json`;
-    const configExists = await exists(configPath);
-    
-    if (!configExists) {
-      await writeTextFile(configPath, JSON.stringify({}));
-      return '';
-    }
-    
-    const configContent = await readTextFile(configPath);
-    const config = JSON.parse(configContent) as Record<string, string>;
-    
-    return config[service] || '';
+    const store = await load('api_keys.json', { autoSave: false });
+    const value = await store.get<string>(service);
+    return value ?? '';
   } catch (error) {
     logger.error(`获取${service}的API密钥失败:`, error);
     return '';
@@ -397,27 +386,15 @@ export const getApiKey = async (service: string): Promise<string> => {
 };
 
 /**
- * 保存API密钥
+ * 保存API密钥到加密存储
  * @param service 服务名称，如'openai'
  * @param apiKey 密钥
  */
 export const saveApiKey = async (service: string, apiKey: string): Promise<boolean> => {
   try {
-    const configDir = await getConfigDir();
-    if (!configDir) return false;
-    
-    const configPath = `${configDir}api_keys.json`;
-    const configExists = await exists(configPath);
-    
-    let config: Record<string, string> = {};
-    if (configExists) {
-      const configContent = await readTextFile(configPath);
-      config = JSON.parse(configContent) as Record<string, string>;
-    }
-    
-    config[service] = apiKey;
-    
-    await writeTextFile(configPath, JSON.stringify(config, null, 2));
+    const store = await load('api_keys.json', { autoSave: true });
+    await store.set(service, apiKey);
+    await store.save();
     return true;
   } catch (error) {
     logger.error(`保存${service}的API密钥失败:`, error);

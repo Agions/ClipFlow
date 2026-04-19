@@ -9,7 +9,7 @@
  * - prefers-reduced-motion respected
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   HomeOutlined,
@@ -28,6 +28,18 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+// Hook to extract page info from location pathname
+const usePageInfo = (pathname: string) => {
+  return useMemo(() => {
+    if (pathname === '/') return { selectedKey: '/', pageTitle: '首页' };
+    if (pathname.startsWith('/projects') || pathname.startsWith('/project') || pathname.startsWith('/editor')) {
+      return { selectedKey: '/projects', pageTitle: '我的项目' };
+    }
+    if (pathname.startsWith('/settings')) return { selectedKey: '/settings', pageTitle: '设置' };
+    return { selectedKey: '/', pageTitle: 'CutDeck' };
+  }, [pathname]);
+};
+
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,6 +47,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const reducedMotion = useRef(
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
+
+  const { selectedKey, pageTitle } = usePageInfo(location.pathname);
 
   // Auto-collapse on narrow screens
   useEffect(() => {
@@ -46,27 +60,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const getSelectedKey = () => {
-    const path = location.pathname;
-    if (path === '/') return '/';
-    if (path.startsWith('/projects') || path.startsWith('/project') || path.startsWith('/editor')) return '/projects';
-    if (path.startsWith('/settings')) return '/settings';
-    return '/';
-  };
-
   const navItems = [
     { key: '/', icon: <HomeOutlined />, label: '首页', onClick: () => navigate('/') },
     { key: '/projects', icon: <VideoCameraOutlined />, label: '我的项目', onClick: () => navigate('/projects') },
     { key: '/settings', icon: <SettingOutlined />, label: '设置', onClick: () => navigate('/settings') },
   ];
-
-  const getPageTitle = () => {
-    const path = location.pathname;
-    if (path === '/') return '首页';
-    if (path.startsWith('/projects') || path.startsWith('/project') || path.startsWith('/editor')) return '我的项目';
-    if (path.startsWith('/settings')) return '设置';
-    return 'CutDeck';
-  };
 
   return (
     <div className={styles.shell}>
@@ -104,14 +102,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {navItems.map(item => (
             <button
               key={item.key}
-              className={`${styles.navItem} ${getSelectedKey() === item.key ? styles.active : ''}`}
+              className={`${styles.navItem} ${selectedKey === item.key ? styles.active : ''}`}
               onClick={item.onClick}
               title={sidebarCollapsed ? item.label : undefined}
-              aria-current={getSelectedKey() === item.key ? 'page' : undefined}
+              aria-current={selectedKey === item.key ? 'page' : undefined}
             >
               <span className={styles.navIcon}>{item.icon}</span>
               {!sidebarCollapsed && <span className={styles.navLabel}>{item.label}</span>}
-              {getSelectedKey() === item.key && !reducedMotion.current && <span className={styles.navIndicator} aria-hidden="true" />}
+              {selectedKey === item.key && !reducedMotion.current && <span className={styles.navIndicator} aria-hidden="true" />}
             </button>
           ))}
         </nav>
@@ -132,7 +130,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* ── Top Bar ── */}
       <header className={styles.topbar} role="banner">
         <div className={styles.topbarLeft}>
-          <h1 className={styles.pageTitle}>{getPageTitle()}</h1>
+          <h1 className={styles.pageTitle}>{pageTitle}</h1>
         </div>
         <div className={styles.topbarRight}>
           <button className={styles.iconBtn} title="帮助" aria-label="帮助">

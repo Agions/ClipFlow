@@ -3,12 +3,8 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import 'antd/dist/reset.css';
 // 统一设计系统（OKLCH 色彩空间，v2 架构）
-import './styles/design-system.css';
-import './styles/global.css';
-import './index.css';
-import './styles/vintage-film.css';
-import './styles/index.less';
-import './assets/theme.less';
+import './styles/design-system.css'; // 主 token — OKLCH 语义化分层
+import './index.css';                 // 全局样式 — bg-dark-* / brand-* 系统
 
 // 防止控制台出现错误消息
 window.addEventListener('error', (e) => {

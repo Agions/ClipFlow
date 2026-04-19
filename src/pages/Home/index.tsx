@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Typography, Button, Card, Row, Col,
-  Space, Tag, Timeline, Progress, Spin
+  Space, Tag, Timeline, Spin
 } from 'antd';
 import {
   VideoCameraOutlined,
@@ -32,8 +32,12 @@ import {
   resolveProjectVideoPath,
   type RawProjectRecord,
 } from '@/shared';
+import styles from './index.module.less';
 
 const { Title, Paragraph, Text } = Typography;
+
+// Amber brand color
+const AMBER = '#d4a574';
 
 interface HomeProjectItem {
   id: string;
@@ -46,17 +50,17 @@ interface HomeProjectItem {
   sizeMb?: number;
 }
 
-// 工作流步骤 - 科技暗黑配色
+// 工作流步骤 — 统一琥珀色调
 const workflowSteps = [
-  { icon: <VideoCameraOutlined />, title: '上传视频', desc: '支持 MP4/MOV/WebM', color: '#6366f1' },
-  { icon: <ThunderboltOutlined />, title: '智能分析', desc: '场景检测 · 关键帧', color: '#8b5cf6' },
-  { icon: <FileTextOutlined />, title: '脚本生成', desc: '8大AI模型 · 7种模板', color: '#a855f7' },
+  { icon: <VideoCameraOutlined />, title: '上传视频', desc: '支持 MP4/MOV/WebM', color: AMBER },
+  { icon: <ThunderboltOutlined />, title: '智能分析', desc: '场景检测 · 关键帧', color: '#c49660' },
+  { icon: <FileTextOutlined />, title: '脚本生成', desc: '8大AI模型 · 7种模板', color: '#e2c49a' },
   { icon: <ExperimentOutlined />, title: '去重优化', desc: '原创性保障', color: '#06b6d4' },
   { icon: <ScissorOutlined />, title: '智能剪辑', desc: '时间轴编排', color: '#10b981' },
   { icon: <ExportOutlined />, title: '导出发布', desc: '720p ~ 4K', color: '#f43f5e' },
 ];
 
-// AI 模型标签 - 2026年3月最新模型
+// AI 模型标签
 const aiModels = ['GPT-5.3 Codex', 'o3', 'Claude Sonnet 4.6', 'Gemini 3.1 Pro Preview', 'Gemini 3.1 Flash Lite Preview', 'Qwen-Max-Latest', 'GLM-5', 'Kimi K2.5'];
 
 // 并发限制：避免大量文件操作同时发起
@@ -97,25 +101,25 @@ const Home = () => {
         (project) => typeof project.id === 'string'
       );
       const enriched = await concurrentMap(filtered, async (project) => {
-          const metrics = extractProjectMediaMetrics(project);
-          const videoPath = resolveProjectVideoPath(project);
-          const exactSizeMb = videoPath ? (await getFileSizeBytes(videoPath)) / 1024 / 1024 : 0;
-          const sizeMb = pickPreferredSizeMb(exactSizeMb, metrics.explicitSizeMb, metrics.estimatedSizeMb);
-          return {
-            id: String(project.id),
-            name: typeof project.name === 'string' ? project.name : '未命名项目',
-            description: typeof project.description === 'string' ? project.description : '',
-            createdAt: typeof project.createdAt === 'string' ? project.createdAt : new Date().toISOString(),
-            updatedAt: typeof project.updatedAt === 'string'
-              ? project.updatedAt
-              : (typeof project.createdAt === 'string' ? project.createdAt : new Date().toISOString()),
-            status: project.status === 'completed' || project.status === 'processing' || project.status === 'archived'
-              ? project.status
-              : 'draft',
-            durationSec: metrics.durationSec,
-            sizeMb,
-          } satisfies HomeProjectItem;
-        });
+        const metrics = extractProjectMediaMetrics(project);
+        const videoPath = resolveProjectVideoPath(project);
+        const exactSizeMb = videoPath ? (await getFileSizeBytes(videoPath)) / 1024 / 1024 : 0;
+        const sizeMb = pickPreferredSizeMb(exactSizeMb, metrics.explicitSizeMb, metrics.estimatedSizeMb);
+        return {
+          id: String(project.id),
+          name: typeof project.name === 'string' ? project.name : '未命名项目',
+          description: typeof project.description === 'string' ? project.description : '',
+          createdAt: typeof project.createdAt === 'string' ? project.createdAt : new Date().toISOString(),
+          updatedAt: typeof project.updatedAt === 'string'
+            ? project.updatedAt
+            : (typeof project.createdAt === 'string' ? project.createdAt : new Date().toISOString()),
+          status: project.status === 'completed' || project.status === 'processing' || project.status === 'archived'
+            ? project.status
+            : 'draft',
+          durationSec: metrics.durationSec,
+          sizeMb,
+        } satisfies HomeProjectItem;
+      });
       if (!activeRef || activeRef.current) {
         setProjects(enriched);
       }
@@ -167,28 +171,20 @@ const Home = () => {
     return new Date(dateText).toLocaleDateString('zh-CN');
   };
 
-  const statsData = useMemo(() => {
-    const total = projects.length;
-    const completed = projects.filter((project) => project.status === 'completed').length;
-    const totalDurationMinutes = projects.reduce((sum, project) => sum + (project.durationSec || 0), 0) / 60;
-    const totalSizeGb = projects.reduce((sum, project) => sum + (project.sizeMb || 0), 0) / 1024;
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-    const createdThisMonth = projects.filter((project) => {
-      if (!project.createdAt) {
-        return false;
-      }
-      const createdAt = new Date(project.createdAt);
-      return createdAt.getFullYear() === currentYear && createdAt.getMonth() === currentMonth;
-    }).length;
-    return [
-      { title: '总项目', value: total, icon: <VideoCameraOutlined />, color: '#6366f1', suffix: '个' },
-      { title: '已完成', value: completed, icon: <CheckCircleOutlined />, color: '#10b981', suffix: '个' },
-      { title: '本月创作', value: createdThisMonth, icon: <RocketOutlined />, color: '#f59e0b', suffix: '个' },
-      { title: '总时长', value: Number(totalDurationMinutes.toFixed(1)), icon: <ClockCircleOutlined />, color: '#06b6d4', suffix: '分钟' },
-      { title: '存储容量', value: Number(totalSizeGb.toFixed(2)), icon: <ProjectOutlined />, color: '#8b5cf6', suffix: 'GB' },
-    ];
-  }, [projects]);
+  const statsData = useMemo(() => [
+    { title: '总项目', value: projects.length, icon: <VideoCameraOutlined />, color: AMBER, suffix: '个' },
+    { title: '已完成', value: projects.filter((p) => p.status === 'completed').length, icon: <CheckCircleOutlined />, color: '#10b981', suffix: '个' },
+    { title: '本月创作', value: (() => {
+      const now = new Date();
+      return projects.filter((p) => {
+        if (!p.createdAt) return false;
+        const d = new Date(p.createdAt);
+        return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+      }).length;
+    })(), icon: <RocketOutlined />, color: '#f59e0b', suffix: '个' },
+    { title: '总时长', value: Number((projects.reduce((s, p) => s + (p.durationSec || 0), 0) / 60).toFixed(1)), icon: <ClockCircleOutlined />, color: '#06b6d4', suffix: '分钟' },
+    { title: '存储容量', value: Number((projects.reduce((s, p) => s + (p.sizeMb || 0), 0) / 1024).toFixed(2)), icon: <ProjectOutlined />, color: AMBER, suffix: 'GB' },
+  ], [projects]);
 
   const recentActivities = useMemo(() => {
     const ordered = [...projects]
@@ -197,9 +193,9 @@ const Home = () => {
 
     if (ordered.length === 0) {
       return [{
-        color: '#6366f1',
+        color: AMBER,
         title: '开始创建你的第一个项目',
-        desc: '点击“创建新项目”进入完整 AI 工作流',
+        desc: '点击"创建新项目"进入完整 AI 工作流',
         time: '现在',
         processing: false,
       }];
@@ -209,7 +205,7 @@ const Home = () => {
       const isCompleted = project.status === 'completed';
       const isProcessing = project.status === 'processing';
       return {
-        color: isCompleted ? '#10b981' : isProcessing ? '#f59e0b' : '#6366f1',
+        color: isCompleted ? '#10b981' : isProcessing ? '#f59e0b' : AMBER,
         title: project.name || '未命名项目',
         desc: isCompleted ? '项目已完成' : isProcessing ? '处理中' : '草稿已更新',
         time: getRelativeTime(project.updatedAt),
@@ -220,78 +216,28 @@ const Home = () => {
 
   const hours = new Date().getHours();
   const greeting = hours < 12 ? '早上好' : hours < 18 ? '下午好' : '晚上好';
-
-  // 背景样式
-  const containerStyle: React.CSSProperties = {
-    maxWidth: 1400,
-    margin: '0 auto',
-    padding: '0 24px',
-  };
-
-  // 科技暗黑卡片样式
-  const cardStyle: React.CSSProperties = {
-    background: isDarkMode ? 'rgba(18, 18, 26, 0.8)' : '#fff',
-    border: isDarkMode ? '1px solid #2a2a3a' : '1px solid #e8e8e8',
-    borderRadius: 12,
-  };
-
-  // Hero 区域渐变背景
   const heroGradient = isDarkMode
-    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #a855f7 100%)'
-    : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    ? 'linear-gradient(135deg, #d4a574 0%, #c49660 50%, #b8856a 100%)'
+    : 'linear-gradient(135deg, #d4a574 0%, #c49660 100%)';
 
   return (
-    <div style={containerStyle}>
-      {/* 欢迎横幅 - 霓虹发光效果 */}
+    <div className={styles.container}>
+      {/* 欢迎横幅 */}
       <Card
         bordered={false}
-        style={{
-          marginBottom: 24,
-          background: heroGradient,
-          borderRadius: 16,
-          overflow: 'hidden',
-          position: 'relative',
-        }}
+        className={styles.heroBanner}
+        style={{ background: heroGradient }}
         styles={{ body: { padding: '40px 36px', position: 'relative', zIndex: 1 } }}
       >
-        {/* 科技网格背景装饰 */}
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: isDarkMode
-            ? 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)'
-            : 'none',
-          backgroundSize: '50px 50px',
-          pointerEvents: 'none',
-        }} />
-
-        {/* 光晕效果 */}
-        <div style={{
-          position: 'absolute',
-          top: -100,
-          right: -100,
-          width: 300,
-          height: 300,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
+        <div className={styles.heroGrid} />
+        <div className={styles.heroGlow} />
 
         <Row align="middle" justify="space-between">
           <Col>
-            <Title level={2} style={{
-              color: '#fff',
-              margin: 0,
-              fontWeight: 600,
-              textShadow: '0 2px 10px rgba(0,0,0,0.2)',
-            }}>
+            <Title level={2} className={styles.heroTitle}>
               {greeting}，欢迎使用 CutDeck
             </Title>
-            <Paragraph style={{
-              color: 'rgba(255,255,255,0.85)',
-              fontSize: 16,
-              margin: '8px 0 20px',
-            }}>
+            <Paragraph className={styles.heroParagraph}>
               AI 驱动的专业视频内容创作平台
             </Paragraph>
             <Space size={12}>
@@ -301,15 +247,7 @@ const Home = () => {
                 icon={<PlusOutlined />}
                 onClick={() => navigate('/project/new')}
                 onMouseEnter={() => { void preloadProjectEditPage(); }}
-                style={{
-                  background: '#fff',
-                  color: '#667eea',
-                  border: 'none',
-                  fontWeight: 600,
-                  height: 44,
-                  borderRadius: 8,
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-                }}
+                className={styles.heroPrimaryBtn}
               >
                 创建新项目
               </Button>
@@ -318,94 +256,61 @@ const Home = () => {
                 icon={<ProjectOutlined />}
                 onClick={() => navigate('/projects')}
                 onMouseEnter={() => { void preloadProjectsPage(); }}
-                style={{
-                  background: 'rgba(255,255,255,0.2)',
-                  color: '#fff',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  height: 44,
-                  borderRadius: 8,
-                }}
+                className={styles.heroSecondaryBtn}
               >
                 项目管理
               </Button>
             </Space>
           </Col>
           <Col>
-            <div style={{
-              fontSize: 80,
-              color: 'rgba(255,255,255,0.15)',
-              lineHeight: 1,
-              filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.2))',
-            }}>
+            <div className={styles.heroIcon}>
               <PlayCircleOutlined />
             </div>
           </Col>
         </Row>
       </Card>
 
-      {/* 统计卡片 - 发光边框效果 */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      {/* 统计卡片 */}
+      <Row gutter={[16, 16]} className={styles.statsRow}>
         {statsData.map((item, idx) => (
           <Col xs={12} sm={8} lg={4} key={idx}>
             <Card
               bordered={false}
-              style={{
-                ...cardStyle,
-                borderRadius: 12,
-                transition: 'all 0.3s ease',
-              }}
+              className={`${styles.statsCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}
               styles={{ body: { padding: '20px 24px' } }}
               hoverable
-              onMouseEnter={(e) => {
-                const card = e.currentTarget as HTMLElement;
-                card.style.borderColor = item.color;
-                card.style.boxShadow = `0 0 20px ${item.color}30`;
-                card.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                const card = e.currentTarget as HTMLElement;
-                card.style.borderColor = isDarkMode ? '#2a2a3a' : '#e8e8e8';
-                card.style.boxShadow = 'none';
-                card.style.transform = 'none';
-              }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 10,
-                  background: isDarkMode ? `${item.color}20` : `${item.color}15`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 20,
-                  color: item.color,
-                  border: `1px solid ${item.color}30`,
-                }}>
-                  {item.icon}
-                </div>
-                <div>
-                  <Text style={{
-                    fontSize: 12,
-                    color: isDarkMode ? '#94a3b8' : 'rgba(0,0,0,0.45)',
-                  }}>
-                    {item.title}
-                  </Text>
-                  <div style={{
-                    fontSize: 24,
-                    fontWeight: 700,
-                    lineHeight: 1.2,
-                    color: isDarkMode ? '#f1f5f9' : 'rgba(0,0,0,0.87)',
-                  }}>
-                    {item.value}
-                    <span style={{
-                      fontSize: 13,
-                      fontWeight: 400,
-                      color: isDarkMode ? '#64748b' : 'rgba(0,0,0,0.45)',
-                      marginLeft: 2,
-                    }}>
-                      {item.suffix}
-                    </span>
+              <div className={styles.statsCardBody}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div
+                    className={styles.statIcon}
+                    style={{
+                      background: isDarkMode ? `${item.color}20` : `${item.color}15`,
+                      color: item.color,
+                      borderColor: `${item.color}30`,
+                    }}
+                  >
+                    {item.icon}
+                  </div>
+                  <div>
+                    <Text
+                      className={styles.statLabel}
+                      style={{ color: isDarkMode ? '#94a3b8' : 'rgba(0,0,0,0.45)' }}
+                    >
+                      {item.title}
+                    </Text>
+                    <div
+                      className={styles.statValue}
+                      style={{ color: isDarkMode ? '#f1f5f9' : 'rgba(0,0,0,0.87)' }}
+                    >
+                      {item.value}
+                      <span
+                        className={styles.statSuffix}
+                        style={{ color: isDarkMode ? '#64748b' : 'rgba(0,0,0,0.45)' }}
+                      >
+                        {item.suffix}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -414,13 +319,14 @@ const Home = () => {
         ))}
       </Row>
 
+      {/* 最近项目 */}
       <Card
         bordered={false}
-        style={{ ...cardStyle, marginBottom: 24, borderRadius: 12 }}
+        className={`${styles.recentProjectsCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}
         title={
           <Space>
-            <ClockCircleOutlined style={{ color: '#6366f1' }} />
-            <span style={{ fontWeight: 600 }}>最近项目</span>
+            <ClockCircleOutlined style={{ color: AMBER }} />
+            <span className={styles.cardTitle}>最近项目</span>
           </Space>
         }
         extra={
@@ -430,11 +336,11 @@ const Home = () => {
         }
       >
         {projectsLoading ? (
-          <div style={{ padding: '16px 0', textAlign: 'center' }}>
+          <div className={styles.loadingContainer}>
             <Spin />
           </div>
         ) : recentProjects.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '8px 0' }}>
+          <div className={styles.emptyState}>
             <Text type="secondary">暂无项目，先创建一个项目开始创作。</Text>
             <div style={{ marginTop: 10 }}>
               <Button type="primary" icon={<PlusOutlined />} onMouseEnter={() => { void preloadProjectEditPage(); }} onClick={() => navigate('/project/new')}>
@@ -448,21 +354,18 @@ const Home = () => {
               <Col xs={24} sm={12} md={12} lg={6} key={project.id}>
                 <Card
                   hoverable
-                  style={{
-                    borderRadius: 10,
-                    border: isDarkMode ? '1px solid #2a2a3a' : '1px solid #f0f0f0',
-                  }}
+                  className={`${styles.projectCard} ${isDarkMode ? styles.projectCardDark : styles.projectCardLight}`}
                   styles={{ body: { padding: 14 } }}
                   onClick={() => navigate(`/project/edit/${project.id}`)}
                   onMouseEnter={() => { void preloadProjectEditPage(); }}
                 >
-                  <Text strong ellipsis style={{ display: 'block' }}>
+                  <Text strong ellipsis className={styles.projectCardTitle}>
                     {project.name || '未命名项目'}
                   </Text>
-                  <Text type="secondary" ellipsis style={{ fontSize: 12, display: 'block', marginTop: 4 }}>
+                  <Text type="secondary" ellipsis className={styles.projectCardDesc}>
                     {project.description || '无项目描述'}
                   </Text>
-                  <div style={{ marginTop: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div className={styles.projectCardFooter}>
                     <Tag color="blue">{project.status === 'completed' ? '已完成' : '草稿'}</Tag>
                     <Text type="secondary" style={{ fontSize: 11 }}>
                       {new Date(project.updatedAt).toLocaleDateString('zh-CN')}
@@ -476,91 +379,47 @@ const Home = () => {
       </Card>
 
       <Row gutter={[16, 16]}>
-        {/* 工作流程概览 - 霓虹边框 */}
+        {/* 工作流程 */}
         <Col xs={24} lg={14}>
           <Card
             title={
               <Space>
-                <RocketOutlined style={{ color: '#6366f1' }} />
-                <span style={{ fontWeight: 600 }}>创作流程</span>
+                <RocketOutlined style={{ color: AMBER }} />
+                <span className={styles.cardTitle}>创作流程</span>
               </Space>
             }
             bordered={false}
-            style={{
-              ...cardStyle,
-              height: '100%',
-              borderRadius: 12,
-            }}
+            className={`${styles.workflowCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}
           >
             <Row gutter={[12, 16]}>
               {workflowSteps.map((step, idx) => (
                 <Col xs={12} sm={8} key={idx}>
-                  <div style={{
-                    padding: '16px 12px',
-                    borderRadius: 10,
-                    background: isDarkMode ? 'rgba(99, 102, 241, 0.08)' : '#fafafa',
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    border: '1px solid transparent',
-                    position: 'relative',
-                    overflow: 'hidden',
-                  }}
-                    onMouseEnter={(e) => {
-                      const target = e.currentTarget as HTMLElement;
-                      target.style.borderColor = step.color;
-                      target.style.transform = 'translateY(-2px)';
-                      target.style.boxShadow = `0 4px 20px ${step.color}30`;
-                    }}
-                    onMouseLeave={(e) => {
-                      const target = e.currentTarget as HTMLElement;
-                      target.style.borderColor = 'transparent';
-                      target.style.transform = 'none';
-                      target.style.boxShadow = 'none';
+                  <div
+                    className={styles.workflowItem}
+                    style={{
+                      background: isDarkMode ? 'rgba(212, 165, 116, 0.08)' : '#fafafa',
                     }}
                   >
-                    {/* 悬停时显示渐变背景 */}
-                    <div style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background: `linear-gradient(135deg, ${step.color}10 0%, transparent 100%)`,
-                      opacity: 0,
-                      transition: 'opacity 0.3s',
-                      pointerEvents: 'none',
-                    }} className="step-bg" />
-
-                    <div style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 10,
-                      background: isDarkMode ? `${step.color}20` : `${step.color}15`,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 18,
-                      color: step.color,
-                      marginBottom: 8,
-                      border: `1px solid ${step.color}30`,
-                      position: 'relative',
-                      zIndex: 1,
-                    }}>
+                    <div
+                      className={styles.workflowIcon}
+                      style={{
+                        background: isDarkMode ? `${step.color}20` : `${step.color}15`,
+                        color: step.color,
+                        borderColor: `${step.color}30`,
+                      }}
+                    >
                       {step.icon}
                     </div>
-                    <div style={{
-                      fontWeight: 600,
-                      fontSize: 13,
-                      color: isDarkMode ? '#f1f5f9' : 'rgba(0,0,0,0.87)',
-                      position: 'relative',
-                      zIndex: 1,
-                    }}>
+                    <div
+                      className={styles.workflowStepTitle}
+                      style={{ color: isDarkMode ? '#f1f5f9' : 'rgba(0,0,0,0.87)' }}
+                    >
                       {step.title}
                     </div>
-                    <Text style={{
-                      fontSize: 11,
-                      color: isDarkMode ? '#64748b' : 'rgba(0,0,0,0.45)',
-                      position: 'relative',
-                      zIndex: 1,
-                    }}>
+                    <Text
+                      className={styles.workflowStepDesc}
+                      style={{ color: isDarkMode ? '#64748b' : 'rgba(0,0,0,0.45)' }}
+                    >
                       {step.desc}
                     </Text>
                   </div>
@@ -568,20 +427,13 @@ const Home = () => {
               ))}
             </Row>
 
-            <div style={{ marginTop: 20, textAlign: 'center' }}>
+            <div className={styles.workflowCtaRow}>
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={() => navigate('/project/new')}
                 onMouseEnter={() => { void preloadProjectEditPage(); }}
-                style={{
-                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                  border: 'none',
-                  borderRadius: 8,
-                  height: 40,
-                  fontWeight: 500,
-                  boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4)',
-                }}
+                className={styles.workflowCtaBtn}
               >
                 开始创作 <ArrowRightOutlined />
               </Button>
@@ -589,49 +441,39 @@ const Home = () => {
           </Card>
         </Col>
 
-        {/* 最近动态 - 暗色时间线 */}
+        {/* 最近动态 */}
         <Col xs={24} lg={10}>
           <Card
             title={
               <Space>
                 <ClockCircleOutlined style={{ color: '#06b6d4' }} />
-                <span style={{ fontWeight: 600 }}>最近动态</span>
+                <span className={styles.cardTitle}>最近动态</span>
               </Space>
             }
             bordered={false}
-            style={{
-              ...cardStyle,
-              height: '100%',
-              borderRadius: 12,
-            }}
+            className={`${styles.activitiesCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}
           >
             <Timeline
               items={recentActivities.map((item) => ({
                 color: item.color,
                 children: (
-                  <div style={{ paddingBottom: 8 }}>
+                  <div className={styles.activityItem}>
                     <Text strong style={{ color: isDarkMode ? '#f1f5f9' : 'rgba(0,0,0,0.87)' }}>
                       {item.title}
                     </Text>
                     <div>
-                      <Text style={{
-                        fontSize: 12,
-                        color: isDarkMode ? '#94a3b8' : 'rgba(0,0,0,0.65)',
-                      }}>
+                      <Text style={{ fontSize: 12, color: isDarkMode ? '#94a3b8' : 'rgba(0,0,0,0.65)' }}>
                         {item.desc}
                       </Text>
                       {item.processing && (
-                        <Tag color="processing" style={{ marginLeft: 8 }}>
+                        <Tag color="processing" className={styles.processingTag}>
                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                             <LineChartOutlined spin /> 处理中
                           </span>
                         </Tag>
                       )}
                     </div>
-                    <Text style={{
-                      fontSize: 11,
-                      color: isDarkMode ? '#64748b' : 'rgba(0,0,0,0.45)',
-                    }}>
+                    <Text style={{ fontSize: 11, color: isDarkMode ? '#64748b' : 'rgba(0,0,0,0.45)' }}>
                       {item.time}
                     </Text>
                   </div>
@@ -642,41 +484,22 @@ const Home = () => {
         </Col>
       </Row>
 
-      {/* AI 模型支持 - 霓虹标签 */}
+      {/* AI 模型支持 */}
       <Card
         bordered={false}
-        style={{
-          ...cardStyle,
-          marginTop: 16,
-          borderRadius: 12,
-        }}
+        className={`${styles.aiModelsCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}
         styles={{ body: { padding: '16px 24px' } }}
       >
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 8,
-        }}>
-          <Text style={{
-            color: isDarkMode ? '#94a3b8' : 'rgba(0,0,0,0.65)',
-          }}>
-            <ThunderboltOutlined style={{ color: '#f59e0b', marginRight: 8 }} />
+        <div className={styles.aiModelsWrapper}>
+          <Text style={{ color: isDarkMode ? '#94a3b8' : 'rgba(0,0,0,0.65)' }}>
+            <RocketOutlined style={{ color: '#f59e0b', marginRight: 8 }} />
             支持的 AI 模型
           </Text>
           <Space size={6} wrap>
             {aiModels.map((m) => (
               <Tag
                 key={m}
-                style={{
-                  margin: 0,
-                  borderRadius: 4,
-                  fontSize: 11,
-                  background: isDarkMode ? 'rgba(99, 102, 241, 0.15)' : 'rgba(99, 102, 241, 0.1)',
-                  border: isDarkMode ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid rgba(99, 102, 241, 0.2)',
-                  color: isDarkMode ? '#a5b4fc' : '#6366f1',
-                }}
+                className={`${styles.aiModelTag} ${isDarkMode ? styles.aiModelTagDark : styles.aiModelTagLight}`}
               >
                 {m}
               </Tag>

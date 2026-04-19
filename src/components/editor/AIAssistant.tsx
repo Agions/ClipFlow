@@ -143,57 +143,15 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
   // Generate subtitles - calls actual subtitle service
   const generateSubtitles = useCallback(async () => {
     setProcessing(true);
-    
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-    }
-    
-    try {
-      const { subtitleService } = await import('@/core/services/subtitle.service');
-      // Get current video from editor context if available
-      // const videoPath = editorState?.currentVideo?.path;
-      // const result = await subtitleService.extractSubtitles(videoPath);
-      setProgress(50);
-      // Placeholder: real implementation requires video path from context
-      setProgress(100);
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      message.error('字幕生成失败: ' + errorMsg);
-    } finally {
-      setProcessing(false);
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-        progressIntervalRef.current = null;
-      }
-    }
+    setProgress(0);
+    throw new Error('Not implemented');
   }, []);
   
   // Smart cut - calls actual smart cut service
   const smartCut = useCallback(async () => {
     setProcessing(true);
-    
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current);
-    }
-    
-    try {
-      // smartCutService unused - feature not implemented
-      // Get current video from editor context if available
-      // const videoInfo = editorState?.currentVideo;
-      // const result = await smartCutService.smartCut(videoInfo, { style: 'normal' });
-      setProgress(50);
-      // Placeholder: real implementation requires video info from context
-      setProgress(100);
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      message.error('智能剪辑失败: ' + errorMsg);
-    } finally {
-      setProcessing(false);
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-        progressIntervalRef.current = null;
-      }
-    }
+    setProgress(0);
+    throw new Error('Not implemented');
   }, []);
   
   // Render chat messages
@@ -244,8 +202,8 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
         className={styles.aiTabs}
       >
         <TabPane tab="智能对话" key="chat" />
-        <TabPane tab="字幕生成" key="subtitles" />
-        <TabPane tab="智能剪辑" key="smartcut" />
+        <TabPane tab={<span>字幕生成 <Tag color="orange" style={{ marginLeft: 6, fontSize: 10 }}>即将推出</Tag></span>} key="subtitles" />
+        <TabPane tab={<span>智能剪辑 <Tag color="orange" style={{ marginLeft: 6, fontSize: 10 }}>即将推出</Tag></span>} key="smartcut" />
         <TabPane tab="视频增强" key="enhance" />
       </Tabs>
       

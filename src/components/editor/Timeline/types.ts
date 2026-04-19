@@ -120,3 +120,8 @@ export interface TimelineProps {
   onClipSelect?: (clip: Clip | null) => void;
   onClipUpdate?: (clip: Clip) => void;
 }
+
+/** Type guard — detects a fully-formed TimelineClip vs a plain Clip (which may lack ms fields) */
+export function isTimelineClip(clip: Clip | TimelineClip): clip is TimelineClip {
+  return typeof clip.startMs === 'number' && typeof clip.endMs === 'number';
+}

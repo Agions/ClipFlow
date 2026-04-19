@@ -28,7 +28,7 @@ const DARK_TOKENS = {
   '--text-primary': '#F0F0F5',
   '--text-secondary': '#8888A0',
   '--text-muted': '#55556A',
-  '--brand-amber': '#FF9F43',
+  '--brand-amber': '#d4a574',
   '--brand-cyan': '#00D4FF',
   '--border-dim': '#2A2D42',
   '--border-focus': '#3D4166',

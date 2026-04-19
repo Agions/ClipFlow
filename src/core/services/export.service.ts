@@ -104,16 +104,72 @@ export class ExportService {
   private currentExportId: string | null = null;
   private config: ExportConfig | null = null;
 
-  setConfig(config: ExportConfig): void {
-    this.config = config;
+  setConfig(config: Partial<ExportConfig>): void {
+    // Merge with preset defaults for missing fields
+    const quality = config.quality ?? 'medium';
+    const preset = EXPORT_PRESETS[quality];
+    this.config = {
+      format: config.format ?? 'mp4',
+      quality,
+      resolution: config.resolution ?? preset.resolution ?? '1080p',
+      frameRate: config.frameRate ?? preset.frameRate ?? 30,
+      aspectRatio: config.aspectRatio ?? '16:9',
+      audioCodec: config.audioCodec ?? preset.encoder?.audioCodec ?? 'aac',
+      audioBitrate: config.audioBitrate ?? preset.audioBitrate ?? '192k',
+      sampleRate: config.sampleRate ?? 48000,
+      channels: config.channels ?? 2,
+      encoder: config.encoder ?? preset.encoder ?? { videoCodec: 'h264', audioCodec: 'aac', crf: 23, preset: 'medium' },
+      subtitleEnabled: config.subtitleEnabled ?? false,
+      subtitlePath: config.subtitlePath,
+      burnSubtitles: config.burnSubtitles ?? false,
+      watermarkEnabled: config.watermarkEnabled ?? false,
+      watermarkText: config.watermarkText,
+      watermarkImage: config.watermarkImage,
+      watermarkPosition: config.watermarkPosition ?? 'bottom-right',
+      watermarkOpacity: config.watermarkOpacity ?? 0.8,
+      title: config.title,
+      author: config.author,
+      copyright: config.copyright,
+    };
+  }
+
+  getConfig(): ExportConfig | null {
+    return this.config;
   }
 
   async exportVideo(
     inputPath: string,
     outputPath: string,
-    config: ExportConfig,
+    config: Partial<ExportConfig>,
     onProgress?: (percent: number) => void
   ): Promise<ExportResult> {
+    // Always merge with current config + preset defaults
+    const quality = config.quality ?? this.config?.quality ?? 'medium';
+    const preset = EXPORT_PRESETS[quality];
+    const fullConfig: ExportConfig = {
+      format: config.format ?? this.config?.format ?? 'mp4',
+      quality,
+      resolution: config.resolution ?? this.config?.resolution ?? preset.resolution ?? '1080p',
+      frameRate: config.frameRate ?? this.config?.frameRate ?? preset.frameRate ?? 30,
+      aspectRatio: config.aspectRatio ?? this.config?.aspectRatio ?? '16:9',
+      audioCodec: config.audioCodec ?? this.config?.audioCodec ?? preset.encoder?.audioCodec ?? 'aac',
+      audioBitrate: config.audioBitrate ?? this.config?.audioBitrate ?? preset.audioBitrate ?? '192k',
+      sampleRate: config.sampleRate ?? this.config?.sampleRate ?? 48000,
+      channels: config.channels ?? this.config?.channels ?? 2,
+      encoder: config.encoder ?? this.config?.encoder ?? preset.encoder ?? { videoCodec: 'h264', audioCodec: 'aac', crf: 23, preset: 'medium' },
+      subtitleEnabled: config.subtitleEnabled ?? this.config?.subtitleEnabled ?? false,
+      subtitlePath: config.subtitlePath ?? this.config?.subtitlePath,
+      burnSubtitles: config.burnSubtitles ?? this.config?.burnSubtitles ?? false,
+      watermarkEnabled: config.watermarkEnabled ?? this.config?.watermarkEnabled ?? false,
+      watermarkText: config.watermarkText ?? this.config?.watermarkText,
+      watermarkImage: config.watermarkImage ?? this.config?.watermarkImage,
+      watermarkPosition: config.watermarkPosition ?? this.config?.watermarkPosition ?? 'bottom-right',
+      watermarkOpacity: config.watermarkOpacity ?? this.config?.watermarkOpacity ?? 0.8,
+      title: config.title ?? this.config?.title,
+      author: config.author ?? this.config?.author,
+      copyright: config.copyright ?? this.config?.copyright,
+    };
+
     const exportId = crypto.randomUUID();
     this.currentExportId = exportId;
 
@@ -121,7 +177,7 @@ export class ExportService {
       exportId,
       input: inputPath,
       output: outputPath,
-      format: config.format,
+      format: fullConfig.format,
     });
 
     try {
@@ -132,15 +188,15 @@ export class ExportService {
       }>('export_video', {
         inputPath,
         outputPath,
-        format: config.format,
-        resolution: config.resolution,
-        frameRate: config.frameRate,
-        videoCodec: config.encoder.videoCodec,
-        audioCodec: config.audioCodec,
-        crf: config.encoder.crf ?? 23,
-        subtitleEnabled: config.subtitleEnabled,
-        subtitlePath: config.subtitlePath,
-        burnSubtitles: config.burnSubtitles,
+        format: fullConfig.format,
+        resolution: fullConfig.resolution,
+        frameRate: fullConfig.frameRate,
+        videoCodec: fullConfig.encoder.videoCodec,
+        audioCodec: fullConfig.audioCodec,
+        crf: fullConfig.encoder.crf ?? 23,
+        subtitleEnabled: fullConfig.subtitleEnabled,
+        subtitlePath: fullConfig.subtitlePath,
+        burnSubtitles: fullConfig.burnSubtitles,
       });
 
       logger.info('[ExportService] 导出完成:', { exportId, result });
@@ -149,7 +205,7 @@ export class ExportService {
         outputPath: result.outputPath,
         duration: result.duration,
         fileSize: result.fileSize,
-        format: config.format,
+        format: fullConfig.format,
       };
     } catch (error) {
       logger.error('[ExportService] 导出失败:', { exportId, error });

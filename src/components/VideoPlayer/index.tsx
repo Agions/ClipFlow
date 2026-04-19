@@ -65,6 +65,74 @@ function VideoPlayer({
     };
   }, [onTimeUpdate, onEnded]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Skip if focus is inside an input/textarea
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement).isContentEditable) return;
+
+      const video = videoRef.current;
+      if (!video) return;
+
+      const SEEK_STEP = 5;   // seconds for arrow keys
+      const SEEK_LONG = 10;  // seconds for J/L keys
+
+      switch (e.key) {
+        case ' ':
+        case 'k':
+        case 'K':
+          e.preventDefault();
+          togglePlay();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          video.currentTime = Math.max(0, video.currentTime - SEEK_STEP);
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          video.currentTime = Math.min(video.duration, video.currentTime + SEEK_STEP);
+          break;
+        case 'j':
+        case 'J':
+          e.preventDefault();
+          video.currentTime = Math.max(0, video.currentTime - SEEK_LONG);
+          break;
+        case 'l':
+        case 'L':
+          e.preventDefault();
+          video.currentTime = Math.min(video.duration, video.currentTime + SEEK_LONG);
+          break;
+        case 'm':
+        case 'M':
+          e.preventDefault();
+          video.muted = !video.muted;
+          setVolume(video.muted ? 0 : video.volume);
+          break;
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          video.volume = Math.min(1, video.volume + 0.1);
+          setVolume(video.volume);
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
+          video.volume = Math.max(0, video.volume - 0.1);
+          setVolume(video.volume);
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const togglePlay = () => {
     const videoElement = videoRef.current;
     if (!videoElement) return;

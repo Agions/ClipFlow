@@ -69,7 +69,7 @@ export function useDashboard(): UseDashboardReturn {
       const filtered = rawProjects.filter((p) => typeof p.id === 'string');
       const mapped: Project[] = await concurrentMap(
         filtered,
-        async (project: any) => {
+        async (project: RawProjectRecord) => {
           const metrics = extractProjectMediaMetrics(project);
           const videoPath = resolveProjectVideoPath(project);
           const exactSizeMb = videoPath

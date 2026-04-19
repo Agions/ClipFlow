@@ -71,14 +71,14 @@ const Settings: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const availableModels = getAvailableModelsFromApiKeys(apiKeys, CORE_MODELS as any) as any[];
-    const nextDefaultModel = resolveDefaultModelId(defaultModel, availableModels as any[]);
+    const availableModels = getAvailableModelsFromApiKeys(apiKeys, CORE_MODELS);
+    const nextDefaultModel = resolveDefaultModelId(defaultModel, availableModels);
     if (nextDefaultModel !== defaultModel) {
       setDefaultModel(nextDefaultModel);
     }
   }, [apiKeys, defaultModel, setDefaultModel]);
 
-  const availableModels = getAvailableModelsFromApiKeys(apiKeys, CORE_MODELS as any) as any[];
+  const availableModels = getAvailableModelsFromApiKeys(apiKeys, CORE_MODELS);
 
   // API 密钥管理
   const handleUpdateApiKey = (provider: ModelProvider, key: string) => {

@@ -52,6 +52,16 @@
     "clipboard-manager:allow-read-text",
     "clipboard-manager:allow-write-text",
     "clipboard-manager:allow-read-image",
-    "clipboard-manager:allow-write-image"
+    "clipboard-manager:allow-write-image",
+    "store:default",
+    "store:allow-get",
+    "store:allow-set",
+    "store:allow-delete",
+    "store:allow-keys",
+    "store:allow-clear",
+    "store:allow-length",
+    "store:allow-load",
+    "store:allow-reset",
+    "store:allow-save"
   ]
 }

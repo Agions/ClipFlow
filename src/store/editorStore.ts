@@ -12,6 +12,20 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { VideoSegment, EditorPanel } from '@/core/types';
 import type { TimelineTrack, TimelineClip, Keyframe, TrackType } from '@/components/Timeline/types';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Constants (magic numbers extracted)
+// ─────────────────────────────────────────────────────────────────────────────
+const MAX_HISTORY_SIZE = 19;          // Undo/redo stack depth
+const DEFAULT_SNAP_THRESHOLD_MS = 100; // Snap-to-edge threshold (ms)
+const DEFAULT_ZOOM = 1;               // Zoom level
+const ZOOM_MIN = 0.1;
+const ZOOM_MAX = 10;
+const VOLUME_MIN = 0;
+const VOLUME_MAX = 1;
+const SEEK_STEP_SECONDS = 5;          // Keyboard seek step
+const SEEK_LONG_SECONDS = 10;          // J/L long seek step
+const VOLUME_STEP = 0.1;              // Arrow up/down volume change
+
 // ============================================
 // Local types (not used outside this store)
 // ============================================
@@ -163,13 +177,13 @@ const initialState = {
     segmentId: undefined as string | undefined,
     multipleIds: [] as string[],
   },
-  zoom: 1,
+  zoom: DEFAULT_ZOOM,
   scrollPosition: 0,
   playheadMs: 0,
   timelineTracks: [] as TimelineTrack[],
   timelineDuration: 60000,
   snapEnabled: true,
-  snapThreshold: 100,
+  snapThreshold: DEFAULT_SNAP_THRESHOLD_MS,
   selectedClipId: undefined as string | undefined,
   inPointMs: undefined as number | undefined,
   outPointMs: undefined as number | undefined,
@@ -199,7 +213,7 @@ export const useEditorStore = create<EditorState>()(
       setActivePanel: (activePanel) => set({ activePanel }),
       setPreviewPlaying: (previewPlaying) => set({ previewPlaying }),
       setCurrentTime: (currentTime) => set({ currentTime }),
-      setVolume: (volume) => set({ volume: Math.max(0, Math.min(1, volume)) }),
+      setVolume: (volume) => set({ volume: Math.max(VOLUME_MIN, Math.min(VOLUME_MAX, volume)) }),
       setMuted: (muted) => set({ muted }),
       
       // 片段操作
@@ -248,7 +262,7 @@ export const useEditorStore = create<EditorState>()(
       clearSelection: () =>
         set({ selection: { segmentId: undefined, multipleIds: [] } }),
       
-      setZoom: (zoom) => set({ zoom: Math.max(0.1, Math.min(10, zoom)) }),
+      setZoom: (zoom) => set({ zoom: Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom)) }),
       setScrollPosition: (scrollPosition) => set({ scrollPosition }),
       
       // 多轨道时间线
@@ -452,7 +466,7 @@ export const useEditorStore = create<EditorState>()(
       saveHistory: () =>
         set((state) => ({
           history: {
-            past: [...state.history.past.slice(-19), state.segments],
+            past: [...state.history.past.slice(-MAX_HISTORY_SIZE), state.segments],
             future: [],
           },
         })),
@@ -460,7 +474,7 @@ export const useEditorStore = create<EditorState>()(
       saveTrackHistory: () =>
         set((state) => ({
           trackHistory: {
-            past: [...state.trackHistory.past.slice(-19), state.timelineTracks],
+            past: [...state.trackHistory.past.slice(-MAX_HISTORY_SIZE), state.timelineTracks],
             future: [],
           },
         })),
@@ -531,6 +545,7 @@ export const useEditorStore = create<EditorState>()(
         video: state.video,
         zoom: state.zoom,
         volume: state.volume,
+        muted: state.muted,
       }),
     }
   )

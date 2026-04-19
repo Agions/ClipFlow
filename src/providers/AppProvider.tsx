@@ -16,11 +16,11 @@ interface AppProviderProps {
  */
 const getDarkThemeTokens = () => ({
   // 主强调色 — 琥珀光（行动点/CTA）
-  colorPrimary: '#FF9F43',
-  colorPrimaryHover: '#FFBE76',
-  colorPrimaryActive: '#E8891C',
-  colorPrimaryBg: 'rgba(255, 159, 67, 0.15)',
-  colorPrimaryBgHover: 'rgba(255, 159, 67, 0.25)',
+  colorPrimary: '#d4a574',
+  colorPrimaryHover: '#e0b88a',
+  colorPrimaryActive: '#c49660',
+  colorPrimaryBg: 'rgba(212, 165, 116, 0.15)',
+  colorPrimaryBgHover: 'rgba(212, 165, 116, 0.25)',
 
   // 功能色
   colorSuccess: '#4ADE80',
@@ -65,11 +65,11 @@ const getDarkThemeTokens = () => ({
  * 亮色主题配色 — 保持与深色一致的 Amber 主调
  */
 const getLightThemeTokens = () => ({
-  colorPrimary: '#E8891C',
-  colorPrimaryHover: '#FF9F43',
-  colorPrimaryActive: '#D4760F',
-  colorPrimaryBg: 'rgba(255, 159, 67, 0.1)',
-  colorPrimaryBgHover: 'rgba(255, 159, 67, 0.2)',
+  colorPrimary: '#c49660',
+  colorPrimaryHover: '#d4a574',
+  colorPrimaryActive: '#b08050',
+  colorPrimaryBg: 'rgba(212, 165, 116, 0.1)',
+  colorPrimaryBgHover: 'rgba(212, 165, 116, 0.2)',
 
   colorSuccess: '#10b981',
   colorSuccessBg: 'rgba(16, 185, 129, 0.1)',
@@ -121,8 +121,8 @@ const ThemeConfigurator: React.FC<{ children: ReactNode }> = ({ children }) => {
       controlHeight: 40,
       fontWeight: 500,
       primaryShadow: isDarkMode
-        ? '0 4px 12px rgba(255, 159, 67, 0.3)'
-        : '0 2px 6px rgba(232, 137, 28, 0.25)',
+        ? '0 4px 12px rgba(212, 165, 116, 0.3)'
+        : '0 2px 6px rgba(196, 150, 96, 0.25)',
     },
     Card: {
       borderRadiusLG: 12,
@@ -133,8 +133,8 @@ const ThemeConfigurator: React.FC<{ children: ReactNode }> = ({ children }) => {
       itemBorderRadius: 8,
       subMenuItemBorderRadius: 6,
       itemBg: 'transparent',
-      itemSelectedBg: isDarkMode ? 'rgba(255, 159, 67, 0.15)' : 'rgba(255, 159, 67, 0.1)',
-      itemSelectedColor: '#FF9F43',
+      itemSelectedBg: isDarkMode ? 'rgba(212, 165, 116, 0.15)' : 'rgba(212, 165, 116, 0.1)',
+      itemSelectedColor: '#d4a574',
     },
     Modal: {
       borderRadiusLG: 12,
@@ -143,12 +143,12 @@ const ThemeConfigurator: React.FC<{ children: ReactNode }> = ({ children }) => {
     },
     Select: {
       borderRadius: 8,
-      optionSelectedBg: isDarkMode ? 'rgba(255, 159, 67, 0.15)' : 'rgba(255, 159, 67, 0.1)',
+      optionSelectedBg: isDarkMode ? 'rgba(212, 165, 116, 0.15)' : 'rgba(212, 165, 116, 0.1)',
     },
     Input: {
       borderRadius: 8,
-      activeBorderColor: '#FF9F43',
-      hoverBorderColor: isDarkMode ? '#3D4166' : '#FF9F43',
+      activeBorderColor: '#d4a574',
+      hoverBorderColor: isDarkMode ? '#3D4166' : '#d4a574',
     },
     Radio: {
       borderRadius: 4,
@@ -167,15 +167,15 @@ const ThemeConfigurator: React.FC<{ children: ReactNode }> = ({ children }) => {
     Tabs: {
       cardBg: isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.02)',
       cardGutter: 4,
-      inkBarColor: '#FF9F43',
-      itemActiveColor: '#FF9F43',
-      itemSelectedColor: '#FF9F43',
+      inkBarColor: '#d4a574',
+      itemActiveColor: '#d4a574',
+      itemSelectedColor: '#d4a574',
     },
     Table: {
       borderRadiusLG: 12,
       headerBg: isDarkMode ? '#1C1D2E' : '#f5f7fa',
       headerColor: isDarkMode ? '#8888A0' : 'rgba(0, 0, 0, 0.65)',
-      rowHoverBg: isDarkMode ? 'rgba(255, 159, 67, 0.08)' : 'rgba(255, 159, 67, 0.04)',
+      rowHoverBg: isDarkMode ? 'rgba(212, 165, 116, 0.08)' : 'rgba(212, 165, 116, 0.04)',
     },
     Tag: {
       borderRadiusSM: 4,
@@ -187,14 +187,14 @@ const ThemeConfigurator: React.FC<{ children: ReactNode }> = ({ children }) => {
       borderRadiusLG: 12,
     },
     Progress: {
-      defaultColor: '#FF9F43',
+      defaultColor: '#d4a574',
     },
     Slider: {
-      trackBg: 'rgba(255, 159, 67, 0.3)',
+      trackBg: 'rgba(212, 165, 116, 0.3)',
       railBg: isDarkMode ? '#2A2D42' : '#e0e0e0',
     },
     Switch: {
-      primaryColor: '#FF9F43',
+      primaryColor: '#d4a574',
     },
   };
 

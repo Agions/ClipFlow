@@ -25,6 +25,7 @@ import { notify } from '@/shared';
 
 // Types, Constants, Utils
 import type { TimelineProps, Track, Clip, TrackType, Keyframe, TimelineScale, Transition, ClipProperties, TimelineClip } from './types';
+import { isTimelineClip } from './types';
 import { TRACK_COLORS, TRANSITION_TYPES } from './constants';
 import { generateId, formatTime } from './utils';
 
@@ -90,15 +91,15 @@ const Timeline: React.FC<TimelineProps> = ({
       name: track.name,
       type: track.type as TrackType,
       clips: (track.clips || []).map((clip): TimelineClip => {
-        const clipStartMs = (clip as any).startMs ?? (clip.startTime ?? 0) * 1000;
-        const clipEndMs = (clip as any).endMs ?? (clip.endTime ?? 0) * 1000;
-        const sourceStartVal = (clip as any).sourceStart ?? 0;
-        const sourceEndVal = (clip as any).sourceEnd ?? 0;
+        const clipStartMs = isTimelineClip(clip) ? clip.startMs : (clip.startTime ?? 0) * 1000;
+        const clipEndMs = isTimelineClip(clip) ? clip.endMs : (clip.endTime ?? 0) * 1000;
+        const sourceStartVal = isTimelineClip(clip) ? clip.sourceStart : 0;
+        const sourceEndVal = isTimelineClip(clip) ? clip.sourceEnd : 0;
         return {
           id: clip.id || '',
           trackId: clip.trackId || track.id,
           name: clip.name || '未命名片段',
-          type: (clip as any).type || 'video',
+          type: clip.type || 'video',
           startTime: clip.startTime ?? clipStartMs / 1000,
           endTime: clip.endTime ?? clipEndMs / 1000,
           startMs: clipStartMs,

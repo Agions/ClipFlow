@@ -476,8 +476,8 @@ export const generateScriptWithAI = async (
   }
 };
 
-export const analyzeKeyFramesWithAI = async (framePaths: string[]): Promise<string[]> => {
-  return framePaths.map((_, i) => `关键帧 ${i + 1} 中的场景描述`);
+export const analyzeKeyFramesWithAI = async (_framePaths: string[]): Promise<string[]> => {
+  throw new Error('analyzeKeyFramesWithAI: not implemented — connect to AI model endpoint');
 };
 
 export const improveScriptWithAI = async (

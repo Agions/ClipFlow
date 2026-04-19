@@ -9,6 +9,24 @@ description: CutDeck 版本更新历史，记录每次版本的主要变更。
 
 ---
 
+## v1.9.8 (2026-04-19)
+
+### 🔒 安全
+
+- **API 密钥加密存储**：API 密钥改用 `tauri-plugin-store` 加密存储（AES 加密），不再明文保存
+
+### 🐛 Bug 修复
+
+- VideoEditor 导出类型安全修复（`Partial<ExportConfig>` + 默认值）
+- `handleAnalysisComplete` 闭包陷阱修复（补充 useCallback 依赖项）
+- 音量/缩放边界修复（添加 MIN/MAX 常量约束，防止 NaN）
+
+### ⚙️ 代码质量
+
+- 消除 Magic Numbers，提取 8 个命名常量
+- Projects 页面网络请求增加 3 次指数退避重试
+- Settings 页面移除 `as any` 不安全 cast
+
 ## v1.1.1 (2026-04-02)
 
 ### 代码优化

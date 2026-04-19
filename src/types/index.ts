@@ -50,7 +50,7 @@ export interface VideoProject {
   videoUrl: string;
   videoPath?: string;
   outputDir?: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   analysis?: VideoAnalysis;
   scripts: Script[];
   createdAt: string;
@@ -163,7 +163,7 @@ export interface ProjectData {
   videoPath: string;
   createdAt: string;
   updatedAt: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   keyFrames?: string[];
-  script?: any[];
+  script?: CoreScriptSegment[];
 } 

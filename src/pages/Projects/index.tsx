@@ -50,10 +50,12 @@ const ProjectManager: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [statusFilter, setStatusFilter] = useState<ProjectStatusFilter>('all');
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   const loadProjectData = useCallback(async () => {
     try {
       setLoading(true);
+      setLoadFailed(false);
       const data = await listProjects();
       const mapped = (Array.isArray(data) ? data : [])
         .filter((item) => typeof item.id === 'string')
@@ -63,6 +65,7 @@ const ProjectManager: React.FC = () => {
       logger.error('加载项目列表失败:', { error });
       notify.error(error, '加载项目列表失败，请稍后重试');
       setProjects([]);
+      setLoadFailed(true);
     } finally {
       setLoading(false);
     }
@@ -333,12 +336,22 @@ const ProjectManager: React.FC = () => {
                 />
               </Tooltip>
             </Button.Group>
-            <Button 
-              type="primary" 
-              icon={<PlusOutlined />} 
+            {loadFailed && (
+              <Tooltip title="重新加载">
+                <Button
+                  icon={<PlusOutlined />}
+                  onClick={() => { void loadProjectData(); }}
+                >
+                  重试
+                </Button>
+              </Tooltip>
+            )}
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
               onClick={() => navigate('/project/new')}
               onMouseEnter={() => { void preloadProjectEditPage(); }}
-              style={{ 
+              style={{
                 background: 'linear-gradient(135deg, #667eea, #764ba2)',
                 border: 'none', borderRadius: 6,
               }}
