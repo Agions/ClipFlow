@@ -250,8 +250,8 @@ pub fn apply_filter_chain(input: ApplyChainInput) -> Result<String, String> {
         };
 
         apply_single_filter(
-            current_input.to_str().unwrap(),
-            next_input.to_str().unwrap(),
+            current_input.to_string_lossy().as_ref(),
+            next_input.to_string_lossy().as_ref(),
             &filter,
             None,
             None,
@@ -293,7 +293,7 @@ pub fn generate_filter_preview(
 
     apply_single_filter(
         &input_path,
-        preview_path.to_str().unwrap(),
+        preview_path.to_string_lossy().as_ref(),
         &filter,
         Some(start),
         Some(duration),
@@ -336,7 +336,7 @@ pub fn generate_chain_preview(
     let chain = build_filter_chain(filters.clone())?;
     apply_filtergraph(
         &input_path,
-        preview_path.to_str().unwrap(),
+        preview_path.to_string_lossy().as_ref(),
         &chain.filtergraph,
         Some(start),
         Some(duration),
