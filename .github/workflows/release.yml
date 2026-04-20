@@ -78,18 +78,22 @@ jobs:
       - name: Package macOS app as zip
         run: |
           APP_BUNDLE="src-tauri/target/release/bundle/macos/CutDeck.app"
+          echo "=== Bundle directory check ==="
+          ls -la src-tauri/target/release/bundle/ 2>/dev/null && echo "---macos---" && ls -la "$APP_BUNDLE" 2>/dev/null && echo "Bundle found" || echo "Bundle NOT found"
+          
           if [ ! -d "$APP_BUNDLE" ]; then
             echo "ERROR: .app bundle not found at $APP_BUNDLE"
-            ls -la src-tauri/target/release/bundle/ 2>/dev/null || echo "bundle dir missing"
             ls -la src-tauri/target/release/bundle/macos/ 2>/dev/null || echo "macos dir missing"
             exit 1
           fi
-          echo "Bundling $APP_BUNDLE..."
-          cd src-tauri/target/release/bundle/macos
-          ditto -c -k --sequesterRsrc CutDeck.app ../CutDeck-macos.zip
-          cd ../../../../..
-          echo "=== ZIP created ==="
-          ls -lh src-tauri/target/release/bundle/CutDeck-macos.zip
+          
+          echo "Bundling with ditto..."
+          cd "src-tauri/target/release/bundle/macos"
+          ditto -c -k CutDeck.app ../CutDeck-macos.zip
+          cd "${GITHUB_WORKSPACE}" || cd ../../..
+          
+          echo "=== Verifying ZIP ==="
+          ls -lh src-tauri/target/release/bundle/CutDeck-macos.zip || echo "ZIP not created"
 
       - name: Upload macOS zip artifact
         uses: actions/upload-artifact@v4
