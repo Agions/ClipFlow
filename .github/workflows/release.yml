@@ -92,12 +92,11 @@ jobs:
           if [ -z "$APP_DIR" ]; then echo "ERROR: .app bundle not found"; exit 1; fi
           APP_NAME=$(basename "$APP_DIR")
           
-          echo "=== Creating zip ==="
-          cd src-tauri/target/release/bundle/macos
-          zip -r ../CutDeck-macos.zip "$APP_NAME"
-          cd ../../../../..
-          echo "=== Done ==="
+          echo "=== Creating zip with ditto ==="
+          ditto -c -k --sequesterRsrc "$APP_DIR" src-tauri/target/release/bundle/CutDeck-macos.zip
+          echo "=== Verifying ==="
           ls -lh src-tauri/target/release/bundle/CutDeck-macos.zip
+          unzip -l src-tauri/target/release/bundle/CutDeck-macos.zip | head -10
 
       - name: Upload dmg artifact
         if: matrix.format == 'dmg'
