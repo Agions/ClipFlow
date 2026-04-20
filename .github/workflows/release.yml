@@ -1,4 +1,4 @@
-name: Build Release
+name: Release Build
 
 on:
   push:
@@ -7,27 +7,160 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version'
+        description: '手动版本号（如 1.9.8）'
         required: true
-        default: '1.0.0'
+        default: ''
+        type: string
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
+  attestations: write
+  issues: write
+
+env:
+  APP_NAME: CutDeck
+  VITE_APP_NAME: CutDeck
+  VITE_APP_VERSION: ${{ github.event.inputs.version || github.ref_name }}
 
 jobs:
-  build-tauri:
+  # ─── macOS ────────────────────────────────────────────────
+  build-macos:
     strategy:
       fail-fast: false
-    runs-on: ubuntu-24.04
+      matrix:
+        include:
+          - format: dmg
+            runner: macos-14
+          - format: app
+            runner: macos-14
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'pnpm'
+          cache: pnpm
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '9'
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Build Tauri
+        run: pnpm run tauri build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build DMG
+        if: matrix.format == 'dmg'
+        run: |
+          APP_PATH="src-tauri/target/release/bundle/macos/CutDeck.app"
+          DMG_PATH="src-tauri/target/release/bundle/dmg/CutDeck.dmg"
+          VOL_NAME="CutDeck"
+          hdiutil create -volname "$VOL_NAME" -srcfolder "$APP_PATH" -ov -format UDZO "$DMG_PATH"
+
+      - name: Upload dmg artifact
+        if: matrix.format == 'dmg'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CutDeck-macos-dmg
+          path: src-tauri/target/release/bundle/dmg/CutDeck.dmg
+          retention-days: 5
+
+      - name: Upload app artifact
+        if: matrix.format == 'app'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CutDeck-macos-app
+          path: src-tauri/target/release/bundle/macos/CutDeck.app
+          retention-days: 5
+
+  # ─── Windows ───────────────────────────────────────────────
+  build-windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - format: nsis
+            runner: windows-2022
+          - format: msi
+            runner: windows-2022
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '9'
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Build Tauri
+        run: pnpm run tauri build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload nsis artifact
+        if: matrix.format == 'nsis'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CutDeck-windows-nsis
+          path: src-tauri/target/release/bundle/nsis/*.exe
+          retention-days: 5
+
+      - name: Upload msi artifact
+        if: matrix.format == 'msi'
+        uses: actions/upload-artifact@v4
+        with:
+          name: CutDeck-windows-msi
+          path: src-tauri/target/release/bundle/msi/*.msi
+          retention-days: 5
+
+  # ─── Linux ─────────────────────────────────────────────────
+  build-linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - format: appimage
+            runner: ubuntu-24.04
+          - format: deb
+            runner: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -48,88 +181,185 @@ jobs:
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --ignore-scripts
 
-      - name: Build Tauri app
+      - name: Build Tauri
         run: pnpm run tauri build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload AppImage
+      - name: Upload AppImage artifact
+        if: matrix.format == 'appimage'
         uses: actions/upload-artifact@v4
         with:
-          name: CutDeck-linux-AppImage
+          name: CutDeck-linux-appimage
           path: src-tauri/target/release/bundle/appimage/*.AppImage
           retention-days: 5
 
-      - name: Upload deb
+      - name: Upload deb artifact
+        if: matrix.format == 'deb'
         uses: actions/upload-artifact@v4
         with:
           name: CutDeck-linux-deb
           path: src-tauri/target/release/bundle/deb/*.deb
           retention-days: 5
 
-  build-docs:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: '9'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build Docs
-        run: pnpm run docs:build
-      - name: Deploy to GitHub Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/.vitepress/dist
-          publish_branch: gh-pages
-
+  # ─── Universal Shell Installer ────────────────────────────
   create-release:
+    needs: [build-macos, build-windows, build-linux]
     runs-on: ubuntu-latest
-    needs: build-tauri
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download AppImage
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: CutDeck-linux-AppImage
-          path: release
-
-      - name: Download deb
-        uses: actions/download-artifact@v4
-        with:
-          name: CutDeck-linux-deb
           path: release
 
       - name: List release files
-        run: ls -lh release/
+        run: |
+          find release -type f | head -50
+          echo "---"
+          echo "DONE"
+
+      - name: Generate Install Script
+        run: |
+          VERSION=${{ github.event.inputs.version || github.ref_name }}
+          cat > release/install.sh << 'SCRIPT'
+          #!/usr/bin/env bash
+          # CutDeck One-Line Installer
+          # Usage: curl -fsSL https://cutdeck.com/install | bash
+          # Or:    curl -fsSL https://cutdeck.com/install | bash -s -- --version 1.9.8
+
+          set -e
+
+          VERSION="${VERSION:-latest}"
+          REPO="CutDeck/CutDeck"
+          INSTALL_DIR="${HOME}/Applications/CutDeck.app"
+
+          detect_os() {
+            case "$(uname -s)" in
+              Linux*)     echo "linux" ;;
+              Darwin*)    echo "macos" ;;
+              MINGW*|MSYS*|CYGWIN*) echo "windows" ;;
+              *)          echo "unknown" ;;
+            esac
+          }
+
+          detect_arch() {
+            case "$(uname -m)" in
+              x86_64|amd64)  echo "amd64" ;;
+              aarch64|arm64) echo "arm64" ;;
+              *)             echo "amd64" ;;
+            esac
+          }
+
+          download_and_install() {
+            local os=$1
+            local arch=$2
+            local format=$3
+            local file=$4
+
+            echo "⬇️  下载 ${file}..."
+            curl -fLo "/tmp/${file}" \
+              -H "Accept: application/octet-stream" \
+              "https://github.com/${REPO}/releases/download/${VERSION}/${file}"
+
+            echo "📦 安装..."
+            case "$os" in
+              macos)
+                hdiutil attach "/tmp/${file}" -mountpoint /Volumes/CutDeck -nobrowse
+                rm -rf "$INSTALL_DIR"
+                cp -r /Volumes/CutDeck/CutDeck.app "$INSTALL_DIR"
+                hdiutil detach /Volumes/CutDeck
+                echo "✅ 安装完成: ${INSTALL_DIR}"
+                ;;
+              linux)
+                case "$format" in
+                  appimage)
+                    chmod +x "/tmp/${file}"
+                    mv "/tmp/${file}" "${HOME}/.local/bin/CutDeck"
+                    mkdir -p "${HOME}/.local/bin"
+                    mv "/tmp/${file}" "${HOME}/.local/bin/CutDeck"
+                    echo "✅ 安装完成: ${HOME}/.local/bin/CutDeck"
+                    echo "   运行: ~/.local/bin/CutDeck"
+                    ;;
+                  deb)
+                    sudo dpkg -i "/tmp/${file}" && sudo apt-get -f install -y
+                    echo "✅ 安装完成"
+                    ;;
+                esac
+                ;;
+              windows)
+                powershell -Command "Start-Process msiexec.exe -Wait -ArgumentList '/i', 'C:\temp\${file}'"
+                echo "✅ 安装完成"
+                ;;
+            esac
+          }
+
+          main() {
+            local os=$(detect_os)
+            local arch=$(detect_arch)
+            echo "🖥️  检测系统: ${os} (${arch})"
+            echo "📦 版本: ${VERSION}"
+
+            case "$os" in
+              macos)
+                download_and_install "$os" "$arch" "dmg" "CutDeck-macos-dmg/CutDeck.dmg"
+                ;;
+              linux)
+                # 优先 AppImage，回退 deb
+                if curl -sf "https://github.com/${REPO}/releases/download/${VERSION}/CutDeck-linux-appimage/CutDeck.AppImage" > /dev/null; then
+                  download_and_install "$os" "$arch" "appimage" "CutDeck-linux-appimage/CutDeck.AppImage"
+                else
+                  download_and_install "$os" "$arch" "deb" "$(ls release/CutDeck-linux-deb/*.deb 2>/dev/null | head -1)"
+                fi
+                ;;
+              windows)
+                download_and_install "$os" "$arch" "nsis" "CutDeck-windows-nsis/CutDeck_x.x.x_x64-setup.exe"
+                ;;
+              *)
+                echo "❌ 不支持的操作系统: ${os}"
+                exit 1
+                ;;
+            esac
+          }
+
+          main
+          SCRIPT
+          chmod +x release/install.sh
+          echo "✅ install.sh 生成完成"
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
         with:
-          files: release/**/*
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          body: |
+            ## 📥 CutDeck ${{ github.event.inputs.version || github.ref_name }} 下载
+
+            ### 一键安装（推荐）
+            ```bash
+            curl -fsSL https://cutdeck.com/install | bash
+            # 或指定版本
+            curl -fsSL https://cutdeck.com/install | bash -s -- --version ${{ github.event.inputs.version || github.ref_name }}
+            ```
+
+            ### 各平台下载
+            | 平台 | 格式 | 下载 |
+            |------|------|------|
+            | macOS | DMG | `CutDeck-macos-dmg/CutDeck.dmg` |
+            | Windows | NSIS | `CutDeck-windows-nsis/*.exe` |
+            | Windows | MSI | `CutDeck-windows-msi/*.msi` |
+            | Linux | AppImage | `CutDeck-linux-appimage/*.AppImage` |
+            | Linux | DEB | `CutDeck-linux-deb/*.deb` |
+          files: |
+            release/**/*
+            release/install.sh
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
