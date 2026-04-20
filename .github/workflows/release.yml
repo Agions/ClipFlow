@@ -83,32 +83,28 @@ jobs:
           path: macos-build.log
           retention-days: 2
 
-      - name: Build DMG
+      - name: Package macOS app
         if: matrix.format == 'dmg'
         run: |
-          echo "=== Tauri bundle output ==="
-          find src-tauri/target/release/bundle -type f 2>/dev/null | head -30
-          echo "=== Looking for .app ==="
-          find src-tauri/target/release/bundle -name "*.app" -o -name "*.dmg" 2>/dev/null
+          echo "=== Finding .app bundle ==="
           APP_DIR=$(find src-tauri/target/release/bundle -type d -name "*.app" 2>/dev/null | head -1)
           echo "APP_DIR: $APP_DIR"
-          if [ -z "$APP_DIR" ]; then
-            echo "ERROR: No .app found, listing bundle dir:"
-            ls -la src-tauri/target/release/bundle/
-            ls -la src-tauri/target/release/bundle/macos/ 2>/dev/null || true
-            exit 1
-          fi
-          mkdir -p src-tauri/target/release/bundle/dmg
-          DMG_PATH="src-tauri/target/release/bundle/dmg/CutDeck.dmg"
-          hdiutil create -volname "CutDeck" -srcfolder "$APP_DIR" -ov -format UDZO "$DMG_PATH"
-          ls -lh "$DMG_PATH"
+          if [ -z "$APP_DIR" ]; then echo "ERROR: .app bundle not found"; exit 1; fi
+          APP_NAME=$(basename "$APP_DIR")
+          
+          echo "=== Creating zip ==="
+          cd src-tauri/target/release/bundle/macos
+          zip -r ../CutDeck-macos.zip "$APP_NAME"
+          cd ../../../../..
+          echo "=== Done ==="
+          ls -lh src-tauri/target/release/bundle/CutDeck-macos.zip
 
       - name: Upload dmg artifact
         if: matrix.format == 'dmg'
         uses: actions/upload-artifact@v4
         with:
-          name: CutDeck-macos-dmg
-          path: src-tauri/target/release/bundle/dmg/CutDeck.dmg
+          name: CutDeck-macos-zip
+          path: src-tauri/target/release/bundle/CutDeck-macos.zip
           retention-days: 5
 
       - name: Upload app artifact
@@ -334,20 +330,13 @@ jobs:
           }
 
           install_macos() {
-            local dmg="${ARTIFACT_DIR}/CutDeck.dmg"
-            download "CutDeck-macos-dmg/CutDeck.dmg" "CutDeck.dmg"
+            local zip="${ARTIFACT_DIR}/CutDeck-macos.zip"
+            download "CutDeck-macos-zip/CutDeck-macos.zip" "CutDeck-macos.zip"
 
-            echo "📦 挂载 DMG..."
-            hdiutil attach "$dmg" -mountpoint /Volumes/CutDeck -nobrowse
-
-            echo "🧹 移除旧版..."
+            echo "📦 解压到 Applications..."
             rm -rf "$INSTALL_DIR"
-
-            echo "📦 复制到 Applications..."
-            cp -r /Volumes/CutDeck/CutDeck.app "$INSTALL_DIR"
-
-            hdiutil detach /Volumes/CutDeck
-            rm -f "$dmg"
+            unzip -q "$zip" -d "$(dirname "$INSTALL_DIR")"
+            rm -f "$zip"
 
             echo "✅ 安装完成: ${INSTALL_DIR}"
             echo "   启动: open \"${INSTALL_DIR}\""
@@ -438,7 +427,7 @@ jobs:
             ### 各平台下载
             | 平台 | 格式 | 下载 |
             |------|------|------|
-            | macOS | DMG | `CutDeck-macos-dmg/CutDeck.dmg` |
+            | macOS | ZIP | `CutDeck-macos-zip/CutDeck-macos.zip` |
             | Windows | NSIS | `CutDeck-windows-nsis/*.exe` |
             | Windows | MSI | `CutDeck-windows-msi/*.msi` |
             | Linux | AppImage | `CutDeck-linux-appimage/*.AppImage` |
