@@ -1,0 +1,39 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.clipCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border-color, #d9d9d9);
+  border-radius: 6px;
+  margin-bottom: 8px;
+
+  &.selected {
+    border-color: var(--primary-color, #1890ff);
+    background: var(--primary-bg, #e6f7ff);
+  }
+}
+
+.index { font-weight: 600; flex: 1; }
+.duration { color: var(--text-secondary, #8c8c8c); font-size: 12px; }
+.score { color: var(--text-secondary, #8c8c8c); font-size: 12px; }
+
+.footer {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-top: 1px solid var(--border-color, #d9d9d9);
+}
+
+.platformSelect { width: 120px; }
