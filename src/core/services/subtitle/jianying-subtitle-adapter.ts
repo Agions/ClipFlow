@@ -28,6 +28,6 @@ export function toJianYingSubtitleTrack(
       speed: 1.0,
       color: '#FFFFFF',
       text: seg.text,
-    })) as unknown as JianYingClip[],
+    })) as JianYingClip[],
   };
 }

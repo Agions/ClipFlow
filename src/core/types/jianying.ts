@@ -9,6 +9,8 @@ export interface JianYingClip {
   sourceEndMs: number;
   speed: number;
   color: string;
+  /** 字幕文本（字幕轨道专用） */
+  text?: string;
 }
 
 export interface JianYingTrack {

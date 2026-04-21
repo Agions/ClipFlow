@@ -1,8 +1,10 @@
 /**
  * 情感峰值检测
- * 基于音频能量分析 + 视觉笑点检测
+ * 基于 Rust highlight_detector 的音频能量分析
  * 笑声/掌声/情绪高潮片段得额外加分
  */
+
+import { invoke } from '@tauri-apps/api/core';
 
 export interface EmoPeak {
   startMs: number;
@@ -13,6 +15,17 @@ export interface EmoPeak {
 
 export interface EmoPeakResult {
   peaks: EmoPeak[];
+}
+
+/** Rust HighlightSegment 的 TypeScript 映射 */
+interface RustHighlightSegment {
+  startMs: number;
+  endMs: number;
+  score: number; // 0-1
+  reason: string;
+  audioScore?: number;
+  sceneScore?: number;
+  motionScore?: number;
 }
 
 /**
@@ -31,17 +44,36 @@ export function calculateEmotionScore(peaks: EmoPeak[], totalDurationMs: number)
 }
 
 /**
- * 检测情感峰值（placeholder — 待接 Rust 层音频能量分析）
+ * 检测情感峰值
+ * 调用 Rust backend detect_highlights 命令，筛选 audio_energy 类型高光片段
  */
 export async function detectEmotionPeaks(
-  audioPath: string,
+  videoPath: string,
   options: { threshold?: number; minDurationMs?: number } = {}
 ): Promise<EmoPeakResult> {
-  const { threshold = 70, minDurationMs = 500 } = options;
-  // TODO: 调用 Rust 层的音频能量分析器
-  // const result = await invoke<AudioEnergyResult>('detect_emotion_peaks', { audioPath, threshold, minDurationMs });
-  void audioPath;
-  void threshold;
-  void minDurationMs;
-  return { peaks: [] };
+  try {
+    const highlights = await invoke<RustHighlightSegment[]>('detect_highlights', {
+      input: {
+        video_path: videoPath,
+        threshold: options.threshold ?? 1.5,
+        min_duration_ms: options.minDurationMs ?? 500,
+        top_n: 20,
+        detect_scene: false,
+      },
+    });
+
+    const peaks: EmoPeak[] = highlights
+      .filter((h) => h.reason === 'audio_energy' && h.audioScore != null)
+      .map((h) => ({
+        startMs: h.startMs,
+        endMs: h.endMs,
+        energy: Math.round((h.audioScore ?? 0) * 100),
+        type: 'generic' as const,
+      }));
+
+    return { peaks };
+  } catch (err) {
+    console.error('[emotion-peak-detector] detect_highlights failed:', err);
+    return { peaks: [] };
+  }
 }
