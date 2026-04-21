@@ -9,7 +9,7 @@ import {
   useModel,
   useModelCost,
   useRecommendedModel
-} from '@/core/hooks/useModel';
+} from '@/hooks/useModel';
 import type { AIModel, ModelProvider } from '@/core/types';
 import { useModelFilter } from './hooks/useModelFilter';
 import { useModelSelection } from './hooks/useModelSelection';

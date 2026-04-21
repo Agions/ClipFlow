@@ -34,8 +34,8 @@ import {
   DollarOutlined,
 } from '@ant-design/icons';
 import { motion, AnimatePresence } from '@/components/common/motion-shim';
-import { useModel, useModelCost } from '@/core/hooks/useModel';
-import { useProject } from '@/core/hooks/useProject';
+import { useModel, useModelCost } from '@/hooks/useModel';
+import { useProject } from '@/hooks/useProject';
 import ModelSelector from '@/components/ModelSelector';
 import { notify } from '@/shared';
 import type { ScriptData, ScriptSegment } from '@/core/types';

@@ -1,10 +1,8 @@
 /**
  * Core Hooks 统一导出
+ * 已迁移到 src/hooks/：useModel, useProject
+ * src/core/hooks/ 仅保留 useVideo, useEditor
  */
 
-// AI 剪辑
-
-export { useProject } from './useProject';
 export { useVideo } from './useVideo';
-export { useModel, useModelCost } from './useModel';
 export { useEditor } from './use-editor-state';
