@@ -1,0 +1,24 @@
+.modeSelector {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+}
+
+.modeCard {
+  flex: 1;
+  padding: 16px;
+  border: 1px solid var(--border-color, #d9d9d9);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+
+  &.active {
+    border-color: var(--primary-color, #1890ff);
+    background: var(--primary-bg, #e6f7ff);
+  }
+}
+
+.icon { font-size: 24px; display: block; }
+.label { display: block; font-weight: 600; margin-top: 8px; }
+.desc { display: block; font-size: 12px; color: var(--text-secondary, #8c8c8c); margin-top: 4px; }
