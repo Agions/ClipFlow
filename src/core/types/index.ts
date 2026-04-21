@@ -4,3 +4,4 @@
  * 实际类型定义在 ../types.ts，此文件做 re-export
  */
 export * from '../types';
+export * from './jianying';
