@@ -1,0 +1,164 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+env:
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.tag.outputs.version }}
+      release_id: ${{ steps.create.outputs.id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Extract version from tag
+        id: tag
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      - name: Create Release Draft
+        id: create
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: CutDeck v${{ steps.tag.outputs.version }}
+          draft: true
+          prerelease: false
+
+  build-tauri:
+    name: Build Tauri (${{ matrix.platform.label }})
+    needs: create-release
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - { runner: windows-latest, target: 'x86_64-pc-windows-msvc', label: 'Windows x64' }
+          - { runner: macos-latest, target: 'aarch64-apple-darwin', label: 'macOS ARM64' }
+          - { runner: macos-latest, target: 'x86_64-apple-darwin', label: 'macOS x64' }
+          - { runner: ubuntu-22.04, target: 'x86_64-unknown-linux-gnu', label: 'Linux x64' }
+          - { runner: ubuntu-22.04, target: 'aarch64-unknown-linux-gnu', label: 'Linux ARM64' }
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: '9'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: ${{ matrix.platform.target }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      # macOS: generate run instructions
+      - name: Create macOS run instructions
+        if: matrix.platform.label == 'macOS ARM64' || matrix.platform.label == 'macOS x64'
+        run: |
+          cat > "HOW-TO-RUN.txt" << 'RUNEOF'
+          === CutDeck macOS Installation Instructions ===
+
+          Because CutDeck is not signed with an Apple Developer certificate,
+          you must explicitly allow it to run on your Mac:
+
+          METHOD 1 — Easiest (Recommended):
+          1. Right-click on CutDeck.app
+          2. Select "Open" from the context menu
+          3. macOS will show a warning popup
+          4. Click "Open Anyway"
+          5. CutDeck will launch ✅
+
+          METHOD 2 — Terminal:
+          1. Open Terminal (Applications → Utilities → Terminal)
+          2. Copy and paste this command:
+             sudo xattr -rd com.apple.quarantine "/Applications/CutDeck.app"
+          3. Press Enter, enter your password when prompted
+          4. Launch CutDeck from Applications normally
+
+          METHOD 3 — System Settings:
+          1. Try to open CutDeck (double-click)
+          2. Go to System Settings → Privacy & Security
+          3. Scroll down to "Security policy" section
+          4. Click "Open Anyway" next to CutDeck
+          5. Launch CutDeck again
+
+          For more help: https://github.com/Agions/CutDeck/releases
+          RUNEOF
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ github.ref_name }}
+          args: --target ${{ matrix.platform.target }}
+
+      # macOS: copy run instructions into bundle directory
+      - name: Copy run instructions to bundle
+        if: matrix.platform.label == 'macOS ARM64' || matrix.platform.label == 'macOS x64'
+        run: |
+          # Find the bundle path and copy HOW-TO-RUN.txt into it
+          find src-tauri/target/${{ matrix.platform.target }}/release/bundle -name "*.app" -type d | while read app_path; do
+            parent_dir=$(dirname "$app_path")
+            cp HOW-TO-RUN.txt "$parent_dir/HOW-TO-RUN.txt"
+            echo "Copied HOW-TO-RUN.txt to $parent_dir"
+          done
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cutdeck-${{ matrix.platform.label }}
+          path: |
+            src-tauri/target/${{ matrix.platform.target }}/release/bundle/**
+            HOW-TO-RUN.txt
+          retention-days: 7
+
+  upload-assets:
+    name: Upload Release Assets
+    needs: [create-release, build-tauri]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List artifacts
+        run: find artifacts -type f | head -20
+
+      - name: Upload to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # For each artifact, extract filename and upload
+          for artifact in $(find artifacts -type f \( -name "*.exe" -o -name "*.msi" -o -name "*.dmg" -o -name "*.app" -o -name "*.deb" -o -name "*.rpm" -o -name "*.AppImage" -o -name "HOW-TO-RUN.txt" \) 2>/dev/null); do
+            echo "Uploading $artifact..."
+            # Upload using GitHub CLI
+            gh release upload ${{ github.ref_name }} "$artifact" --repo ${{ github.repository }}
+          done
+
+      - name: Publish Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release edit ${{ github.ref_name }} --draft=false --repo ${{ github.repository }}
