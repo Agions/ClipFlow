@@ -53,7 +53,7 @@ export const ExportBar = memo<ExportBarProps>(({
       {/* Export button */}
       <ExportButton
         state={exportState}
-        onClick={exportState === 'processing' ? onCancel : onExport}
+        onClick={exportState === 'processing' ? (onCancel ?? onExport) : onExport}
       />
     </div>
   );

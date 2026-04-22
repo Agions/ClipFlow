@@ -124,13 +124,12 @@ const SegmentList: React.FC<SegmentListProps> = ({
         <Title level={5} className={styles.sectionTitle}>片段列表</Title>
         <Empty description="暂无片段" image={Empty.PRESENTED_IMAGE_SIMPLE} />
         <Button
-          type="dashed"
-          icon={<PlusOutlined />}
-          block
+          variant="outline"
           onClick={onAddSegment}
           disabled={!hasVideo}
           className={styles.addSegmentButton}
         >
+          <PlusOutlined className="mr-1" />
           添加片段
         </Button>
       </div>
@@ -143,13 +142,12 @@ const SegmentList: React.FC<SegmentListProps> = ({
       {renderedItems}
 
       <Button
-        type="dashed"
-        icon={<PlusOutlined />}
-        block
+        variant="outline"
         onClick={onAddSegment}
         disabled={!hasVideo}
         className={styles.addSegmentButton}
       >
+        <PlusOutlined className="mr-1" />
         添加片段
       </Button>
     </div>

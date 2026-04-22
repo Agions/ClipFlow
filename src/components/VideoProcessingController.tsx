@@ -611,8 +611,8 @@ const VideoProcessingController: React.FC<VideoProcessingControllerProps> = ({
                               disabled={processingBatch}
                             >
                               <Button 
-                                variant="ghost" 
-                                size="icon-sm"
+                                type="text" 
+                                size="small"
                                 disabled={processingBatch}
                               >
                                 <DeleteOutlined />

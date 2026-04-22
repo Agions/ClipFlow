@@ -7,7 +7,9 @@ import type { ScriptSegment } from '@/core/types';
 import { getTypeLabel } from './types';
 import styles from './ScriptEditor.module.less';
 
-const { Text } = Typography;
+const Text = ({ children, type, strong, style }: { children: React.ReactNode; type?: string; strong?: boolean; style?: React.CSSProperties }) => {
+  return strong ? <strong style={style}>{children}</strong> : <span style={style}>{children}</span>;
+};
 
 interface SegmentTableProps {
   segments: ScriptSegment[];

@@ -1,6 +1,7 @@
 import React from 'react';
-import { List, Card, Tag, Space, Tooltip, Button, Dropdown, Progress, Typography } from 'antd';
+import { List, Card, Tag, Space, Tooltip, Dropdown, Progress, Typography } from 'antd';
 import type { MenuProps } from 'antd';
+import { Button } from '@/components/ui/button';
 import { PlayCircleOutlined, EllipsisOutlined, VideoCameraOutlined, FolderOpenOutlined } from '@ant-design/icons';
 import type { ProjectUIStatus, ProjectView, ProjectUIStats } from '../types';
 
@@ -73,18 +74,12 @@ const ProjectsListView: React.FC<ProjectsListViewProps> = ({
                 </div>
                 <Space>
                   <Tooltip title="进入工作台">
-                    <Button
-                      type="text"
-                      icon={<PlayCircleOutlined />}
-                      onMouseEnter={onPreloadEditor}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenEditor(project.id);
-                      }}
-                    />
+                    <Button variant="ghost" size="icon-sm">
+                      <PlayCircleOutlined />
+                    </Button>
                   </Tooltip>
                   <Dropdown menu={projectActions(project)} trigger={['click']}>
-                    <Button type="text" icon={<EllipsisOutlined />} onClick={(e) => e.stopPropagation()} />
+                    <Button variant="ghost" size="icon-sm" />
                   </Dropdown>
                 </Space>
               </div>

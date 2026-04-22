@@ -6,6 +6,7 @@
 import React from 'react';
 import { Layout, Tooltip, Space, Typography, Divider, Select } from 'antd';
 import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
 import {
   ScissorOutlined,
   AudioOutlined,
@@ -390,8 +391,7 @@ const AILayout: React.FC<AILayoutProps> = ({ children }) => {
             {renderPropsPanel()}
             
             <Button 
-              className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" 
-              block 
+              className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white w-full" 
               onClick={() => {
                 notify.success(`已切换到 ${aiFeatures.find(f => f.key === selectedFeature)?.label} 功能`);
               }}

@@ -7,7 +7,7 @@
 import React, { memo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle2, Loader2 } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 
 interface AISettingsProps {
   apiKey?: string;
@@ -72,7 +72,7 @@ export const AISettings = memo<AISettingsProps>(({
             ) : testState === 'success' ? (
               <CheckCircle2 className="size-3.5 text-accent-success" />
             ) : testState === 'error' ? (
-              <XCircle2 className="size-3.5 text-accent-danger" />
+              <XCircle className="size-3.5 text-accent-danger" />
             ) : (
               'Test'
             )}

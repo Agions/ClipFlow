@@ -14,7 +14,9 @@ import type { Script, ScriptSegment } from '@/types';
 import { notify } from '@/shared';
 import styles from './ScriptPreview.module.less';
 
-const { Title, Paragraph, Text } = Typography;
+const Title = ({ children, level, className }: { children: React.ReactNode; level?: number; className?: string }) => <h3 className={className} style={{ fontSize: level === 3 ? '1.25rem' : '1rem', fontWeight: level ? 600 : 400 }}>{children}</h3>;
+const Paragraph = ({ children, className }: { children: React.ReactNode; className?: string }) => <p className={className}>{children}</p>;
+const Text = ({ children, strong, style, className }: { children: React.ReactNode; strong?: boolean; style?: React.CSSProperties; className?: string }) => strong ? <strong style={style} className={className}>{children}</strong> : <span style={style} className={className}>{children}</span>;
 
 interface ScriptPreviewProps {
   script: Script;
@@ -96,18 +98,19 @@ const ScriptPreview: React.FC<ScriptPreviewProps> = ({ script, onEdit, onExport 
         </div>
         <div className={styles.actions}>
           <Button 
-            icon={<CopyOutlined />} 
+            variant="outline"
             onClick={copyToClipboard}
             className={styles.actionButton}
-            loading={copying}
           >
-            复制全文
+            <CopyOutlined className="mr-1" />
+            {copying ? '复制中...' : '复制全文'}
           </Button>
           <Button 
-            icon={<FilePdfOutlined />} 
+            variant="outline"
             onClick={onExport}
             className={styles.actionButton}
           >
+            <FilePdfOutlined className="mr-1" />
             导出 PDF
           </Button>
           <Button 

@@ -1,7 +1,8 @@
 import { logger } from '@/utils/logger';
 import React, { useState, useEffect, lazy, Suspense, useRef, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button, Modal, Spin, Typography, Menu, Space, Drawer, Tooltip, Result } from 'antd';
+import { Modal, Spin, Typography, Menu, Space, Drawer, Tooltip, Result } from 'antd';
+import { Button } from '@/components/ui/button';
 import type { MenuProps } from 'antd';
 import {
   ArrowLeftOutlined, 
@@ -334,8 +335,8 @@ const ProjectDetail: React.FC = () => {
         title="加载项目失败"
         subTitle={loadError}
         extra={[
-          <Button key="retry" type="primary" onClick={() => setReloadToken((v) => v + 1)}>重试</Button>,
-          <Button key="back" onClick={() => navigate('/projects')}>返回项目列表</Button>,
+          <Button key="retry" className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={() => setReloadToken((v) => v + 1)}>重试</Button>,
+          <Button key="back" variant="outline" onClick={() => navigate('/projects')}>返回项目列表</Button>,
         ]}
       />
     );
@@ -375,8 +376,10 @@ const ProjectDetail: React.FC = () => {
             <div className={styles.scriptHeader}>
               <Title level={4}>AI驱动脚本编辑</Title>
               <Space>
-                <Button loading={aiLoading} onClick={handleGenerateScript} type="primary" className={styles.premiumBtn}>AI 一键生成</Button>
-                <Button onClick={handleCreateScript} className={styles.premiumBtn}>新建空脚本</Button>
+                <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleGenerateScript} disabled={aiLoading}>
+                  {aiLoading ? '生成中...' : 'AI 一键生成'}
+                </Button>
+                <Button variant="outline" onClick={handleCreateScript}>新建空脚本</Button>
               </Space>
             </div>
             {activeScript ? (
@@ -400,7 +403,7 @@ const ProjectDetail: React.FC = () => {
             <div className={styles.iconWrapper}><AudioOutlined /></div>
             <Title level={3}>全自动音画同步引擎</Title>
             <Text>结合TTS合成声音与画面关键帧自动对齐，提供影院级配音体验。</Text>
-            <Button type="primary" size="large" className={styles.premiumBtn} onClick={() => notify.info('功能开发中，敬请期待！')}>即将推出</Button>
+            <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={() => notify.info('功能开发中，敬请期待！')}>即将推出</Button>
           </div>
         );
       case 'edit':
@@ -428,7 +431,9 @@ const ProjectDetail: React.FC = () => {
       <div className={styles.header}>
         <Space>
           <Tooltip title="返回项目列表">
-            <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => navigate('/projects')} size="large" />
+            <Button variant="ghost" onClick={() => navigate('/projects')}>
+              <ArrowLeftOutlined />
+            </Button>
           </Tooltip>
           <div className={styles.titleArea}>
             <Text type="secondary" style={{ fontSize: '12px' }}>当前工作区</Text>
@@ -437,10 +442,12 @@ const ProjectDetail: React.FC = () => {
         </Space>
         
         <Space>
-          <Button icon={<SettingOutlined />} onClick={() => setDrawerVisible(true)} className={styles.premiumBtn}>
+          <Button variant="ghost" onClick={() => setDrawerVisible(true)}>
+            <SettingOutlined className="mr-1" />
             项目信息
           </Button>
-          <Button danger icon={<DeleteOutlined />} onClick={handleDeleteProject} className={styles.premiumBtn}>
+          <Button variant="destructive" onClick={handleDeleteProject}>
+            <DeleteOutlined className="mr-1" />
             删除
           </Button>
         </Space>

@@ -187,7 +187,8 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
         className={styles.editorCard}
         extra={
           <Space>
-            <Button icon={<EditOutlined />} onClick={() => setAiModalVisible(true)}>
+            <Button variant="outline" onClick={() => setAiModalVisible(true)}>
+              <EditOutlined className="mr-1" />
               AI优化
             </Button>
             <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleSave}>
@@ -200,7 +201,7 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
                 open={exportMenuVisible}
                 onOpenChange={setExportMenuVisible}
               >
-                <Button icon={<ExportOutlined />}>
+                <Button variant="outline">
                   导出 <DownOutlined />
                 </Button>
               </Dropdown>
@@ -222,12 +223,12 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
         />
 
         <Button
-          type="dashed"
-          icon={<PlusOutlined />}
-          block
+          variant="outline"
+          className="w-full"
           onClick={handleAddSegment}
           style={{ marginTop: 16 }}
         >
+          <PlusOutlined className="mr-1" />
           添加片段
         </Button>
 

@@ -126,5 +126,3 @@ const FolderNode = memo<{
 });
 
 FolderNode.displayName = 'FolderNode';
-
-export { FolderTree };

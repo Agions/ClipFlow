@@ -435,41 +435,36 @@ const EnhancedVideoPlayer: React.FC<EnhancedVideoPlayerProps> = ({
                 <Row gutter={[16, 16]}>
                   {allowFrameControl && (
                     <Col span={12}>
-                      <Card size="small" title="帧控制" className={styles.controlCard}>
+                      <Card title="帧控制" className={styles.controlCard}>
                         <Space>
-                          <Button 
-                            icon={<StepBackwardOutlined />} 
+                          <Button variant="outline" size="sm"
                             onClick={stepBackward}
-                            size="small"
                           >
+                            <StepBackwardOutlined />
                             上一帧
                           </Button>
-                          <Button 
-                            icon={<BackwardOutlined />} 
+                          <Button variant="outline" size="sm"
                             onClick={fastBackward}
-                            size="small"
                           >
+                            <BackwardOutlined />
                             -5秒
                           </Button>
-                          <Button 
-                            icon={<ForwardOutlined />} 
+                          <Button variant="outline" size="sm"
                             onClick={fastForward}
-                            size="small"
                           >
+                            <ForwardOutlined />
                             +5秒
                           </Button>
-                          <Button 
-                            icon={<StepForwardOutlined />} 
+                          <Button variant="outline" size="sm"
                             onClick={stepForward}
-                            size="small"
                           >
+                            <StepForwardOutlined />
                             下一帧
                           </Button>
-                          <Button 
-                            icon={<CameraOutlined />} 
+                          <Button variant="outline" size="sm"
                             onClick={captureFrame}
-                            size="small"
                           >
+                            <CameraOutlined />
                             截图
                           </Button>
                         </Space>
@@ -479,12 +474,12 @@ const EnhancedVideoPlayer: React.FC<EnhancedVideoPlayerProps> = ({
                   
                   {allowSpeedControl && (
                     <Col span={12}>
-                      <Card size="small" title="速度控制" className={styles.controlCard}>
+                      <Card title="速度控制" className={styles.controlCard}>
                         <Radio.Group 
                           value={playbackRate} 
                           onChange={(e) => handleRateChange(e.target.value)}
                           buttonStyle="solid"
-                          size="small"
+                         
                         >
                           <Radio.Button value={0.5}>0.5x</Radio.Button>
                           <Radio.Button value={1}>1.0x</Radio.Button>
@@ -510,7 +505,7 @@ const EnhancedVideoPlayer: React.FC<EnhancedVideoPlayerProps> = ({
                               value={playbackRate}
                               onChange={(val) => val && handleRateChange(val)}
                               style={{ marginLeft: 8, width: 60 }}
-                              size="small"
+                             
                             />
                           </Col>
                         </Row>
@@ -521,7 +516,7 @@ const EnhancedVideoPlayer: React.FC<EnhancedVideoPlayerProps> = ({
                 
                 <Row style={{ marginTop: 8 }}>
                   <Col span={24}>
-                    <Card size="small" title="视频信息" className={styles.controlCard}>
+                    <Card title="视频信息" className={styles.controlCard}>
                       <Row gutter={16}>
                         <Col span={8}>
                           <Statistic 

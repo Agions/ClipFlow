@@ -255,8 +255,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
         {!running && results.length === 0 && (
           <Button
             onClick={handleRun}
-            className={`${styles.runButton} bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white`}
-            block
+            className={`${styles.runButton} bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white w-full`}
           >
             <ThunderboltOutlined className="mr-1" />
             开始 AI 拆条分析
@@ -266,9 +265,8 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
         {running && (
           <div className={styles.progressSection}>
             <Progress
-              percent={Math.round(progress)}
-              status="active"
-              strokeColor={{ '0%': '#FF9F43', '100%': '#FF6B35' }}
+              value={Math.round(progress)}
+              className="[&_[data-slot=slider-track]]:bg-accent-primary/20"
             />
             <p className={styles.progressStage}>
               {stage === 'analyzing' && <><span aria-hidden="true">🔍</span> 识别高光片段...</>}

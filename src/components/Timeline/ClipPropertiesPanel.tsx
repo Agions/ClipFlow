@@ -1,6 +1,7 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Space, InputNumber } from 'antd';
 import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
 import type { TimelineClip } from './types';
 import { formatTime } from './utils';
 import { MIN_CLIP_DURATION } from './constants';
@@ -51,7 +52,7 @@ export const ClipPropertiesPanel = memo<ClipPropertiesPanelProps>(({ clip, onUpd
         </div>
         <div className={styles.propRow}>
           <label>音量</label>
-          <Slider min={0} max={200} value={volume} onChange={setVolume} tooltip={{ formatter: (v) => `${v}%` }} />
+          <Slider min={0} max={200} defaultValue={[volume]} onValueChange={(v) => setVolume(Array.isArray(v) ? v[0] : v)} className="w-24" />
         </div>
         <div className={styles.propRow}>
           <label>时长</label>
@@ -61,11 +62,11 @@ export const ClipPropertiesPanel = memo<ClipPropertiesPanelProps>(({ clip, onUpd
         </div>
       </div>
       <div className={styles.propertiesFooter}>
-        <Button size="small" danger onClick={() => { onDelete(clip.id); onClose(); }}>
+        <Button size="sm" variant="destructive" onClick={() => { onDelete(clip.id); onClose(); }}>
           删除片段
         </Button>
         <Space>
-          <Button size="small" onClick={onClose}>取消</Button>
+          <Button size="sm" onClick={onClose}>取消</Button>
           <Button size="sm" className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleApply}>应用</Button>
         </Space>
       </div>

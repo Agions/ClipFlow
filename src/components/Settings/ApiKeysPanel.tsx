@@ -10,7 +10,7 @@ import { notify } from '@/shared';
 import { ModelProvider, PROVIDER_NAMES } from '@/constants/models';
 import { MODEL_PROVIDERS } from '@/core/config/models.config';
 
-const { Text } = Typography;
+const Text = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => <span style={style}>{children}</span>;
 
 interface ApiKeyConfig {
   key: string;
@@ -110,11 +110,12 @@ const ApiKeysPanel: React.FC<ApiKeysPanelProps> = ({ apiKeys, onUpdateKey, onDel
                 </Button>
                 {config?.key && (
                   <Button
-                    danger
-                    icon={<DeleteOutlined />}
+                    variant="destructive"
                     onClick={() => onDeleteKey(provider)}
                     aria-label={`删除 ${PROVIDER_NAMES[provider]} 密钥`}
-                  />
+                  >
+                    <DeleteOutlined />
+                  </Button>
                 )}
               </Space.Compact>
             </Form.Item>

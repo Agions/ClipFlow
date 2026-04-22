@@ -1,7 +1,10 @@
 import React, { memo } from 'react';
-import { Space, Progress } from 'antd';
+import { Space, Progress, Typography } from 'antd';
 import { Button } from '@/components/ui/button';
 import { ScissorOutlined, SettingOutlined, SaveOutlined } from '@ant-design/icons';
+import styles from './VideoEditor.module.less';
+
+const { Text } = Typography;
 
 interface EditorControlsProps {
   processing: boolean;

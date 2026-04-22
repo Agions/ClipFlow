@@ -44,20 +44,7 @@ export const TimelineToolbar = memo<TimelineToolbarProps>(({
       {/* Left: Play controls */}
       <div className="flex items-center gap-1">
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={onPlayPause}
-              className="text-text-primary"
-            >
-              {isPlaying ? (
-                <Pause className="size-3.5" />
-              ) : (
-                <Play className="size-3.5 ml-0.5" />
-              )}
-            </Button>
-          </TooltipTrigger>
+          <TooltipTrigger render={<Button variant="outline" size="icon-sm" onClick={onPlayPause} className="text-text-primary" />} />
           <TooltipContent side="bottom">
             <p>{isPlaying ? '暂停 (Space)' : '播放 (Space)'}</p>
           </TooltipContent>
@@ -78,11 +65,7 @@ export const TimelineToolbar = memo<TimelineToolbarProps>(({
       {/* Right: Zoom controls */}
       <div className="flex items-center gap-1">
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outline" size="icon-sm" onClick={onZoomOut} className="text-text-secondary">
-              <ZoomOut className="size-3.5" />
-            </Button>
-          </TooltipTrigger>
+          <TooltipTrigger render={<Button variant="outline" size="icon-sm" onClick={onZoomOut} className="text-text-secondary" />} />
           <TooltipContent side="bottom"><p>缩小</p></TooltipContent>
         </Tooltip>
 
@@ -94,22 +77,14 @@ export const TimelineToolbar = memo<TimelineToolbarProps>(({
         </span>
 
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outline" size="icon-sm" onClick={onZoomIn} className="text-text-secondary">
-              <ZoomIn className="size-3.5" />
-            </Button>
-          </TooltipTrigger>
+          <TooltipTrigger render={<Button variant="outline" size="icon-sm" onClick={onZoomIn} className="text-text-secondary" />} />
           <TooltipContent side="bottom"><p>放大</p></TooltipContent>
         </Tooltip>
 
         <div className="w-px h-4 bg-border-subtle mx-1" />
 
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outline" size="icon-sm" onClick={onFitAll} className="text-text-secondary">
-              <Maximize2 className="size-3.5" />
-            </Button>
-          </TooltipTrigger>
+          <TooltipTrigger render={<Button variant="outline" size="icon-sm" onClick={onFitAll} className="text-text-secondary" />} />
           <TooltipContent side="bottom"><p>适应全部</p></TooltipContent>
         </Tooltip>
       </div>

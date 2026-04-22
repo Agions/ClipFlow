@@ -2,7 +2,8 @@
  * AnalyzeStep — 分析视频步骤
  */
 import React from 'react';
-import { Card, Typography, Button, Spin, Space } from 'antd';
+import { Card, Typography, Spin, Space } from 'antd';
+import { Button } from '@/components/ui/button';
 const { Title, Paragraph } = Typography;
 import { EditOutlined } from '@ant-design/icons';
 import VideoSelector from '@/components/VideoSelector';
@@ -67,11 +68,13 @@ export const AnalyzeStep: React.FC<AnalyzeStepProps> = ({
 
     <div className={styles.stepActions}>
       <Space>
-        <Button onClick={onPrev}>上一步</Button>
+        <Button variant="outline" onClick={onPrev}>上一步</Button>
         {scriptSegmentsCount > 0 ? (
-          <Button type="primary" onClick={onNext}>下一步</Button>
+          <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={onNext}>下一步</Button>
         ) : (
-          <Button type="primary" onClick={onAnalyze} loading={loading}>分析视频</Button>
+          <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={onAnalyze} disabled={loading}>
+            {loading ? '分析中...' : '分析视频'}
+          </Button>
         )}
       </Space>
     </div>

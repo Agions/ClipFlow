@@ -55,11 +55,7 @@ export const BatchProcessing: React.FC<BatchProcessingProps> = ({
 
       {processingBatch && (
         <div className="batchProgress">
-          <Progress
-            percent={batchProgress}
-            status="active"
-            format={() => `${Math.round(batchProgress)}%`}
-          />
+          <Progress value={batchProgress} />
           <div className="batchStatus">
             处理中: {currentBatchItem + 1}/{batchItems.length} - {batchItems[currentBatchItem]?.name}
           </div>

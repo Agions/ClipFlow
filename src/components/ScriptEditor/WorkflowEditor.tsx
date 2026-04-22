@@ -1,8 +1,9 @@
 import { logger } from '@/utils/logger';
 import React, { useState, useEffect, useCallback, memo, useMemo } from 'react';
-import { Card, List, Space, Input, Tag, Typography, type TabsProps } from 'antd';
-import { Tabs } from '@/components/ui/tabs';
+import { Card, List, Space, Input, Tag } from 'antd';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import {
   EditOutlined,
   SaveOutlined,
@@ -15,9 +16,9 @@ import { formatDuration } from '@/services/video';
 import { notify } from '@/shared';
 import styles from './ScriptEditor.module.less';
 
-const { Text, Paragraph, Title } = Typography;
+const Text = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => <span style={style}>{children}</span>;
+
 const { TextArea } = Input;
-const { TabPane } = Tabs;
 
 interface WorkflowEditorProps {
   script: ScriptData;
@@ -75,92 +76,6 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({
     }
   }, []);
 
-  const tabItems = useMemo<TabsProps['items']>(() => [
-    {
-      key: 'content',
-      label: '脚本内容',
-      children: (
-        <div className={styles.workflowEditor}>
-          <div className={styles.titleInput}>
-            <Text type="secondary">标题</Text>
-            <Input
-              value={editedTitle}
-              onChange={handleTitleChange}
-              placeholder="输入脚本标题"
-              size="large"
-            />
-          </div>
-          <div className={styles.contentInput}>
-            <Text type="secondary">内容</Text>
-            <TextArea
-              value={editedContent}
-              onChange={handleContentChange}
-              placeholder="输入脚本内容..."
-              rows={15}
-              className={styles.scriptTextArea}
-            />
-          </div>
-        </div>
-      )
-    },
-    {
-      key: 'segments',
-      label: '片段列表',
-      children: (
-        <List
-          dataSource={script.segments || []}
-          renderItem={(segment: ScriptSegment) => (
-            <List.Item
-              actions={[
-                <Button key="edit" type="text" icon={<EditOutlined />} />,
-                <Button key="delete" type="text" danger icon={<DeleteOutlined />} />,
-              ]}
-            >
-              <List.Item.Meta
-                title={
-                  <Space>
-                    <Tag color="blue">{segment.type}</Tag>
-                    <Text>
-                      {formatDuration(segment.startTime)} - {formatDuration(segment.endTime)}
-                    </Text>
-                  </Space>
-                }
-                description={<Paragraph ellipsis={{ rows: 2 }}>{segment.content}</Paragraph>}
-              />
-            </List.Item>
-          )}
-        />
-      )
-    },
-    ...(scenes && scenes.length > 0 ? [{
-      key: 'scenes',
-      label: `场景 (${scenes.length})`,
-      children: (
-        <List
-          dataSource={scenes}
-          renderItem={(scene: Scene) => (
-            <List.Item>
-              <List.Item.Meta
-                title={
-                  <Space>
-                    <ClockCircleOutlined />
-                    <Text>
-                      {formatDuration(scene.startTime)} - {formatDuration(scene.endTime)}
-                    </Text>
-                    {scene.tags?.map(tag => (
-                      <Tag key={tag}>{tag}</Tag>
-                    ))}
-                  </Space>
-                }
-                description={scene.description}
-              />
-            </List.Item>
-          )}
-        />
-      )
-    }] : [])
-  ], [editedContent, editedTitle, handleContentChange, handleTitleChange, scenes, script.segments]);
-
   return (
     <div className={styles.scriptEditor}>
       <Card
@@ -168,7 +83,8 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({
         className={styles.editorCard}
         extra={
           <Space>
-            <Button icon={<EditOutlined />} onClick={() => setAiModalVisible(true)}>
+            <Button variant="outline" onClick={() => setAiModalVisible(true)}>
+              <EditOutlined className="mr-1" />
               AI优化
             </Button>
             <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleSave}>
@@ -178,19 +94,107 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({
           </Space>
         }
       >
-        <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList>
+            <TabsTrigger value="content">脚本内容</TabsTrigger>
+            <TabsTrigger value="segments">片段列表</TabsTrigger>
+            {scenes && scenes.length > 0 && (
+              <TabsTrigger value="scenes">场景 ({scenes.length})</TabsTrigger>
+            )}
+          </TabsList>
+
+          <TabsContent value="content">
+            <div className={styles.workflowEditor}>
+              <div className={styles.titleInput}>
+                <Text style={{ color: '#999' }}>标题</Text>
+                <Input
+                  value={editedTitle}
+                  onChange={handleTitleChange}
+                  placeholder="输入脚本标题"
+                  size="large"
+                />
+              </div>
+              <div className={styles.contentInput}>
+                <Text style={{ color: '#999' }}>内容</Text>
+                <TextArea
+                  value={editedContent}
+                  onChange={handleContentChange}
+                  placeholder="输入脚本内容..."
+                  rows={15}
+                  className={styles.scriptTextArea}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="segments">
+            <List
+              dataSource={script.segments || []}
+              renderItem={(segment: ScriptSegment) => (
+                <List.Item
+                  actions={[
+                    <Button key="edit" variant="ghost" size="icon-sm"><EditOutlined /></Button>,
+                    <Button key="delete" variant="ghost" size="icon-sm"><DeleteOutlined /></Button>,
+                  ]}
+                >
+                  <List.Item.Meta
+                    title={
+                      <Space>
+                        <Tag color="blue">{segment.type}</Tag>
+                        <Text>
+                          {formatDuration(segment.startTime)} - {formatDuration(segment.endTime)}
+                        </Text>
+                      </Space>
+                    }
+                    description={segment.content}
+                  />
+                </List.Item>
+              )}
+            />
+          </TabsContent>
+
+          {scenes && scenes.length > 0 && (
+            <TabsContent value="scenes">
+              <List
+                dataSource={scenes}
+                renderItem={(scene: Scene) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      title={
+                        <Space>
+                          <ClockCircleOutlined />
+                          <Text>
+                            {formatDuration(scene.startTime)} - {formatDuration(scene.endTime)}
+                          </Text>
+                          {scene.tags?.map(tag => (
+                            <Tag key={tag}>{tag}</Tag>
+                          ))}
+                        </Space>
+                      }
+                      description={scene.description}
+                    />
+                  </List.Item>
+                )}
+              />
+            </TabsContent>
+          )}
+        </Tabs>
       </Card>
 
       {/* AI 优化模态框 */}
-      <Modal
-        title="AI 优化脚本"
-        open={aiModalVisible}
-        onCancel={() => setAiModalVisible(false)}
-        onOk={handleAIImprove}
-      >
-        <p>使用 AI 优化脚本将会根据视频内容和当前脚本，生成更加专业的表达和结构。</p>
-        <p>点击确定开始优化。</p>
-      </Modal>
+      <Dialog open={aiModalVisible} onOpenChange={(open) => !open && setAiModalVisible(false)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>AI 优化脚本</DialogTitle>
+          </DialogHeader>
+          <p>使用 AI 优化脚本将会根据视频内容和当前脚本，生成更加专业的表达和结构。</p>
+          <p>点击确定开始优化。</p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAiModalVisible(false)}>取消</Button>
+            <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleAIImprove}>确定</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

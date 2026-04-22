@@ -1,7 +1,8 @@
 import { logger } from '@/utils/logger';
 import React, { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Button, Typography, Space, Spin, Divider, Modal, Tag, Result } from 'antd';
+import { Card, Typography, Space, Spin, Divider, Modal, Tag, Result } from 'antd';
+import { Button } from '@/components/ui/button';
 import { ArrowLeftOutlined, SaveOutlined, DeleteOutlined, ExportOutlined, RobotOutlined } from '@ant-design/icons';
 import { useSettings } from '@/context/SettingsContext';
 import { notify } from '@/shared';
@@ -238,9 +239,9 @@ const ScriptDetail: React.FC = () => {
         title="加载脚本失败"
         subTitle={loadError}
         extra={[
-          <Button key="retry" type="primary" onClick={() => setReloadToken((v) => v + 1)}>重试</Button>,
-          projectId ? <Button key="project" onClick={() => navigate(`/project/${projectId}`)}>返回项目</Button> : null,
-          <Button key="back" onClick={() => navigate('/projects')}>返回项目列表</Button>,
+          <Button key="retry" className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={() => setReloadToken((v) => v + 1)}>重试</Button>,
+          projectId ? <Button key="project" variant="outline" onClick={() => navigate(`/project/${projectId}`)}>返回项目</Button> : null,
+          <Button key="back" variant="outline" onClick={() => navigate('/projects')}>返回项目列表</Button>,
         ]}
       />
     );
@@ -255,39 +256,38 @@ const ScriptDetail: React.FC = () => {
       <div className={styles.header}>
         <Space>
           <Button
-            icon={<ArrowLeftOutlined />}
+            variant="ghost"
             onClick={() => navigate(`/project/${project.id}`)}
           >
+            <ArrowLeftOutlined className="mr-1" />
             返回项目
           </Button>
           
           <Button
-            type="primary"
-            icon={<SaveOutlined />}
+            className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white"
             onClick={handleSave}
-            loading={isSaving}
-            disabled={isDeleting}
+            disabled={isSaving || isDeleting}
           >
-            保存
+            <SaveOutlined className="mr-1" />
+            {isSaving ? '保存中...' : '保存'}
           </Button>
           
           <Button
-            icon={<ExportOutlined />}
+            variant="outline"
             onClick={handleExport}
-            loading={isExporting}
             disabled={segments.length === 0 || isSaving || isDeleting}
           >
-            导出
+            <ExportOutlined className="mr-1" />
+            {isExporting ? '导出中...' : '导出'}
           </Button>
           
           <Button
-            danger
-            icon={<DeleteOutlined />}
+            variant="destructive"
             onClick={handleDelete}
-            loading={isDeleting}
             disabled={isSaving || isExporting}
           >
-            删除
+            <DeleteOutlined className="mr-1" />
+            {isDeleting ? '删除中...' : '删除'}
           </Button>
         </Space>
       </div>
