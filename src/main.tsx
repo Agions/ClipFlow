@@ -2,9 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import 'antd/dist/reset.css';
-// 统一设计系统（OKLCH 色彩空间，v2 架构）
-import './styles/design-system.css'; // 主 token — OKLCH 语义化分层
-import './index.css';                 // 全局样式 — bg-dark-* / brand-* 系统
+import './styles/globals.css';
 
 // 防止控制台出现错误消息
 window.addEventListener('error', (e) => {

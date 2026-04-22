@@ -55,6 +55,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.2.4",
     "@tauri-apps/cli": "^2.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
@@ -67,6 +68,7 @@
     "@vitejs/plugin-react": "^4.4.1",
     "@vitest/coverage-v8": "^4.1.4",
     "@vuepress/theme-default": "^1.9.10",
+    "autoprefixer": "^10.5.0",
     "babel-plugin-import": "^1.13.8",
     "boxen": "^8.0.1",
     "chalk": "^5.4.1",
@@ -77,6 +79,8 @@
     "husky": "^9.1.7",
     "jsdom": "^26.0.0",
     "less": "^4.2.2",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^4.2.4",
     "terser": "^5.46.0",
     "ts-node": "^10.9.2",
     "typedoc": "^0.28.1",

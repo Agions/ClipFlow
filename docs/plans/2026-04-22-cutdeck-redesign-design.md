@@ -2,7 +2,11 @@
 
 **Date:** 2026-04-22
 **Version:** 1.0
-**Status:** Draft — Pending Approval
+**Status:** Approved — Proceeding to Phase 2
+**Approved Decisions:**
+- Timeline rebuild with shadcn components (not just restyle)
+- Version: v2.0.0 (major release)
+- `docs/plans/` excluded from Git (confirmed)
 **Author:** claw @ Superpowers Pipeline
 
 ---
