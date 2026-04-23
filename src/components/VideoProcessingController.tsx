@@ -23,9 +23,6 @@ import {
 import { invoke } from '@tauri-apps/api/core';
 import { notify } from '@/shared';
 import type { VideoSegment } from '@/core/types';
-import { BasicSettings } from './modules/BasicSettings';
-import { EffectsSettings } from './modules/EffectsSettings';
-import { BatchProcessing } from './modules/BatchProcessing';
 import styles from './VideoProcessingController.module.less';
 
 const QUALITY_OPTIONS = [

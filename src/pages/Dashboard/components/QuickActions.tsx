@@ -5,7 +5,7 @@ import React, { useMemo, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import {
-  VideoCamera,
+  Video,
   FolderOpen,
   Flame,
   BarChart3,
@@ -23,7 +23,7 @@ const QuickActions: React.FC = React.memo(() => {
   const tools = useMemo(() => [
     {
       key: 'templates',
-      icon: <VideoCamera size={20} className={styles.toolIcon} />,
+      icon: <Video size={20} className={styles.toolIcon} />,
       title: '模板库',
       desc: '使用专业模板快速创建',
       path: '/workflow',

@@ -12,7 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Key,
   Bot,
-  Settings,
+  Settings as SettingsIcon,
   Info,
   Lock,
 } from 'lucide-react';
@@ -160,7 +160,7 @@ const Settings: React.FC = () => {
               <Key size={14} /> API 密钥
             </TabsTrigger>
             <TabsTrigger value="general">
-              <Settings size={14} /> {t('settings.general')}
+              <SettingsIcon size={14} /> {t('settings.general')}
             </TabsTrigger>
             <TabsTrigger value="about">
               <Info size={14} /> {t('settings.about')}

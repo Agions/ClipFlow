@@ -15,12 +15,12 @@ import React, { useState, useCallback, memo } from 'react';
 import { useCutDeck } from '../AIEditorContext';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Tag } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
 import { notify } from '@/shared';
 import {
-  Thunderbolt,
+  Zap,
   CheckCircle,
   Download,
 } from 'lucide-react';
@@ -234,7 +234,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
           <label className={styles.label}>导出格式</label>
           <div className={styles.formatTags}>
             {FORMAT_OPTIONS.map(fmt => (
-              <Tag
+              <Badge
                 key={fmt.value}
                 color={selectedFormats.includes(fmt.value as AspectRatio) ? 'orange' : 'default'}
                 onClick={() => {
@@ -247,7 +247,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
                 style={{ cursor: 'pointer', fontSize: 13, padding: '4px 10px' }}
               >
                 {fmt.emoji} {fmt.label}
-              </Tag>
+              </Badge>
             ))}
           </div>
         </div>
@@ -260,7 +260,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
             onClick={handleRun}
             className={`${styles.runButton} bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white w-full`}
           >
-            <Thunderbolt className="mr-1" />
+            <Zap className="mr-1" />
             开始 AI 拆条分析
           </Button>
         )}
@@ -287,9 +287,9 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
           <div className={styles.clipsHeader}>
             <span className={styles.clipsTitle}>
               📋 生成 {results.length} 个短片段
-              <Tag color="green" style={{ marginLeft: 8 }}>
+              <Badge variant="default" className="bg-green-100 text-green-700" style={{ marginLeft: 8 }}>
                 已选 {selectedClips.size} 个
-              </Tag>
+              </Badge>
             </span>
             <Button
               className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white"
@@ -322,7 +322,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
                     <Checkbox checked={isSelected} />
                     <span className={styles.clipTime}>
                       ⏱ {startStr} → {endStr}
-                      <Tag style={{ marginLeft: 6 }}>{duration.toFixed(0)}s</Tag>
+                      <Badge style={{ marginLeft: 6 }}>{duration.toFixed(0)}s</Badge>
                     </span>
                     <span
                       className={styles.clipScore}
@@ -353,9 +353,9 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
                       <p className={styles.seoDesc}>{seo.description?.slice(0, 80)}...</p>
                       <div className={styles.hashtags}>
                         {seo.hashtags?.slice(0, 5).map(tag => (
-                          <Tag key={tag} color="blue" style={{ fontSize: 11 }}>
+                          <Badge key={tag} variant="default" className="bg-blue-100 text-blue-700" style={{ fontSize: 11 }}>
                             #{tag}
-                          </Tag>
+                          </Badge>
                         ))}
                       </div>
                     </div>

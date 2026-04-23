@@ -17,7 +17,6 @@ import { preloadProjectDetailPage, preloadProjectEditPage, preloadVideoEditorPag
 import type { ProjectUIStatus, ProjectUIStats, ProjectView } from './types';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
-const { Search } = Input;
 const loadProjectsListView = () => import('./components/ProjectsListView');
 const ProjectsListView = lazy(loadProjectsListView);
 
@@ -141,7 +140,7 @@ const ProjectManager: React.FC = () => {
   const projectActions = (project: ProjectView) => [
     { key: 'edit', label: '编辑项目', icon: <Edit3 size={14} />, onClick: () => navigate(`/project/edit/${project.id}`) },
     { key: 'editor', label: '进入工作台', icon: <Play size={14} />, onClick: () => navigate(`/editor/${project.id}`) },
-    { key: 'export', label: '导出', icon: <Export size={14} /> },
+    { key: 'export', label: '导出', icon: <Download size={14} /> },
     { key: 'divider', type: 'divider' as const },
     { key: 'delete', label: '删除', icon: <Trash2 size={14} />, danger: true, onClick: () => setDeleteConfirmId(project.id) },
   ];

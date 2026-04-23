@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Video, Plus, Play, Rocket, Zap, FileText, Clock, CheckCircle, ArrowRight,
-  FlaskConical, Scissors, VolumeX, Export, Folder, TrendingUp, Loader2,
+  FlaskConical, Scissors, VolumeX, Download, Folder, TrendingUp, Loader2,
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 import { useSettings } from '@/context/SettingsContext';
@@ -40,7 +40,7 @@ const workflowSteps = [
   { icon: <FileText size={20} />, title: '脚本生成', desc: '8大AI模型 · 7种模板', color: '#e2c49a' },
   { icon: <FlaskConical size={20} />, title: '去重优化', desc: '原创性保障', color: '#06b6d4' },
   { icon: <Scissors size={20} />, title: '智能剪辑', desc: '时间轴编排', color: '#10b981' },
-  { icon: <Export size={20} />, title: '导出发布', desc: '720p ~ 4K', color: '#f43f5e' },
+  { icon: <Download size={20} />, title: '导出发布', desc: '720p ~ 4K', color: '#f43f5e' },
 ];
 
 const aiModels = ['GPT-5.3 Codex', 'o3', 'Claude Sonnet 4.6', 'Gemini 3.1 Pro Preview', 'Gemini 3.1 Flash Lite Preview', 'Qwen-Max-Latest', 'GLM-5', 'Kimi K2.5'];

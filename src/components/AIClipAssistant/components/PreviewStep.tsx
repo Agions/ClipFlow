@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
+import { Card, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -64,15 +64,15 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
           <Card
             key={segment.id}
             className={styles.segmentCard}
-            title={
+          >
+            <CardHeader className="p-0 pb-2">
               <div className="flex items-center gap-2">
                 <span className="font-semibold">片段 {index + 1}</span>
                 <Badge variant={segment.type === 'silence' ? 'destructive' : 'default'}>
                   {segment.type === 'silence' ? '静音' : '视频'}
                 </Badge>
               </div>
-            }
-          >
+            </CardHeader>
             <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
               <Clock size={12} /> {formatTime(segment.startTime)} - {formatTime(segment.endTime)}
             </div>

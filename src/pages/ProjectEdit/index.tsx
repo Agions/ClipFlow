@@ -9,7 +9,8 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Card, Spin } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
+import { Spin } from '@/components/ui/spin';
 import { Button } from '@/components/ui/button';
 import { Steps, StepsItem, StepsContent } from '@/components/ui/steps';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';

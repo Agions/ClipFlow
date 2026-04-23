@@ -8,7 +8,7 @@ import {
   Scissors,
   GitMerge,
   Trash2,
-  Flask,
+  TestTube,
   CheckCircle,
 } from 'lucide-react';
 import type { ClipAnalysisResult } from '@/core/services/aiClip.service';
@@ -46,7 +46,7 @@ const SuggestionsStep: React.FC<SuggestionsStepProps> = ({
       case 'trim': return <Scissors size={16} />;
       case 'merge': return <GitMerge size={16} />;
       case 'cut': return <Trash2 size={16} />;
-      case 'effect': return <Flask size={16} />;
+      case 'effect': return <TestTube size={16} />;
       default: return null;
     }
   };

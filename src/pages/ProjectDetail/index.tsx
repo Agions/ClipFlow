@@ -12,7 +12,7 @@ import { Loader2, ArrowLeft, Delete, Settings, Eye, AudioLines, FileText, Scisso
 import { v4 as uuidv4 } from 'uuid';
 import { useModelStore } from '@/store';
 import { saveProjectToFile, getApiKey, loadProjectWithRetry, deleteProject } from '@/services/tauri';
-import { useSettings } from '@/context/ThemeContext';
+import { useSettings } from '@/context/SettingsContext';
 import { notify } from '@/shared';
 import { generateScriptWithModel, parseGeneratedScript } from '@/services/aiService';
 import { resolveLegacyModel } from '@/services/aiModelAdapter';

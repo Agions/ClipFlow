@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
-import { Row, Col } from '@/components/ui/grid';
+import { cn } from "@/lib/utils";
+
+// Simple grid replacement for Row/Col
 import { Badge } from '@/components/ui/badge';
-import { Avatar } from '@/components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio';
 import { CheckCircle, Bot, HelpCircle, Code, Video, Edit, Flame, Star, Zap } from 'lucide-react';
 import { motion } from '@/components/common/motion-shim';
 import { AI_MODELS as CORE_AI_MODELS, DEFAULT_MODEL_ID, MODEL_PROVIDERS } from '@/core/config/models.config';
@@ -56,21 +58,21 @@ const toDisplayModel = (model: CoreAIModel): DisplayAIModel => ({
 
 const getCategoryIcon = (cat: ModelCategory) => {
   switch (cat) {
-    case 'text': return <EditOutlined />;
-    case 'code': return <CodeOutlined />;
-    case 'image': return <RobotOutlined />;
-    case 'video': return <VideoCameraOutlined />;
-    default: return <QuestionCircleOutlined />;
+    case 'text': return <Edit />;
+    case 'code': return <Code />;
+    case 'image': return <Bot />;
+    case 'video': return <Video />;
+    default: return <HelpCircle />;
   }
 };
 
 const getFeatureIcon = (feature: string) => {
   const lowerFeature = feature.toLowerCase();
-  if (lowerFeature.includes('视觉') || lowerFeature.includes('图像')) return <RobotOutlined />;
-  if (lowerFeature.includes('代码')) return <CodeOutlined />;
-  if (lowerFeature.includes('高级') || lowerFeature.includes('强大')) return <ThunderboltOutlined />;
-  if (lowerFeature.includes('创意')) return <StarOutlined />;
-  return <FireOutlined />;
+  if (lowerFeature.includes('视觉') || lowerFeature.includes('图像')) return <Bot />;
+  if (lowerFeature.includes('代码')) return <Code />;
+  if (lowerFeature.includes('高级') || lowerFeature.includes('强大')) return <Zap />;
+  if (lowerFeature.includes('创意')) return <Star />;
+  return <Flame />;
 };
 
 const AIModelSelector: React.FC<AIModelSelectorProps> = ({
@@ -146,11 +148,11 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
   }, []);
 
   const categoryOptions = [
-    { label: '全部', value: 'all' as ModelCategory, icon: <RobotOutlined /> },
-    { label: '文本', value: 'text' as ModelCategory, icon: <EditOutlined /> },
-    { label: '代码', value: 'code' as ModelCategory, icon: <CodeOutlined /> },
-    { label: '图像', value: 'image' as ModelCategory, icon: <RobotOutlined /> },
-    { label: '视频', value: 'video' as ModelCategory, icon: <VideoCameraOutlined /> },
+    { label: '全部', value: 'all' as ModelCategory, icon: <Bot /> },
+    { label: '文本', value: 'text' as ModelCategory, icon: <Edit /> },
+    { label: '代码', value: 'code' as ModelCategory, icon: <Code /> },
+    { label: '图像', value: 'image' as ModelCategory, icon: <Bot /> },
+    { label: '视频', value: 'video' as ModelCategory, icon: <Video /> },
   ];
 
   return (
@@ -160,7 +162,7 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
           <h4 className={`${styles.title} ${compact ? 'text-base' : 'text-lg'} font-semibold`}>选择AI模型</h4>
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger><QuestionCircleOutlined className={styles.helpIcon} /></TooltipTrigger>
+              <TooltipTrigger><HelpCircle className={styles.helpIcon} /></TooltipTrigger>
               <TooltipContent>选择不同的AI模型以适应您的任务需求</TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -210,9 +212,9 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
         {loadingRef.current ? (
           <div className={styles.loadingContainer}>加载中...</div>
         ) : viewMode === 'card' ? (
-          <Row gutter={[16, 16]} className={styles.modelGrid}>
+          <div className={`${styles.modelGrid} grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4`}>
             {filteredModels.map((model, index) => (
-              <Col xs={24} sm={12} md={8} lg={6} key={model.id}>
+              <div key={model.id}>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: index * 0.05 }}>
                   <Card
                     hoverable
@@ -222,22 +224,22 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
                         {typeof model.avatar === 'string' ? (
-                          <Avatar src={model.avatar} size={40} />
+                          <Avatar size="lg"><AvatarImage src={model.avatar} /><AvatarFallback>{model.name[0]}</AvatarFallback></Avatar>
                         ) : (
-                          <Avatar icon={model.avatar || <RobotOutlined />} size={40} style={{ backgroundColor: '#1E88E5' }} />
+                          <Avatar size="lg"><AvatarFallback style={{ backgroundColor: '#1E88E5' }}>{model.name[0]}</AvatarFallback></Avatar>
                         )}
                         <div>
                           <div className="font-medium">{model.name}</div>
                           {model.isPro && (
-                            <Badge variant="warning" className="text-xs mt-0.5">
-                              <StarOutlined /> 专业版
+                            <Badge variant="secondary" className="text-xs mt-0.5">
+                              <Star className={styles.checkIcon} /> 专业版
                             </Badge>
                           )}
                         </div>
                       </div>
                       {selectedModelId === model.id && (
                         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.3 }}>
-                          <CheckCircleFilled className={styles.checkIcon} />
+                          <CheckCircle className={styles.checkIcon} />
                         </motion.div>
                       )}
                     </div>
@@ -273,16 +275,16 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger className="text-xs text-muted-foreground">
-                          <ThunderboltOutlined /> {(model.tokenLimit / 1000).toFixed(0)}K tokens
+                          <Zap /> {(model.tokenLimit / 1000).toFixed(0)}K tokens
                         </TooltipTrigger>
                         <TooltipContent>模型可处理的最大上下文长度</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </Card>
                 </motion.div>
-              </Col>
+              </div>
             ))}
-          </Row>
+          </div>
         ) : (
           <RadioGroup value={selectedModelId} onValueChange={handleModelSelect} className={styles.modelList}>
             {filteredModels.map((model, index) => (
@@ -297,21 +299,21 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
                 <RadioGroupItem value={model.id} />
                 <div className="flex items-center gap-2">
                   {typeof model.avatar === 'string' ? (
-                    <Avatar src={model.avatar} size={28} />
+                    <Avatar size="sm"><AvatarImage src={model.avatar} /><AvatarFallback>{model.name[0]}</AvatarFallback></Avatar>
                   ) : (
-                    <Avatar icon={model.avatar || <RobotOutlined />} size={28} style={{ backgroundColor: '#1E88E5' }} />
+                    <Avatar size="sm"><AvatarFallback style={{ backgroundColor: '#1E88E5' }}>{model.name[0]}</AvatarFallback></Avatar>
                   )}
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="font-medium">{model.name}</span>
-                      {model.isPro && <Badge variant="warning" className="text-xs"><StarOutlined /> Pro</Badge>}
+                      {model.isPro && <Badge variant="secondary" className="text-xs"><Star className="size-3" /> Pro</Badge>}
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <span>{getProviderName(model.provider)}</span>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger className="flex items-center gap-0.5">
-                            <ThunderboltOutlined /> {(model.tokenLimit / 1000).toFixed(0)}K
+                            <Zap /> {(model.tokenLimit / 1000).toFixed(0)}K
                           </TooltipTrigger>
                           <TooltipContent>模型可处理的最大上下文长度</TooltipContent>
                         </Tooltip>
@@ -328,7 +330,7 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
       {onConfigureAPI && (
         <motion.div className={styles.footer} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.3 }}>
           <Button variant="link" onClick={() => onConfigureAPI(allModels.find(m => m.id === selectedModelId)?.provider || 'openai')}>
-            <ThunderboltOutlined className="mr-1" />
+            <Zap className="mr-1" />
             配置API密钥
           </Button>
         </motion.div>

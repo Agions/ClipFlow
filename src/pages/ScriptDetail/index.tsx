@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { ArrowLeft, Save, Trash2, Download, Bot, Loader2 } from 'lucide-react';
-import { useSettings } from '@/context/ThemeContext';
+import { useSettings } from '@/context/SettingsContext';
 import { notify } from '@/shared';
 import { exportScriptToFile, saveProjectToFile, loadProjectWithRetry, listProjects } from '@/services/tauri';
 import { findProjectByScriptId, normalizeProjectFile } from '@/core/utils/project-file';
