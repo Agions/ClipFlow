@@ -44,7 +44,7 @@ const ModelSettingsPanel: React.FC<ModelSettingsPanelProps> = ({
           <span className="text-sm text-muted-foreground">默认模型（核验日期：{MODEL_CATALOG_VERIFIED_AT}）</span>
           <Select
             value={selectedModel?.id}
-            onValueChange={(val) => val && onModelChange(val)}
+            onValueChange={(val: string) => val && onModelChange(val)}
             disabled={!isModelSelectable}
           >
             <SelectTrigger className="w-full">

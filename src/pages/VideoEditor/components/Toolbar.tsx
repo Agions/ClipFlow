@@ -60,7 +60,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           </Button>
 
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger>
               <Button
                 variant="ghost"
                 onClick={onUndo}
@@ -75,7 +75,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           </Tooltip>
 
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger>
               <Button
                 variant="ghost"
                 onClick={onRedo}
@@ -90,7 +90,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           </Tooltip>
 
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger>
               <Button
                 variant="outline"
                 onClick={onAddSegment}
@@ -105,7 +105,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           </Tooltip>
 
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger>
               <Button
                 variant="outline"
                 onClick={onSmartClip}

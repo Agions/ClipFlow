@@ -29,7 +29,7 @@ interface ProjectsListViewProps {
   onOpenEditor: (projectId: string) => void;
   onPreloadProject: () => void;
   onPreloadEditor: () => void;
-  projectActions: (project: ProjectView) => MenuProps;
+  projectActions: (project: ProjectView) => any;
 }
 
 const ProjectsListView: React.FC<ProjectsListViewProps> = ({

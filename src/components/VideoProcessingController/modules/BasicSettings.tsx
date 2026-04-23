@@ -33,7 +33,7 @@ export const BasicSettings: React.FC<BasicSettingsProps> = ({
       <div className="grid grid-cols-2 gap-4">
         <div className="formItem">
           <div className="formLabel">视频质量</div>
-          <Select value={videoQuality} onValueChange={onQualityChange}>
+          <Select value={videoQuality} onValueChange={onQualityChange as any}>
             <SelectTrigger className="w-full">
               <SelectContent>
                 {QUALITY_OPTIONS.map(option => (
@@ -51,7 +51,7 @@ export const BasicSettings: React.FC<BasicSettingsProps> = ({
 
         <div className="formItem">
           <div className="formLabel">导出格式</div>
-          <Select value={exportFormat} onValueChange={onFormatChange}>
+          <Select value={exportFormat} onValueChange={onFormatChange as any}>
             <SelectTrigger className="w-full">
               <SelectContent>
                 {FORMAT_OPTIONS.map(option => (
@@ -74,7 +74,7 @@ export const BasicSettings: React.FC<BasicSettingsProps> = ({
             <div className="formLabel">分辨率</div>
             <Select
               value={customSettings.resolution}
-              onValueChange={resolution => onCustomSettingsChange({ resolution })}
+              onValueChange={(resolution: string | null) => onCustomSettingsChange({ resolution: resolution ?? '1920x1080' })}
             >
               <SelectTrigger className="w-full">
                 <SelectContent>
@@ -114,7 +114,7 @@ export const BasicSettings: React.FC<BasicSettingsProps> = ({
             <div className="formLabel">帧率 (FPS)</div>
             <Select
               value={String(customSettings.framerate)}
-              onValueChange={framerate => onCustomSettingsChange({ framerate: parseInt(framerate) })}
+              onValueChange={(framerate: string | null) => onCustomSettingsChange({ framerate: parseInt(framerate ?? '30') })}
             >
               <SelectTrigger className="w-full">
                 <SelectContent>

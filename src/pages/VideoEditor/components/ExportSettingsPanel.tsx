@@ -52,7 +52,7 @@ const ExportSettingsPanel: React.FC<ExportSettingsPanelProps> = ({
           <div className={styles.settingItem}>
             <span className="font-semibold">输出格式</span>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger>
                 <Button>
                   {outputFormat.toUpperCase()} <Download size={14} className="ml-1" />
                 </Button>
@@ -70,7 +70,7 @@ const ExportSettingsPanel: React.FC<ExportSettingsPanelProps> = ({
           <div className={styles.settingItem}>
             <span className="font-semibold">视频质量</span>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger>
                 <Button>
                   {getQualityLabel(videoQuality)} <Download size={14} className="ml-1" />
                 </Button>

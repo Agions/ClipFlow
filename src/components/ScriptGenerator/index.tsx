@@ -195,7 +195,7 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
             {selectedModel ? (
               <div className="flex items-center gap-2">
                 <span>{selectedModel.name}</span>
-                <Badge variant={isConfigured ? 'success' : 'secondary'}>
+                <Badge variant={isConfigured ? 'default' : 'secondary'}>
                   {isConfigured ? '已配置' : '未配置'}
                 </Badge>
               </div>
@@ -245,7 +245,7 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium">目标受众</label>
-              <Select value={formValues.audience} onValueChange={(v) => setFormValues(prev => ({ ...prev, audience: v }))}>
+              <Select value={formValues.audience} onValueChange={(v: string | null) => setFormValues(prev => ({ ...prev, audience: (v ?? prev.audience) as string }))}>
                 <SelectTrigger>
                   <SelectContent>
                     {AUDIENCE_OPTIONS.map(opt => (
@@ -263,7 +263,7 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
               {STYLE_OPTIONS.map(opt => (
                 <TooltipProvider key={opt.value}>
                   <Tooltip>
-                    <TooltipTrigger asChild>
+                    <TooltipTrigger>
                       <button
                         className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
                           formValues.style === opt.value
@@ -307,7 +307,7 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
               {LENGTH_OPTIONS.map(opt => (
                 <TooltipProvider key={opt.value}>
                   <Tooltip>
-                    <TooltipTrigger asChild>
+                    <TooltipTrigger>
                       <button
                         className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
                           formValues.length === opt.value
@@ -369,25 +369,12 @@ export const ScriptGenerator: React.FC<ScriptGeneratorProps> = ({
             exit={{ opacity: 0, y: -20 }}
           >
             <Card
-              title={
-                <div className="flex items-center gap-2">
-                  <CheckCircle size={16} className="text-green-500" />
-                  <span>生成结果</span>
-                </div>
-              }
-              footer={
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={handleGenerate} disabled={isGenerating}>
-                    <Zap size={14} className="mr-1" />
-                    重新生成
-                  </Button>
-                  <Button onClick={handleSave}>
-                    <CheckCircle size={14} className="mr-1" />
-                    保存脚本
-                  </Button>
-                </div>
-              }
+              className={styles.resultCard}
             >
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle size={16} className="text-green-500" />
+                <span className="font-medium">生成结果</span>
+              </div>
               <div className={styles.scriptContent}>
                 <h5 className="text-lg font-semibold mb-2">{generatedScript.title}</h5>
                 <p className="text-muted-foreground">{generatedScript.content}</p>

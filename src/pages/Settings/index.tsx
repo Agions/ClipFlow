@@ -133,7 +133,7 @@ const Settings: React.FC = () => {
   if (isLoading) {
     return (
       <div className={styles.container}>
-        <Skeleton active paragraph={{ rows: 10 }} />
+        <Skeleton />
       </div>
     );
   }

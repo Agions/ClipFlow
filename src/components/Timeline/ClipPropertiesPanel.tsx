@@ -47,9 +47,9 @@ export const ClipPropertiesPanel = memo<ClipPropertiesPanelProps>(({ clip, onUpd
         </div>
         <div className={styles.propRow}>
           <label>开始 (s)</label>
-          <Input size="small" type="number" value={startSec} onChange={(e) => setStartSec(parseFloat(e.target.value) || 0)} step={0.1} min={0} className="w-20" />
+          <Input type="number" value={startSec} onChange={(e) => setStartSec(parseFloat(e.target.value) || 0)} step={0.1} min={0} className="w-20" />
           <label>结束 (s)</label>
-          <Input size="small" type="number" value={endSec} onChange={(e) => setEndSec(parseFloat(e.target.value) || 1)} step={0.1} min={0} className="w-20" />
+          <Input type="number" value={endSec} onChange={(e) => setEndSec(parseFloat(e.target.value) || 1)} step={0.1} min={0} className="w-20" />
         </div>
         <div className={styles.propRow}>
           <label>音量</label>

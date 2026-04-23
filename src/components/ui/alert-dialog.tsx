@@ -23,18 +23,18 @@ const AlertDialogTrigger: React.FC<AlertDialogTriggerProps> = ({ children, asChi
     onClick?.(e)
   }
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<{ onClick?: (e: React.MouseEvent) => void }>, {
+    return React.cloneElement(children as React.ReactElement<{ onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void }>, {
       onClick: handleClick,
     })
   }
-  return <button {...props} onClick={handleClick}>{children}</button>
+  return <button type="button" {...props} onClick={handleClick}>{children}</button>
 }
 
 interface AlertDialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
   onClose?: () => void
 }
 
-const AlertDialogContent: React.FC<AlertDialogContentProps> = ({ className, children, onClose, ...props }) => {
+const AlertDialogContent: React.FC<AlertDialogContentProps> = ({ className, children, onClose, onClick, ...props }) => {
   return (
     <div
       className={cn(

@@ -397,7 +397,7 @@ export const MultiTrackTimeline: React.FC<MultiTrackTimelineProps> = memo(({
           </Tooltip>
           <span className="w-px h-4 bg-zinc-700" />
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <Button icon={<Plus />}>添加轨道</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>

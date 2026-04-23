@@ -259,7 +259,7 @@ const ProjectDetail: React.FC = () => {
         <div className={styles.header}>
           <div className="flex items-center gap-3">
             <Tooltip>
-              <TooltipTrigger asChild>
+              <TooltipTrigger>
                 <Button variant="ghost" size="icon" onClick={() => navigate('/projects')}><ArrowLeft size={16} /></Button>
               </TooltipTrigger>
               <TooltipContent>返回项目列表</TooltipContent>

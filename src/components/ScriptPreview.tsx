@@ -77,7 +77,7 @@ const ScriptPreview: React.FC<ScriptPreviewProps> = ({ script, onEdit, onExport 
   };
 
   return (
-    <Card className={styles.container} bordered={false}>
+    <Card className={styles.container}>
       <div className={styles.header}>
         <div>
           <h3 className={styles.title}>脚本预览</h3>

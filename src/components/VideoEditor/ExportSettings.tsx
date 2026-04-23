@@ -76,10 +76,9 @@ const ExportSettings: React.FC<ExportSettingsProps> = ({
                 <span className="font-semibold w-24">视频质量:</span>
                 <Select
                   value={videoQuality ?? undefined}
-                  onValueChange={(value) => value && onSettingsChange({ videoQuality: value })}
-                  className="w-[200px]"
+                  onValueChange={((value: string) => { if (value) onSettingsChange({ videoQuality: value as any }); }) as any}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-[200px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -94,10 +93,9 @@ const ExportSettings: React.FC<ExportSettingsProps> = ({
                 <span className="font-semibold w-24">导出格式:</span>
                 <Select
                   value={exportFormat ?? undefined}
-                  onValueChange={(value) => value && onSettingsChange({ exportFormat: value })}
-                  className="w-[200px]"
+                  onValueChange={((value: string) => { if (value) onSettingsChange({ exportFormat: value as any }); }) as any}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-[200px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -137,10 +135,9 @@ const ExportSettings: React.FC<ExportSettingsProps> = ({
                 <span className="font-semibold w-24">转场效果:</span>
                 <Select
                   value={transitionType}
-                  onValueChange={(value) => value && onSettingsChange({ transitionType: value as TransitionType })}
-                  className="w-[200px]"
+                  onValueChange={((value: string) => { if (value) onSettingsChange({ transitionType: value as any }); }) as any}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-[200px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

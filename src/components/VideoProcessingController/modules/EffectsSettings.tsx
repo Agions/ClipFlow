@@ -41,7 +41,7 @@ export const EffectsSettings: React.FC<EffectsSettingsProps> = ({
       <div className="grid grid-cols-3 gap-4">
         <div className="formItem col-span-2">
           <div className="formLabel">转场效果</div>
-          <Select value={transitionType} onValueChange={onTransitionChange}>
+          <Select value={transitionType} onValueChange={onTransitionChange as any}>
             <SelectTrigger className="w-full">
               <SelectContent>
                 {TRANSITION_OPTIONS.map(option => (
@@ -71,7 +71,7 @@ export const EffectsSettings: React.FC<EffectsSettingsProps> = ({
       <div className="grid grid-cols-2 gap-4">
         <div className="formItem">
           <div className="formLabel">音频处理</div>
-          <Select value={audioProcess} onValueChange={onAudioProcessChange}>
+          <Select value={audioProcess} onValueChange={onAudioProcessChange as any}>
             <SelectTrigger className="w-full">
               <SelectContent>
                 {AUDIO_PROCESS_OPTIONS.map(option => (

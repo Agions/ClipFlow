@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group"
-import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 
 import { cn } from "@/lib/utils"
 
@@ -18,29 +17,23 @@ const RadioGroup = React.forwardRef<
     />
   )
 })
-RadioGroup.displayName = RadioGroupPrimitive.displayName
 
 const RadioGroupItem = React.forwardRef<
-  React.ElementRef<typeof RadioPrimitive>,
-  React.ComponentPropsWithoutRef<typeof RadioPrimitive>
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement> & { value?: string }
 >(({ className, ...props }, ref) => {
   return (
-    <RadioPrimitive
+    <button
       ref={ref}
+      type="button"
+      role="radio"
       className={cn(
-        "aspect-square size-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[checked]:bg-primary data-[checked]:text-primary-foreground",
+        "aspect-square size-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-checked:bg-primary aria-checked:text-primary-foreground",
         className
       )}
       {...props}
-    >
-      <RadioPrimitive.Indicator className="flex items-center justify-center">
-        <div className="size-2 rounded-full bg-current" />
-      </RadioPrimitive.Indicator>
-    </RadioPrimitive>
+    />
   )
 })
-RadioGroupItem.displayName = RadioPrimitive.displayName
 
-const Radio = RadioGroupItem
-
-export { RadioGroup, RadioGroupItem, Radio }
+export { RadioGroup, RadioGroupItem }

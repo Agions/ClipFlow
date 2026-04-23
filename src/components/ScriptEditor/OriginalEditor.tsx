@@ -59,7 +59,7 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
     setTotalDuration(duration);
   }, [segments]);
 
-  const setFieldValue = useCallback((field: keyof SegmentFormValues, value: string | number) => {
+  const setFieldValue = useCallback((field: keyof SegmentFormValues, value: string | number | null) => {
     setFormValues(prev => ({ ...prev, [field]: value }));
     setFormError('');
   }, []);
@@ -247,7 +247,7 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
           <SegmentEditForm
             formValues={formValues}
             formError={formError}
-            onFieldChange={setFieldValue}
+            onFieldChange={setFieldValue as (field: keyof SegmentFormValues, value: string | number | null) => void}
             editingIndex={editingIndex}
             onSave={handleSaveSegment}
             onCancel={handleCancelEdit}

@@ -100,7 +100,7 @@ const ApiKeyRequest: React.FC<ApiKeyRequestProps> = ({
       {/* Model Type Selector */}
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-text-primary">选择模型提供商</label>
-        <Select value={selectedType} onValueChange={(value) => value && setSelectedType(value as AIModelType)}>
+        <Select value={selectedType} onValueChange={(value: string) => value && setSelectedType(value as AIModelType)}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
@@ -174,7 +174,7 @@ const ApiKeyRequest: React.FC<ApiKeyRequestProps> = ({
       {/* Region */}
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-text-primary">所在地区</label>
-        <Select value={region} onValueChange={(val) => val && setRegion(val)}>
+        <Select value={region} onValueChange={(val: string | null) => val && setRegion(val)}>
           <SelectTrigger className={errors.region ? 'border-destructive' : ''}>
             <SelectValue placeholder="请选择所在地区" />
           </SelectTrigger>

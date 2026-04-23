@@ -207,7 +207,7 @@ const Home = () => {
       <Row gutter={[16, 16]} className={styles.statsRow}>
         {statsData.map((item, idx) => (
           <Col span={6} key={idx}>
-            <Card bordered={false} className={`${styles.statsCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}>
+            <Card className={`${styles.statsCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}>
               <div className="flex items-center gap-3">
                 <div className={styles.statIcon} style={{ background: isDarkMode ? `${item.color}20` : `${item.color}15`, color: item.color }}>
                   {item.icon}
@@ -242,7 +242,6 @@ const Home = () => {
             {recentProjects.map((project) => (
               <Col span={6} key={project.id}>
                 <Card
-                  hoverable
                   className={`${styles.projectCard} ${isDarkMode ? styles.projectCardDark : styles.projectCardLight}`}
                   onClick={() => navigate(`/project/edit/${project.id}`)}
                   onMouseEnter={() => { void preloadProjectEditPage(); }}
@@ -266,20 +265,11 @@ const Home = () => {
 
       <Row gutter={[16, 16]}>
         {/* 工作流程 */}
-        <Col span={14}>
-          <Card
-            header={
-              <div className="flex items-center gap-2">
-                <Rocket size={16} style={{ color: AMBER }} />
-                <span className={styles.cardTitle}>创作流程</span>
-              </div>
-            }
-            bordered={false}
-            className={`${styles.workflowCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}
-          >
+        <Col span={12}>
+          <Card className={`${styles.workflowCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}>
             <Row gutter={[12, 16]}>
               {workflowSteps.map((step, idx) => (
-                <Col span={8} key={idx}>
+                <Col span={6} key={idx}>
                   <div className={styles.workflowItem} style={{ background: isDarkMode ? 'rgba(212, 165, 116, 0.08)' : '#fafafa' }}>
                     <div className={styles.workflowIcon} style={{ background: isDarkMode ? `${step.color}20` : `${step.color}15`, color: step.color }}>
                       {step.icon}
@@ -299,17 +289,8 @@ const Home = () => {
         </Col>
 
         {/* 最近动态 */}
-        <Col span={10}>
-          <Card
-            header={
-              <div className="flex items-center gap-2">
-                <TrendingUp size={16} style={{ color: '#06b6d4' }} />
-                <span className={styles.cardTitle}>最近动态</span>
-              </div>
-            }
-            bordered={false}
-            className={`${styles.activitiesCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}
-          >
+        <Col span={12}>
+          <Card className={`${styles.activitiesCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}>
             <div className="flex flex-col gap-3">
               {recentActivities.map((item, idx) => (
                 <div key={idx} className="flex items-start gap-3">

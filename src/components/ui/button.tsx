@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -41,28 +42,32 @@ const buttonVariants = cva(
   }
 )
 
-function Button({
-  className,
-  variant = "default",
-  size = "default",
-  icon,
-  danger,
-  ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants> & { icon?: React.ReactNode; danger?: boolean }) {
-  return (
-    <ButtonPrimitive
-      data-slot="button"
-      className={cn(buttonVariants({ 
-        variant: danger ? "destructive" : variant, 
-        size, 
-        className 
-      }))}
-      {...props}
-    >
-      {icon && <span data-icon="inline-start">{icon}</span>}
-      {props.children}
-    </ButtonPrimitive>
-  )
+interface ButtonProps extends React.ComponentPropsWithoutRef<typeof ButtonPrimitive>, VariantProps<typeof buttonVariants> {
+  icon?: React.ReactNode
+  danger?: boolean
+  loading?: boolean
 }
 
+const Button = React.forwardRef<HTMLElement, ButtonProps>(
+  ({ className, variant = "default", size = "default", icon, danger, loading, disabled, children, ...props }, ref) => {
+    return (
+      <ButtonPrimitive
+        ref={ref as any}
+        data-slot="button"
+        className={cn(buttonVariants({ 
+          variant: danger ? "destructive" : variant, 
+          size, 
+          className 
+        }))}
+        disabled={disabled || loading}
+        {...props}
+      >
+        {icon && <span data-icon="inline-start">{icon}</span>}
+        {loading ? <span>加载中...</span> : children}
+      </ButtonPrimitive>
+    )
+  }
+)
+
 export { Button, buttonVariants }
+export type { ButtonProps }

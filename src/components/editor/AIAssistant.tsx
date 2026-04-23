@@ -29,7 +29,7 @@ import {
   Lightbulb,
   Languages,
   Zap,
-  Flask,
+  FlaskConical as Flask,
   HelpCircle,
   XCircle,
 } from 'lucide-react';
@@ -199,7 +199,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
 
             <div className={styles.chatInput}>
               <div className={styles.modelSelector}>
-                <Select value={resolveDefaultModelId(resolvedModelId, selectableModels)} onValueChange={setSelectedModelId}>
+                <Select value={resolveDefaultModelId(resolvedModelId, selectableModels)} onValueChange={setSelectedModelId as any}>
                   <SelectTrigger className="w-full">
                     <SelectContent>
                       {selectableModels.map(model => (
@@ -262,7 +262,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                       <Switch defaultChecked />
                       <span className="text-sm">自动分段</span>
                       <Tooltip>
-                        <TooltipTrigger asChild><HelpCircle size={14} /></TooltipTrigger>
+                        <TooltipTrigger><HelpCircle size={14} /></TooltipTrigger>
                         <TooltipContent>根据语义自动将字幕分成多个段落</TooltipContent>
                       </Tooltip>
                     </div>
@@ -273,7 +273,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                       <Switch defaultChecked />
                       <span className="text-sm">过滤语气词</span>
                       <Tooltip>
-                        <TooltipTrigger asChild><HelpCircle size={14} /></TooltipTrigger>
+                        <TooltipTrigger><HelpCircle size={14} /></TooltipTrigger>
                         <TooltipContent>移除'嗯'、'啊'等语气词，使字幕更加清晰</TooltipContent>
                       </Tooltip>
                     </div>
@@ -284,7 +284,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                   variant="default"
                   onClick={generateSubtitles}
                   disabled={processing}
-                  block
+                  className="w-full"
                 >
                   <Languages size={16} style={{ marginRight: 8 }} />
                   开始生成字幕
@@ -313,12 +313,11 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
               <div className={styles.advancedOptions}>
                 <div className={styles.optionItem}>
                   <span className="text-sm">识别精度</span>
-                  <Slider defaultValue={[80]} min={40} max={95} step={1}
-                    marks={[
-                      { value: 40, label: '快速' },
-                      { value: 80, label: '标准' },
-                      { value: 95, label: '高精度' },
-                    ]}
+                  <Slider
+                    defaultValue={[80]}
+                    min={40}
+                    max={95}
+                    step={1}
                   />
                 </div>
 
@@ -376,7 +375,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                       <Switch defaultChecked />
                       <span className="text-sm">移除沉默</span>
                       <Tooltip>
-                        <TooltipTrigger asChild><HelpCircle size={14} /></TooltipTrigger>
+                        <TooltipTrigger><HelpCircle size={14} /></TooltipTrigger>
                         <TooltipContent>自动检测并移除视频中的沉默部分</TooltipContent>
                       </Tooltip>
                     </div>
@@ -387,7 +386,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                       <Switch defaultChecked />
                       <span className="text-sm">优化转场</span>
                       <Tooltip>
-                        <TooltipTrigger asChild><HelpCircle size={14} /></TooltipTrigger>
+                        <TooltipTrigger><HelpCircle size={14} /></TooltipTrigger>
                         <TooltipContent>在剪辑点添加平滑转场效果</TooltipContent>
                       </Tooltip>
                     </div>
@@ -398,7 +397,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
                   variant="default"
                   onClick={smartCut}
                   disabled={processing}
-                  block
+                  className="w-full"
                 >
                   <Scissors size={16} style={{ marginRight: 8 }} />
                   开始智能剪辑
@@ -427,24 +426,12 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
               <div className={styles.advancedOptions}>
                 <div className={styles.optionItem}>
                   <span className="text-sm">关键内容优先级</span>
-                  <Slider defaultValue={[70]} min={30} max={95}
-                    marks={[
-                      { value: 30, label: '低' },
-                      { value: 70, label: '中' },
-                      { value: 95, label: '高' },
-                    ]}
-                  />
+                  <Slider defaultValue={[70]} min={30} max={95} />
                 </div>
 
                 <div className={styles.optionItem}>
                   <span className="text-sm">场景检测灵敏度</span>
-                  <Slider defaultValue={[50]} min={20} max={80}
-                    marks={[
-                      { value: 20, label: '低' },
-                      { value: 50, label: '中' },
-                      { value: 80, label: '高' },
-                    ]}
-                  />
+                  <Slider defaultValue={[50]} min={20} max={80} />
                 </div>
               </div>
             </details>

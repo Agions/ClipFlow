@@ -95,8 +95,8 @@ const ProjectEditHeader = React.memo<ProjectEditHeaderProps>(({
         <Switch size="sm" checked={autoSaveEnabled} onCheckedChange={onAutoSaveToggle} />
       </div>
       <Button
-        variant="primary" icon={<Save />} onClick={onSave}
-        loading={saving} disabled={loading || initialLoading}
+        variant="default" icon={<Save />} onClick={onSave}
+        disabled={loading || initialLoading || saving}
       >
         保存项目
       </Button>
@@ -428,7 +428,7 @@ const ProjectEdit: React.FC = () => {
   if (error) {
     const actions = [<Button key="back" onClick={handleBack}>返回</Button>];
     if (projectId) actions.unshift(
-      <Button key="retry" variant="primary" type="button" onClick={() => setReloadToken((v) => v + 1)}>重试</Button>
+      <Button key="retry" variant="default" type="button" onClick={() => setReloadToken((v) => v + 1)}>重试</Button>
     );
     return (
       <div className="flex flex-col items-center justify-center py-20">

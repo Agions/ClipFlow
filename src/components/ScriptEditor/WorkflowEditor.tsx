@@ -79,11 +79,11 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-base font-semibold">脚本编辑</h3>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setAiModalVisible(true)}>
+            <Button variant="outline"  onClick={() => setAiModalVisible(true)}>
               <Edit size={14} className="mr-1" />
               AI优化
             </Button>
-            <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" size="sm" onClick={handleSave}>
+            <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white"  onClick={handleSave}>
               <Save size={14} className="mr-1" />
               保存
             </Button>
@@ -107,7 +107,7 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({
                   value={editedTitle}
                   onChange={handleTitleChange}
                   placeholder="输入脚本标题"
-                  size="sm"
+                  
                 />
               </div>
               <div className={styles.contentInput}>

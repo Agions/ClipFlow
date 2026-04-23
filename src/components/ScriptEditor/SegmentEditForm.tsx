@@ -16,7 +16,7 @@ interface SegmentFormValues {
 interface SegmentEditFormProps {
   formValues: SegmentFormValues;
   formError: string;
-  onFieldChange: (field: keyof SegmentFormValues, value: string | number) => void;
+  onFieldChange: (field: keyof SegmentFormValues, value: string | number | null) => void;
   editingIndex: number;
   onSave: () => void;
   onCancel: () => void;
@@ -62,7 +62,7 @@ const SegmentEditForm: React.FC<SegmentEditFormProps> = ({
 
         <div className="mb-4">
           <label className="text-xs text-muted-foreground block mb-1">类型</label>
-          <Select value={formValues.type} onValueChange={v => onFieldChange('type', v)}>
+          <Select value={formValues.type} onValueChange={(v: string | null) => onFieldChange('type', (v ?? '') as string | number)}>
             <SelectTrigger>
               {segmentTypeOptions.find(o => o.value === formValues.type)?.label ?? '旁白'}
             </SelectTrigger>

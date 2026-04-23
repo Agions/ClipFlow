@@ -284,7 +284,7 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
             ))}
           </div>
         ) : (
-          <RadioGroup value={selectedModelId} onValueChange={handleModelSelect} className={styles.modelList}>
+          <RadioGroup value={selectedModelId} onValueChange={handleModelSelect as any} className={styles.modelList}>
             {filteredModels.map((model, index) => (
               <motion.div
                 key={model.id}
@@ -294,7 +294,7 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
                 transition={{ duration: 0.2, delay: index * 0.03 }}
                 onClick={() => handleModelSelect(model.id)}
               >
-                <RadioGroupItem value={model.id} />
+                <RadioGroupItem value={model.id} className="flex items-center justify-center" />
                 <div className="flex items-center gap-2">
                   {typeof model.avatar === 'string' ? (
                     <Avatar size="sm"><AvatarImage src={model.avatar} /><AvatarFallback>{model.name[0]}</AvatarFallback></Avatar>

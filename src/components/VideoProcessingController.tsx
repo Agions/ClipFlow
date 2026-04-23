@@ -24,6 +24,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { notify } from '@/shared';
 import type { VideoSegment } from '@/core/types';
 import { BasicSettings, EffectsSettings, BatchProcessing } from './VideoProcessingController/modules';
+import type { QualityValue, FormatValue, TransitionValue, AudioProcessValue } from './VideoProcessingController/constants';
 import styles from './VideoProcessingController.module.less';
 
 const QUALITY_OPTIONS = [
@@ -99,11 +100,11 @@ const VideoProcessingController: React.FC<VideoProcessingControllerProps> = ({
   defaultFormat = 'mp4',
   defaultAudioProcess = 'original'
 }) => {
-  const [videoQuality, setVideoQuality] = useState(defaultQuality);
-  const [exportFormat, setExportFormat] = useState(defaultFormat);
-  const [transitionType, setTransitionType] = useState('fade');
+  const [videoQuality, setVideoQuality] = useState<QualityValue>(defaultQuality as QualityValue);
+  const [exportFormat, setExportFormat] = useState<FormatValue>(defaultFormat as FormatValue);
+  const [transitionType, setTransitionType] = useState<TransitionValue>('fade');
   const [transitionDuration, setTransitionDuration] = useState(1);
-  const [audioProcess, setAudioProcess] = useState(defaultAudioProcess);
+  const [audioProcess, setAudioProcess] = useState<AudioProcessValue>(defaultAudioProcess as AudioProcessValue);
   const [audioVolume, setAudioVolume] = useState(100);
   const [useSubtitles, setUseSubtitles] = useState(true);
 
@@ -301,11 +302,11 @@ const VideoProcessingController: React.FC<VideoProcessingControllerProps> = ({
             {activePanels.includes('basic') && (
               <div className="p-2">
                 <BasicSettings
-                  videoQuality={videoQuality}
-                  exportFormat={exportFormat}
+                  videoQuality={videoQuality as any}
+                  exportFormat={exportFormat as any}
                   customSettings={customSettings}
-                  onQualityChange={setVideoQuality}
-                  onFormatChange={setExportFormat}
+                  onQualityChange={setVideoQuality as any}
+                  onFormatChange={setExportFormat as any}
                   onCustomSettingsChange={updateCustomSettings}
                 />
               </div>
@@ -329,9 +330,9 @@ const VideoProcessingController: React.FC<VideoProcessingControllerProps> = ({
                   audioProcess={audioProcess}
                   audioVolume={audioVolume}
                   useSubtitles={useSubtitles}
-                  onTransitionChange={setTransitionType}
-                  onTransitionDurationChange={setTransitionDuration}
-                  onAudioProcessChange={setAudioProcess}
+                  onTransitionChange={setTransitionType as any}
+                  onTransitionDurationChange={setTransitionDuration as any}
+                  onAudioProcessChange={setAudioProcess as any}
                   onAudioVolumeChange={handleAudioVolumeChange}
                   onSubtitlesChange={setUseSubtitles}
                 />
@@ -358,7 +359,7 @@ const VideoProcessingController: React.FC<VideoProcessingControllerProps> = ({
                   onAddBatchItem={addBatchItem}
                   onRemoveBatchItem={removeBatchItem}
                   onStartBatchProcessing={startBatchProcessing}
-                  calculateTotalDuration={calculateTotalDuration}
+                  calculateTotalDuration={calculateTotalDuration as any}
                 />
               </div>
             )}

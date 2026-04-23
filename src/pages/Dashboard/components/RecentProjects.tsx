@@ -93,7 +93,7 @@ const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, onOpenPro
         <div className={styles.duration}>{formatDuration(project.duration)}</div>
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger>
               <button
                 className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 hover:bg-black/70 transition-colors"
                 onClick={(e) => { e.stopPropagation(); onToggleStar(project.id); }}
@@ -122,7 +122,7 @@ const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, onOpenPro
             </div>
           </div>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                 <MoreHorizontal size={16} />
               </Button>
@@ -199,7 +199,7 @@ const RecentProjects: React.FC<RecentProjectsProps> = React.memo(({
             {projectProp.starred ? <Star size={16} className="text-amber-400 fill-amber-400" /> : <StarOff size={16} />}
           </Button>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                 <MoreHorizontal size={16} />
               </Button>

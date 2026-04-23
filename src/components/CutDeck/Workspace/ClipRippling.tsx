@@ -127,7 +127,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
       notify.success(`生成 ${result.clips.length} 个短片段`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      notify.error(`拆条失败: ${msg}`);
+      notify.error(`拆条失败: ${msg}`, '拆条失败');
     } finally {
       setRunning(false);
     }
@@ -170,7 +170,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
       if (exported.length > 0) onNext?.();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      notify.error(`导出失败: ${msg}`);
+      notify.error(`导出失败: ${msg}`, '导出失败');
     } finally {
       setExporting(false);
     }
@@ -204,7 +204,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
           <label className={styles.label}>目标平台</label>
           <Select
             value={platform}
-            onChange={v => setPlatform(v)}
+            onValueChange={setPlatform as any}
             className={styles.select}
            
           >
@@ -220,7 +220,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
           <label className={styles.label}>目标片段数</label>
           <Select
             value={targetCount}
-            onChange={setTargetCount}
+            onValueChange={(v: string | null) => setTargetCount(Number(v)) as any}
             className={styles.select}
            
           >
