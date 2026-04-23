@@ -199,7 +199,7 @@ const AIAssistant: React.FC<AIAssistantProps> = () => {
 
             <div className={styles.chatInput}>
               <div className={styles.modelSelector}>
-                <Select value={resolveDefaultModelId(resolvedModelId, selectableModels)} onValueChange={setSelectedModelId as any}>
+                <Select value={resolveDefaultModelId(resolvedModelId, selectableModels)} onValueChange={setSelectedModelId}>
                   <SelectTrigger className="w-full">
                     <SelectContent>
                       {selectableModels.map(model => (

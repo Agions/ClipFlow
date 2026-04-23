@@ -48,11 +48,11 @@ interface ButtonProps extends React.ComponentPropsWithoutRef<typeof ButtonPrimit
   loading?: boolean
 }
 
-const Button = React.forwardRef<HTMLElement, ButtonProps>(
+const Button = React.forwardRef<React.ElementRef<typeof ButtonPrimitive>, ButtonProps>(
   ({ className, variant = "default", size = "default", icon, danger, loading, disabled, children, ...props }, ref) => {
     return (
       <ButtonPrimitive
-        ref={ref as any}
+        ref={ref}
         data-slot="button"
         className={cn(buttonVariants({ 
           variant: danger ? "destructive" : variant, 

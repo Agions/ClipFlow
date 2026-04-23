@@ -284,7 +284,7 @@ const AIModelSelector: React.FC<AIModelSelectorProps> = ({
             ))}
           </div>
         ) : (
-          <RadioGroup value={selectedModelId} onValueChange={handleModelSelect as any} className={styles.modelList}>
+          <RadioGroup value={selectedModelId} onValueChange={(v) => { if (typeof v === 'string') handleModelSelect(v); }} className={styles.modelList}>
             {filteredModels.map((model, index) => (
               <motion.div
                 key={model.id}

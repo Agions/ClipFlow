@@ -33,7 +33,7 @@ export const BasicSettings: React.FC<BasicSettingsProps> = ({
       <div className="grid grid-cols-2 gap-4">
         <div className="formItem">
           <div className="formLabel">视频质量</div>
-          <Select value={videoQuality} onValueChange={onQualityChange as any}>
+          <Select value={videoQuality} onValueChange={(v: string) => onQualityChange(v as QualityValue)}>
             <SelectTrigger className="w-full">
               <SelectContent>
                 {QUALITY_OPTIONS.map(option => (
@@ -51,7 +51,7 @@ export const BasicSettings: React.FC<BasicSettingsProps> = ({
 
         <div className="formItem">
           <div className="formLabel">导出格式</div>
-          <Select value={exportFormat} onValueChange={onFormatChange as any}>
+          <Select value={exportFormat} onValueChange={(v: string) => onFormatChange(v as FormatValue)}>
             <SelectTrigger className="w-full">
               <SelectContent>
                 {FORMAT_OPTIONS.map(option => (

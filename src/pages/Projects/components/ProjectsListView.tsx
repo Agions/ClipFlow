@@ -19,6 +19,15 @@ interface MenuProps {
 
 import type { ProjectUIStatus, ProjectView, ProjectUIStats } from '../types';
 
+interface ActionItem {
+  key: string;
+  label?: string;
+  icon?: React.ReactNode;
+  danger?: boolean;
+  onClick?: () => void;
+  type?: 'divider';
+}
+
 interface ProjectsListViewProps {
   projects: ProjectView[];
   loading: boolean;
@@ -29,7 +38,7 @@ interface ProjectsListViewProps {
   onOpenEditor: (projectId: string) => void;
   onPreloadProject: () => void;
   onPreloadEditor: () => void;
-  projectActions: (project: ProjectView) => any;
+  projectActions: (project: ProjectView) => ActionItem[];
 }
 
 const ProjectsListView: React.FC<ProjectsListViewProps> = ({
@@ -42,11 +51,10 @@ const ProjectsListView: React.FC<ProjectsListViewProps> = ({
   onPreloadProject,
   projectActions,
 }) => {
-  const getMenuItems = (project: ProjectView) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const items: any[] = projectActions(project).items || [];
-    return items.map((item: any, i: number) => ({
-      label: typeof item?.label === 'string' ? item.label : String(i),
+  const getMenuItems = (project: ProjectView): ActionItem[] => {
+    return (projectActions(project) ?? []).map((item: ActionItem, i: number) => ({
+      key: item?.key ?? String(i),
+      label: item?.label ?? String(i),
       danger: item?.danger,
       onClick: () => typeof item?.onClick === 'function' && item.onClick(),
     }));
@@ -145,7 +153,7 @@ const ProjectsListView: React.FC<ProjectsListViewProps> = ({
                           key={idx}
                           data-variant={item.danger ? 'destructive' : undefined}
                           className={item.danger ? 'text-destructive' : ''}
-                          onClick={(e: React.MouseEvent) => { e.stopPropagation(); item.onClick(); }}
+                          onClick={(e: React.MouseEvent) => { e.stopPropagation(); item.onClick?.(); }}
                         >
                           {item.label}
                         </DropdownMenuItem>

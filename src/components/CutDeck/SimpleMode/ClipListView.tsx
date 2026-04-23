@@ -58,7 +58,7 @@ export const ClipListView: React.FC<ClipListViewProps> = ({ segments, onExport }
       </div>
 
       <div className={styles.footer}>
-        <Select value={platform} onValueChange={setPlatform as any}>
+        <Select value={platform} onValueChange={(v: string) => setPlatform(v)}>
           <SelectTrigger className="w-[120px] platformSelect">
             <SelectValue placeholder="选择平台" />
           </SelectTrigger>

@@ -302,11 +302,11 @@ const VideoProcessingController: React.FC<VideoProcessingControllerProps> = ({
             {activePanels.includes('basic') && (
               <div className="p-2">
                 <BasicSettings
-                  videoQuality={videoQuality as any}
-                  exportFormat={exportFormat as any}
+                  videoQuality={videoQuality}
+                  exportFormat={exportFormat}
                   customSettings={customSettings}
-                  onQualityChange={setVideoQuality as any}
-                  onFormatChange={setExportFormat as any}
+                  onQualityChange={(v) => setVideoQuality(v as QualityValue)}
+                  onFormatChange={(v) => setExportFormat(v as FormatValue)}
                   onCustomSettingsChange={updateCustomSettings}
                 />
               </div>
@@ -330,9 +330,9 @@ const VideoProcessingController: React.FC<VideoProcessingControllerProps> = ({
                   audioProcess={audioProcess}
                   audioVolume={audioVolume}
                   useSubtitles={useSubtitles}
-                  onTransitionChange={setTransitionType as any}
-                  onTransitionDurationChange={setTransitionDuration as any}
-                  onAudioProcessChange={setAudioProcess as any}
+                  onTransitionChange={(v) => setTransitionType(v as TransitionValue)}
+                  onTransitionDurationChange={setTransitionDuration}
+                  onAudioProcessChange={(v) => setAudioProcess(v as AudioProcessValue)}
                   onAudioVolumeChange={handleAudioVolumeChange}
                   onSubtitlesChange={setUseSubtitles}
                 />
@@ -359,7 +359,7 @@ const VideoProcessingController: React.FC<VideoProcessingControllerProps> = ({
                   onAddBatchItem={addBatchItem}
                   onRemoveBatchItem={removeBatchItem}
                   onStartBatchProcessing={startBatchProcessing}
-                  calculateTotalDuration={calculateTotalDuration as any}
+                  calculateTotalDuration={calculateTotalDuration as (segments: Array<{ start?: number; end?: number }>) => number}
                 />
               </div>
             )}

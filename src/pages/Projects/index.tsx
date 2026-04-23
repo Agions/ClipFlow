@@ -137,7 +137,14 @@ const ProjectManager: React.FC = () => {
     return date.toLocaleDateString('zh-CN');
   };
 
-  const projectActions = (project: ProjectView): any => [
+  const projectActions = (project: ProjectView): Array<{
+    key: string;
+    label?: string;
+    icon?: React.ReactNode;
+    danger?: boolean;
+    onClick?: () => void;
+    type?: 'divider';
+  }> => [
     { key: 'edit', label: '编辑项目', icon: <Edit3 size={14} />, onClick: () => navigate(`/project/edit/${project.id}`) },
     { key: 'editor', label: '进入工作台', icon: <Play size={14} />, onClick: () => navigate(`/editor/${project.id}`) },
     { key: 'export', label: '导出', icon: <Download size={14} /> },
@@ -278,7 +285,7 @@ const ProjectManager: React.FC = () => {
                         <AlertDialogTitle>操作</AlertDialogTitle>
                       </AlertDialogHeader>
                       <div className="flex flex-col gap-1">
-                        {projectActions(project).filter((a: any) => a.key !== 'divider').map((action: any) => (
+                        {projectActions(project).filter((a) => a.key !== 'divider').map((action) => (
                           <Button
                             key={action.key}
                             variant="ghost"
