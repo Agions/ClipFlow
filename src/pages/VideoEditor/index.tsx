@@ -129,7 +129,7 @@ const VideoEditorPage: React.FC = () => {
       const outputPath = `export/${Date.now()}.${outputFormat}`;
 
       // 显示进度
-      message.loading('正在导出视频...', 0);
+      notify.info('正在导出视频...');
 
       // 执行导出
       const result = await exportService.exportVideo(

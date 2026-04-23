@@ -45,14 +45,23 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  icon,
+  danger,
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants> & { icon?: React.ReactNode; danger?: boolean }) {
   return (
     <ButtonPrimitive
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ 
+        variant: danger ? "destructive" : variant, 
+        size, 
+        className 
+      }))}
       {...props}
-    />
+    >
+      {icon && <span data-icon="inline-start">{icon}</span>}
+      {props.children}
+    </ButtonPrimitive>
   )
 }
 

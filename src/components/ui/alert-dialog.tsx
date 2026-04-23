@@ -18,13 +18,16 @@ interface AlertDialogTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonE
   asChild?: boolean
 }
 
-const AlertDialogTrigger: React.FC<AlertDialogTriggerProps> = ({ children, asChild, ...props }) => {
+const AlertDialogTrigger: React.FC<AlertDialogTriggerProps> = ({ children, asChild, onClick, ...props }) => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    onClick?.(e)
+  }
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<{ onClick?: () => void }>, {
-      onClick: () => onOpenChange?.(true),
+    return React.cloneElement(children as React.ReactElement<{ onClick?: (e: React.MouseEvent) => void }>, {
+      onClick: handleClick,
     })
   }
-  return <button {...props} onClick={() => onOpenChange?.(true)}>{children}</button>
+  return <button {...props} onClick={handleClick}>{children}</button>
 }
 
 interface AlertDialogContentProps extends React.HTMLAttributes<HTMLDivElement> {

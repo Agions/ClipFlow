@@ -1,6 +1,6 @@
 import React, { memo, useState, useRef, useCallback } from 'react';
 import { Tooltip } from '@/components/ui/tooltip';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import {
   Plus,
   Trash2,
@@ -58,12 +58,6 @@ export const TrackHeader = memo<TrackHeaderProps>(({
     document.addEventListener('mouseup', handleMouseUp);
   }, [track.id, onResizeTrack]);
 
-  const trackMenuItems = [
-    { key: 'add', label: '添加片段', icon: <Plus size={16} />, onClick: () => onAddClip(track.id) },
-    { type: 'divider' },
-    { key: 'delete', label: '删除轨道', icon: <Trash2 size={16} />, danger: true, onClick: () => onDeleteTrack(track.id) },
-  ];
-
   return (
     <div
       className={styles.trackHeader}
@@ -108,24 +102,20 @@ export const TrackHeader = memo<TrackHeaderProps>(({
         className={`${styles.resizeHandle} ${resizing ? styles.resizing : ''}`}
         onMouseDown={handleResizeStart}
       />
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
+      <DropdownMenu>
+        <DropdownMenuTrigger>
           <div className={styles.trackMenuTrigger} />
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Portal>
-          <DropdownMenu.Content className={styles.dropdownContent}>
-            {trackMenuItems.map(item => (
-              item.type === 'divider' ? (
-                <DropdownMenu.Separator key="divider" />
-              ) : (
-                <DropdownMenu.Item key={item.key} className={item.danger ? styles.dangerItem : ''} onClick={item.onClick}>
-                  {item.icon} {item.label}
-                </DropdownMenu.Item>
-              )
-            ))}
-          </DropdownMenu.Content>
-        </DropdownMenu.Portal>
-      </DropdownMenu.Root>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => onAddClip(track.id)}>
+            <Plus size={16} /> 添加片段
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => onDeleteTrack(track.id)}>
+            <Trash2 size={16} /> 删除轨道
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 });

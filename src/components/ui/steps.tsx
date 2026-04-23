@@ -1,11 +1,53 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-interface StepsProps extends React.HTMLAttributes<HTMLDivElement> {
-  current?: number
+interface StepItem {
+  title?: string
+  icon?: React.ReactNode
+  description?: string
 }
 
-const Steps: React.FC<StepsProps> = ({ className, current = 0, children, ...props }) => {
+interface StepsProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+  current?: number
+  items?: StepItem[]
+  onChange?: (step: number) => void
+}
+
+const Steps: React.FC<StepsProps> = ({ className, current = 0, items, onChange, children, ...props }) => {
+  if (items) {
+    return (
+      <div className={cn("flex items-center gap-2", className)} {...props}>
+        {items.map((item, index) => {
+          const completed = index < current;
+          const active = index === current;
+          return (
+            <div
+              key={index}
+              className={cn(
+                "flex flex-col items-center gap-1 cursor-pointer",
+                active && "text-primary",
+                completed && "text-primary",
+                !active && !completed && "text-muted-foreground"
+              )}
+              onClick={() => onChange?.(index)}
+            >
+              <div
+                className={cn(
+                  "w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium border-2",
+                  active && "border-primary bg-primary text-primary-foreground",
+                  completed && "border-primary bg-primary text-primary-foreground",
+                  !active && !completed && "border-muted bg-transparent"
+                )}
+              >
+                {completed ? '✓' : active ? '●' : '○'}
+              </div>
+              {item.title && <span className="text-xs">{item.title}</span>}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
   return (
     <div className={cn("flex items-center gap-2", className)} {...props}>
       {React.Children.map(children, (child, index) => {

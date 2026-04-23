@@ -11,14 +11,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Spin } from '@/components/ui/spin';
 import { Button } from '@/components/ui/button';
-import { Steps, StepsItem, StepsContent } from '@/components/ui/steps';
+import { Steps } from '@/components/ui/steps';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Save, Video, Edit, CheckCircle } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 import { VideoMetadata, analyzeVideo, extractKeyFrames } from '@/services/video';
 import type { ScriptSegment } from '@/core/types';
@@ -75,12 +75,12 @@ const ProjectEditHeader = React.memo<ProjectEditHeaderProps>(({
   autoSaveEnabled, onBack, onSave, onSaveBehaviorChange, onAutoSaveToggle,
 }) => (
   <div className={styles.header}>
-    <Button type="text" icon={<ArrowLeft />} onClick={onBack}>返回</Button>
+    <Button variant="ghost" icon={<ArrowLeft />} onClick={onBack}>返回</Button>
     <h3 className="text-base font-semibold">{isNewProject ? '创建新项目' : '编辑项目'}</h3>
     <div className="flex items-center gap-4">
       <div className={styles.saveBehaviorControl}>
         <span className={styles.saveBehaviorLabel}>保存后：</span>
-        <Select value={saveBehavior} onValueChange={onSaveBehaviorChange}>
+        <Select value={saveBehavior} onValueChange={onSaveBehaviorChange as any}>
           <SelectTrigger size="sm" className="w-36">
             <SelectValue />
           </SelectTrigger>
@@ -95,7 +95,7 @@ const ProjectEditHeader = React.memo<ProjectEditHeaderProps>(({
         <Switch size="sm" checked={autoSaveEnabled} onCheckedChange={onAutoSaveToggle} />
       </div>
       <Button
-        type="primary" icon={<Save />} onClick={onSave}
+        variant="primary" icon={<Save />} onClick={onSave}
         loading={saving} disabled={loading || initialLoading}
       >
         保存项目
@@ -222,7 +222,7 @@ const ProjectEdit: React.FC = () => {
     } finally {
       persistLockRef.current = false;
     }
-  }, [addRecentProject, form, getProjectData, videoPath]);
+  }, [addRecentProject, getProjectData, videoPath]);
 
   const { autoSaveState, lastAutoSaveAt, scheduleAutoSave, setAutoSaveState } = useProjectAutoSave({
     enabled: autoSaveEnabled,
@@ -428,7 +428,7 @@ const ProjectEdit: React.FC = () => {
   if (error) {
     const actions = [<Button key="back" onClick={handleBack}>返回</Button>];
     if (projectId) actions.unshift(
-      <Button key="retry" type="primary" onClick={() => setReloadToken((v) => v + 1)}>重试</Button>
+      <Button key="retry" variant="primary" type="button" onClick={() => setReloadToken((v) => v + 1)}>重试</Button>
     );
     return (
       <div className="flex flex-col items-center justify-center py-20">

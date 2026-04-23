@@ -9,7 +9,7 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Edit3, Trash2, Play, MoreHorizontal, Grid3X3, List, Search, Video, FolderOpen, Export, Download } from 'lucide-react';
+import { Plus, Edit3, Trash2, Play, MoreHorizontal, Grid3X3, List, Search, Video, FolderOpen, Download } from 'lucide-react';
 import { useSettings } from '@/context/SettingsContext';
 import { notify } from '@/shared';
 import { listProjects, deleteProject as deleteProjectFile, PROJECTS_CHANGED_EVENT } from '@/services/tauri';
@@ -155,7 +155,7 @@ const ProjectManager: React.FC = () => {
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
       {/* 工具栏 */}
-      <Card className="mb-4" styles={{ body: { padding: '12px 20px' } }}>
+      <Card className="mb-4" style={{ padding: '12px 20px' }}>
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -254,11 +254,11 @@ const ProjectManager: React.FC = () => {
               <Card
                 key={project.id}
                 className="cursor-pointer overflow-hidden"
-                styles={{ body: { padding: 16, height: '100%', display: 'flex', flexDirection: 'column' } }}
+                style={{ padding: 16, height: '100%', display: 'flex', flexDirection: 'column' }}
                 onClick={() => navigate(`/project/${project.id}`)}
               >
                 <div className="flex justify-between items-start mb-3">
-                  <Badge variant={uiStatus.status === 'completed' ? 'success' : uiStatus.status === 'processing' ? 'default' : 'secondary'}>
+                  <Badge variant={uiStatus.status === 'completed' ? 'default' : uiStatus.status === 'processing' ? 'default' : 'secondary'}>
                     {statusConfig[uiStatus.status]?.text || '草稿'}
                   </Badge>
                   <AlertDialog>

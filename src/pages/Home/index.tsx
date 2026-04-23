@@ -166,14 +166,12 @@ const Home = () => {
     <div className={styles.container}>
       {/* 欢迎横幅 */}
       <Card
-        bordered={false}
         className={styles.heroBanner}
-        styles={{ body: { padding: '40px 36px', position: 'relative', zIndex: 1 } }}
-        style={{ background: heroGradient }}
+        style={{ padding: '40px 36px', position: 'relative', zIndex: 1, background: heroGradient }}
       >
         <div className={styles.heroGrid} />
         <div className={styles.heroGlow} />
-        <Row align="middle" justify="space-between">
+        <Row align="center" justify="between">
           <Col>
             <h2 className={styles.heroTitle}>{greeting}，欢迎使用 CutDeck</h2>
             <p className={styles.heroParagraph}>AI 驱动的专业视频内容创作平台</p>
@@ -208,7 +206,7 @@ const Home = () => {
       {/* 统计卡片 */}
       <Row gutter={[16, 16]} className={styles.statsRow}>
         {statsData.map((item, idx) => (
-          <Col xs={12} sm={8} lg={4} key={idx}>
+          <Col span={6} key={idx}>
             <Card bordered={false} className={`${styles.statsCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}>
               <div className="flex items-center gap-3">
                 <div className={styles.statIcon} style={{ background: isDarkMode ? `${item.color}20` : `${item.color}15`, color: item.color }}>
@@ -228,19 +226,7 @@ const Home = () => {
 
       {/* 最近项目 */}
       <Card
-        bordered={false}
         className={`${styles.recentProjectsCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}
-        header={
-          <div className="flex items-center gap-2">
-            <Clock size={16} style={{ color: AMBER }} />
-            <span className={styles.cardTitle}>最近项目</span>
-          </div>
-        }
-        footer={
-          <Button type="link" onMouseEnter={() => { void preloadProjectsPage(); }} onClick={() => navigate('/projects')}>
-            查看全部
-          </Button>
-        }
       >
         {projectsLoading ? (
           <div className="flex items-center justify-center py-8"><Loader2 className="animate-spin" /></div>
@@ -254,7 +240,7 @@ const Home = () => {
         ) : (
           <Row gutter={[12, 12]}>
             {recentProjects.map((project) => (
-              <Col xs={24} sm={12} md={12} lg={6} key={project.id}>
+              <Col span={6} key={project.id}>
                 <Card
                   hoverable
                   className={`${styles.projectCard} ${isDarkMode ? styles.projectCardDark : styles.projectCardLight}`}
@@ -264,7 +250,7 @@ const Home = () => {
                   <div className="flex flex-col gap-2">
                     <div className="flex items-start justify-between">
                       <span className={`${styles.projectCardTitle} font-semibold truncate`}>{project.name || '未命名项目'}</span>
-                      <Badge variant={project.status === 'completed' ? 'success' : 'secondary'}>
+                      <Badge variant={project.status === 'completed' ? 'default' : 'secondary'}>
                         {project.status === 'completed' ? '已完成' : '草稿'}
                       </Badge>
                     </div>
@@ -280,7 +266,7 @@ const Home = () => {
 
       <Row gutter={[16, 16]}>
         {/* 工作流程 */}
-        <Col xs={24} lg={14}>
+        <Col span={14}>
           <Card
             header={
               <div className="flex items-center gap-2">
@@ -293,7 +279,7 @@ const Home = () => {
           >
             <Row gutter={[12, 16]}>
               {workflowSteps.map((step, idx) => (
-                <Col xs={12} sm={8} key={idx}>
+                <Col span={8} key={idx}>
                   <div className={styles.workflowItem} style={{ background: isDarkMode ? 'rgba(212, 165, 116, 0.08)' : '#fafafa' }}>
                     <div className={styles.workflowIcon} style={{ background: isDarkMode ? `${step.color}20` : `${step.color}15`, color: step.color }}>
                       {step.icon}
@@ -313,7 +299,7 @@ const Home = () => {
         </Col>
 
         {/* 最近动态 */}
-        <Col xs={24} lg={10}>
+        <Col span={10}>
           <Card
             header={
               <div className="flex items-center gap-2">
@@ -333,7 +319,7 @@ const Home = () => {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-black/65'}`}>{item.desc}</span>
                       {item.processing && (
-                        <Badge variant="warning" className="text-xs">
+                        <Badge variant="destructive" className="text-xs">
                           <Loader2 size={10} className="animate-spin mr-1" />处理中
                         </Badge>
                       )}
@@ -348,7 +334,7 @@ const Home = () => {
       </Row>
 
       {/* AI 模型支持 */}
-      <Card bordered={false} className={`${styles.aiModelsCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}>
+      <Card className={`${styles.aiModelsCard} ${isDarkMode ? styles.cardDark : styles.cardLight}`}>
         <div className="flex items-center gap-2 mb-3">
           <Rocket size={14} style={{ color: '#f59e0b' }} />
           <span className={isDarkMode ? 'text-slate-400' : 'text-black/65'}>支持的 AI 模型</span>

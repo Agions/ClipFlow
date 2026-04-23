@@ -55,7 +55,7 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
           <div className="flex items-center gap-1">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild>
+                <TooltipTrigger>
                   <Button variant="ghost" size="icon-sm" onClick={() => onEdit(index)}>
                     <Edit3 size={14} />
                   </Button>
@@ -66,7 +66,7 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
 
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild>
+                <TooltipTrigger>
                   <Button variant="ghost" size="icon-sm" onClick={() => onPreview(index)}>
                     <Play size={14} />
                   </Button>
@@ -77,7 +77,7 @@ const SegmentTable: React.FC<SegmentTableProps> = ({
 
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild>
+                <TooltipTrigger>
                   <Button variant="ghost" size="icon-sm" onClick={() => onDelete(index)}>
                     <Trash2 size={14} />
                   </Button>

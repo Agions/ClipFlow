@@ -204,7 +204,7 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
             </Button>
             {onExport && (
               <DropdownMenu open={exportMenuOpen} onOpenChange={setExportMenuOpen}>
-                <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger>
                   <Button variant="outline">
                     导出 <ChevronDown size={14} className="ml-1" />
                   </Button>
@@ -258,7 +258,7 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
       <PreviewModal
         open={previewVisible}
         loading={previewLoading}
-        previewUrl={previewSrc}
+        previewSrc={previewSrc}
         onClose={() => setPreviewVisible(false)}
       />
 
