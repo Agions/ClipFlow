@@ -15,12 +15,15 @@ import React, { useState, useCallback, memo } from 'react';
 import { useCutDeck } from '../AIEditorContext';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Tag, Checkbox, Select, message } from 'antd';
+import { Tag } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
+import { notify } from '@/shared';
 import {
-  ThunderboltOutlined,
-  CheckCircleOutlined,
-  DownloadOutlined,
-} from '@ant-design/icons';
+  Thunderbolt,
+  CheckCircle,
+  Download,
+} from 'lucide-react';
 import { invoke } from '@tauri-apps/api/core';
 import { motion } from '@/components/common/motion-shim';
 import { ClipRepurposingPipeline } from '@/core/services/clipRepurposing/pipeline';
@@ -34,7 +37,7 @@ import type { SocialPlatform } from '@/core/services/clipRepurposing/seoGenerato
 import { transcodeWithCrop, type AspectRatio } from '@/services/tauri';
 import styles from './ClipRippling.module.css';
 
-const { Option } = Select;
+
 
 // 平台选项
 const PLATFORM_OPTIONS: { value: SocialPlatform; label: string; emoji: string }[] = [
@@ -86,7 +89,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
 
   const handleRun = useCallback(async () => {
     if (!videoPath || !videoInfo) {
-      message.warning('请先上传视频并完成分析');
+      notify.warning('请先上传视频并完成分析');
       return;
     }
 
@@ -108,7 +111,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
         onProgress: (stg, prog, msg) => {
           setStage(stg);
           setProgress(prog);
-          if (msg) message.info(msg);
+          if (msg) notify.info(msg);
         },
       };
 
@@ -121,10 +124,10 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
       setResults(result.clips);
       // 默认全选
       setSelectedClips(new Set(result.clips.map(c => c.clip.id).filter((id): id is string => id !== undefined)));
-      message.success(`生成 ${result.clips.length} 个短片段`);
+      notify.success(`生成 ${result.clips.length} 个短片段`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      message.error(`拆条失败: ${msg}`);
+      notify.error(`拆条失败: ${msg}`);
     } finally {
       setRunning(false);
     }
@@ -132,11 +135,11 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
 
   const handleExport = useCallback(async () => {
     if (selectedClips.size === 0) {
-      message.warning('请先选择要导出的片段');
+      notify.warning('请先选择要导出的片段');
       return;
     }
     if (selectedFormats.length === 0) {
-      message.warning('请至少选择一种导出格式');
+      notify.warning('请至少选择一种导出格式');
       return;
     }
 
@@ -163,11 +166,11 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
         }
       }
       setExportedPaths(exported);
-      message.success(`导出完成！共 ${exported.length} 个文件`);
+      notify.success(`导出完成！共 ${exported.length} 个文件`);
       if (exported.length > 0) onNext?.();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      message.error(`导出失败: ${msg}`);
+      notify.error(`导出失败: ${msg}`);
     } finally {
       setExporting(false);
     }
@@ -203,12 +206,12 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
             value={platform}
             onChange={v => setPlatform(v)}
             className={styles.select}
-            size="large"
+           
           >
             {PLATFORM_OPTIONS.map(o => (
-              <Option key={o.value} value={o.value}>
+              <SelectItem key={o.value} value={o.value}>
                 {o.emoji} {o.label}
-              </Option>
+              </SelectItem>
             ))}
           </Select>
         </div>
@@ -219,10 +222,10 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
             value={targetCount}
             onChange={setTargetCount}
             className={styles.select}
-            size="large"
+           
           >
             {[3, 5, 8, 10, 15].map(n => (
-              <Option key={n} value={n}>{n} 个</Option>
+              <SelectItem key={n} value={String(n)}>{n} 个</SelectItem>
             ))}
           </Select>
         </div>
@@ -257,7 +260,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
             onClick={handleRun}
             className={`${styles.runButton} bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white w-full`}
           >
-            <ThunderboltOutlined className="mr-1" />
+            <Thunderbolt className="mr-1" />
             开始 AI 拆条分析
           </Button>
         )}
@@ -293,7 +296,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
               onClick={handleExport}
               disabled={selectedClips.size === 0 || exporting}
             >
-              <DownloadOutlined className="mr-1" />
+              <Download className="mr-1" />
               导出选中片段
             </Button>
           </div>
@@ -365,7 +368,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
           {/* 已导出文件 */}
           {exportedPaths.length > 0 && (
             <div className={styles.exportedSection}>
-              <CheckCircleOutlined style={{ color: '#52c41a' }} />
+              <CheckCircle style={{ color: '#52c41a' }} />
               <span style={{ marginLeft: 8 }}>已导出 {exportedPaths.length} 个文件</span>
             </div>
           )}

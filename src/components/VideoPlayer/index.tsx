@@ -3,11 +3,11 @@ import { useState, useRef, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import {
-  PlayCircleOutlined,
-  PauseCircleOutlined,
-  SoundOutlined,
-  FullscreenOutlined,
-} from '@ant-design/icons';
+  Play,
+  Pause,
+  Volume2,
+  Maximize,
+} from 'lucide-react';
 import styles from './index.module.less';
 
 interface VideoPlayerProps {
@@ -194,7 +194,7 @@ function VideoPlayer({
         />
         {!isPlaying && (
           <div className={styles.centerPlayButton} onClick={togglePlay}>
-            <PlayCircleOutlined />
+            <PlayCircle />
           </div>
         )}
       </div>
@@ -210,7 +210,7 @@ function VideoPlayer({
         <div className={styles.controlButtons}>
           <div>
             <Button variant="ghost" className={styles.controlButton} onClick={togglePlay}>
-              {isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+              {isPlaying ? <PauseCircle /> : <PlayCircle />}
             </Button>
             <span className={styles.timeDisplay}>
               {formatTime(currentTime)} / {formatTime(duration)}
@@ -223,7 +223,7 @@ function VideoPlayer({
               onMouseLeave={() => setShowVolumeSlider(false)}
             >
               <Button variant="ghost" className={styles.controlButton}>
-                <SoundOutlined />
+                <Volume2 />
               </Button>
               {showVolumeSlider && (
                 <div className={styles.volumeSlider}>
@@ -239,7 +239,7 @@ function VideoPlayer({
               )}
             </div>
             <Button variant="ghost" className={styles.controlButton} onClick={toggleFullscreen}>
-              <FullscreenOutlined />
+              <Maximize />
             </Button>
           </div>
         </div>

@@ -1,24 +1,21 @@
 import { logger } from '@/utils/logger';
-import React, { useState, useEffect, useCallback, memo, useMemo } from 'react';
-import { Card, List, Space, Input, Tag } from 'antd';
+import React, { useState, useEffect, useCallback, memo } from 'react';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import {
-  EditOutlined,
-  SaveOutlined,
-  DeleteOutlined,
-  FileTextOutlined,
-  ClockCircleOutlined,
-} from '@ant-design/icons';
+  Edit,
+  Save,
+  FileText,
+  Clock,
+} from 'lucide-react';
 import type { ScriptData, Scene, ScriptSegment } from '@/core/types';
 import { formatDuration } from '@/services/video';
 import { notify } from '@/shared';
 import styles from './ScriptEditor.module.less';
-
-const Text = ({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) => <span style={style}>{children}</span>;
-
-const { TextArea } = Input;
 
 interface WorkflowEditorProps {
   script: ScriptData;
@@ -78,22 +75,21 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({
 
   return (
     <div className={styles.scriptEditor}>
-      <Card
-        title="脚本编辑"
-        className={styles.editorCard}
-        extra={
-          <Space>
-            <Button variant="outline" onClick={() => setAiModalVisible(true)}>
-              <EditOutlined className="mr-1" />
+      <Card className={styles.editorCard + ' p-4'}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base font-semibold">脚本编辑</h3>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => setAiModalVisible(true)}>
+              <Edit size={14} className="mr-1" />
               AI优化
             </Button>
-            <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleSave}>
-              <SaveOutlined className="mr-1" />
+            <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" size="sm" onClick={handleSave}>
+              <Save size={14} className="mr-1" />
               保存
             </Button>
-          </Space>
-        }
-      >
+          </div>
+        </div>
+
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="content">脚本内容</TabsTrigger>
@@ -105,77 +101,66 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({
 
           <TabsContent value="content">
             <div className={styles.workflowEditor}>
-              <div className={styles.titleInput}>
-                <Text style={{ color: '#999' }}>标题</Text>
+              <div className={styles.titleInput + ' mb-4'}>
+                <span className="text-sm text-muted-foreground mb-1 block">标题</span>
                 <Input
                   value={editedTitle}
                   onChange={handleTitleChange}
                   placeholder="输入脚本标题"
-                  size="large"
+                  size="sm"
                 />
               </div>
               <div className={styles.contentInput}>
-                <Text style={{ color: '#999' }}>内容</Text>
-                <TextArea
+                <span className="text-sm text-muted-foreground mb-1 block">内容</span>
+                <textarea
                   value={editedContent}
                   onChange={handleContentChange}
                   placeholder="输入脚本内容..."
                   rows={15}
-                  className={styles.scriptTextArea}
+                  className={styles.scriptTextArea + ' w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}
                 />
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="segments">
-            <List
-              dataSource={script.segments || []}
-              renderItem={(segment: ScriptSegment) => (
-                <List.Item
-                  actions={[
-                    <Button key="edit" variant="ghost" size="icon-sm"><EditOutlined /></Button>,
-                    <Button key="delete" variant="ghost" size="icon-sm"><DeleteOutlined /></Button>,
-                  ]}
-                >
-                  <List.Item.Meta
-                    title={
-                      <Space>
-                        <Tag color="blue">{segment.type}</Tag>
-                        <Text>
-                          {formatDuration(segment.startTime)} - {formatDuration(segment.endTime)}
-                        </Text>
-                      </Space>
-                    }
-                    description={segment.content}
-                  />
-                </List.Item>
-              )}
-            />
+            <div className="divide-y divide-border">
+              {(script.segments || []).map((segment: ScriptSegment, index: number) => (
+                <div key={index} className="flex items-center gap-3 p-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <Badge variant="default">{segment.type}</Badge>
+                      <span className="text-xs">{formatDuration(segment.startTime)} - {formatDuration(segment.endTime)}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground truncate">{segment.content}</p>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <Button variant="ghost" size="icon-sm"><Edit size={14} /></Button>
+                    <Button variant="ghost" size="icon-sm"><Save size={14} /></Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </TabsContent>
 
           {scenes && scenes.length > 0 && (
             <TabsContent value="scenes">
-              <List
-                dataSource={scenes}
-                renderItem={(scene: Scene) => (
-                  <List.Item>
-                    <List.Item.Meta
-                      title={
-                        <Space>
-                          <ClockCircleOutlined />
-                          <Text>
-                            {formatDuration(scene.startTime)} - {formatDuration(scene.endTime)}
-                          </Text>
-                          {scene.tags?.map(tag => (
-                            <Tag key={tag}>{tag}</Tag>
-                          ))}
-                        </Space>
-                      }
-                      description={scene.description}
-                    />
-                  </List.Item>
-                )}
-              />
+              <div className="divide-y divide-border">
+                {scenes.map((scene: Scene, index: number) => (
+                  <div key={index} className="flex items-start gap-3 p-3">
+                    <Clock size={14} className="mt-0.5 text-muted-foreground" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <span className="text-xs">{formatDuration(scene.startTime)} - {formatDuration(scene.endTime)}</span>
+                        {scene.tags?.map(tag => (
+                          <Badge key={tag} variant="secondary">{tag}</Badge>
+                        ))}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{scene.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </TabsContent>
           )}
         </Tabs>
@@ -187,8 +172,8 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({
           <DialogHeader>
             <DialogTitle>AI 优化脚本</DialogTitle>
           </DialogHeader>
-          <p>使用 AI 优化脚本将会根据视频内容和当前脚本，生成更加专业的表达和结构。</p>
-          <p>点击确定开始优化。</p>
+          <p className="text-sm text-muted-foreground">使用 AI 优化脚本将会根据视频内容和当前脚本，生成更加专业的表达和结构。</p>
+          <p className="text-sm text-muted-foreground">点击确定开始优化。</p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAiModalVisible(false)}>取消</Button>
             <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleAIImprove}>确定</Button>

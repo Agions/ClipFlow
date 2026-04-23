@@ -1,18 +1,18 @@
 /**
  * HighlightList — 高光时刻列表
- * 
+ *
  * 基于 Rust highlight_detector.rs 的音频能量+场景切换分析结果，
  * 以深色面板呈现，点击定位到 Timeline 播放头。
- * 
+ *
  * 设计风格：AI Cinema Studio Dark
  * - bg-base: #0C0D14 | accent: #FF9F43 | cyan: #00D4FF
  */
 import React, { useState, useCallback } from 'react';
-import { Spin, message } from 'antd';
 import { Slider } from '@/components/ui/slider';
-import { ThunderboltOutlined, AimOutlined, BulbOutlined } from '@ant-design/icons';
+import { Zap, Crosshair, Lightbulb } from 'lucide-react';
 import { visionService } from '@/core/services/vision.service';
 import { useEditorStore } from '@/store/editorStore';
+import { notify } from '@/shared/utils/notify';
 import type { VideoInfo } from '@/core/types';
 import styles from './HighlightList.module.css';
 
@@ -68,7 +68,7 @@ const HighlightList: React.FC<HighlightListProps> = ({ videoInfo, defaultExpande
 
   const detect = useCallback(async () => {
     if (!videoInfo?.path) {
-      message.warning('视频路径不可用');
+      notify.warning('视频路径不可用');
       return;
     }
     setLoading(true);
@@ -82,11 +82,11 @@ const HighlightList: React.FC<HighlightListProps> = ({ videoInfo, defaultExpande
       });
       setHighlights(result);
       setDetected(true);
-      message.success(`检测到 ${result.length} 个高光`);
+      notify.success(`检测到 ${result.length} 个高光`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       setError(msg);
-      message.error(`高光检测失败: ${msg}`);
+      notify.error(err, `高光检测失败: ${msg}`);
     } finally {
       setLoading(false);
     }
@@ -101,7 +101,7 @@ const HighlightList: React.FC<HighlightListProps> = ({ videoInfo, defaultExpande
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerLeft}>
-          <ThunderboltOutlined className={styles.headerIcon} />
+          <Zap size={16} className={styles.headerIcon} />
           <span className={styles.headerTitle}>高光时刻</span>
           {detected && highlights.length > 0 && (
             <span className={styles.countBadge}>{highlights.length}</span>
@@ -132,7 +132,7 @@ const HighlightList: React.FC<HighlightListProps> = ({ videoInfo, defaultExpande
             onClick={detect}
             disabled={loading || !videoInfo?.path}
           >
-            {loading ? <Spin size="small" /> : <ThunderboltOutlined />}
+            {loading ? <div className="animate-spin text-sm">⟳</div> : <Zap size={14} />}
             {loading ? '分析中…' : '自动检测'}
           </button>
         </div>
@@ -148,7 +148,7 @@ const HighlightList: React.FC<HighlightListProps> = ({ videoInfo, defaultExpande
 
       {detected && highlights.length === 0 && !loading && (
         <div className={styles.emptyState}>
-          <BulbOutlined />
+          <Lightbulb size={20} />
           <p>暂无高光数据，尝试降低阈值</p>
         </div>
       )}
@@ -205,7 +205,7 @@ const HighlightList: React.FC<HighlightListProps> = ({ videoInfo, defaultExpande
                   onClick={(e) => { e.stopPropagation(); handleSeek(h); }}
                   aria-label="定位到此高光"
                 >
-                  <AimOutlined /> 定位
+                  <Crosshair size={12} /> 定位
                 </button>
               </li>
             );

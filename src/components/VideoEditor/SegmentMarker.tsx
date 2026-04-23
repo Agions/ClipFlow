@@ -1,5 +1,5 @@
 import React, { useCallback, memo } from 'react';
-import { Tooltip } from 'antd';
+
 import { ScriptSegment } from '@/types';
 import styles from './VideoEditor.module.less';
 

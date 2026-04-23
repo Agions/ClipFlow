@@ -1,8 +1,5 @@
 import React, { memo } from 'react';
-import { Typography, Empty } from 'antd';
 import styles from '../index.module.less';
-
-const { Title } = Typography;
 
 interface KeyframePanelProps {
   keyframes: string[];
@@ -11,10 +8,12 @@ interface KeyframePanelProps {
 const KeyframePanel: React.FC<KeyframePanelProps> = ({ keyframes }) => {
   return (
     <div className={styles.keyframesContainer}>
-      <Title level={5} className={styles.sectionTitle}>关键帧</Title>
+      <h5 className={styles.sectionTitle}>关键帧</h5>
 
       {keyframes.length === 0 ? (
-        <Empty description="暂无关键帧" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        <div className="text-center text-muted-foreground py-8">
+          暂无关键帧
+        </div>
       ) : (
         <div className={styles.keyframeList}>
           {keyframes.map((frame, index) => (

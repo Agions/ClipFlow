@@ -1,19 +1,18 @@
 import React, { memo, lazy, Suspense } from 'react';
-import { Card, Typography, Spin } from 'antd';
-import { FileTextOutlined } from '@ant-design/icons';
+import { Card, CardContent } from '@/components/ui/card';
+import { FileText } from 'lucide-react';
 import { ScriptEditorProps, isWorkflowProps } from './types';
 import styles from './ScriptEditor.module.less';
 
-const { Text } = Typography;
 const WorkflowEditor = lazy(() => import('./WorkflowEditor'));
 const OriginalEditor = lazy(() => import('./OriginalEditor'));
 
 const EditorFallback: React.FC = () => (
   <Card className={styles.scriptEditor}>
-    <div className={styles.emptyState}>
-      <Spin size="large" />
-      <Text type="secondary">编辑器模块加载中...</Text>
-    </div>
+    <CardContent className="flex flex-col items-center justify-center gap-4 py-12">
+      <div className="animate-spin text-3xl">⟳</div>
+      <p className="text-sm text-muted-foreground">编辑器模块加载中...</p>
+    </CardContent>
   </Card>
 );
 
@@ -26,17 +25,16 @@ const EditorFallback: React.FC = () => (
 const ScriptEditor: React.FC<ScriptEditorProps> = (props) => {
   const isWorkflowMode = isWorkflowProps(props);
 
-  // Workflow 模式渲染
   if (isWorkflowMode) {
     const { script, scenes, onSave, onScriptUpdate } = props;
 
     if (!script) {
       return (
         <Card className={styles.scriptEditor}>
-          <div className={styles.emptyState}>
-            <FileTextOutlined style={{ fontSize: 48, color: '#d9d9d9' }} />
-            <Text type="secondary">暂无脚本数据</Text>
-          </div>
+          <CardContent className="flex flex-col items-center justify-center gap-4 py-12">
+            <FileText size={48} className="text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">暂无脚本数据</p>
+          </CardContent>
         </Card>
       );
     }
@@ -53,7 +51,6 @@ const ScriptEditor: React.FC<ScriptEditorProps> = (props) => {
     );
   }
 
-  // 原始模式渲染
   const { videoPath, initialSegments, onSave, onExport } = props;
 
   return (

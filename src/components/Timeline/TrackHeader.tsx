@@ -1,16 +1,17 @@
 import React, { memo, useState, useRef, useCallback } from 'react';
-import { Tooltip, Dropdown } from 'antd';
+import { Tooltip } from '@/components/ui/tooltip';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
-  PlusOutlined,
-  DeleteOutlined,
-  LockOutlined,
-  UnlockOutlined,
-  EyeOutlined,
-  EyeInvisibleOutlined,
-  SoundOutlined,
-  SoundFilled,
-} from '@ant-design/icons';
-import type { MenuProps } from 'antd';
+  Plus,
+  Trash2,
+  Lock,
+  Unlock,
+  Eye,
+  EyeOff,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
+
 import type { TimelineTrack } from './types';
 import { TRACK_COLORS } from './constants';
 import styles from './Timeline.module.less';
@@ -58,9 +59,9 @@ export const TrackHeader = memo<TrackHeaderProps>(({
   }, [track.id, onResizeTrack]);
 
   const trackMenuItems: MenuProps['items'] = [
-    { key: 'add', label: '添加片段', icon: <PlusOutlined />, onClick: () => onAddClip(track.id) },
+    { key: 'add', label: '添加片段', icon: <Plus size={16} />, onClick: () => onAddClip(track.id) },
     { type: 'divider' },
-    { key: 'delete', label: '删除轨道', icon: <DeleteOutlined />, danger: true, onClick: () => onDeleteTrack(track.id) },
+    { key: 'delete', label: '删除轨道', icon: <Trash2 size={16} />, danger: true, onClick: () => onDeleteTrack(track.id) },
   ];
 
   return (
@@ -78,7 +79,7 @@ export const TrackHeader = memo<TrackHeaderProps>(({
             className={`${styles.iconBtn} ${track.muted ? styles.active : ''}`}
             onClick={() => onToggleMute(track.id)}
           >
-            {track.muted ? <SoundFilled /> : <SoundOutlined />}
+            {track.muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
           </button>
         </Tooltip>
         <Tooltip title={track.locked ? '解锁' : '锁定'}>
@@ -86,7 +87,7 @@ export const TrackHeader = memo<TrackHeaderProps>(({
             className={`${styles.iconBtn} ${track.locked ? styles.active : ''}`}
             onClick={() => onToggleLock(track.id)}
           >
-            {track.locked ? <LockOutlined /> : <UnlockOutlined />}
+            {track.locked ? <Lock size={16} /> : <Unlock size={16} />}
           </button>
         </Tooltip>
         <Tooltip title={track.visible ? '隐藏轨道' : '显示轨道'}>
@@ -94,12 +95,12 @@ export const TrackHeader = memo<TrackHeaderProps>(({
             className={`${styles.iconBtn} ${!track.visible ? styles.active : ''}`}
             onClick={() => onToggleVisible(track.id)}
           >
-            {track.visible ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+            {track.visible ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
         </Tooltip>
         <Tooltip title="添加片段">
           <button className={styles.iconBtn} onClick={() => onAddClip(track.id)}>
-            <PlusOutlined />
+            <Plus size={16} />
           </button>
         </Tooltip>
       </div>
@@ -107,9 +108,24 @@ export const TrackHeader = memo<TrackHeaderProps>(({
         className={`${styles.resizeHandle} ${resizing ? styles.resizing : ''}`}
         onMouseDown={handleResizeStart}
       />
-      <Dropdown menu={{ items: trackMenuItems }} trigger={['contextMenu']}>
-        <div className={styles.trackMenuTrigger} />
-      </Dropdown>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
+          <div className={styles.trackMenuTrigger} />
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content className={styles.dropdownContent}>
+            {trackMenuItems.map(item => (
+              item.type === 'divider' ? (
+                <DropdownMenu.Separator key="divider" />
+              ) : (
+                <DropdownMenu.Item key={item.key} className={item.danger ? styles.dangerItem : ''} onClick={item.onClick}>
+                  {item.icon} {item.label}
+                </DropdownMenu.Item>
+              )
+            ))}
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
     </div>
   );
 });

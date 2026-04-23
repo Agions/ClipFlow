@@ -1,7 +1,8 @@
 import React, { memo, useState, useEffect } from 'react';
-import { Space, InputNumber } from 'antd';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import type { TimelineClip } from './types';
 import { formatTime } from './utils';
 import { MIN_CLIP_DURATION } from './constants';
@@ -46,9 +47,9 @@ export const ClipPropertiesPanel = memo<ClipPropertiesPanelProps>(({ clip, onUpd
         </div>
         <div className={styles.propRow}>
           <label>开始 (s)</label>
-          <InputNumber size="small" value={startSec} onChange={(v) => setStartSec(v ?? 0)} step={0.1} min={0} />
+          <Input size="small" type="number" value={startSec} onChange={(e) => setStartSec(parseFloat(e.target.value) || 0)} step={0.1} min={0} className="w-20" />
           <label>结束 (s)</label>
-          <InputNumber size="small" value={endSec} onChange={(v) => setEndSec(v ?? 1)} step={0.1} min={0} />
+          <Input size="small" type="number" value={endSec} onChange={(e) => setEndSec(parseFloat(e.target.value) || 1)} step={0.1} min={0} className="w-20" />
         </div>
         <div className={styles.propRow}>
           <label>音量</label>
@@ -61,14 +62,14 @@ export const ClipPropertiesPanel = memo<ClipPropertiesPanelProps>(({ clip, onUpd
           <span className={styles.propTime}>{formatTime(clip.sourceEndMs - clip.sourceStartMs)}</span>
         </div>
       </div>
-      <div className={styles.propertiesFooter}>
+      <div className={cn(styles.propertiesFooter, 'flex items-center justify-end gap-2')}>
         <Button size="sm" variant="destructive" onClick={() => { onDelete(clip.id); onClose(); }}>
           删除片段
         </Button>
-        <Space>
+        <div className="flex items-center gap-2">
           <Button size="sm" onClick={onClose}>取消</Button>
           <Button size="sm" className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleApply}>应用</Button>
-        </Space>
+        </div>
       </div>
     </div>
   );

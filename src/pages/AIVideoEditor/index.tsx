@@ -12,7 +12,7 @@ import { CutDeckProvider, useCutDeck } from '@/components/CutDeck/AIEditorContex
 import { useKeyboardShortcuts, KEYBOARD_SHORTCUTS_HELP } from '@/hooks/useKeyboardShortcuts';
 import KeyboardShortcutsHelp from '@/components/common/KeyboardShortcutsHelp';
 import { useEditorStore } from '@/store/editorStore';
-import { message } from 'antd';
+import { notify } from '@/shared';
 import { TAB_TO_FEATURE, type AIFunctionTabKey } from '@/components/CutDeck/Workspace/functionModeMap';
 import styles from './index.module.less';
 
@@ -103,18 +103,18 @@ const AIVideoEditorContent: React.FC = () => {
     onDelete: () => {
       if (selectedClipId) {
         removeClipFromTrack(selectedClipId);
-        message.success('片段已删除');
+        notify.success('片段已删除');
       } else {
-        message.warning('请先选择要删除的片段');
+        notify.warning('请先选择要删除的片段');
       }
     },
     onInPoint: () => {
       setInPoint();
-      message.success(`入点: ${(playheadMs / 1000).toFixed(1)}s`);
+      notify.success(`入点: ${(playheadMs / 1000).toFixed(1)}s`);
     },
     onOutPoint: () => {
       setOutPoint();
-      message.success(`出点: ${(playheadMs / 1000).toFixed(1)}s`);
+      notify.success(`出点: ${(playheadMs / 1000).toFixed(1)}s`);
     },
     onSelectAll: () => {
       selectAllClips();

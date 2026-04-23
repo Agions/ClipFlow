@@ -4,26 +4,25 @@
  */
 
 import React from 'react';
-import { Card, Steps, Alert, Typography } from 'antd';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
-  SettingOutlined,
-  EyeOutlined,
-  RobotOutlined,
-  PlayCircleOutlined
-} from '@ant-design/icons';
+  Settings,
+  Eye,
+  Bot,
+  PlayCircle,
+} from 'lucide-react';
 import { useAIClipAssistant } from './hooks/useAIClipAssistant';
 import { ConfigStep, AnalyzeStep, SuggestionsStep, PreviewStep } from './components';
 import type { AIClipAssistantProps } from './types';
 import styles from './index.module.less';
 
-const { Title, Paragraph } = Typography;
-const { Step } = Steps;
-
 const CLIP_STEPS = [
-  { title: '配置', icon: <SettingOutlined /> },
-  { title: '分析', icon: <EyeOutlined /> },
-  { title: '建议', icon: <RobotOutlined /> },
-  { title: '预览', icon: <PlayCircleOutlined /> }
+  { title: '配置', icon: <Settings size={14} /> },
+  { title: '分析', icon: <Eye size={14} /> },
+  { title: '建议', icon: <Bot size={14} /> },
+  { title: '预览', icon: <PlayCircle size={14} /> }
 ];
 
 export const AIClipAssistant: React.FC<AIClipAssistantProps> = ({
@@ -98,39 +97,38 @@ export const AIClipAssistant: React.FC<AIClipAssistantProps> = ({
   return (
     <div className={styles.aiClipAssistant}>
       <Card className={styles.headerCard}>
-        <Title level={4}>
-          <RobotOutlined /> AI 智能剪辑助手
-        </Title>
-        <Paragraph type="secondary">
-          自动检测剪辑点、识别静音片段、提取关键帧，并生成智能剪辑建议
-        </Paragraph>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bot size={20} />
+            AI 智能剪辑助手
+          </CardTitle>
+          <CardDescription>
+            自动检测剪辑点、识别静音片段、提取关键帧，并生成智能剪辑建议
+          </CardDescription>
+        </CardHeader>
       </Card>
 
       {error && (
-        <Alert
-          message="错误"
-          description={error}
-          type="error"
-          showIcon
-          closable
-          className={styles.errorAlert}
-        />
+        <Alert variant="destructive" className={styles.errorAlert}>
+          <AlertDescription>
+            <strong>错误</strong>: {error}
+          </AlertDescription>
+        </Alert>
       )}
 
-      <Steps
-        current={currentStep}
-        className={styles.steps}
-        onChange={setCurrentStep}
-      >
+      <div className={styles.stepIndicators}>
         {CLIP_STEPS.map((step, index) => (
-          <Step
+          <button
             key={index}
-            title={step.title}
-            icon={step.icon}
+            className={`${styles.stepIndicator} ${index === currentStep ? styles.active : ''} ${index > currentStep ? styles.disabled : ''}`}
+            onClick={() => index <= currentStep + 1 && setCurrentStep(index)}
             disabled={index > currentStep + 1}
-          />
+          >
+            <div className={styles.stepIcon}>{step.icon}</div>
+            <span className={styles.stepTitle}>{step.title}</span>
+          </button>
         ))}
-      </Steps>
+      </div>
 
       <div className={styles.stepContent}>{renderStepContent()}</div>
     </div>

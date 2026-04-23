@@ -1,11 +1,8 @@
 import React, { memo } from 'react';
-import { Typography, Empty } from 'antd';
-import { RobotOutlined } from '@ant-design/icons';
+import { Bot } from 'lucide-react';
 import { AIClipAssistant } from '@/components/AIClipAssistant';
 import type { ClipAnalysisResult, ClipSegment } from '@/core/services/aiClip.service';
 import styles from '../index.module.less';
-
-const { Title } = Typography;
 
 interface AIClipPanelProps {
   projectId: string | undefined;
@@ -25,19 +22,19 @@ const AIClipPanel: React.FC<AIClipPanelProps> = ({
   if (!videoSrc || duration === 0) {
     return (
       <div className={styles.aiClipPanel}>
-        <Title level={5} className={styles.sectionTitle}>
-          <RobotOutlined /> AI 智能剪辑助手
-        </Title>
-        <Empty description="请先加载视频" />
+        <h5 className={styles.sectionTitle}>
+          <Bot size={16} /> AI 智能剪辑助手
+        </h5>
+        <div className="text-center text-muted-foreground py-8">请先加载视频</div>
       </div>
     );
   }
 
   return (
     <div className={styles.aiClipPanel}>
-      <Title level={5} className={styles.sectionTitle}>
-        <RobotOutlined /> AI 智能剪辑助手
-      </Title>
+      <h5 className={styles.sectionTitle}>
+        <Bot size={16} /> AI 智能剪辑助手
+      </h5>
 
       <AIClipAssistant
         videoInfo={{

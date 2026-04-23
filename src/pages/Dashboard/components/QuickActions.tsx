@@ -2,14 +2,14 @@
  * 快捷操作组件
  */
 import React, { useMemo, useCallback } from 'react';
-import { Card, Row, Col } from 'antd';
-import {
-  VideoCameraOutlined,
-  FolderOutlined,
-  FireOutlined,
-  BarChartOutlined,
-} from '@ant-design/icons';
+import { Card } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
+import {
+  VideoCamera,
+  FolderOpen,
+  Flame,
+  BarChart3,
+} from 'lucide-react';
 import {
   preloadAIVideoEditorPage,
   preloadProjectsPage,
@@ -23,7 +23,7 @@ const QuickActions: React.FC = React.memo(() => {
   const tools = useMemo(() => [
     {
       key: 'templates',
-      icon: <VideoCameraOutlined className={styles.toolIcon} />,
+      icon: <VideoCamera size={20} className={styles.toolIcon} />,
       title: '模板库',
       desc: '使用专业模板快速创建',
       path: '/workflow',
@@ -31,7 +31,7 @@ const QuickActions: React.FC = React.memo(() => {
     },
     {
       key: 'materials',
-      icon: <FolderOutlined className={styles.toolIcon} />,
+      icon: <FolderOpen size={20} className={styles.toolIcon} />,
       title: '素材库',
       desc: '管理您的视频素材',
       path: '/projects',
@@ -39,7 +39,7 @@ const QuickActions: React.FC = React.memo(() => {
     },
     {
       key: 'ai',
-      icon: <FireOutlined className={styles.toolIcon} />,
+      icon: <Flame size={20} className={styles.toolIcon} />,
       title: 'AI 助手',
       desc: '智能生成内容与剪辑',
       path: '/ai-editor',
@@ -47,13 +47,13 @@ const QuickActions: React.FC = React.memo(() => {
     },
     {
       key: 'analytics',
-      icon: <BarChartOutlined className={styles.toolIcon} />,
+      icon: <BarChart3 size={20} className={styles.toolIcon} />,
       title: '数据分析',
       desc: '查看您的创作数据',
       path: '/settings',
       preloadFn: preloadSettingsPage,
     },
-  ], [navigate]);
+  ], []);
 
   const handleCardClick = useCallback((path: string, preloadFn?: () => void) => {
     if (preloadFn) {
@@ -70,31 +70,32 @@ const QuickActions: React.FC = React.memo(() => {
   }, [handleCardClick]);
 
   return (
-    <Card className={styles.quickTools}>
-      <Row gutter={[16, 16]} className={styles.toolGrid}>
+    <div className={styles.quickTools}>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {tools.map((tool) => (
-          <Col xs={24} sm={8} md={6} key={tool.key}>
-            <Card
-              className={styles.toolCard}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => handleKeyDown(e, tool.path, tool.preloadFn)}
-              onMouseEnter={() => {
-                if (tool.preloadFn) {
-                  void tool.preloadFn();
-                }
-              }}
-              onClick={() => handleCardClick(tool.path, tool.preloadFn)}
-              aria-label={`${tool.title}: ${tool.desc}`}
-            >
+          <Card
+            key={tool.key}
+            className={styles.toolCard}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => handleKeyDown(e, tool.path, tool.preloadFn)}
+            onMouseEnter={() => {
+              if (tool.preloadFn) {
+                void tool.preloadFn();
+              }
+            }}
+            onClick={() => handleCardClick(tool.path, tool.preloadFn)}
+            aria-label={`${tool.title}: ${tool.desc}`}
+          >
+            <div className="flex flex-col items-center gap-2 py-2">
               {tool.icon}
               <div className={styles.toolTitle}>{tool.title}</div>
               <div className={styles.toolDesc}>{tool.desc}</div>
-            </Card>
-          </Col>
+            </div>
+          </Card>
         ))}
-      </Row>
-    </Card>
+      </div>
+    </div>
   );
 });
 

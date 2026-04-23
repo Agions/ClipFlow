@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback, memo, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Form } from 'antd';
 import { Button } from '@/components/ui/button';
 import {
   Edit3,
@@ -44,7 +43,8 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
 }) => {
   const [segments, setSegments] = useState<ScriptSegment[]>(initialSegments);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editForm] = Form.useForm<SegmentFormValues>();
+  const [formValues, setFormValues] = useState<SegmentFormValues>({ start: 0, end: 30, type: 'narration', content: '' });
+  const [formError, setFormError] = useState<string>('');
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewSrc, setPreviewSrc] = useState('');
   const [previewLoading, setPreviewLoading] = useState(false);
@@ -59,70 +59,72 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
     setTotalDuration(duration);
   }, [segments]);
 
+  const setFieldValue = useCallback((field: keyof SegmentFormValues, value: string | number) => {
+    setFormValues(prev => ({ ...prev, [field]: value }));
+    setFormError('');
+  }, []);
+
+  const validateForm = useCallback((): boolean => {
+    const start = Number(formValues.start);
+    const end = Number(formValues.end);
+    if (isNaN(start) || isNaN(end)) { setFormError('请输入有效的时间值'); return false; }
+    if (end <= start) { setFormError('结束时间必须大于开始时间'); return false; }
+    if (!formValues.content.trim()) { setFormError('请输入内容'); return false; }
+    return true;
+  }, [formValues]);
+
   // 添加新片段
   const handleAddSegment = useCallback(() => {
     const lastSegment = segments.length > 0 ? segments[segments.length - 1] : null;
     const startTime = lastSegment ? lastSegment.endTime : 0;
     const endTime = startTime + 30;
-
-    editForm.setFieldsValue({
-      start: startTime,
-      end: endTime,
-      type: 'narration',
-      content: '',
-    });
-
+    setFormValues({ start: startTime, end: endTime, type: 'narration', content: '' });
+    setFormError('');
     setEditingIndex(segments.length);
-  }, [segments, editForm]);
+  }, [segments]);
 
   // 编辑片段
   const handleEditSegment = useCallback((index: number) => {
     const segment = segments[index];
-
-    editForm.setFieldsValue({
+    setFormValues({
       start: segment.startTime,
       end: segment.endTime,
       type: segment.type || 'narration',
       content: segment.content || '',
     });
-
+    setFormError('');
     setEditingIndex(index);
-  }, [segments, editForm]);
+  }, [segments]);
 
   // 保存编辑片段
   const handleSaveSegment = useCallback(() => {
-    editForm.validateFields().then(values => {
-      const start = Number(values.start);
-      const end = Number(values.end);
-
-      const newSegments = [...segments];
-      const segment: ScriptSegment = {
-        id: `segment_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-        startTime: start,
-        endTime: end,
-        type: values.type as ScriptSegment['type'],
-        content: values.content,
-      };
-
-      if (editingIndex !== null) {
-        if (editingIndex < segments.length) {
-          newSegments[editingIndex] = segment;
-        } else {
-          newSegments.push(segment);
-        }
+    if (!validateForm()) return;
+    const start = Number(formValues.start);
+    const end = Number(formValues.end);
+    const newSegments = [...segments];
+    const segment: ScriptSegment = {
+      id: `segment_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      startTime: start,
+      endTime: end,
+      type: formValues.type as ScriptSegment['type'],
+      content: formValues.content,
+    };
+    if (editingIndex !== null) {
+      if (editingIndex < segments.length) {
+        newSegments[editingIndex] = segment;
+      } else {
+        newSegments.push(segment);
       }
-
-      setSegments(newSegments);
-      setEditingIndex(null);
-      editForm.resetFields();
-    });
-  }, [segments, editingIndex, editForm]);
+    }
+    setSegments(newSegments);
+    setEditingIndex(null);
+  }, [segments, editingIndex, formValues, validateForm]);
 
   // 取消编辑
   const handleCancelEdit = useCallback(() => {
     setEditingIndex(null);
-    editForm.resetFields();
-  }, [editForm]);
+    setFormError('');
+  }, []);
 
   // 删除片段
   const handleDeleteSegment = useCallback((index: number) => {
@@ -168,9 +170,7 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
     try {
       notify.info('正在使用 AI 优化脚本...');
       setAiModalVisible(false);
-      setTimeout(() => {
-        notify.success('脚本优化完成');
-      }, 2000);
+      setTimeout(() => { notify.success('脚本优化完成'); }, 2000);
     } catch (error) {
       logger.error('AI 优化脚本失败:', { error });
       notify.error(error, 'AI 优化脚本失败');
@@ -245,7 +245,9 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
 
         {editingIndex !== null && (
           <SegmentEditForm
-            form={editForm}
+            formValues={formValues}
+            formError={formError}
+            onFieldChange={setFieldValue}
             editingIndex={editingIndex}
             onSave={handleSaveSegment}
             onCancel={handleCancelEdit}

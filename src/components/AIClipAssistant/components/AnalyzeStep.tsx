@@ -82,14 +82,16 @@ const AnalyzeStep: React.FC<AnalyzeStepProps> = ({
           <div className={styles.timelineBar}>
             {analysisResult.cutPoints.map((cp) => (
               <Tooltip key={cp.id}>
-                <TooltipTrigger asChild>
-                  <div
-                    className={`${styles.cutPoint} ${styles[cp.type]}`}
-                    style={{
-                      left: `${(cp.timestamp / analysisResult.duration) * 100}%`
-                    }}
-                  />
-                </TooltipTrigger>
+                <TooltipTrigger
+                  render={
+                    <div
+                      className={`${styles.cutPoint} ${styles[cp.type]}`}
+                      style={{
+                        left: `${(cp.timestamp / analysisResult.duration) * 100}%`
+                      }}
+                    />
+                  }
+                />
                 <TooltipContent>
                   <p>{`${cp.description} (${cp.confidence > 0.8 ? '高' : cp.confidence > 0.5 ? '中' : '低'}置信度)`}</p>
                 </TooltipContent>

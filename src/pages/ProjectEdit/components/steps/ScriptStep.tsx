@@ -2,9 +2,10 @@
  * ScriptStep — 编辑脚本步骤
  */
 import React from 'react';
-import { Card, Space } from 'antd';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { EditOutlined } from '@ant-design/icons';
+import { Edit } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import ScriptEditor from '@/components/ScriptEditor';
 import type { ScriptSegment } from '@/core/types';
 import styles from '../../index.module.less';
@@ -38,13 +39,11 @@ export const ScriptStep: React.FC<ScriptStepProps> = ({
       onExport={onExport}
     />
 
-    <div className={styles.stepActions}>
-      <Space>
-        <Button variant="outline" onClick={onPrev}>上一步</Button>
-        <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={onSaveProject} disabled={loading || saving}>
-          {saving ? '保存中...' : '保存项目'}
-        </Button>
-      </Space>
+    <div className={cn(styles.stepActions, 'flex items-center gap-2')}>
+      <Button variant="outline" onClick={onPrev}>上一步</Button>
+      <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={onSaveProject} disabled={loading || saving}>
+        {saving ? '保存中...' : '保存项目'}
+      </Button>
     </div>
   </Card>
 );

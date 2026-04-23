@@ -2,7 +2,7 @@
  * 欢迎头部组件
  */
 import React from 'react';
-import { PlusOutlined } from '@ant-design/icons';
+import { Plus } from 'lucide-react';
 import { preloadProjectEditPage } from '@/core/utils/route-preload';
 import { useAppStore } from '@/store';
 import styles from '../index.module.less';
@@ -31,7 +31,7 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = React.memo(({ onCreateProjec
           onMouseEnter={handleMouseEnter}
           aria-label="新建项目"
         >
-          <PlusOutlined className={styles.createButtonIcon} />
+          <Plus className={styles.createButtonIcon} />
           新建项目
         </button>
       </div>

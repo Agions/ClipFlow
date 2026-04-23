@@ -3,12 +3,13 @@
  * Part of VideoProcessingController - handles transition and audio effects
  */
 import React from 'react';
-import { Row, Col, Select, Slider, InputNumber, Switch, Space } from 'antd';
-import { SoundOutlined } from '@ant-design/icons';
+import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Volume2 } from 'lucide-react';
 import { TRANSITION_OPTIONS, AUDIO_PROCESS_OPTIONS } from '../constants';
 import type { TransitionValue, AudioProcessValue } from '../constants';
-
-const { Option } = Select;
 
 interface EffectsSettingsProps {
   transitionType: TransitionValue;
@@ -36,64 +37,59 @@ export const EffectsSettings: React.FC<EffectsSettingsProps> = ({
   onSubtitlesChange,
 }) => {
   return (
-    <Row gutter={[16, 16]}>
-      <Col span={16}>
-        <div className="formItem">
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-3 gap-4">
+        <div className="formItem col-span-2">
           <div className="formLabel">转场效果</div>
-          <Select
-            value={transitionType}
-            onChange={onTransitionChange}
-            style={{ width: '100%' }}
-            showSearch
-            optionFilterProp="children"
-          >
-            {TRANSITION_OPTIONS.map(option => (
-              <Option key={option.value} value={option.value}>
-                {option.label}
-              </Option>
-            ))}
+          <Select value={transitionType} onValueChange={onTransitionChange}>
+            <SelectTrigger className="w-full">
+              <SelectContent>
+                {TRANSITION_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </SelectTrigger>
           </Select>
         </div>
-      </Col>
 
-      <Col span={8}>
         <div className="formItem">
           <div className="formLabel">转场时长 (秒)</div>
-          <InputNumber
+          <Input
+            type="number"
             min={0.2}
             max={3}
             step={0.1}
             value={transitionDuration}
-            onChange={val => onTransitionDurationChange(val as number)}
-            style={{ width: '100%' }}
+            onChange={e => onTransitionDurationChange(parseFloat(e.target.value) || 0.5)}
+            className="w-full"
           />
         </div>
-      </Col>
+      </div>
 
-      <Col span={12}>
+      <div className="grid grid-cols-2 gap-4">
         <div className="formItem">
           <div className="formLabel">音频处理</div>
-          <Select
-            value={audioProcess}
-            onChange={onAudioProcessChange}
-            style={{ width: '100%' }}
-          >
-            {AUDIO_PROCESS_OPTIONS.map(option => (
-              <Option key={option.value} value={option.value}>
-                {option.label}
-              </Option>
-            ))}
+          <Select value={audioProcess} onValueChange={onAudioProcessChange}>
+            <SelectTrigger className="w-full">
+              <SelectContent>
+                {AUDIO_PROCESS_OPTIONS.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </SelectTrigger>
           </Select>
         </div>
-      </Col>
 
-      <Col span={12}>
         <div className="formItem">
-          <div className="formLabel">
-            <Space>
+          <div className="formLabel flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <Volume2 size={14} />
               <span>音量调整</span>
-              <SoundOutlined />
-            </Space>
+            </div>
             <span className="valueDisplay">{audioVolume}%</span>
           </div>
           <Slider
@@ -101,25 +97,25 @@ export const EffectsSettings: React.FC<EffectsSettingsProps> = ({
             max={200}
             step={5}
             value={audioVolume}
-            onChange={onAudioVolumeChange}
+            onValueChange={(v) => onAudioVolumeChange(Array.isArray(v) ? v[0] : v)}
             disabled={audioProcess === 'none'}
           />
         </div>
-      </Col>
+      </div>
 
-      <Col span={24}>
-        <div className="formItem">
-          <div className="formLabel">添加字幕</div>
+      <div className="formItem">
+        <div className="formLabel">添加字幕</div>
+        <div className="flex items-center gap-2">
           <Switch
             checked={useSubtitles}
-            onChange={onSubtitlesChange}
+            onCheckedChange={onSubtitlesChange}
           />
-          <span className="switchDescription">
+          <span className="switchDescription text-xs text-muted-foreground">
             将脚本内容作为字幕添加到视频中
           </span>
         </div>
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 };
 

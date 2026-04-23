@@ -2,13 +2,14 @@
  * useDashboard Hook - 抽取数据获取逻辑
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Modal } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import { logger } from '@/utils/logger';
 import {
   listProjects,
   deleteProject as deleteProjectFile,
-  getFileSizeBytes,
+  getFileSizeMb,
   PROJECTS_CHANGED_EVENT,
 } from '@/services/tauri';
 import { useSettings } from '@/context/SettingsContext';
@@ -22,7 +23,6 @@ import {
 import { preloadProjectEditPage } from '@/core/utils/route-preload';
 import { Project, DashboardStats } from '../types';
 
-// 并发限制：避免大量文件操作同时发起
 const concurrentMap = async <T, R>(
   items: T[],
   fn: (item: T) => Promise<R>,
@@ -43,12 +43,9 @@ const concurrentMap = async <T, R>(
 };
 
 export interface UseDashboardReturn {
-  // 数据
   projects: Project[];
   loading: boolean;
   stats: DashboardStats;
-  
-  // 操作
   loadProjects: () => Promise<void>;
   toggleStar: (id: string) => void;
   deleteProject: (id: string) => void;
@@ -61,8 +58,8 @@ export function useDashboard(): UseDashboardReturn {
   const { addRecentProject } = useSettings();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
-  // 加载项目数据
   const loadProjects = useCallback(async () => {
     try {
       setLoading(true);
@@ -73,14 +70,8 @@ export function useDashboard(): UseDashboardReturn {
         async (project: RawProjectRecord) => {
           const metrics = extractProjectMediaMetrics(project);
           const videoPath = resolveProjectVideoPath(project);
-          const exactSizeMb = videoPath
-            ? (await getFileSizeBytes(videoPath)) / 1024 / 1024
-            : 0;
-          const size = pickPreferredSizeMb(
-            exactSizeMb,
-            metrics.explicitSizeMb,
-            metrics.estimatedSizeMb
-          );
+          const exactSizeMb = videoPath ? (await getFileSizeMb(videoPath)) : 0;
+          const size = pickPreferredSizeMb(exactSizeMb, metrics.explicitSizeMb, metrics.estimatedSizeMb);
 
           return {
             id: String(project.id),
@@ -104,19 +95,13 @@ export function useDashboard(): UseDashboardReturn {
     }
   }, []);
 
-  // 监听项目变化事件
   useEffect(() => {
     void loadProjects();
-    const handleProjectsChanged = () => {
-      void loadProjects();
-    };
+    const handleProjectsChanged = () => { void loadProjects(); };
     window.addEventListener(PROJECTS_CHANGED_EVENT, handleProjectsChanged);
-    return () => {
-      window.removeEventListener(PROJECTS_CHANGED_EVENT, handleProjectsChanged);
-    };
+    return () => window.removeEventListener(PROJECTS_CHANGED_EVENT, handleProjectsChanged);
   }, [loadProjects]);
 
-  // 统计数据（memoized）
   const stats = useMemo((): DashboardStats => {
     const totalProjects = projects.length;
     const totalDuration = projects.reduce((sum, p) => sum + p.duration, 0);
@@ -124,44 +109,32 @@ export function useDashboard(): UseDashboardReturn {
     return { totalProjects, totalDuration, totalSize };
   }, [projects]);
 
-  // 切换收藏状态
   const toggleStar = useCallback((id: string) => {
-    setProjects((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, starred: !p.starred } : p))
-    );
+    setProjects((prev) => prev.map((p) => (p.id === id ? { ...p, starred: !p.starred } : p)));
   }, []);
 
-  // 删除项目
+  const confirmDelete = async (id: string) => {
+    try {
+      const ok = await deleteProjectFile(id);
+      if (ok) {
+        notify.success('项目已删除');
+        await loadProjects();
+      } else {
+        notify.error(null, '删除项目失败');
+      }
+    } catch (error) {
+      logger.error('删除项目失败:', { error });
+      notify.error(error, '删除项目失败，请稍后重试');
+    }
+    setDeleteConfirmId(null);
+  };
+
   const deleteProject = useCallback((id: string) => {
-    Modal.confirm({
-      title: '确认删除项目',
-      content: '删除后不可恢复，确认继续？',
-      okText: '删除',
-      okType: 'danger',
-      cancelText: '取消',
-      onOk: async () => {
-        try {
-          const ok = await deleteProjectFile(id);
-          if (ok) {
-            notify.success('项目已删除');
-            await loadProjects();
-          } else {
-            notify.error(null, '删除项目失败');
-          }
-        } catch (error) {
-          logger.error('删除项目失败:', { error });
-          notify.error(error, '删除项目失败，请稍后重试');
-        }
-      },
-    });
-  }, [loadProjects]);
+    setDeleteConfirmId(id);
+  }, []);
 
-  // 创建新项目
-  const createNewProject = useCallback(() => {
-    navigate('/project/new');
-  }, [navigate]);
+  const createNewProject = useCallback(() => { navigate('/project/new'); }, [navigate]);
 
-  // 打开项目
   const openProject = useCallback((id: string) => {
     addRecentProject(id);
     navigate(`/project/edit/${id}`);

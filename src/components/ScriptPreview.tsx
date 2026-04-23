@@ -1,6 +1,9 @@
 import { logger } from '@/utils/logger';
 import React, { useState } from 'react';
-import { Card, Divider, Tag, Tooltip, Space } from 'antd';
+import { Card } from '@/components/ui/card';
+import { Divider } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { 
   FilePdfOutlined, 
@@ -16,7 +19,7 @@ import styles from './ScriptPreview.module.less';
 
 const Title = ({ children, level, className }: { children: React.ReactNode; level?: number; className?: string }) => <h3 className={className} style={{ fontSize: level === 3 ? '1.25rem' : '1rem', fontWeight: level ? 600 : 400 }}>{children}</h3>;
 const Paragraph = ({ children, className }: { children: React.ReactNode; className?: string }) => <p className={className}>{children}</p>;
-const Text = ({ children, strong, style, className }: { children: React.ReactNode; strong?: boolean; style?: React.CSSProperties; className?: string }) => strong ? <strong style={style} className={className}>{children}</strong> : <span style={style} className={className}>{children}</span>;
+
 
 interface ScriptPreviewProps {
   script: Script;

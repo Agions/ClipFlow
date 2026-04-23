@@ -1,12 +1,15 @@
 import React from 'react';
-import { Card, Row, Col, Space, Typography, Tag, Divider, Empty } from 'antd';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ReloadOutlined, DownloadOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { Badge } from '@/components/ui/badge';
+import {
+  RotateCcw,
+  Download,
+  Clock,
+} from 'lucide-react';
 import type { ClipSegment } from '@/core/services/aiClip.service';
 import type { VideoInfo } from '@/core/types';
 import styles from '../index.module.less';
-
-const { Title, Text } = Typography;
 
 interface PreviewStepProps {
   videoInfo: VideoInfo;
@@ -37,8 +40,8 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
 }) => {
   if (previewSegments.length === 0) {
     return (
-      <Card className={styles.previewCard}>
-        <Empty description="暂无预览内容，请先应用建议" />
+      <Card className={styles.previewCard + ' p-6'}>
+        <div className="text-center text-muted-foreground py-8">暂无预览内容，请先应用建议</div>
       </Card>
     );
   }
@@ -46,51 +49,39 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
   const totalDuration = previewSegments.reduce((sum, s) => sum + s.duration, 0);
 
   return (
-    <Card className={styles.previewCard}>
-      <div className={styles.previewStats}>
-        <Row gutter={16}>
-          <Col span={8}>
-            <Statistic title="原始时长" value={`${Math.round(videoInfo.duration)}秒`} />
-          </Col>
-          <Col span={8}>
-            <Statistic title="剪辑后时长" value={`${Math.round(totalDuration)}秒`} />
-          </Col>
-          <Col span={8}>
-            <Statistic title="片段数量" value={previewSegments.length} />
-          </Col>
-        </Row>
+    <Card className={styles.previewCard + ' p-6'}>
+      <div className="grid grid-cols-3 gap-4 mb-4">
+        <Statistic title="原始时长" value={`${Math.round(videoInfo.duration)}秒`} />
+        <Statistic title="剪辑后时长" value={`${Math.round(totalDuration)}秒`} />
+        <Statistic title="片段数量" value={previewSegments.length} />
       </div>
 
-      <Divider />
+      <div className="border-t border-border my-4" />
 
-      <Title level={5}>剪辑片段预览</Title>
+      <h3 className="text-lg font-semibold mb-4">剪辑片段预览</h3>
       <div className={styles.segmentsPreview}>
         {previewSegments.map((segment, index) => (
           <Card
             key={segment.id}
-            size="small"
             className={styles.segmentCard}
             title={
-              <Space>
-                <Text strong>片段 {index + 1}</Text>
-                <Tag color={segment.type === 'silence' ? 'red' : 'blue'}>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold">片段 {index + 1}</span>
+                <Badge variant={segment.type === 'silence' ? 'destructive' : 'default'}>
                   {segment.type === 'silence' ? '静音' : '视频'}
-                </Tag>
-              </Space>
+                </Badge>
+              </div>
             }
           >
-            <div className={styles.segmentTime}>
-              <ClockCircleOutlined /> {formatTime(segment.startTime)} -{' '}
-              {formatTime(segment.endTime)}
+            <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
+              <Clock size={12} /> {formatTime(segment.startTime)} - {formatTime(segment.endTime)}
             </div>
-            <div className={styles.segmentDuration}>
-              时长: {segment.duration.toFixed(1)}秒
-            </div>
+            <div className="text-sm">时长: {segment.duration.toFixed(1)}秒</div>
             {segment.thumbnail && (
               <img
                 src={segment.thumbnail}
                 alt={`片段 ${index + 1}`}
-                className={styles.segmentThumbnail}
+                className={styles.segmentThumbnail + ' mt-2'}
                 loading="lazy"
                 decoding="async"
                 draggable={false}
@@ -100,17 +91,15 @@ const PreviewStep: React.FC<PreviewStepProps> = ({
         ))}
       </div>
 
-      <div className={styles.actionButtons}>
-        <Space>
-          <Button variant="outline" onClick={onReset}>
-            <ReloadOutlined className="mr-1" />
-            重新配置
-          </Button>
-          <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white">
-            <DownloadOutlined className="mr-1" />
-            导出剪辑方案
-          </Button>
-        </Space>
+      <div className="flex gap-3 mt-6">
+        <Button variant="outline" onClick={onReset}>
+          <RotateCcw size={16} className="mr-1" />
+          重新配置
+        </Button>
+        <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white">
+          <Download size={16} className="mr-1" />
+          导出剪辑方案
+        </Button>
       </div>
     </Card>
   );

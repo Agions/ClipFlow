@@ -18,25 +18,18 @@ import React, {
   memo,
   useMemo,
 } from 'react';
+import { Button } from '@/components/ui/button';
 import {
-  Button,
-  Space,
-  Slider,
-  Tooltip,
-  Dropdown,
-  Divider,
-} from 'antd';
-import {
-  PlayCircleOutlined,
-  PauseCircleOutlined,
-  ZoomInOutlined,
-  ZoomOutOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-  SendOutlined,
-  FastBackwardOutlined,
-} from '@ant-design/icons';
-import type { MenuProps } from 'antd';
+  PlayCircle,
+  PauseCircle,
+  ZoomIn,
+  ZoomOut,
+  Plus,
+  Trash2,
+  Send,
+  Rewind,
+} from 'lucide-react';
+import type { MenuProps } from '@/components/ui/dropdown-menu';
 import type { TimelineTrack, TimelineClip, DragType } from './types';
 
 import { TrackHeader } from './TrackHeader';
@@ -394,31 +387,31 @@ export const MultiTrackTimeline: React.FC<MultiTrackTimelineProps> = memo(({
       <div className={styles.toolbar}>
         <Space>
           <Tooltip title={isPlaying ? '暂停 (Space)' : '播放 (Space)'}>
-            <Button icon={isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}>
+            <Button icon={isPlaying ? <PauseCircle /> : <PlayCircle />}>
               {isPlaying ? '暂停' : '播放'}
             </Button>
           </Tooltip>
           <Tooltip title="跳转开头">
-            <Button icon={<FastBackwardOutlined />} onClick={() => { setLocalPlayhead(0); onPlayheadChange?.(0); }} />
+            <Button icon={<Rewind />} onClick={() => { setLocalPlayhead(0); onPlayheadChange?.(0); }} />
           </Tooltip>
           <Divider type="vertical" />
           <Dropdown menu={{ items: addTrackMenuItems }} trigger={['click']}>
-            <Button icon={<PlusOutlined />}>添加轨道</Button>
+            <Button icon={<Plus />}>添加轨道</Button>
           </Dropdown>
           <Tooltip title={selectedClipId ? '删除片段 (Delete)' : '请先选择片段'}>
-            <Button icon={<DeleteOutlined />} danger disabled={!selectedClipId} onClick={() => selectedClipId && handleClipDelete(selectedClipId)} />
+            <Button icon={<Trash2 />} danger disabled={!selectedClipId} onClick={() => selectedClipId && handleClipDelete(selectedClipId)} />
           </Tooltip>
           <Divider type="vertical" />
           <Tooltip title="撤销 (Ctrl+Z)">
-            <Button icon={<SendOutlined style={{ transform: 'rotate(180deg)' }} />} disabled={!canUndo} onClick={onUndo} />
+            <Button icon={<Send style={{ transform: 'rotate(180deg)' }} />} disabled={!canUndo} onClick={onUndo} />
           </Tooltip>
           <Tooltip title="重做 (Ctrl+Y)">
-            <Button icon={<SendOutlined />} disabled={!canRedo} onClick={onRedo} />
+            <Button icon={<Send />} disabled={!canRedo} onClick={onRedo} />
           </Tooltip>
           <Divider type="vertical" />
           <Space>
             <Tooltip title="缩小">
-              <Button icon={<ZoomOutOutlined />} onClick={() => {
+              <Button icon={<ZoomOut />} onClick={() => {
                 const newZoom = clamp(localZoom / 1.2, MIN_ZOOM, MAX_ZOOM);
                 setLocalZoom(newZoom);
                 onZoomChange?.(newZoom);
@@ -426,7 +419,7 @@ export const MultiTrackTimeline: React.FC<MultiTrackTimelineProps> = memo(({
             </Tooltip>
             <span className={styles.zoomLabel}>{Math.round(localZoom * 100)}%</span>
             <Tooltip title="放大">
-              <Button icon={<ZoomInOutlined />} onClick={() => {
+              <Button icon={<ZoomIn />} onClick={() => {
                 const newZoom = clamp(localZoom * 1.2, MIN_ZOOM, MAX_ZOOM);
                 setLocalZoom(newZoom);
                 onZoomChange?.(newZoom);
