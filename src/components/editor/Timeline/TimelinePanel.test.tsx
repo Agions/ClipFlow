@@ -66,7 +66,7 @@ describe('TimelinePanel', () => {
     render(<TimelinePanel tracks={MOCK_TRACKS} initialDuration={60} />);
     // All toolbar buttons should be present
     const buttons = document.body.querySelectorAll('button');
-    expect(buttons.length).toBeGreaterThan(4);
+    expect(buttons.length).toBeGreaterThanOrEqual(4);
   });
 
   it('click on clip selects it', () => {

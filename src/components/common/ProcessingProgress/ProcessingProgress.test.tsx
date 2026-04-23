@@ -11,7 +11,7 @@ describe('ProcessingProgress', () => {
 
   it('should render line progress when type="line"', () => {
     const { container } = render(<ProcessingProgress percent={75} type="line" />);
-    expect(container.querySelector('.ant-progress-line')).toBeInTheDocument();
+    expect(container.querySelector('[data-slot="progress"]')).toBeInTheDocument();
   });
 
   it('should display the correct percentage text', () => {
@@ -49,10 +49,10 @@ describe('ProcessingProgress', () => {
   });
 
   it('should render with different sizes without crashing', () => {
-    const { container: small } = render(<ProcessingProgress percent={30} size="small" />);
-    expect(small.querySelector('.ant-progress')).toBeInTheDocument();
+    const { container: small } = render(<ProcessingProgress percent={30} size="small" type="line" />);
+    expect(small.querySelector('[data-slot="progress"]')).toBeInTheDocument();
 
-    const { container: large } = render(<ProcessingProgress percent={30} size="large" />);
-    expect(large.querySelector('.ant-progress')).toBeInTheDocument();
+    const { container: large } = render(<ProcessingProgress percent={30} size="large" type="line" />);
+    expect(large.querySelector('[data-slot="progress"]')).toBeInTheDocument();
   });
 });
