@@ -22,7 +22,7 @@ const MODELS = [
 
   { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4' },
   { value: 'qwen3-max', label: 'Qwen3-Max' },
-  { value: 'kimi-k2-turbo-preview', label: 'Kimi K2.6' },
+  { value: 'kimi-k2.6', label: 'Kimi K2.6' },
 ];
 
 export const AISettings = memo<AISettingsProps>(({
