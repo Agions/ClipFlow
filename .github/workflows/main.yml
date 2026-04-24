@@ -109,7 +109,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: reports/coverage-final.json
+          path: coverage/coverage-final.json
           retention-days: 7
 
   quality-gate:
@@ -134,10 +134,10 @@ jobs:
           echo "ESLint warnings within limit"
       - name: Coverage threshold check
         run: |
-          if [ -f reports/coverage-final.json ]; then
+          if [ -f coverage/coverage-final.json ]; then
             COVERAGE=$(python3 -c "
 import json,sys
-d=json.load(open('reports/coverage-final.json'))
+d=json.load(open('coverage/coverage-final.json'))
 total=0; covered=0
 for fp,data in d.items():
     s=data.get('s',{})
