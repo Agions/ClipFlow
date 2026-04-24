@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "CutDeck - AI 视频创作平台",
+        "title": "CutDeck - AI \u89c6\u9891\u521b\u4f5c\u5e73\u53f0",
         "label": "main",
         "width": 1200,
         "height": 800,
@@ -34,7 +34,14 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "msi", "dmg", "app", "deb", "rpm", "appimage"],
+    "targets": [
+      "nsis",
+      "msi",
+      "app",
+      "deb",
+      "rpm",
+      "appimage"
+    ],
     "resources": {
       "../dist": "dist"
     },
@@ -49,12 +56,15 @@
     "shortDescription": "AI-powered video editing tool",
     "longDescription": "CutDeck is an AI-driven professional video editing tool with autonomous cutting, smart segmentation, highlight detection, and subtitle generation.",
     "publisher": "CutDeck",
-    "copyright": "Copyright © 2024 CutDeck",
+    "copyright": "Copyright \u00a9 2024 CutDeck",
     "windows": {
       "nsis": {
         "installMode": "currentUser",
         "displayLanguageSelector": true,
-        "languages": ["SimpChinese", "English"]
+        "languages": [
+          "SimpChinese",
+          "English"
+        ]
       },
       "wix": null
     },
@@ -63,10 +73,16 @@
         "bundleMediaFramework": true
       },
       "deb": {
-        "depends": ["libwebkit2gtk-4.1-0", "libgtk-3-0"]
+        "depends": [
+          "libwebkit2gtk-4.1-0",
+          "libgtk-3-0"
+        ]
       },
       "rpm": {
-        "depends": ["webkit2gtk4.1", "gtk3"]
+        "depends": [
+          "webkit2gtk4.1",
+          "gtk3"
+        ]
       }
     },
     "macOS": {
@@ -89,7 +105,9 @@
     },
     "deep-link": {
       "desktop": {
-        "schemes": ["cutdeck"]
+        "schemes": [
+          "cutdeck"
+        ]
       }
     }
   }
