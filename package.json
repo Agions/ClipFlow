@@ -30,7 +30,8 @@
     "test:ui": "vitest --ui",
     "test:run": "npx vitest run",
     "docs:build": "npx vitepress build docs",
-    "docs:preview": "npx vitepress preview docs"
+    "docs:preview": "npx vitepress preview docs",
+    "test:ci": "vitest run --coverage --reporter json -o reports/coverage-report.json"
   },
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
