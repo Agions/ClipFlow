@@ -18,7 +18,7 @@ describe('ClipListView', () => {
   // Note: These tests are skipped because base-ui Checkbox uses PointerEvent
   // which is not available in jsdom. The checkbox functionality has been
   // manually verified to work correctly.
-  it.skip('should toggle selection on checkbox click', async () => {
+  it('should toggle selection on checkbox click', async () => {
     const user = userEvent.setup();
     render(<ClipListView segments={mockSegments} onExport={() => {}} />);
     const firstCheckbox = screen.getAllByRole('checkbox')[0];
@@ -26,7 +26,7 @@ describe('ClipListView', () => {
     expect(firstCheckbox.getAttribute('aria-checked')).toBe('true');
   });
 
-  it.skip('should call onExport with selected ids and platform', async () => {
+  it('should call onExport with selected ids and platform', async () => {
     const user = userEvent.setup();
     const handler = vi.fn();
     render(<ClipListView segments={mockSegments} onExport={handler} />);

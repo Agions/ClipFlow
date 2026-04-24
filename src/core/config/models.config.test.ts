@@ -10,7 +10,7 @@ import {
   getModelsByProvider,
   getModelsByCategory,
   DEFAULT_MODEL_ID,
-} from '@/core/config/models.config';
+} from './models.config';
 import type { ModelProvider, ModelCategory } from '@/core/types';
 
 describe('AI_MODELS', () => {

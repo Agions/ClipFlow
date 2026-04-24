@@ -22,7 +22,8 @@
     "baseUrl": ".",
     "rootDirs": ["."],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/scripts/*": ["./scripts/*"]
     }
   },
   "include": ["src"],

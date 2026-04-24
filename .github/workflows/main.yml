@@ -27,6 +27,17 @@ jobs:
         run: pnpm install
       - name: TypeScript check
         run: pnpm run type-check
+      - name: Create reports directory
+        run: mkdir -p reports
+      - name: TypeScript JSON report
+        run: tsc --noEmit --json -o reports/tsc-report.json
+        continue-on-error: true
+      - name: Upload TypeScript report
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsc-report
+          path: reports/tsc-report.json
+          retention-days: 7
 
   lint:
     name: Lint
@@ -43,8 +54,19 @@ jobs:
           version: '9'
       - name: Install dependencies
         run: pnpm install
+      - name: Create reports directory
+        run: mkdir -p reports
       - name: ESLint
         run: pnpm run lint
+      - name: ESLint JSON report
+        run: eslint src --format json -o reports/eslint-report.json
+        continue-on-error: true
+      - name: Upload ESLint report
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-report
+          path: reports/eslint-report.json
+          retention-days: 7
 
   test:
     name: Unit Tests
@@ -64,8 +86,89 @@ jobs:
       - name: Run tests
         run: pnpm run test:run
 
+  coverage:
+    name: Coverage Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: '9'
+      - name: Install dependencies
+        run: pnpm install
+      - name: Create reports directory
+        run: mkdir -p reports
+      - name: Coverage with JSON reporter
+        run: vitest run --coverage --reporter json -o reports/coverage-report.json
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: reports/coverage-report.json
+          retention-days: 7
+
+  quality-gate:
+    name: PR Quality Gate
+    needs: [lint, typecheck, coverage]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-report'
+          path: reports/
+          merge-multiple: true
+      - name: ESLint warnings check
+        run: |
+          ESLINT_COUNT=$(cat reports/eslint-report.json 2>/dev/null | grep -c '"severity":\s*1' || echo "0")
+          echo "ESLint warnings: $ESLINT_COUNT"
+          if [ "$ESLINT_COUNT" -gt 250 ]; then
+            echo "ESLint warnings ($ESLINT_COUNT) exceed threshold of 250"
+            exit 1
+          fi
+          echo "ESLint warnings within limit"
+      - name: Coverage threshold check
+        run: |
+          if [ -f reports/coverage-report.json ]; then
+            COVERAGE=$(cat reports/coverage-report.json | grep -o '"percent":[0-9.]*' | head -1 | grep -o '[0-9.]*' || echo "0")
+            echo "Coverage: ${COVERAGE}%"
+            COVERAGE_INT=$(printf "%.0f" "$COVERAGE")
+            if [ "$COVERAGE_INT" -lt 50 ]; then
+              echo "Coverage (${COVERAGE}%) below threshold of 50%"
+              exit 1
+            fi
+            echo "Coverage meets threshold"
+          else
+            echo "Coverage report not found"
+            exit 1
+          fi
+      - name: TypeScript errors check
+        run: |
+          if [ -f reports/tsc-report.json ]; then
+            TSC_OUTPUT=$(cat reports/tsc-report.json)
+            if echo "$TSC_OUTPUT" | grep -q '"transitiveDiagnostics"'; then
+              echo "TypeScript report format valid"
+            fi
+            ERRORS=$(echo "$TSC_OUTPUT" | grep -o '"errorCount":[0-9]*' | grep -o '[0-9]*' | head -1 || echo "0")
+            echo "TypeScript errors: $ERRORS"
+            if [ "$ERRORS" -gt 0 ]; then
+              echo "TypeScript has errors ($ERRORS)"
+              exit 1
+            fi
+            echo "TypeScript check passed"
+          else
+            echo "TypeScript report not found"
+            exit 1
+          fi
+
   build:
     name: Vite Build
+    needs: [typecheck, lint, test, coverage, quality-gate]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -89,3 +192,53 @@ jobs:
           name: dist
           path: dist/
           retention-days: 7
+
+  reports:
+    name: Quality Reports
+    needs: [lint, typecheck, coverage]
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-report'
+          path: reports/
+          merge-multiple: true
+      - name: List reports
+        run: ls -la reports/
+      - name: Run code quality dashboard
+        run: npx ts-node scripts/code-review-dashboard.ts --json
+      - name: Upload all reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports
+          path: reports/
+          retention-days: 7
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "## 📊 Quality Reports" > comment.md
+          echo "" >> comment.md
+          echo "### Artifacts" >> comment.md
+          echo "- [Download Quality Reports](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts)" >> comment.md
+          echo "" >> comment.md
+          if [ -f reports/eslint-report.json ]; then
+            echo "### ESLint Report" >> comment.md
+            echo "ESLint JSON report available in artifacts" >> comment.md
+          fi
+          cat comment.md
+      - name: Post PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const comment = fs.readFileSync('comment.md', 'utf8');
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });

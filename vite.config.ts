@@ -33,6 +33,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@/store': path.resolve(__dirname, './src/store/index'),
+      '@/scripts': path.resolve(__dirname, './scripts'),
     },
   },
   build: {

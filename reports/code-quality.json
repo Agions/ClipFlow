@@ -1,0 +1,344 @@
+{
+  "generatedAt": "2026-04-24T11:15:22.226Z",
+  "branch": "unknown",
+  "isCI": false,
+  "eslint": {
+    "totalFiles": 365,
+    "totalErrors": 0,
+    "totalWarnings": 0,
+    "bySeverity": {
+      "error": 0,
+      "warning": 0
+    },
+    "topFiles": [
+      {
+        "file": "src/App.tsx",
+        "count": 0
+      },
+      {
+        "file": "src/components/AIClipAssistant/components/AnalyzeStep.tsx",
+        "count": 0
+      },
+      {
+        "file": "src/components/AIClipAssistant/components/ConfigStep.tsx",
+        "count": 0
+      },
+      {
+        "file": "src/components/AIClipAssistant/components/PreviewStep.tsx",
+        "count": 0
+      },
+      {
+        "file": "src/components/AIClipAssistant/components/SuggestionsStep.tsx",
+        "count": 0
+      },
+      {
+        "file": "src/components/AIClipAssistant/components/index.ts",
+        "count": 0
+      },
+      {
+        "file": "src/components/AIClipAssistant/hooks/useAIClipAssistant.ts",
+        "count": 0
+      },
+      {
+        "file": "src/components/AIClipAssistant/index.tsx",
+        "count": 0
+      },
+      {
+        "file": "src/components/AIClipAssistant/types.ts",
+        "count": 0
+      },
+      {
+        "file": "src/components/AILayout.tsx",
+        "count": 0
+      }
+    ]
+  },
+  "typescript": {
+    "errors": [],
+    "errorCount": 0
+  },
+  "coverage": {
+    "totalLines": {
+      "covered": 507,
+      "total": 10550,
+      "percent": 5
+    },
+    "totalBranches": {
+      "covered": 269,
+      "total": 6042,
+      "percent": 4
+    },
+    "byFile": [
+      {
+        "path": "src/components/editor/Timeline/TimelineToolbar.tsx",
+        "lineCovered": 3,
+        "lineTotal": 3,
+        "linePercent": 100,
+        "branchCovered": 2,
+        "branchTotal": 4,
+        "branchPercent": 50
+      },
+      {
+        "path": "src/components/editor/Timeline/TimelineTrack.tsx",
+        "lineCovered": 8,
+        "lineTotal": 8,
+        "linePercent": 100,
+        "branchCovered": 2,
+        "branchTotal": 4,
+        "branchPercent": 50
+      },
+      {
+        "path": "src/components/ui/button.tsx",
+        "lineCovered": 4,
+        "lineTotal": 4,
+        "linePercent": 100,
+        "branchCovered": 6,
+        "branchTotal": 10,
+        "branchPercent": 60
+      },
+      {
+        "path": "src/components/ui/checkbox.tsx",
+        "lineCovered": 1,
+        "lineTotal": 1,
+        "linePercent": 100,
+        "branchCovered": 0,
+        "branchTotal": 0,
+        "branchPercent": 0
+      },
+      {
+        "path": "src/components/ui/scroll-area.tsx",
+        "lineCovered": 3,
+        "lineTotal": 3,
+        "linePercent": 100,
+        "branchCovered": 1,
+        "branchTotal": 1,
+        "branchPercent": 100
+      },
+      {
+        "path": "src/core/config/platform-presets.ts",
+        "lineCovered": 5,
+        "lineTotal": 5,
+        "linePercent": 100,
+        "branchCovered": 2,
+        "branchTotal": 2,
+        "branchPercent": 100
+      },
+      {
+        "path": "src/core/services/export/jianying-draft-exporter.ts",
+        "lineCovered": 6,
+        "lineTotal": 6,
+        "linePercent": 100,
+        "branchCovered": 3,
+        "branchTotal": 6,
+        "branchPercent": 50
+      },
+      {
+        "path": "src/core/services/subtitle/jianying-subtitle-adapter.ts",
+        "lineCovered": 2,
+        "lineTotal": 2,
+        "linePercent": 100,
+        "branchCovered": 0,
+        "branchTotal": 0,
+        "branchPercent": 0
+      },
+      {
+        "path": "src/core/types/jianying.ts",
+        "lineCovered": 1,
+        "lineTotal": 1,
+        "linePercent": 100,
+        "branchCovered": 0,
+        "branchTotal": 0,
+        "branchPercent": 0
+      },
+      {
+        "path": "src/core/video/formatters.ts",
+        "lineCovered": 33,
+        "lineTotal": 33,
+        "linePercent": 100,
+        "branchCovered": 32,
+        "branchTotal": 32,
+        "branchPercent": 100
+      },
+      {
+        "path": "src/lib/utils.ts",
+        "lineCovered": 1,
+        "lineTotal": 1,
+        "linePercent": 100,
+        "branchCovered": 0,
+        "branchTotal": 0,
+        "branchPercent": 0
+      },
+      {
+        "path": "src/services/aiModelAdapter.ts",
+        "lineCovered": 5,
+        "lineTotal": 5,
+        "linePercent": 100,
+        "branchCovered": 2,
+        "branchTotal": 2,
+        "branchPercent": 100
+      },
+      {
+        "path": "src/shared/utils/format.ts",
+        "lineCovered": 68,
+        "lineTotal": 68,
+        "linePercent": 100,
+        "branchCovered": 47,
+        "branchTotal": 49,
+        "branchPercent": 96
+      },
+      {
+        "path": "src/utils/retry.ts",
+        "lineCovered": 14,
+        "lineTotal": 14,
+        "linePercent": 100,
+        "branchCovered": 2,
+        "branchTotal": 2,
+        "branchPercent": 100
+      },
+      {
+        "path": "src/core/services/export-progress.ts",
+        "lineCovered": 35,
+        "lineTotal": 36,
+        "linePercent": 97,
+        "branchCovered": 13,
+        "branchTotal": 18,
+        "branchPercent": 72
+      },
+      {
+        "path": "src/utils/logger.ts",
+        "lineCovered": 26,
+        "lineTotal": 28,
+        "linePercent": 93,
+        "branchCovered": 8,
+        "branchTotal": 12,
+        "branchPercent": 67
+      },
+      {
+        "path": "src/components/common/ErrorBoundary.tsx",
+        "lineCovered": 11,
+        "lineTotal": 12,
+        "linePercent": 92,
+        "branchCovered": 5,
+        "branchTotal": 6,
+        "branchPercent": 83
+      },
+      {
+        "path": "src/components/editor/Timeline/TimelineRuler.tsx",
+        "lineCovered": 30,
+        "lineTotal": 35,
+        "linePercent": 86,
+        "branchCovered": 12,
+        "branchTotal": 17,
+        "branchPercent": 71
+      },
+      {
+        "path": "src/components/CutDeck/ModeSelector/ModeSelector.tsx",
+        "lineCovered": 5,
+        "lineTotal": 6,
+        "linePercent": 83,
+        "branchCovered": 2,
+        "branchTotal": 4,
+        "branchPercent": 50
+      },
+      {
+        "path": "src/core/utils/model-availability.ts",
+        "lineCovered": 12,
+        "lineTotal": 15,
+        "linePercent": 80,
+        "branchCovered": 4,
+        "branchTotal": 9,
+        "branchPercent": 44
+      },
+      {
+        "path": "src/components/common/ProcessingProgress/index.tsx",
+        "lineCovered": 14,
+        "lineTotal": 18,
+        "linePercent": 78,
+        "branchCovered": 29,
+        "branchTotal": 40,
+        "branchPercent": 73
+      },
+      {
+        "path": "src/core/services/workflow-progress.ts",
+        "lineCovered": 57,
+        "lineTotal": 74,
+        "linePercent": 77,
+        "branchCovered": 14,
+        "branchTotal": 24,
+        "branchPercent": 58
+      },
+      {
+        "path": "src/services/apiKey.ts",
+        "lineCovered": 31,
+        "lineTotal": 45,
+        "linePercent": 69,
+        "branchCovered": 23,
+        "branchTotal": 38,
+        "branchPercent": 61
+      },
+      {
+        "path": "src/components/ui/progress.tsx",
+        "lineCovered": 4,
+        "lineTotal": 6,
+        "linePercent": 67,
+        "branchCovered": 0,
+        "branchTotal": 0,
+        "branchPercent": 0
+      },
+      {
+        "path": "src/components/editor/Timeline/TimelineClip.tsx",
+        "lineCovered": 11,
+        "lineTotal": 17,
+        "linePercent": 65,
+        "branchCovered": 4,
+        "branchTotal": 5,
+        "branchPercent": 80
+      },
+      {
+        "path": "src/components/editor/Timeline/TimelinePanel.tsx",
+        "lineCovered": 45,
+        "lineTotal": 70,
+        "linePercent": 64,
+        "branchCovered": 9,
+        "branchTotal": 18,
+        "branchPercent": 50
+      },
+      {
+        "path": "src/components/CutDeck/SimpleMode/ClipListView.tsx",
+        "lineCovered": 9,
+        "lineTotal": 16,
+        "linePercent": 56,
+        "branchCovered": 2,
+        "branchTotal": 8,
+        "branchPercent": 25
+      },
+      {
+        "path": "src/core/services/video/emotion-peak-detector.ts",
+        "lineCovered": 9,
+        "lineTotal": 17,
+        "linePercent": 53,
+        "branchCovered": 4,
+        "branchTotal": 13,
+        "branchPercent": 31
+      },
+      {
+        "path": "src/components/ui/tooltip.tsx",
+        "lineCovered": 2,
+        "lineTotal": 4,
+        "linePercent": 50,
+        "branchCovered": 1,
+        "branchTotal": 5,
+        "branchPercent": 20
+      },
+      {
+        "path": "src/components/ui/select.tsx",
+        "lineCovered": 5,
+        "lineTotal": 11,
+        "linePercent": 45,
+        "branchCovered": 6,
+        "branchTotal": 6,
+        "branchPercent": 100
+      }
+    ]
+  }
+}
