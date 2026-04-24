@@ -92,12 +92,12 @@ VITE_PORT=1431
 CutDeck 支持多种模型提供商（详见 [AI 模型配置](./ai-config.md)）：
 
 - **OpenAI**: GPT-4o、GPT-4o mini、o3-mini
-- **Anthropic**: Claude 3.5 Sonnet、Claude 4 Sonnet
-- **Google**: Gemini 2.0 Flash、Gemini 1.5 Pro
-- **DeepSeek**: DeepSeek Chat、DeepSeek R1
-- **通义千问**: Qwen Plus、Qwen Turbo
-- **智谱**: GLM-4、GLM-4V
-- **Kimi**: moonshot-v1-128k、moonshot-v1-8k
+- **Anthropic**: Claude Sonnet 4.7、Claude Sonnet 4.6
+- **Google**: Gemini 2.5 Pro、Gemini 2.5 Flash Lite
+- **DeepSeek**: DeepSeek-V4-Flash、DeepSeek-V4-Pro
+- **通义千问**: Qwen-Max、Qwen2.5-72B
+- **智谱**: GLM-5-Pro
+- **Kimi**: kimi-k2.5-0905、kimi-k2.5-turbo
 
 ### 哪个 AI 模型最好？
 

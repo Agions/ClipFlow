@@ -1,6 +1,6 @@
 ---
 title: AI 模型配置
-description: CutDeck 支持的 AI 模型提供商配置详解，基于 2026 年 3 月最新模型列表。
+description: CutDeck 支持的 AI 模型提供商配置详解，基于 2026 年 4 月最新模型列表。
 ---
 
 # AI 模型配置
@@ -43,12 +43,6 @@ VITE_OPENAI_BASE_URL=https://api.openai.com/v1
 
 | 模型 ID | 名称 | 特点 |
 |---------|------|------|
-| `gpt-4o` | GPT-4o | 🏆 旗舰多模态，支持视觉和函数调用 |
-| `gpt-4o-mini` | GPT-4o mini | 轻量高速，性价比高 |
-| `gpt-4-turbo` | GPT-4 Turbo | GPT-4 高速版 |
-| `o3-mini` | o3-mini | 最新推理模型，专注复杂推理 |
-
-获取 API 密钥：[platform.openai.com](https://platform.openai.com/api-keys)
 
 ---
 
@@ -60,9 +54,6 @@ VITE_ANTHROPIC_API_KEY=sk-ant-xxxx
 
 | 模型 ID | 名称 | 特点 |
 |---------|------|------|
-| `claude-sonnet-4-20250514` | Claude 4 Sonnet | 中高端，速度与能力平衡 |
-| `claude-3-5-sonnet-20241022` | Claude 3.5 Sonnet | 旗舰级，长上下文处理能力强 |
-| `claude-3-5-haiku-20241022` | Claude 3.5 Haiku | 轻量快速 |
 
 获取 API 密钥：[console.anthropic.com](https://console.anthropic.com/)
 
@@ -77,9 +68,8 @@ VITE_DEFAULT_PROVIDER=google
 
 | 模型 ID | 名称 | 特点 |
 |---------|------|------|
-| `gemini-2.0-flash` | Gemini 2.0 Flash | 最新高速模型，多模态能力强 |
-| `gemini-1.5-pro` | Gemini 1.5 Pro | 2M 超长上下文（免费额度） |
-| `gemini-1.5-flash` | Gemini 1.5 Flash | 轻量快速（免费额度） |
+| `gemini-2.5-pro-preview` | Gemini 2.5 Pro | 🏆 最新旗舰，多模态推理 |
+| `gemini-2.5-flash-lite-preview` | Gemini 2.5 Flash Lite | 轻量高速，低成本 |
 
 获取 API 密钥：[AI Studio](https://aistudio.google.com/app/apikey)
 
@@ -94,8 +84,8 @@ VITE_DEFAULT_PROVIDER=deepseek
 
 | 模型 ID | 名称 | 特点 |
 |---------|------|------|
-| `deepseek-chat` | DeepSeek Chat | 中文能力强，性价比最高 |
-| `deepseek-reasoner` | DeepSeek R1 | 推理模型，复杂推理任务优秀 |
+| `deepseek-v4-flash` | DeepSeek-V4-Flash | 🏆 最新非思考模式，高性价比 |
+| `deepseek-v4-pro` | DeepSeek-V4-Pro | 最新思考模式，复杂推理 |
 
 获取 API 密钥：[platform.deepseek.com](https://platform.deepseek.com/)
 
@@ -110,9 +100,8 @@ VITE_DEFAULT_PROVIDER=dashscope
 
 | 模型 ID | 名称 | 特点 |
 |---------|------|------|
-| `qwen-plus` | 通义千问 Plus | 中文理解能力突出 |
-| `qwen-turbo` | 通义千问 Turbo | 高速模型 |
-| `qwen-long` | 通义千问 Long | 1M 超长上下文 |
+| `qwen-max-latest` | Qwen-Max | 🏆 最新旗舰，中文优化 |
+| `qwen2.5-72b-instruct` | Qwen2.5-72B | 高性价比开源模型 |
 
 获取 API 密钥：[阿里云百炼](https://bailian.console.aliyun.com/)
 
@@ -127,9 +116,7 @@ VITE_DEFAULT_PROVIDER=zhipuai
 
 | 模型 ID | 名称 | 特点 |
 |---------|------|------|
-| `glm-4` | GLM-4 | 中文能力突出 |
-| `glm-4v` | GLM-4V | 视觉理解模型 |
-| `glm-4-alloy` | GLM-4 Alloy | 高速对话模型 |
+| `glm-5-pro` | GLM-5-Pro | 🏆 最新旗舰，中文脚本生成 |
 
 获取 API 密钥：[智谱 AI 开放平台](https://open.bigmodel.cn/)
 
@@ -144,9 +131,8 @@ VITE_DEFAULT_PROVIDER=moonshot
 
 | 模型 ID | 名称 | 特点 |
 |---------|------|------|
-| `moonshot-v1-128k` | Kimi 128K | 128K 超长上下文 |
-| `moonshot-v1-32k` | Kimi 32K | 标准上下文模型 |
-| `moonshot-v1-8k` | Kimi 8K | 快速对话模型 |
+| `kimi-k2.5-0905` | Kimi K2.5 | 🏆 最新旗舰，多模态理解 |
+| `kimi-k2.5-turbo` | Kimi K2.5 Turbo | 高吞吐，低时延 |
 
 获取 API 密钥：[Moonshot Console](https://platform.moonshot.cn/)
 

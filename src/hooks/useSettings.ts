@@ -51,7 +51,7 @@ export function useSettingsStore() {
   const [autoSave, setAutoSave] = useLocalStorage('cutdeck-autosave', true);
   const [compactMode, setCompactMode] = useLocalStorage('cutdeck-compact', false);
   const [theme, setTheme] = useLocalStorage('cutdeck-theme', 'light');
-  const [defaultModel, setDefaultModel] = useLocalStorage('cutdeck-default-model', 'deepseek-chat');
+  const [defaultModel, setDefaultModel] = useLocalStorage('cutdeck-default-model', 'deepseek-v4-flash');
   const [projectSaveBehavior, setProjectSaveBehavior] = useLocalStorage<ProjectSaveBehavior>(PROJECT_SAVE_BEHAVIOR_KEY, 'stay');
   const [outputPath, setOutputPath] = useLocalStorage('cutdeck-output-path', '');
   const [recentProjects, setRecentProjects] = useLocalStorage<string[]>('cutdeck-recent-projects', []);
@@ -80,7 +80,7 @@ export function useSettingsStore() {
     setAutoSave(true);
     setCompactMode(false);
     setTheme('light');
-    setDefaultModel('deepseek-chat');
+    setDefaultModel('deepseek-v4-flash');
     setProjectSaveBehavior('stay');
     setOutputPath('');
     setRecentProjects([]);
