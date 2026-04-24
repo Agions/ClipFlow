@@ -123,23 +123,37 @@ const CORE_MODEL_VERIFICATION: ModelVerificationMeta = {
 };
 
 export const MODEL_CATALOG_VERIFIED_AT = CORE_MODEL_VERIFICATION.checkedAt;
-export const DEFAULT_MODEL_ID = 'o4' as const;
+export const DEFAULT_MODEL_ID = 'gpt-4o' as const;
 
 export const MODEL_VERIFICATION: Record<string, ModelVerificationMeta> = {
-  o4: { checkedAt: '2026-04-25', source: 'platform.openai.com/docs/models', verified: true },
-  'o4-mini': { checkedAt: '2026-04-25', source: 'platform.openai.com/docs/models', verified: true },
-  'claude-sonnet-4-7': { checkedAt: '2026-04-25', source: 'docs.anthropic.com/en/docs/about-claude/models/all-models', verified: true },
-  'gemini-2.5-pro-preview': { checkedAt: '2026-04-25', source: 'ai.google.dev/gemini-api/docs/models', verified: true },
-  'gemini-2.5-flash-lite-preview': { checkedAt: '2026-04-25', source: 'ai.google.dev/gemini-api/docs/models', verified: true },
-  'qwen-max-latest': { checkedAt: '2026-04-25', source: 'help.aliyun.com/zh/model-studio/models', verified: true },
-  'qwen2.5-72b-instruct': { checkedAt: '2026-04-25', source: 'help.aliyun.com/zh/model-studio/models', verified: true },
-  'deepseek-v4-flash': { checkedAt: '2026-04-25', source: 'api-docs.deepseek.com', verified: true },
-  'deepseek-v4-pro': { checkedAt: '2026-04-25', source: 'api-docs.deepseek.com', verified: true },
-  'glm-5-pro': { checkedAt: '2026-04-25', source: 'open.bigmodel.cn', verified: true },
-  'kimi-k2.5-0905': { checkedAt: '2026-04-25', source: 'platform.moonshot.cn', verified: true },
-  'kimi-k2.5-turbo': { checkedAt: '2026-04-25', source: 'platform.moonshot.cn', verified: true },
+  [DEFAULT_MODEL_ID]: CORE_MODEL_VERIFICATION,
+  o3: CORE_MODEL_VERIFICATION,
+  'claude-sonnet-4-6': CORE_MODEL_VERIFICATION,
+  'gemini-3.1-pro-preview': CORE_MODEL_VERIFICATION,
+  'gemini-3.1-flash-lite-preview': CORE_MODEL_VERIFICATION,
+  'qwen-max-latest': CORE_MODEL_VERIFICATION,
+  'deepseek-v4-flash': { checkedAt: '2026-04-25', source: 'api-docs.deepseek.com', verified: true, note: 'deepseek-chat 已废弃，替换为 deepseek-v4-flash（非思考模式）' },
+  'deepseek-v4-pro': { checkedAt: '2026-04-25', source: 'api-docs.deepseek.com', verified: true, note: 'deepseek-reasoner 已废弃，替换为 deepseek-v4-pro（思考模式）' },
+  'glm-5': {
+    checkedAt: '2026-03-06',
+    source: 'provider-portal',
+    verified: true,
+    note: '按当前产品要求固定使用 GLM-5。',
+  },
+  'kimi-k2-0905-preview': {
+    checkedAt: '2026-03-06',
+    source: 'moonshot-official',
+    verified: true,
+    note: 'Kimi K2.5 主力模型。',
+  },
+  'kimi-k2-turbo-preview': {
+    checkedAt: '2026-03-06',
+    source: 'moonshot-official',
+    verified: true,
+    note: 'Kimi K2.5 Turbo，偏速度/成本。',
+  },
   'spark-custom': {
-    checkedAt: '2026-04-25',
+    checkedAt: '2026-03-05',
     source: 'provider-portal-manual-check-required',
     verified: false,
     note: '讯飞星火型号变动频繁，建议在设置里配置。',
@@ -148,32 +162,20 @@ export const MODEL_VERIFICATION: Record<string, ModelVerificationMeta> = {
 
 export const AI_MODELS: AIModel[] = [
   {
-    id: 'o4',
-    name: 'OpenAI o4',
+    id: 'gpt-4o',
+    name: 'GPT-4o',
     provider: 'openai',
-    category: ['text', 'code', 'image'],
-    description: 'OpenAI 最新旗舰模型，适合复杂镜头语义和解说对齐，多模态强推理。',
+    category: ['text', 'code', 'image', 'video'],
+    description: 'OpenAI 旗舰多模态模型，适合复杂镜头语义和解说对齐。',
     features: ['多模态理解', '高级推理', '视频语义分析'],
     tokenLimit: 16384,
-    contextWindow: 1000000,
-    isPro: true,
-    pricing: { input: 0, output: 0, unit: 'provider pricing page' },
-  },
-  {
-    id: 'o4-mini',
-    name: 'OpenAI o4-mini',
-    provider: 'openai',
-    category: ['text', 'code', 'image'],
-    description: '轻量高速版，适合批量分析与低时延任务，成本更低。',
-    features: ['高速', '低成本', '多模态'],
-    tokenLimit: 8192,
-    contextWindow: 1000000,
+    contextWindow: 128000,
     isPro: true,
     pricing: { input: 0, output: 0, unit: 'provider pricing page' },
   },
   {
     id: 'o3',
-    name: 'OpenAI o3',
+    name: 'o3',
     provider: 'openai',
     category: ['text', 'code', 'image'],
     description: '高推理模型，适合镜头匹配、时间轴修正等复杂推断。',
@@ -184,8 +186,8 @@ export const AI_MODELS: AIModel[] = [
     pricing: { input: 0, output: 0, unit: 'provider pricing page' },
   },
   {
-    id: 'claude-sonnet-4-7',
-    name: 'Claude Sonnet 4.7',
+    id: 'claude-sonnet-4-6',
+    name: 'Claude Sonnet 4.6',
     provider: 'anthropic',
     category: ['text', 'code', 'image'],
     description: '长文本组织能力强，适合脚本长稿与风格润色。',
@@ -196,8 +198,8 @@ export const AI_MODELS: AIModel[] = [
     pricing: { input: 0, output: 0, unit: 'provider pricing page' },
   },
   {
-    id: 'gemini-2.5-pro-preview',
-    name: 'Gemini 2.5 Pro Preview',
+    id: 'gemini-3.1-pro-preview',
+    name: 'Gemini 3.1 Pro Preview',
     provider: 'google',
     category: ['text', 'code', 'image', 'video'],
     description: 'Google 最新代际高性能模型，适合复杂视频语义分析与镜头-文案对齐。',
@@ -208,8 +210,8 @@ export const AI_MODELS: AIModel[] = [
     pricing: { input: 0, output: 0, unit: 'provider pricing page' },
   },
   {
-    id: 'gemini-2.5-flash-lite-preview',
-    name: 'Gemini 2.5 Flash Lite Preview',
+    id: 'gemini-3.1-flash-lite-preview',
+    name: 'Gemini 3.1 Flash Lite Preview',
     provider: 'google',
     category: ['text', 'image', 'video'],
     description: 'Google 轻量高速模型，适合批量分析与低时延任务。',
@@ -236,7 +238,7 @@ export const AI_MODELS: AIModel[] = [
     name: 'DeepSeek-V4-Flash',
     provider: 'deepseek',
     category: ['text', 'code', 'image'],
-    description: 'DeepSeek 最新非思考模式模型，通用文本生成与改写，适合混剪旁白批量生成。',
+    description: 'DeepSeek 最新非思考模式（已替代 deepseek-chat），通用文本生成与改写，适合混剪旁白批量生成。',
     features: ['高性价比', '中文可用', '重写能力'],
     tokenLimit: 8192,
     contextWindow: 1000000,
@@ -248,7 +250,7 @@ export const AI_MODELS: AIModel[] = [
     name: 'DeepSeek-V4-Pro',
     provider: 'deepseek',
     category: ['text', 'code'],
-    description: 'DeepSeek 最新思考模式模型，推理型，适合镜头到文案的对齐评分。',
+    description: 'DeepSeek 最新思考模式（已替代 deepseek-reasoner），推理型，适合镜头到文案的对齐评分。',
     features: ['推理', '判别', '重排序'],
     tokenLimit: 8192,
     contextWindow: 1000000,
@@ -256,11 +258,11 @@ export const AI_MODELS: AIModel[] = [
     pricing: { input: 12, output: 24, unit: '元/百万tokens' },
   },
   {
-    id: 'glm-5-pro',
-    name: 'GLM-5-Pro',
+    id: 'glm-5',
+    name: 'GLM-5',
     provider: 'zhipu',
     category: ['text', 'code', 'image'],
-    description: '智谱 GLM-5-Pro，适合中文脚本生成与多轮对话。',
+    description: '智谱 GLM-5，适合中文脚本生成与多轮对话。',
     features: ['中文优化', '推理', '多场景适配'],
     tokenLimit: 8192,
     contextWindow: 128000,
@@ -268,7 +270,7 @@ export const AI_MODELS: AIModel[] = [
     pricing: { input: 0, output: 0, unit: 'provider pricing page' },
   },
   {
-    id: 'kimi-k2.5-0905',
+    id: 'kimi-k2-0905-preview',
     name: 'Kimi K2.5',
     provider: 'moonshot',
     category: ['text', 'code', 'image', 'video'],
@@ -280,7 +282,7 @@ export const AI_MODELS: AIModel[] = [
     pricing: { input: 0, output: 0, unit: 'provider pricing page' },
   },
   {
-    id: 'kimi-k2.5-turbo',
+    id: 'kimi-k2-turbo-preview',
     name: 'Kimi K2.5 Turbo',
     provider: 'moonshot',
     category: ['text', 'code', 'image'],
@@ -307,10 +309,10 @@ export const AI_MODELS: AIModel[] = [
 ];
 
 export const MODEL_RECOMMENDATIONS: Record<string, string[]> = {
-  script: ['o4', 'claude-sonnet-4-7', 'qwen-max-latest', 'deepseek-v4-flash'],
-  analysis: ['gemini-2.5-pro-preview', 'o4', 'o4-mini'],
-  code: ['o4', 'claude-sonnet-4-7', 'deepseek-v4-pro'],
-  fast: ['o4-mini', 'qwen2.5-72b-instruct', 'deepseek-v4-flash'],
+  script: ['gpt-4o', 'claude-sonnet-4-6', 'qwen-max-latest', 'deepseek-v4-flash'],
+  analysis: ['gpt-4o', 'gemini-1.5-pro', 'o3'],
+  code: ['o3', 'claude-sonnet-4-6', 'deepseek-reasoner'],
+  fast: ['qwen-max-latest', 'deepseek-v4-flash'],
 };
 
 export const getModelById = (id: string): AIModel | undefined => {

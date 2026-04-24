@@ -132,8 +132,8 @@ const MODEL_CONFIGS: Record<LegacyAIModelType, ModelConfig> = {
       )?.text || '',
   },
   google: {
-    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent',
-    model: 'gemini-2.5-pro',
+    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro:generateContent',
+    model: 'gemini-3.1-pro',
     headers: (__apiKey: string) => ({ 'Content-Type': 'application/json' }),
     transformRequest: prompt => ({
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
@@ -196,10 +196,10 @@ const MODEL_CONFIGS: Record<LegacyAIModelType, ModelConfig> = {
   },
   moonshot: {
     url: 'https://api.moonshot.cn/v1/chat/completions',
-    model: 'kimi-k2.5-0905',
+    model: 'moonshot-v1-8k',
     headers: apiKey => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` }),
     transformRequest: prompt => ({
-      model: 'kimi-k2.5-0905',
+      model: 'moonshot-v1-8k',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
       max_tokens: 4000,

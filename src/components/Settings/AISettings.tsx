@@ -17,11 +17,11 @@ interface AISettingsProps {
 }
 
 const MODELS = [
-  { value: 'deepseek-v4-flash', label: 'DeepSeek V4 Flash' },
-  { value: 'o4', label: 'OpenAI o4' },
-  { value: 'claude-sonnet-4-7', label: 'Claude Sonnet 4.7' },
-  { value: 'qwen-max-latest', label: 'Qwen Max' },
-  { value: 'kimi-k2.5-0905', label: 'Kimi K2.5' },
+  { value: 'deepseek-v4-flash', label: 'DeepSeek-V4-Flash (推荐)' },
+  { value: 'gpt-4o', label: 'GPT-4o' },
+  { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4' },
+  { value: 'qwen-max-latest', label: 'Qwen-Max' },
+  { value: 'moonshot-v1-8k', label: 'Moonshot (Kimi)' },
 ];
 
 export const AISettings = memo<AISettingsProps>(({

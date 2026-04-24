@@ -105,11 +105,11 @@ npm run dev
 
 | 提供商 | 推荐模型 | 适用场景 |
 |--------|----------|----------|
-| DeepSeek | V4-Flash (推荐)，V4-Pro (推理)| | 🏆 性价比最高， clip script 生成 |
-| OpenAI | o4 (旗舰)，o4-mini (轻量)| | 剧情分析、内容理解 |
-| Anthropic | Claude Sonnet 4.7 (旗舰)| | 长文本分析 |
-| 阿里云 | Qwen-Max (旗舰)| | 中文内容创作 |
-| Kimi | K2.5 (旗舰)，K2.5 Turbo (高速)| | 长文本分析 |
+| DeepSeek | V4-Flash（推荐），V4-Pro（推理）| | 🏆 性价比最高， clip script 生成 |
+| OpenAI | GPT-4o | 剧情分析、内容理解 |
+| Anthropic | Claude Sonnet 4 | 长文本分析 |
+| 阿里云 | Qwen 2.5-Max | 中文内容创作 |
+| Kimi | K2.5 | 长文本分析 |
 
 ---
 
