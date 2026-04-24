@@ -138,7 +138,7 @@ export const MODEL_VERIFICATION: Record<string, ModelVerificationMeta> = {
   'deepseek-v4-flash': { checkedAt: '2026-04-25', source: 'platform.deepseek.com, api-docs.deepseek.com', verified: true },
   'deepseek-v4-pro': { checkedAt: '2026-04-25', source: 'platform.deepseek.com, api-docs.deepseek.com', verified: true },
   'glm-5': { checkedAt: '2026-04-25', source: 'docs.bigmodel.cn/cn/guide/models/text/glm-5', verified: true },
-  'kimi-k2-turbo-preview': { checkedAt: '2026-04-25', source: 'platform.moonshot.cn/docs/guide/kimi-k2-quickstart', verified: true },
+  'kimi-k2-turbo-preview': { checkedAt: '2026-04-25', source: 'platform.moonshot.cn/docs/guide/kimi-k2-quickstart', verified: true, note: '官方名称 Kimi K2.6，API ID 为 kimi-k2-turbo-preview' },
   'spark-custom': {
     checkedAt: '2026-04-25',
     source: 'provider-portal-manual-check-required',

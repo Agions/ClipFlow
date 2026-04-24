@@ -147,7 +147,7 @@ VITE_DEFAULT_PROVIDER=moonshot
 
 | 模型 ID | 名称 | 特点 |
 |---------|------|------|
-| `kimi-k2-turbo-preview` | Kimi K2 Turbo | 🚀 高速版（60-100 Tokens/s），256K 上下文，代码与 Agent |
+| `kimi-k2-turbo-preview` | Kimi K2.6 | 🚀 高速版（60-100 Tokens/s），256K 上下文，代码与 Agent |
 | `moonshot-v1-8k` | Kimi 8K | 快速对话模型（已上线 API） |
 
 获取 API 密钥：[Moonshot Console](https://platform.moonshot.cn/)
