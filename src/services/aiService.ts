@@ -132,8 +132,8 @@ const MODEL_CONFIGS: Record<LegacyAIModelType, ModelConfig> = {
       )?.text || '',
   },
   google: {
-    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro:generateContent',
-    model: 'gemini-3.1-pro',
+    url: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent',
+    model: 'gemini-1.5-pro',
     headers: (__apiKey: string) => ({ 'Content-Type': 'application/json' }),
     transformRequest: prompt => ({
       contents: [{ role: 'user', parts: [{ text: prompt }] }],

@@ -92,8 +92,8 @@ VITE_PORT=1431
 CutDeck 支持多种模型提供商（详见 [AI 模型配置](./ai-config.md)）：
 
 - **OpenAI**: GPT-4o、GPT-4o mini、o3-mini
-- **Anthropic**: Claude 3.5 Sonnet、Claude 4 Sonnet
-- **Google**: Gemini 2.0 Flash、Gemini 1.5 Pro
+- **Anthropic**: Claude Sonnet 4.6、Claude Opus 4.7
+- **Google**: Gemini 1.5 Pro、Gemini 2.0 Flash
 - **DeepSeek**: DeepSeek-V4-Flash、DeepSeek-V4-Pro
 - **通义千问**: Qwen Plus、Qwen Turbo
 - **智谱**: GLM-4、GLM-4V

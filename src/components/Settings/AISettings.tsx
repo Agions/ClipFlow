@@ -20,8 +20,8 @@ const MODELS = [
   { value: 'deepseek-v4-flash', label: 'DeepSeek-V4-Flash (推荐)' },
   { value: 'gpt-4o', label: 'GPT-4o' },
   { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4' },
-  { value: 'qwen-max-latest', label: 'Qwen-Max' },
-  { value: 'moonshot-v1-8k', label: 'Moonshot (Kimi)' },
+  { value: 'qwen3-max', label: 'Qwen3-Max' },
+  { value: 'kimi-k2.6', label: 'Kimi K2.6' },
 ];
 
 export const AISettings = memo<AISettingsProps>(({
