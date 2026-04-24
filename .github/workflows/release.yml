@@ -180,7 +180,7 @@ jobs:
         run: |
           find artifacts -type f \( -name "*.exe" -o -name "*.msi" -o -name "*.zip" -o -name "*.7z" -o -name "*.dmg" -o -name "*.deb" -o -name "*.AppImage" -o -name "HOW-TO-RUN.txt" \) -print0 | while IFS= read -r -d '' artifact; do
             echo "Uploading $artifact..."
-            gh release upload "${{ github.ref_name }}" "$artifact" --repo ${{ github.repository }}
+            gh release upload "${{ github.ref_name }}" "$artifact" --clobber --repo ${{ github.repository }}
           done
 
       - name: Publish Release
