@@ -1,0 +1,442 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/utils/i18n.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/utils</a> i18n.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/33</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/14</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/8</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/30</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useCallback } from 'react';
+&nbsp;
+export type Language = 'zh';
+&nbsp;
+interface Translations {
+  [key: string]: string;
+}
+&nbsp;
+const translations: Translations = <span class="cstat-no" title="statement not covered" >{</span>
+  'app.name': 'CutDeck',
+  'app.save': '保存',
+  'app.cancel': '取消',
+  'app.confirm': '确认',
+  'app.delete': '删除',
+  'app.edit': '编辑',
+  'app.add': '添加',
+  'theme.mode': '主题模式',
+  'theme.light': '亮色',
+  'theme.dark': '暗色',
+  'theme.auto': '自动',
+  'theme.toggle': '切换亮/暗色主题',
+  'settings.title': '设置',
+  'settings.subtitle': '自定义您的应用程序设置和AI模型配置',
+  'settings.save': '保存设置',
+  'settings.saved': '设置已保存',
+  'settings.saveSuccess': '您的设置已成功保存并应用',
+  'settings.models': 'AI模型',
+  'settings.general': '通用设置',
+  'settings.about': '关于',
+  'settings.privacy': '隐私',
+  'settings.models.title': 'AI模型',
+  'settings.models.message': '选择您偏好的AI模型',
+  'settings.models.description': '请选择您想要使用的AI模型，并配置相应的API密钥。不同模型有不同的功能和价格。',
+  'settings.models.available': '可用模型',
+  'settings.models.selectPreferred': '选择您喜欢的AI模型作为默认选项',
+  'settings.models.canChange': '您可以随时更改默认模型，或为特定任务选择不同的模型。某些模型可能需要额外的API密钥配置。',
+  'settings.api.title': 'API密钥',
+  'settings.api.message': '配置AI服务提供商API密钥',
+  'settings.api.description': '为了使用各种AI模型，您需要配置相应服务提供商的API密钥。这些密钥仅存储在您的本地设备，不会传输到其他位置。',
+  'settings.api.keyConfig': 'API密钥配置',
+  'settings.api.domesticServices': '国内AI服务',
+  'settings.api.howToGet': '如何获取API密钥',
+  'settings.api.missing': 'API密钥缺失',
+  'settings.api.enterFirst': '请输入API密钥后再进行测试',
+  'settings.api.valid': 'API密钥有效',
+  'settings.api.invalid': 'API密钥无效',
+  'settings.api.validationError': '验证API密钥时发生错误，请稍后再试',
+  'settings.api.test': '测试',
+  'settings.general.title': '通用设置',
+  'settings.general.autoSave': '自动保存',
+  'settings.general.autoSaveDesc': '自动保存您的编辑，避免意外丢失数据',
+  'settings.general.lineNumbers': '显示行号',
+  'settings.general.lineNumbersDesc': '在编辑器中显示行号，方便代码导航和引用',
+  'settings.general.autoUpdate': '自动更新',
+  'settings.general.autoUpdateDesc': '启用自动更新，确保您始终使用最新版本',
+  'settings.general.performance': '性能与导出',
+  'settings.general.highQuality': '高质量导出',
+  'settings.general.highQualityDesc': '导出更高质量的视频和图像，可能需要更多处理时间',
+  'settings.general.transcode': '启用转码',
+  'settings.general.transcodeDesc': '自动转码上传的视频，以适应不同的播放设备（需更多系统资源）',
+  'settings.general.language': '界面语言',
+  'settings.general.languageDesc': '选择应用界面的显示语言',
+};
+&nbsp;
+export function <span class="fstat-no" title="function not covered" >useTranslation() {</span>
+  const language: Language = <span class="cstat-no" title="statement not covered" >'zh';</span>
+&nbsp;
+  const <span class="cstat-no" title="statement not covered" >t = useCallback(<span class="fstat-no" title="function not covered" >(k</span>ey: string, params?: Record&lt;string, string | number&gt;): string =&gt; {</span>
+    let text = <span class="cstat-no" title="statement not covered" >translations[key] || key;</span>
+<span class="cstat-no" title="statement not covered" >    if (params) {</span>
+<span class="cstat-no" title="statement not covered" >      Object.entries(params).forEach(<span class="fstat-no" title="function not covered" >([</span>paramKey, paramValue]) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        text = text.replace(new RegExp(`{${paramKey}}`, 'g'), String(paramValue));</span>
+      });
+    }
+<span class="cstat-no" title="statement not covered" >    return text;</span>
+  }, []);
+&nbsp;
+  const <span class="cstat-no" title="statement not covered" >changeLanguage = useCallback(<span class="fstat-no" title="function not covered" >(_</span>newLang2: Language) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    window.localStorage.setItem('app_language', 'zh');</span>
+  }, []);
+&nbsp;
+  const <span class="cstat-no" title="statement not covered" >formatDate = useCallback(<span class="fstat-no" title="function not covered" >(d</span>ate: Date | string | number): string =&gt; {</span>
+    const dateObj = <span class="cstat-no" title="statement not covered" >typeof date === 'string' || typeof date === 'number' ? new Date(date) : date;</span>
+<span class="cstat-no" title="statement not covered" >    return new Intl.DateTimeFormat('zh-CN', {</span>
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(dateObj);
+  }, []);
+&nbsp;
+  const <span class="cstat-no" title="statement not covered" >formatNumber = useCallback(<span class="fstat-no" title="function not covered" >(n</span>um: number): string =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    return new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 2 }).format(num);</span>
+  }, []);
+&nbsp;
+  const <span class="cstat-no" title="statement not covered" >formatFileSize = useCallback(<span class="fstat-no" title="function not covered" >(b</span>ytes: number): string =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    if (bytes === 0) <span class="cstat-no" title="statement not covered" >return '0 B';</span></span>
+    const k = <span class="cstat-no" title="statement not covered" >1024;</span>
+    const units = <span class="cstat-no" title="statement not covered" >['B', 'KB', 'MB', 'GB', 'TB'];</span>
+    const i = <span class="cstat-no" title="statement not covered" >Math.floor(Math.log(bytes) / Math.log(k));</span>
+    const size = <span class="cstat-no" title="statement not covered" >parseFloat((bytes / Math.pow(k, i)).toFixed(2));</span>
+<span class="cstat-no" title="statement not covered" >    return `${formatNumber(size)} ${units[i]}`;</span>
+  }, [formatNumber]);
+&nbsp;
+  const <span class="cstat-no" title="statement not covered" >formatDuration = useCallback(<span class="fstat-no" title="function not covered" >(s</span>econds: number): string =&gt; {</span>
+    const hours = <span class="cstat-no" title="statement not covered" >Math.floor(seconds / 3600);</span>
+    const minutes = <span class="cstat-no" title="statement not covered" >Math.floor((seconds % 3600) / 60);</span>
+    const secs = <span class="cstat-no" title="statement not covered" >Math.floor(seconds % 60);</span>
+<span class="cstat-no" title="statement not covered" >    if (hours &gt; 0) <span class="cstat-no" title="statement not covered" >return `${hours}小时${minutes}分钟`;</span></span>
+<span class="cstat-no" title="statement not covered" >    if (minutes &gt; 0) <span class="cstat-no" title="statement not covered" >return `${minutes}分${secs}秒`;</span></span>
+<span class="cstat-no" title="statement not covered" >    return `${secs}秒`;</span>
+  }, []);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return { t, language, changeLanguage, formatDate, formatNumber, formatFileSize, formatDuration };</span>
+}
+&nbsp;
+export default useTranslation;
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-04-24T15:57:18.534Z
+            </div>
+        <script src="../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
+    </body>
+</html>
+    
