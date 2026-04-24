@@ -123,15 +123,16 @@ const CORE_MODEL_VERIFICATION: ModelVerificationMeta = {
 };
 
 export const MODEL_CATALOG_VERIFIED_AT = CORE_MODEL_VERIFICATION.checkedAt;
-export const DEFAULT_MODEL_ID = 'gpt-4o' as const;
+export const DEFAULT_MODEL_ID = 'gpt-5.5' as const;
 
 export const MODEL_VERIFICATION: Record<string, ModelVerificationMeta> = {
-  [DEFAULT_MODEL_ID]: CORE_MODEL_VERIFICATION,
+  'gpt-5.5': { checkedAt: '2026-04-25', source: 'openai.com/index/gpt-5-5-system-card', verified: true },
+  'gpt-5.3-codex': { checkedAt: '2026-04-25', source: 'developers.openai.com/api/docs/guides/latest-model', verified: true },
   o3: { checkedAt: '2026-04-25', source: 'openai.com/index/introducing-o3-and-o4-mini', verified: true },
   'o4-mini': { checkedAt: '2026-04-25', source: 'openai.com/index/introducing-o3-and-o4-mini', verified: true },
   'claude-sonnet-4-6': { checkedAt: '2026-04-25', source: 'anthropic.com/system-cards', verified: true },
   'claude-opus-4-7': { checkedAt: '2026-04-25', source: 'anthropic.com/system-cards', verified: true },
-  'gemini-1.5-pro': { checkedAt: '2026-04-25', source: 'docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions', verified: true },
+  'gemini-3.1-pro': { checkedAt: '2026-04-25', source: 'ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview', verified: true },
   'qwen-max-latest': { checkedAt: '2026-04-25', source: 'alibabacloud.com/help/zh/model-studio/models', verified: true },
   'qwen3-max': { checkedAt: '2026-04-25', source: 'portkey.ai/models/dashscope/qwen3-max', verified: true },
   'deepseek-v4-flash': { checkedAt: '2026-04-25', source: 'api-docs.deepseek.com', verified: true },
@@ -148,14 +149,14 @@ export const MODEL_VERIFICATION: Record<string, ModelVerificationMeta> = {
 
 export const AI_MODELS: AIModel[] = [
   {
-    id: 'gpt-4o',
-    name: 'GPT-4o',
+    id: 'gpt-5.5',
+    name: 'GPT-5.5',
     provider: 'openai',
     category: ['text', 'code', 'image', 'video'],
-    description: 'OpenAI 旗舰多模态模型，适合复杂镜头语义和解说对齐。',
-    features: ['多模态理解', '高级推理', '视频语义分析'],
+    description: 'OpenAI 最新旗舰模型（2026-04-23），编程、研究、数据分析全面提升。',
+    features: ['最高智能', '编程能力', '深度研究'],
     tokenLimit: 16384,
-    contextWindow: 128000,
+    contextWindow: 1000000,
     isPro: true,
     pricing: { input: 0, output: 0, unit: 'provider pricing page' },
   },
@@ -178,6 +179,18 @@ export const AI_MODELS: AIModel[] = [
     category: ['text', 'code', 'image'],
     description: '轻量高速推理模型，适合批量分析与低时延任务，成本更低。',
     features: ['高速', '低成本', '多模态'],
+    tokenLimit: 8192,
+    contextWindow: 1000000,
+    isPro: true,
+    pricing: { input: 0, output: 0, unit: 'provider pricing page' },
+  },
+  {
+    id: 'gpt-5.3-codex',
+    name: 'GPT-5.3 Codex',
+    provider: 'openai',
+    category: ['text', 'code'],
+    description: 'OpenAI 编程专用模型，专为 Codex 等编码环境设计。',
+    features: ['编程专用', '代码生成', '代码审查'],
     tokenLimit: 8192,
     contextWindow: 1000000,
     isPro: true,
@@ -208,14 +221,14 @@ export const AI_MODELS: AIModel[] = [
     pricing: { input: 0, output: 0, unit: 'provider pricing page' },
   },
   {
-    id: 'gemini-1.5-pro',
-    name: 'Gemini 1.5 Pro',
+    id: 'gemini-3.1-pro',
+    name: 'Gemini 3.1 Pro',
     provider: 'google',
     category: ['text', 'code', 'image', 'video'],
-    description: 'Google 高性能模型，2M 超长上下文，适合复杂视频语义分析与镜头-文案对齐。',
+    description: 'Google 最新旗舰（2026-02），Gemini 3.1 Pro 系列，改进思维与 token 效率。API ID: gemini-3.1-pro。',
     features: ['多模态推理', '视频理解', '长上下文'],
     tokenLimit: 8192,
-    contextWindow: 2000000,
+    contextWindow: 1000000,
     isPro: true,
     pricing: { input: 0, output: 0, unit: 'provider pricing page' },
   },
@@ -307,8 +320,8 @@ export const AI_MODELS: AIModel[] = [
 ];
 
 export const MODEL_RECOMMENDATIONS: Record<string, string[]> = {
-  script: ['gpt-4o', 'claude-sonnet-4-6', 'qwen3-max', 'deepseek-v4-flash'],
-  analysis: ['gpt-4o', 'gemini-1.5-pro', 'o3', 'qwen3-max'],
+  script: ['gpt-5.5', 'claude-sonnet-4-6', 'qwen3-max', 'deepseek-v4-flash'],
+  analysis: ['gpt-5.5', 'gemini-3.1-pro', 'o3', 'qwen3-max'],
   code: ['o3', 'claude-opus-4-7', 'deepseek-v4-pro'],
   fast: ['qwen3-max', 'o4-mini'],
 };

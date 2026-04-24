@@ -43,10 +43,12 @@ VITE_OPENAI_BASE_URL=https://api.openai.com/v1
 
 | 模型 ID | 名称 | 特点 |
 |---------|------|------|
-| `o4-mini` | OpenAI o4-mini | 🏆 最新轻量推理模型，高速低成本 |
+| `gpt-5.5` | GPT-5.5 | 🏆 最新旗舰（2026-04-23），编程/研究/数据分析 |
+| `gpt-5.3-codex` | GPT-5.3 Codex | OpenAI 编程专用模型，为 Codex 等编码环境设计 |
+| `o4-mini` | OpenAI o4-mini | 轻量推理模型，高速低成本 |
 | `o3` | OpenAI o3 | 高推理模型，复杂推断，视觉理解 |
-| `gpt-4o` | GPT-4o | 旗舰多模态，支持视觉和函数调用 |
 | `o3-mini` | OpenAI o3-mini | 推理轻量版 |
+| `gpt-4o` | GPT-4o | 旗舰多模态（历史版本） |
 
 获取 API 密钥：[platform.openai.com](https://platform.openai.com/api-keys)
 
@@ -77,10 +79,10 @@ VITE_DEFAULT_PROVIDER=google
 
 | 模型 ID | 名称 | 特点 |
 |---------|------|------|
-| `gemini-1.5-pro` | Gemini 1.5 Pro | 2M 超长上下文，多模态理解 |
+| `gemini-3.1-pro` | Gemini 3.1 Pro | 🏆 最新旗舰（2026-02），Gemini 3.1 Pro 系列 |
 | `gemini-2.0-flash` | Gemini 2.0 Flash | 轻量高速，多模态能力强 |
 
-> 注：Google Gemini 3.x 系列信息待更新，当前以 2.0/1.5 系列为准。
+> 注：`gemini-3.1-pro-preview`（旧 ID）已废弃，API 现使用 `gemini-3.1-pro`。
 
 获取 API 密钥：[AI Studio](https://aistudio.google.com/app/apikey)
 

@@ -23,7 +23,7 @@ export const COST_OPTIMIZATION = {
     },
     // 复杂任务 (> 1000 tokens)
     complex: {
-      primary: 'gpt-4o',
+      primary: 'gpt-5.5',
       fallback: 'o3',
       maxTokens: 4000,
       temperature: 0.7,
@@ -31,7 +31,7 @@ export const COST_OPTIMIZATION = {
     // 创意任务
     creative: {
       primary: 'claude-sonnet-4-6',
-      fallback: 'gpt-4o',
+      fallback: 'gpt-5.5',
       maxTokens: 3000,
       temperature: 0.8,
     },
@@ -124,7 +124,7 @@ export const QUALITY_OPTIMIZATION = {
   // 多模型投票
   ensemble: {
     enabled: false, // 默认关闭（成本高）
-    models: ['gpt-4o', 'claude-opus-4-7', 'qwen3-max'],
+    models: ['gpt-5.5', 'claude-opus-4-7', 'qwen3-max'],
     // 投票策略
     strategy: 'quality', // 'quality' | 'speed' | 'cost'
     // 超时时间
