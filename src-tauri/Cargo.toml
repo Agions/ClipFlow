@@ -34,12 +34,8 @@ thiserror = "2"
 dirs = "6"
 
 [profile.release]
-lto       = "thin"      # Link-time optimization for smaller binaries
-codegen-units = 1    # Maximum optimization (smaller, slower compile)
-strip        = true   # Strip symbols from final binary
-opt-level    = "s"    # Optimize for size over speed
-panic = "abort"
+lto       = "thin"
 codegen-units = 1
-lto = "fat"
-opt-level = "z"
-strip = true
+strip        = true
+opt-level    = "s"
+panic = "abort"
