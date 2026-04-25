@@ -147,7 +147,7 @@ VITE_DEFAULT_PROVIDER=moonshot
 
 | 模型 ID | 名称 | 特点 |
 |---------|------|------|
-| `kimi-k2.6` | Kimi K2.6 | 🏆 2026-04 最新，代码能力与 Agent 搭建，256K 上下文 |
+| `kimi-k2.6` | Kimi K2.6 | 🏆 2026-04 最新，多模态（视觉+文本），262K 上下文 |
 | `moonshot-v1-8k` | Kimi 8K | 快速对话模型（已上线 API） |
 
 获取 API 密钥：[Moonshot Console](https://platform.moonshot.cn/)
