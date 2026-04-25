@@ -103,13 +103,13 @@ npm run dev
 
 只需配置**一个** API Key 即可使用全部 AI 功能：
 
-| 提供商 | 推荐模型 | 适用场景 |
-|--------|----------|----------|
-| DeepSeek | V4-Flash（推荐），V4-Pro（推理） || | 🏆 性价比最高， clip script 生成 |
-| OpenAI | GPT-5.5（最新旗舰）| 剧情分析、内容理解 |
-| Anthropic | Claude Sonnet 4 | 长文本分析 |
-| 阿里云 | Qwen 2.5-Max | 中文内容创作 |
-| Kimi | K2.5 | 长文本分析 |
+| 提供商 | 模型 | 适用场景 |
+|--------|------|----------|
+| DeepSeek | V4-Flash（推荐），V4-Pro（推理） | 🏆 性价比最高，Clip Script 生成 |
+| OpenAI | GPT-5.5（最新旗舰） | 剧情分析、内容理解 |
+| Anthropic | Claude Sonnet 4.6 | 长文本分析 |
+| 阿里云 | Qwen-Max | 中文内容创作 |
+| Kimi | K2.6 | 长文本分析 |
 
 ---
 

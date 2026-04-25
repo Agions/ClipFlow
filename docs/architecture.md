@@ -169,7 +169,7 @@ ClipRepurposingPipeline
 | 桌面框架 | **Tauri v2**（Rust 后端） |
 | 状态管理 | **Zustand v5**（持久化） |
 | 样式 | **CSS Variables** + SCSS Modules（OKLCH 色彩系统） |
-| AI 服务 | 多 Provider（OpenAI/Anthropic/Google/DeepSeek/阿里/智谱/Kimi） |
+| AI 服务 | 多 Provider（OpenAI/Anthropic/Google/DeepSeek/Qwen/Kimi/智谱/Moonshot） |
 | ASR | **faster-whisper**（本地） |
 | 文档 | VitePress |
 
