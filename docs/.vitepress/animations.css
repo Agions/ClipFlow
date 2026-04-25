@@ -1,0 +1,43 @@
+/* CutDeck Animations — Cinematic Dark × Warm Amber */
+
+/* 入场动画：向上淡入 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 扫描光效：代码块横移 */
+@keyframes shimmer {
+  0%   { left: -100%; }
+  60%, 100% { left: 150%; }
+}
+
+/* Hero 背景流动渐变 */
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+/* Logo / 元素悬浮 */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* Footer 呼吸光效 */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+/* H2 标题"剪切"下划线动画：从左向右展开 */
+@keyframes cd-cutline {
+  from { width: 0; }
+  to   { width: 100%; }
+}

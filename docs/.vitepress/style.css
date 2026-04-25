@@ -3048,3 +3048,75 @@ html.dark .VPNavBar { background: transparent !important; }
     animation: none !important;
   }
 }
+
+/* ============================================
+   H2 "剪切式"下划线动画
+   ============================================ */
+
+.vp-doc h2 {
+  position: relative;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid var(--vp-c-divider) !important;
+}
+
+.vp-doc h2::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--sf-amber), transparent);
+  animation: cd-cutline 0.6s ease-out forwards;
+}
+
+/* ============================================
+   代码块扫描光效 (shimmer)
+   ============================================ */
+
+.vp-doc div[class*="language-"] {
+  position: relative;
+  overflow: hidden;
+}
+
+.vp-doc div[class*="language-"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.08), transparent);
+  animation: shimmer 3.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes shimmer {
+  0%   { left: -100%; }
+  60%, 100% { left: 150%; }
+}
+
+/* ============================================
+   Footer 呼吸光效
+   ============================================ */
+
+.VPFooter {
+  position: relative;
+}
+
+.VPFooter::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.4), transparent);
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
