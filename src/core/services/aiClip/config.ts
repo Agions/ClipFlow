@@ -5,5 +5,10 @@ export function exportClipConfig(config: AIClipConfig): string {
 }
 
 export function importClipConfig(json: string, defaultConfig: AIClipConfig): AIClipConfig {
-  return { ...defaultConfig, ...JSON.parse(json) };
+  try {
+    return { ...defaultConfig, ...JSON.parse(json) };
+  } catch (error) {
+    logger.warn('Failed to parse clip config, using default:', error);
+    return defaultConfig;
+  }
 }

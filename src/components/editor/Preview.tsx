@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useMemo, useState } from 'react';
+import React, { forwardRef, useEffect, useMemo, useState, useRef } from 'react';
 import { Button } from '../ui/button';
 import { Maximize, ZoomIn, ZoomOut } from 'lucide-react';
 import styles from './Preview.module.less';
@@ -13,6 +13,8 @@ const DURATION_SECONDS = 120;
 const Preview = forwardRef<HTMLDivElement, PreviewProps>(({ playing = false, onTimeUpdate }, ref) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [zoom, setZoom] = useState(1);
+  const onTimeUpdateRef = useRef(onTimeUpdate);
+  onTimeUpdateRef.current = onTimeUpdate;
 
   useEffect(() => {
     if (!playing) return;
@@ -21,19 +23,19 @@ const Preview = forwardRef<HTMLDivElement, PreviewProps>(({ playing = false, onT
       setCurrentTime((prev) => {
         const next = prev + 0.1;
         const clamped = next >= DURATION_SECONDS ? 0 : next;
-        onTimeUpdate?.(clamped);
+        onTimeUpdateRef.current?.(clamped);
         return clamped;
       });
     }, 100);
 
     return () => window.clearInterval(timer);
-  }, [playing, onTimeUpdate]);
+  }, [playing]);
 
   useEffect(() => {
     if (!playing) {
-      onTimeUpdate?.(currentTime);
+      onTimeUpdateRef.current?.(currentTime);
     }
-  }, [playing, currentTime, onTimeUpdate]);
+  }, [playing, currentTime]);
 
   const zoomPercent = useMemo(() => `${Math.round(zoom * 100)}%`, [zoom]);
 

@@ -3,7 +3,7 @@
  * 数据输入: video, script, voice
  * 数据输出: synthesis (最终合成视频)
  */
-import React, { useState, useCallback, useMemo, memo } from 'react';
+import React, { useState, useCallback, useMemo, memo, useRef, useEffect } from 'react';
 import { useCutDeck } from '../AIEditorContext';
 import { voiceSynthesisService } from '../../../core/services/voice-synthesis.service';
 import { videoEffectService } from '../../../core/services/video-effect.service';
@@ -68,6 +68,16 @@ const VideoSynthesize: React.FC<VideoSynthesizeProps> = memo(({ onNext }) => {
   const [synthesizing, setSynthesizing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [activeTab, setActiveTab] = useState<'voice' | 'subtitle' | 'effect'>('voice');
+  const synthesizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup setTimeout on unmount
+  useEffect(() => {
+    return () => {
+      if (synthesizeTimerRef.current) {
+        clearTimeout(synthesizeTimerRef.current);
+      }
+    };
+  }, []);
 
   const [config, setConfig] = useState<SynthesizeConfig>({
     voiceId: 'female_zh',
@@ -193,7 +203,7 @@ const VideoSynthesize: React.FC<VideoSynthesizeProps> = memo(({ onNext }) => {
 
       notify.success('视频合成完成！');
 
-      setTimeout(() => {
+      synthesizeTimerRef.current = setTimeout(() => {
         if (onNext) onNext();
         else goToNextStep();
       }, 500);

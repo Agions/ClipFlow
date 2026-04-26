@@ -48,22 +48,131 @@ features:
 footer: false
 ---
 
-<!-- 统计数据 -->
-<div class="stats-grid">
-  <div class="stat-item">
-    <div class="stat-number">6+</div>
-    <div class="stat-label">AI 评分维度</div>
+<div class="cd-home">
+  <!-- Shimmer Tag -->
+  <div class="cd-hero-tag">
+    <span class="cd-hero-tag-inner">v2.0 · now with Tauri ✦</span>
   </div>
-  <div class="stat-item">
-    <div class="stat-number">12+</div>
-    <div class="stat-label">视频特效</div>
+
+  <!-- Platform Proof Bar -->
+  <div class="cd-proof-bar">
+    <div class="cd-proof-item">
+      <span class="cd-proof-dot" style="background:#F59E0B"></span>
+      <span>GitHub Stars</span>
+    </div>
+    <span class="cd-proof-sep">·</span>
+    <div class="cd-proof-item">
+      <span class="cd-proof-dot" style="background:#10B981"></span>
+      <span>FFmpeg</span>
+    </div>
+    <span class="cd-proof-sep">·</span>
+    <div class="cd-proof-item">
+      <span class="cd-proof-dot" style="background:#60A5FA"></span>
+      <span>Tauri 2</span>
+    </div>
+    <span class="cd-proof-sep">·</span>
+    <div class="cd-proof-item">
+      <span class="cd-proof-dot" style="background:#A78BFA"></span>
+      <span>faster-whisper</span>
+    </div>
   </div>
-  <div class="stat-item">
-    <div class="stat-number">3</div>
-    <div class="stat-label">一键分发平台</div>
+
+  <!-- Stats Bar -->
+  <div class="cd-stats-bar">
+    <div class="cd-stat">
+      <span class="cd-stat-value">6+</span>
+      <span class="cd-stat-label">AI 评分维度</span>
+    </div>
+    <div class="cd-stat-divider"></div>
+    <div class="cd-stat">
+      <span class="cd-stat-value">12+</span>
+      <span class="cd-stat-label">视频特效</span>
+    </div>
+    <div class="cd-stat-divider"></div>
+    <div class="cd-stat">
+      <span class="cd-stat-value">3</span>
+      <span class="cd-stat-label">一键分发平台</span>
+    </div>
+    <div class="cd-stat-divider"></div>
+    <div class="cd-stat">
+      <span class="cd-stat-value">MIT</span>
+      <span class="cd-stat-label">开源协议</span>
+    </div>
   </div>
-  <div class="stat-item">
-    <div class="stat-number">MIT</div>
-    <div class="stat-label">开源协议</div>
+
+  <!-- Workflow -->
+  <div class="cd-section">
+    <div class="cd-section-title">工作流</div>
+    <div class="cd-workflow">
+      <div class="cd-workflow-step">
+        <span class="cd-workflow-num">1</span>
+        <div>
+          <div class="cd-workflow-title">📥 导入视频</div>
+          <p class="cd-workflow-desc">拖拽或选择本地视频文件</p>
+        </div>
+      </div>
+      <div class="cd-workflow-arrow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="cd-workflow-step">
+        <span class="cd-workflow-num">2</span>
+        <div>
+          <div class="cd-workflow-title">⚙️ 设置参数</div>
+          <p class="cd-workflow-desc">选择输出格式 &amp; 时长</p>
+        </div>
+      </div>
+      <div class="cd-workflow-arrow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="cd-workflow-step">
+        <span class="cd-workflow-num">3</span>
+        <div>
+          <div class="cd-workflow-title">🤖 AI 分析</div>
+          <p class="cd-workflow-desc">6 维评分 · 自动拆条</p>
+        </div>
+      </div>
+      <div class="cd-workflow-arrow">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="cd-workflow-step">
+        <span class="cd-workflow-num">4</span>
+        <div>
+          <div class="cd-workflow-title">🎬 导出发布</div>
+          <p class="cd-workflow-desc">多格式导出 · 一键分发</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compare -->
+  <div class="cd-section">
+    <div class="cd-section-title">为什么选择 CutDeck</div>
+    <div class="cd-compare-table">
+      <div class="cd-compare-header">
+        <div></div>
+        <div>传统剪辑</div>
+        <div>✦ CutDeck</div>
+      </div>
+      <div class="cd-compare-row">
+        <div class="cd-compare-dim">视频编码</div>
+        <div class="cd-compare-old">FFmpeg 手动命令</div>
+        <div class="cd-compare-highlight">可视化 + 专业管线</div>
+      </div>
+      <div class="cd-compare-row">
+        <div class="cd-compare-dim">平台发布</div>
+        <div class="cd-compare-old">各自上传</div>
+        <div class="cd-compare-highlight">一键分发 · 3 平台</div>
+      </div>
+      <div class="cd-compare-row">
+        <div class="cd-compare-dim">高光检测</div>
+        <div class="cd-compare-old">肉眼逐帧观看</div>
+        <div class="cd-compare-highlight">AI 6 维自动评分</div>
+      </div>
+      <div class="cd-compare-row">
+        <div class="cd-compare-dim">隐私安全</div>
+        <div class="cd-compare-old">视频上传云端</div>
+        <div class="cd-compare-highlight">100% 本地运行</div>
+      </div>
+    </div>
   </div>
 </div>

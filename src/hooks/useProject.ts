@@ -6,6 +6,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { ProjectData, VideoInfo, ScriptData, ProjectSettings, TaskStatus } from '../core/types';
+import { logger } from '../utils/logger';
 
 export interface UseProjectReturn {
   // 当前项目
@@ -69,7 +70,13 @@ const DEFAULT_SETTINGS: ProjectSettings = {
 const storage = {
   getProjects: (): ProjectData[] => {
     const data = localStorage.getItem('reelforge_projects');
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    try {
+      return JSON.parse(data);
+    } catch {
+      logger.warn('Failed to parse projects from localStorage, returning empty array');
+      return [];
+    }
   },
   saveProjects: (projects: ProjectData[]) => {
     localStorage.setItem('reelforge_projects', JSON.stringify(projects));

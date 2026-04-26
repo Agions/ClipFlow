@@ -1,0 +1,909 @@
+/**
+ * CutDeck VitePress Theme — OKLCH Cinematic Dark × Tech
+ * Aligns with PlotCraft professional documentation style
+ */
+
+/* ===================================================
+   1. OKLCH Design Tokens
+   =================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Brand: Cinematic Dark × Warm Amber (existing) */
+  --sf-indigo: #1a1a2e;
+  --sf-indigo-light: #232340;
+  --sf-indigo-dark: #12121f;
+  --sf-amber: #f59e0b;
+  --sf-amber-light: #fbbf24;
+  --sf-amber-dark: #d97706;
+  --sf-amber-glow: rgba(245, 158, 11, 0.15);
+
+  /* OKLCH — Primary Blue */
+  --color-primary: oklch(72% 0.18 255);
+  --color-primary-light: oklch(80% 0.16 255);
+  --color-primary-dark: oklch(55% 0.22 255);
+
+  /* OKLCH — Background Layers */
+  --color-bg-base: oklch(0% 0 0);
+  --color-bg-elevated: oklch(14% 0 0);
+  --color-bg-surface: oklch(18% 0 0);
+  --color-bg-card: oklch(22% 0 0);
+
+  /* OKLCH — Functional Colors */
+  --color-success: oklch(72% 0.18 145);
+  --color-warning: oklch(78% 0.16 85);
+  --color-error: oklch(65% 0.22 25);
+
+  /* OKLCH — Accent Purple */
+  --color-accent: oklch(75% 0.18 300);
+
+  /* OKLCH — Text */
+  --color-text-primary: oklch(98% 0 0);
+  --color-text-secondary: oklch(70% 0 0);
+  --color-text-muted: oklch(45% 0 0);
+
+  /* VitePress Light Overrides */
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-soft: #f6f8fa;
+  --vp-c-bg-mute: #eaecef;
+  --vp-c-bg-elv: #ffffff;
+  --vp-c-bg-alt: #f6f8fa;
+  --vp-c-text-1: #111827;
+  --vp-c-text-2: #374151;
+  --vp-c-text-3: #6b7280;
+  --vp-c-border: #d1d5db;
+  --vp-c-divider: #e5e7eb;
+  --vp-code-color: #92400e;
+  --vp-code-bg: #fef3c7;
+
+  /* Fonts */
+  --vp-font-family-base: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --vp-font-family-mono: 'JetBrains Mono', monospace;
+}
+
+html.dark {
+  /* VitePress Dark Overrides — OKLCH */
+  --vp-c-bg: #090910;
+  --vp-c-bg-soft: #0f0f1a;
+  --vp-c-bg-mute: #13131f;
+  --vp-c-bg-elv: #1a1a2e;
+  --vp-c-bg-alt: #0a0a12;
+  --vp-c-text-1: oklch(98% 0 0);
+  --vp-c-text-2: oklch(70% 0 0);
+  --vp-c-text-3: oklch(50% 0 0);
+  --vp-c-border: oklch(25% 0 0);
+  --vp-c-divider: oklch(20% 0 0);
+
+  /* Code block — dark theme */
+  --vp-code-color: oklch(90% 0 0);
+  --vp-code-bg: oklch(14% 0 0);
+  --vp-code-block-bg: oklch(12% 0 0);
+  --vp-code-line-highlight-color: oklch(22% 0 0);
+  --vp-code-copy-code-bg: oklch(18% 0 0);
+  --vp-code-copy-code-hover-bg: oklch(22% 0 0);
+  --vp-code-tab-divider: oklch(25% 0 0);
+  --vp-code-block-divider-color: oklch(20% 0 0);
+  --vp-code-bg: oklch(14% 0 0);
+
+  /* Table */
+  --vp-c-bg-alt: oklch(12% 0 0);
+  --vp-c-bg-soft: oklch(16% 0 0);
+
+  /* Nav */
+  --vp-nav-bg: oklch(12% 0 0 / 0.8);
+
+  /* Sidebar */
+  --vp-sidebar-bg-color: oklch(10% 0 0);
+}
+
+/* ===================================================
+   2. Hero Gradient Flow Background
+   =================================================== */
+
+/* Keyframe: gradient flows smoothly */
+@keyframes heroGradientFlow {
+  0%, 100% {
+    background-position: 0% 50%;
+    opacity: 1;
+  }
+  25% {
+    background-position: 50% 100%;
+    opacity: 0.85;
+  }
+  50% {
+    background-position: 100% 50%;
+    opacity: 1;
+  }
+  75% {
+    background-position: 50% 0%;
+    opacity: 0.85;
+  }
+}
+
+/* Ambient orb keyframes */
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -20px) scale(1.05); }
+  66%       { transform: translate(-20px, 15px) scale(0.95); }
+}
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(-25px, 20px) scale(1.08); }
+  66%       { transform: translate(15px, -30px) scale(0.92); }
+}
+@keyframes orbFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(20px, 25px) scale(1.1); }
+}
+
+/* Hero container — holds the animated background */
+.VPHero {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Layered ambient gradient background */
+.VPHero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 80% 60% at 20% 20%, oklch(55% 0.2 255 / 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 80%, oklch(70% 0.18 300 / 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, oklch(20% 0 0) 0%, oklch(10% 0 0) 100%);
+  animation: heroGradientFlow 18s ease-in-out infinite;
+  background-size: 200% 200%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Floating orb accents */
+.VPHero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    radial-gradient(circle 300px at 15% 30%, oklch(72% 0.18 255 / 0.07) 0%, transparent 70%),
+    radial-gradient(circle 250px at 85% 70%, oklch(75% 0.18 300 / 0.06) 0%, transparent 70%);
+  animation: orbFloat1 20s ease-in-out infinite;
+}
+
+.VPHero > .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero name — brand gradient */
+.VPHero .name {
+  font-family: 'Syne', system-ui, sans-serif !important;
+  font-size: clamp(2.5rem, 6vw, 4rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1.05 !important;
+  margin: 0 !important;
+  color: transparent !important;
+  background: linear-gradient(
+    135deg,
+    oklch(98% 0.01 255) 0%,
+    oklch(80% 0.16 255) 35%,
+    oklch(72% 0.18 255) 70%,
+    oklch(75% 0.18 300) 100%
+  ) !important;
+  background-size: 200% 200% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  animation: heroGradientFlow 12s ease-in-out infinite, fadeInUp 0.8s ease-out forwards !important;
+}
+
+.VPHero .tagline {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
+  font-size: clamp(0.9rem, 2vw, 1.1rem) !important;
+  font-weight: 400 !important;
+  color: oklch(70% 0 0) !important;
+  letter-spacing: 0.01em !important;
+  max-width: 520px;
+  margin: 0 auto !important;
+  line-height: 1.7 !important;
+  animation: fadeInUp 0.8s ease-out 0.2s forwards !important;
+  opacity: 0;
+}
+
+.VPHero .text {
+  font-size: 1rem !important;
+  color: oklch(60% 0 0) !important;
+  animation: fadeInUp 0.8s ease-out 0.15s forwards !important;
+  opacity: 0;
+}
+
+.VPHero .actions {
+  margin-top: 2rem !important;
+  gap: 0.75rem !important;
+  animation: fadeInUp 0.8s ease-out 0.3s forwards !important;
+  opacity: 0;
+}
+
+/* Primary action — glow button */
+.VPHero .action.primary {
+  position: relative;
+  overflow: hidden;
+  background: oklch(72% 0.18 255) !important;
+  color: oklch(98% 0 0) !important;
+  border: 1px solid oklch(80% 0.16 255 / 0.4) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.VPHero .action.primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    oklch(80% 0.16 255 / 0.3) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerHero 3s ease-in-out infinite;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.VPHero .action.primary:hover::before {
+  opacity: 1;
+}
+
+.VPHero .action.primary:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 32px oklch(72% 0.22 255 / 0.4) !important;
+  border-color: oklch(80% 0.16 255 / 0.6) !important;
+}
+
+@keyframes shimmerHero {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Alt action */
+.VPHero .action.alt {
+  border: 1px solid oklch(25% 0 0) !important;
+  color: oklch(70% 0 0) !important;
+  background: oklch(18% 0 0) !important;
+  transition: all 0.3s ease !important;
+}
+
+.VPHero .action.alt:hover {
+  transform: translateY(-3px) !important;
+  background: oklch(22% 0 0) !important;
+  border-color: oklch(40% 0 0) !important;
+  color: oklch(90% 0 0) !important;
+}
+
+.VPHero .image-container {
+  animation: scaleIn 1s ease-out 0.5s forwards, float 6s ease-in-out 1.5s infinite !important;
+  opacity: 0;
+}
+
+/* ===================================================
+   3. H2 Gradient Underline Animation
+   =================================================== */
+
+/* Keyframe: sweep light from left to right */
+@keyframes h2Sweep {
+  0%   { width: 0; left: 0; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { width: 100%; left: 0; opacity: 0; }
+}
+
+.VPDoc h1,
+.VPDoc h2 {
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+/* Gradient underline base */
+.VPDoc h2 .header-anchor,
+.VPDoc h2 {
+  background: linear-gradient(
+    90deg,
+    oklch(72% 0.18 255),
+    oklch(75% 0.18 300)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Animated underline element */
+.VPDoc h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: linear-gradient(
+    90deg,
+    oklch(72% 0.18 255) 0%,
+    oklch(75% 0.18 300) 50%,
+    oklch(80% 0.16 255) 100%
+  );
+  border-radius: 2px;
+  animation: h2Sweep 4s ease-in-out infinite;
+  box-shadow: 0 0 8px oklch(72% 0.22 255 / 0.6);
+}
+
+/* H1 accent */
+.VPDoc h1 {
+  background: linear-gradient(
+    135deg,
+    oklch(98% 0 0) 0%,
+    oklch(80% 0.16 255) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ===================================================
+   4. Code Block Dark Theme + Scan Light Effect
+   =================================================== */
+
+/* Dark code block container */
+.vp-code-group div[class*="language-"],
+div[class*="language-"].ext {
+  background: oklch(12% 0 0) !important;
+  border: 1px solid oklch(25% 0 0) !important;
+  border-radius: 10px !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Scan light overlay — top bar sweeps across */
+div[class*="language-"].ext::before,
+.vp-code-group div[class*="language-"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    oklch(80% 0.14 255 / 0.08) 40%,
+    oklch(75% 0.16 300 / 0.1) 50%,
+    oklch(80% 0.14 255 / 0.08) 60%,
+    transparent 100%
+  );
+  animation: codeScan 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 10px;
+}
+
+@keyframes codeScan {
+  0%   { left: -80%; opacity: 0; }
+  5%  { opacity: 1; }
+  95% { opacity: 1; }
+  100% { left: 120%; opacity: 0; }
+}
+
+/* Code block top bar (language label area) */
+div[class*="language-"] .lang {
+  color: oklch(60% 0 0) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Code text */
+div[class*="language-"] code,
+.vp-code code {
+  color: oklch(90% 0 0) !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Code line highlight */
+div[class*="language-"] .highlighted {
+  background: oklch(22% 0 0) !important;
+  border-left: 2px solid oklch(72% 0.18 255) !important;
+}
+
+/* Copy button */
+.vp-copy-code {
+  background: oklch(18% 0 0) !important;
+  border: 1px solid oklch(25% 0 0) !important;
+  color: oklch(60% 0 0) !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.vp-copy-code:hover {
+  background: oklch(22% 0 0) !important;
+  color: oklch(90% 0 0) !important;
+  border-color: oklch(72% 0.18 255 / 0.4) !important;
+  box-shadow: 0 0 12px oklch(72% 0.18 255 / 0.2) !important;
+}
+
+/* Tab dividers */
+.vp-code-group .tabs {
+  background: oklch(12% 0 0) !important;
+  border-bottom: 1px solid oklch(20% 0 0) !important;
+}
+
+.vp-code-group .tabs input + label {
+  color: oklch(50% 0 0) !important;
+  transition: color 0.2s ease !important;
+}
+
+.vp-code-group .tabs input:checked + label {
+  color: oklch(80% 0.16 255) !important;
+  border-bottom: 2px solid oklch(72% 0.18 255) !important;
+}
+
+/* Inline code */
+.vp-doc div:not(.vp-code-group) code:not(pre code) {
+  background: oklch(18% 0 0) !important;
+  color: oklch(80% 0.16 255) !important;
+  border: 1px solid oklch(25% 0 0) !important;
+  border-radius: 4px !important;
+  padding: 0.1em 0.4em !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.88em !important;
+}
+
+/* ===================================================
+   5. Table — Gradient Header + Row Hover
+   =================================================== */
+
+/* Table container */
+.vp-doc table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid oklch(25% 0 0);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+/* Table header — gradient background */
+.vp-doc table thead tr {
+  background: linear-gradient(
+    90deg,
+    oklch(72% 0.18 255 / 0.15) 0%,
+    oklch(75% 0.18 300 / 0.1) 50%,
+    oklch(72% 0.18 255 / 0.15) 100%
+  ) !important;
+  border-bottom: 1px solid oklch(72% 0.18 255 / 0.3) !important;
+}
+
+.vp-doc table th {
+  color: oklch(90% 0 0) !important;
+  font-family: 'Syne', system-ui, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  padding: 0.75rem 1rem !important;
+}
+
+/* Table rows */
+.vp-doc table tbody tr {
+  background: oklch(14% 0 0) !important;
+  border-bottom: 1px solid oklch(20% 0 0) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Alternating row */
+.vp-doc table tbody tr:nth-child(even) {
+  background: oklch(16% 0 0) !important;
+}
+
+/* Row hover */
+.vp-doc table tbody tr:hover {
+  background: oklch(22% 0 0) !important;
+  box-shadow: inset 0 0 0 1px oklch(72% 0.18 255 / 0.2);
+}
+
+.vp-doc table td {
+  color: oklch(70% 0 0) !important;
+  padding: 0.65rem 1rem !important;
+  font-size: 0.9rem !important;
+}
+
+/* ===================================================
+   6. Card Hover — Lift + Glowing Border
+   =================================================== */
+
+/* Feature cards */
+.VPFeature {
+  background: oklch(16% 0 0) !important;
+  border: 1px solid oklch(25% 0 0) !important;
+  border-radius: 12px !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow border on hover */
+.VPFeature::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    oklch(72% 0.18 255 / 0.5),
+    oklch(75% 0.18 300 / 0.3),
+    oklch(72% 0.18 255 / 0.5)
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.VPFeature:hover {
+  transform: translateY(-8px) !important;
+  border-color: oklch(72% 0.18 255 / 0.4) !important;
+  box-shadow: 
+    0 20px 40px oklch(0% 0 0 / 0.4),
+    0 0 24px oklch(72% 0.18 255 / 0.15),
+    inset 0 1px 0 oklch(80% 0.16 255 / 0.1);
+}
+
+.VPFeature:hover::before {
+  opacity: 0.6;
+  animation: cardGlowPulse 2s ease-in-out infinite;
+}
+
+@keyframes cardGlowPulse {
+  0%, 100% { opacity: 0.4; filter: blur(8px); }
+  50%      { opacity: 0.7; filter: blur(12px); }
+}
+
+/* Feature card icon */
+.VPFeature .icon {
+  font-size: 1.75rem !important;
+  display: block !important;
+  line-height: 1 !important;
+  margin-bottom: 0.75rem !important;
+  transition: transform 0.4s ease !important;
+}
+
+.VPFeature:hover .icon {
+  transform: scale(1.15) rotate(3deg) !important;
+}
+
+/* Feature card title */
+.VPFeature .title {
+  font-family: 'Syne', system-ui, sans-serif !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  color: oklch(95% 0 0) !important;
+  margin: 0 0 0.4rem !important;
+}
+
+/* Feature card description */
+.VPFeature .details {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
+  font-size: 0.85rem !important;
+  color: oklch(60% 0 0) !important;
+  line-height: 1.6 !important;
+}
+
+/* General card lift for custom containers */
+.vp-doc .custom-block {
+  background: oklch(16% 0 0) !important;
+  border: 1px solid oklch(25% 0 0) !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.vp-doc .custom-block:hover {
+  transform: translateY(-4px);
+  border-color: oklch(72% 0.18 255 / 0.3);
+  box-shadow: 0 8px 24px oklch(0% 0 0 / 0.3);
+}
+
+/* ===================================================
+   7. Footer Breathing Glow Effect
+   =================================================== */
+
+/* Keyframe: breathing glow */
+@keyframes footerBreathe {
+  0%, 100% {
+    box-shadow: 
+      0 -1px 0 oklch(72% 0.18 255 / 0.2),
+      0 -4px 16px oklch(72% 0.18 255 / 0.05);
+    opacity: 0.7;
+  }
+  50% {
+    box-shadow: 
+      0 -1px 0 oklch(72% 0.18 255 / 0.5),
+      0 -4px 24px oklch(72% 0.18 255 / 0.15),
+      0 -8px 40px oklch(75% 0.18 300 / 0.08);
+    opacity: 1;
+  }
+}
+
+@keyframes footerTopLine {
+  0%, 100% {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(72% 0.18 255 / 0.6) 30%,
+      oklch(75% 0.18 300 / 0.8) 70%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    background-position: 0% 50%;
+  }
+  50% {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(75% 0.18 300 / 0.6) 30%,
+      oklch(72% 0.18 255 / 0.8) 70%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    background-position: 100% 50%;
+  }
+}
+
+.VPFooter {
+  position: relative;
+  background: oklch(10% 0 0) !important;
+  border-top: 1px solid oklch(20% 0 0) !important;
+  animation: footerBreathe 4s ease-in-out infinite;
+}
+
+/* Top border glow line */
+.VPFooter::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    oklch(72% 0.18 255 / 0.6) 30%,
+    oklch(75% 0.18 300 / 0.8) 70%,
+    transparent 100%
+  );
+  animation: footerTopLine 6s ease-in-out infinite;
+  background-size: 200% 200%;
+}
+
+.VPFooter .message,
+.VPFooter .copyright {
+  color: oklch(45% 0 0) !important;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
+  font-size: 0.85rem !important;
+}
+
+.VPFooter a {
+  color: oklch(60% 0 0) !important;
+  transition: color 0.2s ease !important;
+}
+
+.VPFooter a:hover {
+  color: oklch(72% 0.18 255) !important;
+}
+
+/* ===================================================
+   Base Animations (required by components above)
+   =================================================== */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+/* ===================================================
+   Navigation & Sidebar Polish
+   =================================================== */
+
+/* Nav bar — glass dark */
+.VPNav {
+  background: oklch(10% 0 0 / 0.85) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  border-bottom: 1px solid oklch(20% 0 0) !important;
+  transition: background 0.3s ease !important;
+}
+
+.VPNav:hover {
+  background: oklch(12% 0 0 / 0.95) !important;
+}
+
+/* Sidebar */
+.VPSidebar {
+  background: oklch(10% 0 0) !important;
+  border-right: 1px solid oklch(18% 0 0) !important;
+}
+
+.VPSidebarItem .item .text {
+  color: oklch(60% 0 0) !important;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
+  font-size: 0.875rem !important;
+  transition: color 0.2s ease !important;
+}
+
+.VPSidebarItem.is-active > .item > .text,
+.VPSidebarItem .item:hover .text {
+  color: oklch(80% 0.16 255) !important;
+}
+
+/* Active sidebar link */
+.VPSidebarItem.is-active > .item > .text {
+  font-weight: 600 !important;
+}
+
+/* Nav site title */
+.VPNavBarTitle .title {
+  font-family: 'Syne', system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  color: oklch(90% 0 0) !important;
+  font-size: 1.1rem !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Social icons */
+.VPNavBarSocialLinks a {
+  color: oklch(50% 0 0) !important;
+  transition: color 0.2s ease !important;
+}
+
+.VPNavBarSocialLinks a:hover {
+  color: oklch(72% 0.18 255) !important;
+}
+
+/* ===================================================
+   Search Box
+   =================================================== */
+
+.DocSearch-Button {
+  background: oklch(16% 0 0) !important;
+  border: 1px solid oklch(25% 0 0) !important;
+  border-radius: 8px !important;
+  color: oklch(50% 0 0) !important;
+  transition: all 0.2s ease !important;
+}
+
+.DocSearch-Button:hover {
+  border-color: oklch(72% 0.18 255 / 0.4) !important;
+  background: oklch(18% 0 0) !important;
+  box-shadow: 0 0 12px oklch(72% 0.18 255 / 0.1) !important;
+}
+
+/* Local search modal */
+.VPLocalSearchBox {
+  background: oklch(12% 0 0 / 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+.VPLocalSearchBox .search-input {
+  background: oklch(16% 0 0) !important;
+  border: 1px solid oklch(25% 0 0) !important;
+  border-radius: 8px !important;
+  color: oklch(90% 0 0) !important;
+}
+
+/* ===================================================
+   Scrollbar Styling
+   =================================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: oklch(12% 0 0);
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(25% 0 0);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(72% 0.18 255 / 0.4);
+}
+
+/* ===================================================
+   Selection Color
+   =================================================== */
+
+::selection {
+  background: oklch(72% 0.18 255 / 0.3);
+  color: oklch(98% 0 0);
+}
+
+/* ===================================================
+   Focus Visible
+   =================================================== */
+
+:focus-visible {
+  outline: 2px solid oklch(72% 0.18 255);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ===================================================
+   Badges & Tags
+   =================================================== */
+
+.VPDocBadge {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 0.72rem !important;
+  border-radius: 4px !important;
+  padding: 0.1em 0.5em !important;
+}
+
+.VPDocBadge.tip {
+  background: oklch(72% 0.18 255 / 0.15) !important;
+  color: oklch(80% 0.16 255) !important;
+  border: 1px solid oklch(72% 0.18 255 / 0.3) !important;
+}
+
+.VPDocBadge.warning {
+  background: oklch(78% 0.16 85 / 0.15) !important;
+  color: oklch(78% 0.16 85) !important;
+  border: 1px solid oklch(78% 0.16 85 / 0.3) !important;
+}
+
+.VPDocBadge.danger {
+  background: oklch(65% 0.22 25 / 0.15) !important;
+  color: oklch(65% 0.22 25) !important;
+  border: 1px solid oklch(65% 0.0.22 25 / 0.3) !important;
+}
+
+/* ===================================================
+   Accessibility — Reduced Motion
+   =================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===================================================
+   Responsive
+   =================================================== */
+
+@media (max-width: 768px) {
+  .VPHero .name {
+    font-size: clamp(2rem, 8vw, 3rem) !important;
+  }
+
+  .VPFeature:hover {
+    transform: translateY(-4px) !important;
+  }
+
+  .VPHero::before {
+    animation: none !important;
+  }
+}
