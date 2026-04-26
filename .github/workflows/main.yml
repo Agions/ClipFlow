@@ -32,10 +32,10 @@ jobs:
           version: '9'
       - name: Install dependencies
         run: pnpm install
-      - name: TypeScript check
-        run: pnpm run type-check
       - name: Create reports directory
         run: mkdir -p reports
+      - name: TypeScript check
+        run: tsc --noEmit --pretty false 2>&1 | tee reports/tsc-report.txt; exit ${PIPESTATUS[0]}
       - name: Upload TypeScript report
         if: always()
         uses: actions/upload-artifact@v4
