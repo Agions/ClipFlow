@@ -99,7 +99,7 @@ export interface BatchClipTask {
   projectId: string;
   videos: VideoInfo[];
   config: AIClipConfig;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
   progress: number;
   results: ClipSegment[][];
   errors: string[];

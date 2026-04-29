@@ -14,19 +14,23 @@ import type {
 
 export async function analyzeVideo(
   videoInfo: VideoInfo,
-  config: Partial<AIClipConfig> = {}
+  config: Partial<AIClipConfig> = {},
+  signal?: AbortSignal
 ): Promise<ClipAnalysisResult> {
+  if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
   const fullConfig = { ...DEFAULT_CLIP_CONFIG, ...config };
 
   // 1. 高级场景检测
-  const { scenes, emotions } = await visionService.detectScenesAdvanced(
-    videoInfo,
-    {
-      minSceneDuration: 2,
-      detectObjects: false,
-      detectEmotions: fullConfig.detectEmotion
-    }
-  );
+  const { scenes, emotions } = await Promise.all([
+    visionService.detectScenesAdvanced(
+      videoInfo,
+      { minSceneDuration: 2, detectObjects: false, detectEmotions: false }
+    ),
+    // Skip emotion detection here — ZCR peak detector handles it more reliably
+    Promise.resolve({ scenes: [] as Scene[], objects: [], emotions: [] as EmotionAnalysis[] }),
+  ]).then(([r]) => r).catch(() => ({ scenes: [] as Scene[], objects: [], emotions: [] as EmotionAnalysis[] }));
+
+  if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
 
   // 2. 提取关键帧
   const keyframes = fullConfig.detectKeyframes

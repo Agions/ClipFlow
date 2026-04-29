@@ -2,8 +2,17 @@ import { analyzeVideo } from './analyzer';
 import type { VideoInfo } from '../../types';
 import type { AIClipConfig, BatchClipTask, ClipAnalysisResult, ClipSegment, ClipSuggestion } from './types';
 
+/** In-flight tasks registry */
 const tasks = new Map<string, BatchClipTask>();
+/** AbortController per task */
 const abortControllers = new Map<string, AbortController>();
+
+// ─── Config ──────────────────────────────────────────────────────────────────
+
+/** Maximum concurrent video analyses */
+const MAX_CONCURRENCY = 3;
+
+// ─── Public API ───────────────────────────────────────────────────────────────
 
 export async function batchProcess(
   projectId: string,
@@ -11,38 +20,72 @@ export async function batchProcess(
   config: AIClipConfig,
   onProgress?: (task: BatchClipTask) => void
 ): Promise<BatchClipTask> {
+  const taskId = crypto.randomUUID();
+  const controller = new AbortController();
+  abortControllers.set(taskId, controller);
+
   const task: BatchClipTask = {
-    id: crypto.randomUUID(),
+    id: taskId,
     projectId,
     videos,
     config,
     status: 'processing',
     progress: 0,
-    results: [],
+    results: new Array(videos.length).fill(undefined),
     errors: [],
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+  };
+  tasks.set(taskId, task);
+
+  let nextIndex = 0;
+
+  // Promise settlement tracker — avoids complex Promise.race bookkeeping
+  const pending: Promise<void>[] = [];
+
+  const scheduleNext = (): Promise<void> | null => {
+    if (controller.signal.aborted) return null;
+    if (nextIndex >= videos.length) return null;
+    const i = nextIndex++;
+    return processVideo(i, videos[i]);
   };
 
-  tasks.set(task.id, task);
-
-  try {
-    for (let i = 0; i < videos.length; i++) {
-      const video = videos[i];
-      try {
-        const result = await analyzeVideo(video, config);
-        task.results.push(result.segments);
-      } catch (error) {
-        task.errors.push(`视频 ${video.name} 处理失败: ${error}`);
+  const processVideo = async (i: number, video: VideoInfo): Promise<void> => {
+    try {
+      const result = await analyzeVideo(video, config, controller.signal);
+      if (!controller.signal.aborted) {
+        task.results[i] = result.segments;
       }
-      task.progress = ((i + 1) / videos.length) * 100;
+    } catch (err) {
+      if (controller.signal.aborted) return;
+      task.errors.push(`[${video.name}] ${err instanceof Error ? err.message : String(err)}`);
+      task.results[i] = [];
+    }
+    if (!controller.signal.aborted) {
+      const done = task.results.filter(Boolean).length + task.errors.length;
+      task.progress = Math.min(99, (done / videos.length) * 100);
       onProgress?.(task);
     }
-    task.status = 'completed';
-    task.completedAt = new Date().toISOString();
-  } catch (error) {
-    task.status = 'failed';
-    task.errors.push(`批量处理失败: ${error}`);
+    // Schedule next when this slot frees
+    const next = scheduleNext();
+    if (next) pending.push(next);
+  };
+
+  // Fill initial concurrency window
+  for (let i = 0; i < Math.min(MAX_CONCURRENCY, videos.length); i++) {
+    pending.push(processVideo(i, videos[i]));
+    nextIndex = i + 1;
   }
+
+  // Wait for all to complete
+  await Promise.all(pending);
+
+  task.status = controller.signal.aborted ? 'failed' : 'completed';
+  task.errors = controller.signal.aborted
+    ? [...task.errors, '用户取消']
+    : task.errors;
+  task.completedAt = new Date().toISOString();
+  task.progress = 100;
+  onProgress?.(task);
 
   return task;
 }
@@ -61,6 +104,7 @@ export function cancelTask(taskId: string): void {
   if (task) {
     task.status = 'failed';
     task.errors.push('用户取消');
+    task.completedAt = new Date().toISOString();
   }
 }
 
