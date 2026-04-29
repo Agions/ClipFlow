@@ -200,6 +200,10 @@ export const useEditorStore = create<EditorStore>()(
           });
           if (!clipToMove) return s;
           const duration = clipToMove.endMs - clipToMove.startMs;
+          // Keep source timing in sync when resizing
+          const updatedSourceEndMs = newEndMs !== undefined
+            ? clipToMove.sourceStartMs + (newEndMs - newStartMs)
+            : clipToMove.sourceEndMs;
           return {
             timelineTracks: afterRemove.map((t) =>
               t.id === targetTrackId
@@ -207,7 +211,7 @@ export const useEditorStore = create<EditorStore>()(
                     ...t,
                     clips: [
                       ...t.clips,
-                      { ...clipToMove!, startMs: newStartMs, endMs: newEndMs ?? newStartMs + duration },
+                      { ...clipToMove!, startMs: newStartMs, endMs: newEndMs ?? newStartMs + duration, sourceEndMs: updatedSourceEndMs },
                     ],
                   }
                 : t
@@ -323,10 +327,10 @@ export const useEditorStore = create<EditorStore>()(
 
       undo: () =>
         set((s) => {
-          if (s.history.past.length === 0) return s;
+          if (s.history.past.length === 0) return {};
           const previous = s.history.past[s.history.past.length - 1];
           return {
-            segments: previous,
+            segments: previous ?? [],
             history: { past: s.history.past.slice(0, -1), future: [s.segments, ...s.history.future] },
           };
         }),

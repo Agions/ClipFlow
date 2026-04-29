@@ -1,5 +1,5 @@
 import { saveFile } from './tauri';
-import type { Script } from './aiService';
+import type { GeneratedScript as Script } from './aiService';
 import { formatTime, formatDate } from '../shared/utils/format';
 import { logger } from '../utils/logger';
 import jsPDF from 'jspdf';

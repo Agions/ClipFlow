@@ -25,7 +25,8 @@ export interface ScriptGenerationSettings {
  * This re-export exists for backward compatibility.
  */
 export type ScriptSegment = CoreScriptSegment;
-export interface Script {
+/// Script type returned by AI generation — distinct from the project Script in core/types.ts
+export interface GeneratedScript {
   id: string;
   projectId: string;
   content: CoreScriptSegment[];
@@ -34,6 +35,8 @@ export interface Script {
   updatedAt: string;
   modelUsed?: string;
 }
+/// Alias for backwards compat
+export type Script = GeneratedScript;
 
 interface AIModelConfig {
   type: LegacyAIModelType;
@@ -404,7 +407,7 @@ export const aiService = {
 // 便捷函数
 export const generateScriptWithModel = aiService.generateScript;
 
-export const parseGeneratedScript = (content: string, projectId: string): Script => {
+export const parseGeneratedScript = (content: string, projectId: string): GeneratedScript => {
   const segments = aiService.parseScriptContent(content);
   return {
     id: crypto.randomUUID(),
