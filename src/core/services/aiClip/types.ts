@@ -1,7 +1,7 @@
 import type { VideoInfo } from '../../types';
 
 // 剪辑点类型
-export type CutPointType = 'scene' | 'silence' | 'keyframe' | 'emotion' | 'manual' | 'ai-suggested';
+export type CutPointType = 'scene' | 'silence' | 'keyframe' | 'emotion' | 'manual' | 'ai-suggested' | 'zcr-burst';
 
 // 剪辑点
 export interface CutPoint {
@@ -118,6 +118,8 @@ export interface ClipAnalysisResult {
   keyframeTimestamps: number[];
   sceneBoundaries: Array<{ start: number; end: number; type: string }>;
   estimatedFinalDuration: number;
+  /** ZCR-burst enhanced emotion peaks: timestamp(s), energy(0-100), type */
+  emotionPeaks?: Array<{ timestamp: number; energy: number; type: string }>;
 }
 
 // 关键帧

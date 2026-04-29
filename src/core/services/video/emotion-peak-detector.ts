@@ -6,6 +6,13 @@
 
 import { invoke } from '@tauri-apps/api/core';
 
+/** ZCR burst entry from Rust backend */
+interface ZCRBurst {
+  startMs: number;
+  endMs: number;
+  score: number;
+}
+
 export interface EmoPeak {
   startMs: number;
   endMs: number;
@@ -62,6 +69,15 @@ export async function detectEmotionPeaks(
       },
     });
 
+    // Also get ZCR burst segments for sharp audio events (applause, laughter)
+    const zcrBursts = await invoke<ZCRBurst[]>('detect_zcr_bursts', {
+      input: {
+        audio_path: videoPath,
+        window_ms: 50,
+        zcr_threshold_mult: 2.5,
+      },
+    }).catch(() => [] as ZCRBurst[]);
+
     const peaks: EmoPeak[] = highlights
       .filter((h) => h.reason === 'audio_energy' && h.audioScore != null)
       .map((h) => ({
@@ -70,6 +86,31 @@ export async function detectEmotionPeaks(
         energy: Math.round((h.audioScore ?? 0) * 100),
         type: 'generic' as const,
       }));
+
+    // Merge ZCR bursts — they're sharp sudden events, boost energy for overlaps
+    for (const burst of zcrBursts) {
+      // Only keep bursts with score > 1.2 (significant bursts)
+      if (burst.score < 1.2) continue;
+      // Boost overlapping peak energy
+      const overlapping = peaks.findIndex(
+        (p) => p.startMs < burst.endMs && p.endMs > burst.startMs
+      );
+      if (overlapping >= 0) {
+        // Upgrade type based on score magnitude
+        peaks[overlapping] = {
+          ...peaks[overlapping],
+          energy: Math.min(100, peaks[overlapping].energy + Math.round(burst.score * 15)),
+          type: burst.score > 2.0 ? 'applause' : 'excited',
+        };
+      } else {
+        peaks.push({
+          startMs: burst.startMs,
+          endMs: burst.endMs,
+          energy: Math.min(100, Math.round(burst.score * 50)),
+          type: burst.score > 2.0 ? 'applause' : 'laughter',
+        });
+      }
+    }
 
     return { peaks };
   } catch (err) {

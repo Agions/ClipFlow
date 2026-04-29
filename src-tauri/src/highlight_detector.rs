@@ -425,6 +425,108 @@ impl HighlightDetector {
         Ok(samples)
     }
 
+    /// Compute Zero-Crossing Rate (ZCR) for audio burst detection.
+    /// High ZCR indicates sudden audio events (applause, laughter, sharp sounds).
+    pub fn detect_zcr_bursts(&self, audio_path: &str, window_ms: f32, threshold: f32) -> Vec<(u64, u64, f32)> {
+        let pcm_data = match self.extract_audio_pcm(audio_path) {
+            Ok(d) => d,
+            Err(_) => return Vec::new(),
+        };
+        if pcm_data.is_empty() { return Vec::new(); }
+
+        let sample_rate = 44100.0f32;
+        let window_samples = (window_ms * sample_rate / 1000.0) as usize;
+        let hop = window_samples / 2;
+
+        let mut zcr_values: Vec<f32> = Vec::new();
+        let mut timestamps: Vec<u64> = Vec::new();
+
+        for i in (0..pcm_data.len().saturating_sub(window_samples)).step_by(hop) {
+            let window = &pcm_data[i..i + window_samples];
+            let mut crossings = 0u32;
+            for j in 1..window.len() {
+                if (window[j] >= 0.0 && window[j - 1] < 0.0)
+                || (window[j] < 0.0 && window[j - 1] >= 0.0) {
+                    crossings += 1;
+                }
+            }
+            let zcr = crossings as f32 / (window_samples - 1) as f32;
+            zcr_values.push(zcr);
+            timestamps.push((i as f32 * 1000.0 / sample_rate) as u64);
+        }
+
+        if zcr_values.is_empty() { return Vec::new(); }
+
+        let mean_zcr = zcr_values.iter().sum::<f32>() / zcr_values.len() as f32;
+        let zcr_threshold = mean_zcr * threshold;
+
+        let mut bursts: Vec<(u64, u64, f32)> = Vec::new();
+        let mut in_burst = false;
+        let mut start_idx = 0usize;
+
+        for (i, &zcr) in zcr_values.iter().enumerate() {
+            if zcr > zcr_threshold {
+                if !in_burst { in_burst = true; start_idx = i; }
+            } else if in_burst {
+                in_burst = false;
+                let start_ms = timestamps[start_idx];
+                let end_ms = timestamps[i];
+                if end_ms > start_ms + 200 { // min 200ms burst
+                    let peak_zcr = zcr_values[start_idx..=i].iter().fold(0.0f32, |m, v| m.max(*v));
+                    bursts.push((start_ms, end_ms, peak_zcr / zcr_threshold.max(0.001)));
+                }
+            }
+        }
+        if in_burst && !zcr_values.is_empty() {
+            let start_ms = timestamps[start_idx];
+            let end_ms = *timestamps.last().unwrap();
+            if end_ms > start_ms + 200 {
+                let peak_zcr = zcr_values[start_idx..].iter().fold(0.0f32, |m, v| m.max(*v));
+                bursts.push((start_ms, end_ms, peak_zcr / zcr_threshold.max(0.001)));
+            }
+        }
+        bursts
+    }
+
+    /// Compute spectral centroid over time for timbre/brightness analysis.
+    /// Returns Vec of (timestamp_ms, centroid_hz) tuples.
+    fn compute_spectral_centroid(&self, samples: &[f32], sample_rate: f32, window_ms: f32) -> Vec<(u64, f32)> {
+        let window_samples = (window_ms * sample_rate / 1000.0) as usize;
+        let hop = window_samples / 2;
+        let mut result: Vec<(u64, f32)> = Vec::new();
+
+        for i in (0..samples.len().saturating_sub(window_samples)).step_by(hop) {
+            let window = &samples[i..i + window_samples];
+            let ts_ms = (i as f32 * 1000.0 / sample_rate) as u64;
+            // Simple periodogram via autocorrelation — estimate dominant frequency
+            let mut ac: Vec<f32> = Vec::with_capacity(window_samples / 2);
+            for lag in 1..=window_samples / 2 {
+                let sum = window[..window_samples - lag]
+                    .iter()
+                    .zip(window[lag..].iter())
+                    .map(|(a, b)| a * b)
+                    .sum::<f32>();
+                ac.push(sum / window_samples as f32);
+            }
+            // Find first positive zero crossing after lag ~44 (1kHz) to estimate fundamental
+            let mut centroid = 0.0f32;
+            let mut weight_sum = 0.0f32;
+            let freq_resolution = sample_rate / (window_samples as f32 * 2.0);
+            for (lag_idx, &ac_val) in ac.iter().enumerate().skip(44) { // skip < ~1kHz
+                if ac_val > 0.0 {
+                    let freq = sample_rate / (lag_idx as f32 * 2.0);
+                    if freq < 8000.0 { // human voice/music range
+                        centroid += freq * ac_val;
+                        weight_sum += ac_val;
+                    }
+                }
+            }
+            let sc = if weight_sum > 0.0 { centroid / weight_sum } else { 0.0 };
+            result.push((ts_ms, sc));
+        }
+        result
+    }
+
     fn extract_audio_path(&self, video_path: &str) -> Result<String, String> {
         let temp_audio = std::env::temp_dir()
             .join(format!("cutdeck_audio_{}.wav", chrono_like_timestamp()));

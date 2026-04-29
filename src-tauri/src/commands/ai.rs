@@ -168,6 +168,41 @@ pub fn get_export_dir() -> String {
     temp_dir.to_string_lossy().to_string()
 }
 
+/// Parameters for detect_zcr_bursts command
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DetectZCRBurstsInput {
+    pub audio_path: String,
+    pub window_ms: Option<f32>,
+    /// ZCR threshold multiplier over mean (default 2.5)
+    pub zcr_threshold_mult: Option<f32>,
+}
+
+/// Response for ZCR burst detection
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ZCRBurstResult {
+    pub start_ms: u64,
+    pub end_ms: u64,
+    /// Ratio of peak ZCR to threshold (score > 1 = burst)
+    pub score: f32,
+}
+
+#[tauri::command]
+pub fn detect_zcr_bursts(input: DetectZCRBurstsInput) -> Result<Vec<ZCRBurstResult>, String> {
+    if input.audio_path.trim().is_empty() {
+        return Err("音频路径不能为空".to_string());
+    }
+    let detector = HighlightDetector::new();
+    let window_ms = input.window_ms.unwrap_or(50.0);
+    let threshold = input.zcr_threshold_mult.unwrap_or(2.5);
+    let bursts = detector.detect_zcr_bursts(&input.audio_path, window_ms, threshold);
+    Ok(bursts
+        .into_iter()
+        .map(|(start_ms, end_ms, score)| ZCRBurstResult { start_ms, end_ms, score })
+        .collect())
+}
+
 #[tauri::command]
 pub fn detect_highlights(input: DetectHighlightsInput) -> Result<Vec<crate::highlight_detector::HighlightSegment>, String> {
     if input.video_path.trim().is_empty() {

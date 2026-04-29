@@ -19,7 +19,7 @@ pub use types::*;
 // Re-export all commands so generate_handler! can find them at crate root
 pub use commands::ffprobe::{analyze_video, check_ffmpeg};
 pub use commands::ai::{
-    detect_highlights, detect_smart_segments, extract_key_frames, generate_thumbnail,
+    detect_highlights, detect_zcr_bursts, detect_smart_segments, extract_key_frames, generate_thumbnail,
     get_export_dir, run_ai_director_plan,
 };
 pub use commands::project::{
@@ -93,6 +93,7 @@ pub fn run() {
             subtitle::get_whisper_supported_languages,
             // Highlight detection & smart segmentation
             detect_highlights,
+            detect_zcr_bursts,
             detect_smart_segments,
         ])
         .setup(|app| {

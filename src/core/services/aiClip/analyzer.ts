@@ -1,4 +1,5 @@
 import { visionService } from '../vision.service';
+import { detectEmotionPeaks, type EmoPeak } from '../video/emotion-peak-detector';
 import { invoke } from '@tauri-apps/api/core';
 import type { EmotionAnalysis, Keyframe as SourceKeyframe, VideoInfo, Scene } from '../../types';
 import { DEFAULT_CLIP_CONFIG } from './types';
@@ -37,13 +38,25 @@ export async function analyzeVideo(
     ? await detectSilenceSegments(videoInfo, fullConfig)
     : [];
 
-  // 4. 生成剪辑点
+  // 4. 检测情感峰值（ZCR 增强）— 必须在 generateCutPoints 之前
+  const { peaks: rawPeaks }: { peaks: EmoPeak[] } = await detectEmotionPeaks(videoInfo.path, {
+    threshold: 1.5,
+    minDurationMs: 300,
+  }).catch(() => ({ peaks: [] as EmoPeak[] }));
+  const emotionPeaks = rawPeaks.map(p => ({
+    timestamp: p.startMs / 1000,
+    energy: p.energy,
+    type: p.type,
+  }));
+
+  // 5. 生成剪辑点
   const cutPoints = generateCutPoints(
     videoInfo,
     scenes,
     keyframes,
     silenceSegments,
     emotions,
+    emotionPeaks,
     fullConfig
   );
 
@@ -76,7 +89,8 @@ export async function analyzeVideo(
       end: s.endTime,
       type: s.type || 'unknown'
     })),
-    estimatedFinalDuration
+    estimatedFinalDuration,
+    emotionPeaks,
   };
 }
 
@@ -150,6 +164,7 @@ function generateCutPoints(
   keyframes: Keyframe[],
   silenceSegments: Array<{ start: number; end: number; duration: number }>,
   emotions: EmotionAnalysis[],
+  emotionPeaks: Array<{ timestamp: number; energy: number; type: string }>,
   config: AIClipConfig
 ): CutPoint[] {
   const cutPoints: CutPoint[] = [];
@@ -203,21 +218,21 @@ function generateCutPoints(
     });
   }
 
-  // 情感变化
-  if (config.detectEmotion) {
-    emotions.forEach((emotion) => {
-      if ((emotion.intensity ?? 0) > 0.6) {
+  // Add emotion peak cutPoints
+  if (config.detectEmotion && config.aiOptimize && emotionPeaks.length > 0) {
+    for (const peak of emotionPeaks) {
+      if (peak.energy > 60) {
         cutPoints.push({
-          id: `emotion_${emotion.id}`,
-          timestamp: emotion.timestamp,
+          id: `emo_${peak.timestamp.toFixed(2)}`,
+          timestamp: peak.timestamp,
           type: 'emotion',
-          confidence: emotion.intensity ?? 0,
-          description: `情感变化: ${emotion.dominant}`,
+          confidence: peak.energy / 100,
+          description: `情感峰值: ${peak.type} (能量 ${peak.energy})`,
           suggestedAction: 'keep',
-          metadata: { emotionScore: emotion.intensity }
+          metadata: { emotionScore: peak.energy / 100 }
         });
       }
-    });
+    }
   }
 
   return deduplicateCutPoints(cutPoints.sort((a, b) => a.timestamp - b.timestamp));
@@ -299,8 +314,19 @@ function determineSegmentType(cutPoints: CutPoint[]): ClipSegment['type'] {
 
 function calculateSegmentConfidence(cutPoints: CutPoint[]): number {
   if (cutPoints.length === 0) return 0.5;
-  const avgConfidence = cutPoints.reduce((sum, cp) => sum + cp.confidence, 0) / cutPoints.length;
-  return Math.min(1, avgConfidence);
+  // Weighted confidence: audio_energy + scene_change each get 0.4, emotion 0.2
+  let audioSum = 0, audioCount = 0;
+  let sceneSum = 0, sceneCount = 0;
+  let emotionSum = 0, emotionCount = 0;
+  for (const cp of cutPoints) {
+    if (cp.type === 'scene') { sceneSum += cp.confidence; sceneCount++; }
+    else if (cp.type === 'emotion') { emotionSum += cp.confidence; emotionCount++; }
+    else { audioSum += cp.confidence; audioCount++; }
+  }
+  const audioConf = audioCount ? audioSum / audioCount * 0.4 : 0;
+  const sceneConf = sceneCount ? sceneSum / sceneCount * 0.4 : 0;
+  const emotionConf = emotionCount ? emotionSum / emotionCount * 0.2 : 0;
+  return Math.min(1, audioConf + sceneConf + emotionConf);
 }
 
 async function generateSuggestions(
