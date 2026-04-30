@@ -208,6 +208,7 @@ impl HighlightDetector {
         let opts = options;
         let threshold = opts.scene_threshold.unwrap_or(0.3);
         let min_duration_ms = opts.min_duration_ms.unwrap_or(500);
+        let top_n = opts.top_n.unwrap_or(10);
 
         let temp_dir = std::env::temp_dir().join(format!("cutdeck_scdet_{}", chrono_like_timestamp()));
         let output_file = temp_dir.join("scdet.txt");
