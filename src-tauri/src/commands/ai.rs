@@ -6,6 +6,7 @@ use crate::types::{
 use crate::utils::{chrono_like_timestamp, format_srt_time, parse_fraction};
 use crate::highlight_detector::HighlightDetector;
 use crate::smart_segmenter::SmartSegmenter;
+use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::process::Command;
 use tokio::fs as tokio_fs;
