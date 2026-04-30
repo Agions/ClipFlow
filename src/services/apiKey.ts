@@ -55,7 +55,7 @@ export const validateApiKey = async (provider: string, apiKey: string): Promise<
 
       case 'google':
         // Google AI Studio API 验证
-        await axios.get('https://generativelanguage.googleapis.com/v1/models?key=' + apiKey, {
+        await axios.get(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, {
           timeout: 10000,
         });
         break;

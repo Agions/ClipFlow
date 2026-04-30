@@ -5,7 +5,7 @@
  * @author Agions
  * @version 1.2.0
  */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/ui/tabs';
@@ -16,7 +16,7 @@ import {
   Info,
   Lock,
 } from 'lucide-react';
-import ThemeContext from '../../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import useTranslation from '../../utils/i18n';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import ApiKeysPanel from '../../components/Settings/ApiKeysPanel';
@@ -40,8 +40,7 @@ interface ApiKeyConfig {
 }
 
 const Settings: React.FC = () => {
-  const themeContext = useContext(ThemeContext);
-  const isDarkMode = themeContext?.isDarkMode || false;
+  const { isDarkMode } = useTheme();
   const { t } = useTranslation();
 
   const [activeTab, setActiveTab] = useState('models');

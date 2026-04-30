@@ -2,7 +2,7 @@
  * 步骤4: 生成文案 — AI Cinema Studio Redesign
  * 三大核心功能：AI视频解说 / AI第一人称 / AI混剪
  */
-import React, { useState, useCallback, useEffect, memo } from 'react';
+import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
 import { useCutDeck } from '../AIEditorContext';
 import { aiService } from '../../../core/services/ai.service';
 import type { ScriptData, AIModel, AIModelSettings, ModelProvider } from '../../../core/types';
@@ -122,6 +122,9 @@ const ScriptGenerate: React.FC<ScriptGenerateProps> = memo(({ onNext }) => {
     passed: boolean;
   } | null>(null);
 
+  // 用于跟踪 setTimeout 的 ref，避免内存泄漏
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const currentFunction = FUNCTION_CONFIG[config.functionType];
   const currentMode = FUNCTION_TO_MODE[config.functionType];
 
@@ -131,6 +134,16 @@ const ScriptGenerate: React.FC<ScriptGenerateProps> = memo(({ onNext }) => {
     if (!mapped || mapped === config.functionType) return;
     setConfig((prev) => ({ ...prev, functionType: mapped }));
   }, [config.functionType, state.selectedFeature]);
+
+  // 组件卸载时清理 timeout，避免内存泄漏
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
 
   const applyCommentaryOrchestration = useCallback((scriptData: ScriptData): ScriptData => {
     if (!state.analysis?.scenes?.length || !scriptData.segments?.length) {
@@ -161,6 +174,12 @@ const ScriptGenerate: React.FC<ScriptGenerateProps> = memo(({ onNext }) => {
   }, [currentMode, state.analysis]);
 
   const handleGenerate = useCallback(async (functionType: AIFunctionType) => {
+    // 清理之前的 timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
     setGenerating(true);
     setProgress(0);
     setFeature(FUNCTION_TO_FEATURE[functionType]);
@@ -189,7 +208,7 @@ const ScriptGenerate: React.FC<ScriptGenerateProps> = memo(({ onNext }) => {
         'remix': 'humor',
       };
 
-      setProgress(15);
+      setProgress(10);
 
       const scriptData = await aiService.generateScript(
         model,
@@ -206,9 +225,10 @@ const ScriptGenerate: React.FC<ScriptGenerateProps> = memo(({ onNext }) => {
         }
       );
 
-      setProgress(70);
+      setProgress(50);
       const alignedScript = applyCommentaryOrchestration(scriptData);
 
+      setProgress(80);
       if (functionType === 'video-narration' || functionType === 'first-person') {
         setNarrationScript(alignedScript);
       } else {
@@ -218,14 +238,14 @@ const ScriptGenerate: React.FC<ScriptGenerateProps> = memo(({ onNext }) => {
       setProgress(100);
       notify.success(`${FUNCTION_CONFIG[functionType].title}生成成功！`);
 
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         if (onNext) onNext();
         else goToNextStep();
-      }, 600);
+      }, 2000);  // 增加到2秒，让用户有时间查看生成结果
     } catch (error) {
       notify.error(error, '文案生成失败，请重试');
     } finally {
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setGenerating(false);
         setProgress(0);
       }, 500);
