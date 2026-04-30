@@ -40,7 +40,7 @@ interface ApiKeyConfig {
 }
 
 const Settings: React.FC = () => {
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, toggleTheme } = useTheme();
   const { t } = useTranslation();
 
   const [activeTab, setActiveTab] = useState('models');
@@ -120,11 +120,11 @@ const Settings: React.FC = () => {
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
-    if (themeContext?.toggleTheme) {
+    if (toggleTheme) {
       if (newTheme === 'dark') {
-        themeContext.toggleTheme();
+        toggleTheme();
       } else if (newTheme === 'light' && isDarkMode) {
-        themeContext.toggleTheme();
+        toggleTheme();
       }
     }
   };
