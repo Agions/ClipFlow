@@ -1,7 +1,10 @@
 //! TTS (Edge TTS) — command 入口
 
+use tauri::State;
+
 use crate::commands::ai::tts_core::{check_tts_available_impl, list_tts_backends_impl, synthesize_speech_batch_impl, synthesize_speech_impl, synthesize_speech_ssml_impl};
 use crate::commands::ai::types::{SynthesizeSpeechInput, SynthesizeSpeechOutput, TtsBackendInfo, TtsBatchInput, TtsBatchOutput};
+use crate::commands::project::ProjectService;
 use crate::domain::ssml::SsmlDocument;
 
 #[tauri::command]
@@ -21,12 +24,15 @@ pub async fn synthesize_speech_ssml(
     synthesize_speech_ssml_impl(&doc, &voice, speed, &format, &backend).await
 }
 
-/// 批量并发合成（Stage 14.2）— max_concurrency 默认 3，max_retries 默认 2
+/// 批量并发合成（Stage 14.2 + 14.5 缓存）
+/// - max_concurrency 默认 3，max_retries 默认 2
+/// - 自动启用 TTS 缓存：相同 (text/ssml + voice + speed + format + backend) 命中直接返回
 #[tauri::command]
 pub async fn synthesize_speech_batch(
+    service: State<'_, ProjectService>,
     input: TtsBatchInput,
 ) -> Result<TtsBatchOutput, String> {
-    synthesize_speech_batch_impl(&input).await
+    synthesize_speech_batch_impl(&input, Some(service.db())).await
 }
 
 #[tauri::command]

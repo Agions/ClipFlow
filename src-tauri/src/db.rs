@@ -78,12 +78,24 @@ impl Db {
             self.record_migration(1)?;
         }
 
+        // 迁移 002：TTS 音频缓存（Stage 14.5）
+        if current < 2 {
+            self.migrate_002()?;
+            self.record_migration(2)?;
+        }
+
         Ok(())
     }
 
     fn migrate_001(&self) -> DbResult<()> {
         let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
         conn.execute_batch(MIGRATION_001)?;
+        Ok(())
+    }
+
+    fn migrate_002(&self) -> DbResult<()> {
+        let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
+        conn.execute_batch(MIGRATION_002)?;
         Ok(())
     }
 
@@ -329,6 +341,95 @@ impl Db {
         )?;
         Ok(())
     }
+
+    // ─── TTS 缓存（Stage 14.5） ────────────────────────────
+
+    /// 查询 TTS 缓存；命中返回 Some(row)，未命中返回 None
+    pub fn lookup_tts_cache(&self, cache_key: &str) -> DbResult<Option<TtsCacheRow>> {
+        let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
+        let row: Option<TtsCacheRow> = conn
+            .query_row(
+                "SELECT cache_key, audio_path, duration_secs, text_preview, created_at, accessed_at, access_count
+                 FROM tts_cache WHERE cache_key = ?1",
+                params![cache_key],
+                |row| {
+                    Ok(TtsCacheRow {
+                        cache_key: row.get(0)?,
+                        audio_path: row.get(1)?,
+                        duration_secs: row.get(2)?,
+                        text_preview: row.get(3)?,
+                        created_at: row.get(4)?,
+                        accessed_at: row.get(5)?,
+                        access_count: row.get(6)?,
+                    })
+                },
+            )
+            .optional()?;
+        Ok(row)
+    }
+
+    /// 写入/更新 TTS 缓存（命中后 also bump access_count + accessed_at）
+    pub fn upsert_tts_cache(&self, c: &TtsCacheRow) -> DbResult<()> {
+        let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
+        conn.execute(
+            "INSERT INTO tts_cache (cache_key, audio_path, duration_secs, text_preview, created_at, accessed_at, access_count)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
+             ON CONFLICT(cache_key) DO UPDATE SET
+                audio_path=excluded.audio_path,
+                duration_secs=excluded.duration_secs,
+                text_preview=excluded.text_preview,
+                accessed_at=excluded.accessed_at,
+                access_count=access_count + 1",
+            params![
+                c.cache_key,
+                c.audio_path,
+                c.duration_secs,
+                c.text_preview,
+                c.created_at,
+                c.accessed_at,
+                c.access_count,
+            ],
+        )?;
+        Ok(())
+    }
+
+    /// 批量记录缓存命中（更新 accessed_at + 累加 access_count）
+    pub fn touch_tts_cache(&self, cache_keys: &[String]) -> DbResult<usize> {
+        if cache_keys.is_empty() {
+            return Ok(0);
+        }
+        let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
+        let now = now_unix();
+        let mut updated = 0;
+        // 单条更新，简单可靠（批量 key 数量通常是几十）
+        for key in cache_keys {
+            updated += conn.execute(
+                "UPDATE tts_cache SET accessed_at = ?1, access_count = access_count + 1
+                 WHERE cache_key = ?2",
+                params![now, key],
+            )?;
+        }
+        Ok(updated)
+    }
+
+    /// 清理过期 TTS 缓存（created_at < cutoff_unix）
+    /// 返回删除的行数
+    pub fn clear_expired_tts_cache(&self, cutoff_unix: i64) -> DbResult<usize> {
+        let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
+        let n = conn.execute(
+            "DELETE FROM tts_cache WHERE created_at < ?1",
+            params![cutoff_unix],
+        )?;
+        Ok(n)
+    }
+
+    /// TTS 缓存总数（用于 UI 展示 / 健康检查）
+    pub fn tts_cache_count(&self) -> DbResult<i64> {
+        let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
+        let n: i64 = conn
+            .query_row("SELECT COUNT(*) FROM tts_cache", [], |row| row.get(0))?;
+        Ok(n)
+    }
 }
 
 // ─── 行模型（DB row → Rust struct） ────────────────────────────
@@ -371,6 +472,18 @@ pub struct ArtifactRow {
     pub path: String,
     pub metadata_json: Option<String>,
     pub created_at: i64,
+}
+
+/// TTS 音频缓存行（Stage 14.5）
+#[derive(Debug, Clone)]
+pub struct TtsCacheRow {
+    pub cache_key: String,
+    pub audio_path: String,
+    pub duration_secs: f64,
+    pub text_preview: String,
+    pub created_at: i64,
+    pub accessed_at: i64,
+    pub access_count: i32,
 }
 
 // ─── 工具 ──────────────────────────────────────────────────────
@@ -448,6 +561,24 @@ CREATE TABLE app_settings (
 );
 "#;
 
+// ─── 迁移 002：TTS 音频缓存（Stage 14.5） ─────────────────────
+
+const MIGRATION_002: &str = r#"
+-- TTS 合成结果缓存：text+voice+speed+format+backend hash → 音频文件
+CREATE TABLE tts_cache (
+    cache_key TEXT PRIMARY KEY,
+    audio_path TEXT NOT NULL,
+    duration_secs REAL NOT NULL,
+    text_preview TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    accessed_at INTEGER NOT NULL,
+    access_count INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX idx_tts_cache_accessed_at ON tts_cache(accessed_at DESC);
+CREATE INDEX idx_tts_cache_created_at ON tts_cache(created_at);
+"#;
+
 // ─── 单元测试 ──────────────────────────────────────────────
 
 #[cfg(test)]
@@ -462,9 +593,10 @@ mod tests {
     }
 
     #[test]
-    fn open_runs_migration_001() {
+    fn open_runs_all_migrations() {
         let db = fresh_db();
-        assert_eq!(db.schema_version().unwrap(), 1);
+        // 001 (v3 完整 schema) + 002 (TTS 缓存)
+        assert_eq!(db.schema_version().unwrap(), 2);
     }
 
     #[test]
@@ -568,5 +700,78 @@ mod tests {
         // 覆盖
         db.set_setting("theme", r#""light""#).unwrap();
         assert_eq!(db.get_setting("theme").unwrap().as_deref(), Some(r#""light""#));
+    }
+
+    // ─── TTS 缓存（Stage 14.5） ────────────────────────────
+
+    fn cache_row(key: &str, path: &str, created_at: i64) -> TtsCacheRow {
+        TtsCacheRow {
+            cache_key: key.to_string(),
+            audio_path: path.to_string(),
+            duration_secs: 1.5,
+            text_preview: "你好".to_string(),
+            created_at,
+            accessed_at: created_at,
+            access_count: 0,
+        }
+    }
+
+    #[test]
+    fn tts_cache_lookup_miss_returns_none() {
+        let db = fresh_db();
+        assert!(db.lookup_tts_cache("missing").unwrap().is_none());
+    }
+
+    #[test]
+    fn tts_cache_upsert_then_lookup_round_trip() {
+        let db = fresh_db();
+        db.upsert_tts_cache(&cache_row("k1", "/tmp/a.mp3", 1000)).unwrap();
+
+        let got = db.lookup_tts_cache("k1").unwrap().unwrap();
+        assert_eq!(got.audio_path, "/tmp/a.mp3");
+        assert_eq!(got.duration_secs, 1.5);
+        assert_eq!(got.access_count, 0);
+    }
+
+    #[test]
+    fn tts_cache_upsert_existing_bumps_access_count() {
+        let db = fresh_db();
+        db.upsert_tts_cache(&cache_row("k1", "/tmp/a.mp3", 1000)).unwrap();
+        db.upsert_tts_cache(&cache_row("k1", "/tmp/b.mp3", 2000)).unwrap();
+
+        let got = db.lookup_tts_cache("k1").unwrap().unwrap();
+        assert_eq!(got.audio_path, "/tmp/b.mp3"); // 路径已更新
+        assert_eq!(got.access_count, 1); // 累加 1
+    }
+
+    #[test]
+    fn tts_cache_touch_updates_access_metadata() {
+        let db = fresh_db();
+        db.upsert_tts_cache(&cache_row("k1", "/tmp/a.mp3", 1000)).unwrap();
+        let updated = db.touch_tts_cache(&["k1".to_string(), "missing".to_string()]).unwrap();
+        assert_eq!(updated, 1); // 只有一个 key 存在
+    }
+
+    #[test]
+    fn tts_cache_clear_expired_removes_old_entries() {
+        let db = fresh_db();
+        db.upsert_tts_cache(&cache_row("old", "/tmp/o.mp3", 100)).unwrap();
+        db.upsert_tts_cache(&cache_row("new", "/tmp/n.mp3", 5000)).unwrap();
+
+        // 清理 created_at < 1000
+        let removed = db.clear_expired_tts_cache(1000).unwrap();
+        assert_eq!(removed, 1);
+        assert!(db.lookup_tts_cache("old").unwrap().is_none());
+        assert!(db.lookup_tts_cache("new").unwrap().is_some());
+    }
+
+    #[test]
+    fn tts_cache_count_reflects_total() {
+        let db = fresh_db();
+        assert_eq!(db.tts_cache_count().unwrap(), 0);
+        db.upsert_tts_cache(&cache_row("a", "/a.mp3", 1)).unwrap();
+        db.upsert_tts_cache(&cache_row("b", "/b.mp3", 2)).unwrap();
+        db.upsert_tts_cache(&cache_row("c", "/c.mp3", 3)).unwrap();
+        assert_eq!(db.tts_cache_count().unwrap(), 3);
     }
 }

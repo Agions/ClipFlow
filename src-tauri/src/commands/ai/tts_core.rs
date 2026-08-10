@@ -1,14 +1,17 @@
 //! TTS 核心逻辑 — synthesize_speech / list_tts_backends / check_tts_available / edge_tts_path
 //!
 //! Stage 14.2：并发 batch 合成（max_concurrency 默认 3，重试默认 2）
+//! Stage 14.5：TTS 音频缓存（text+voice+speed+format+backend hash → 音频路径）
 
 use std::env;
+use std::hash::{Hash, Hasher};
 use std::time::Instant;
 use futures_util::stream::{FuturesUnordered, StreamExt};
 use tokio::process::Command;
 use tokio::fs;
 
 use super::types::{SynthesizeSpeechInput, SynthesizeSpeechOutput, TtsBackendInfo, TtsBatchInput, TtsBatchOutput, TtsBatchSegmentInput, TtsBatchResultItem};
+use crate::db::{Db, TtsCacheRow};
 use crate::domain::ssml::serialize_ssml;
 use crate::utils::cmd_err;
 
@@ -123,14 +126,18 @@ pub async fn synthesize_speech_ssml_impl(
     })
 }
 
-/// 批量并发合成（Stage 14.2）
+/// 批量并发合成（Stage 14.2 + 14.5）
 ///
 /// - 限流：`max_concurrency`（默认 3，1-8 合法）
 /// - 重试：每段失败重试 `max_retries` 次（默认 2，0-3 合法）
+/// - 缓存：传入 `db` 时启用 TTS 缓存（text+voice+speed+format+backend hash）
+///   - 命中：直接返回 cached audio_path（duration_secs 也用缓存值）
+///   - 未命中：合成后写入缓存
 /// - 输出顺序：与输入 segments 顺序对齐（前端用 id 二次校验）
 /// - 部分失败：返回 Ok(output) + 错误在 per-segment error 字段
 pub async fn synthesize_speech_batch_impl(
     input: &TtsBatchInput,
+    db: Option<&Db>,
 ) -> Result<TtsBatchOutput, String> {
     if input.segments.is_empty() {
         return Err("Batch input has no segments".to_string());
@@ -153,7 +160,7 @@ pub async fn synthesize_speech_batch_impl(
     // 先推 concurrency 个任务
     for _ in 0..concurrency {
         if let Some(seg) = iter.next() {
-            futures.push(synthesize_one_with_retry(seg.clone(), max_retries));
+            futures.push(synthesize_one_with_retry(seg.clone(), max_retries, db.clone()));
         }
     }
 
@@ -162,7 +169,7 @@ pub async fn synthesize_speech_batch_impl(
         results.push(res);
         // 流水线：每完成一个就推入下一个，保持并发数稳定
         if let Some(seg) = iter.next() {
-            futures.push(synthesize_one_with_retry(seg.clone(), max_retries));
+            futures.push(synthesize_one_with_retry(seg.clone(), max_retries, db.clone()));
         }
     }
 
@@ -186,11 +193,50 @@ pub async fn synthesize_speech_batch_impl(
 async fn synthesize_one_with_retry(
     seg: TtsBatchSegmentInput,
     max_retries: u8,
+    db: Option<&Db>,
 ) -> TtsBatchResultItem {
+    // 1. 缓存命中：直接返回
+    if let Some(db) = &db {
+        if let Ok(Some(cached)) = db.lookup_tts_cache(&cache_key_for(&seg)) {
+            return TtsBatchResultItem {
+                id: seg.id.clone(),
+                audio_path: Some(cached.audio_path),
+                duration_secs: cached.duration_secs,
+                error: None,
+                retries: 0,
+            };
+        }
+    }
+
+    // 2. 未命中：合成（重试）
     let mut last_err: Option<String> = None;
     for attempt in 0..=max_retries {
         match synthesize_one(&seg).await {
             Ok((audio_path, duration_secs)) => {
+                // 3. 写入缓存
+                if let Some(db) = &db {
+                    let now = std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .map(|d| d.as_secs() as i64)
+                        .unwrap_or(0);
+                    let preview = seg
+                        .text
+                        .as_deref()
+                        .or_else(|| seg.ssml.as_ref().map(|_| "[ssml]"))
+                        .unwrap_or("")
+                        .chars()
+                        .take(100)
+                        .collect::<String>();
+                    let _ = db.upsert_tts_cache(&TtsCacheRow {
+                        cache_key: cache_key_for(&seg),
+                        audio_path: audio_path.clone(),
+                        duration_secs,
+                        text_preview: preview,
+                        created_at: now,
+                        accessed_at: now,
+                        access_count: 0,
+                    });
+                }
                 return TtsBatchResultItem {
                     id: seg.id.clone(),
                     audio_path: Some(audio_path),
@@ -209,6 +255,24 @@ async fn synthesize_one_with_retry(
         error: last_err,
         retries: max_retries,
     }
+}
+
+/// TTS 缓存 key：text(ssml or plain) + voice + speed + format + backend 的 hash
+/// 用 std DefaultHasher（SipHash），64-bit 够用；冲突极小（4B 段才可能）
+pub fn cache_key_for(seg: &TtsBatchSegmentInput) -> String {
+    use std::collections::hash_map::DefaultHasher;
+    let mut h = DefaultHasher::new();
+    // SSML 优先：先序列化为标准 XML 再 hash（保证输入等价 → 同一 key）
+    if let Some(doc) = &seg.ssml {
+        serialize_ssml(doc).hash(&mut h);
+    } else if let Some(text) = &seg.text {
+        text.hash(&mut h);
+    }
+    seg.voice.hash(&mut h);
+    seg.speed.to_bits().hash(&mut h);
+    seg.format.hash(&mut h);
+    seg.backend.hash(&mut h);
+    format!("tts_{:016x}", h.finish())
 }
 
 async fn synthesize_one(
@@ -345,7 +409,7 @@ mod tests {
             max_concurrency: 3,
             max_retries: 2,
         };
-        let res = synthesize_speech_batch_impl(&inp).await;
+        let res = synthesize_speech_batch_impl(&inp, None).await;
         assert!(res.is_err());
         assert!(res.unwrap_err().contains("no segments"));
     }
@@ -357,7 +421,7 @@ mod tests {
             max_concurrency: 0,
             max_retries: 0,
         };
-        let res = synthesize_speech_batch_impl(&inp).await;
+        let res = synthesize_speech_batch_impl(&inp, None).await;
         assert!(res.is_err());
         assert!(res.unwrap_err().contains("max_concurrency"));
     }
@@ -369,7 +433,7 @@ mod tests {
             max_concurrency: 3,
             max_retries: 5,
         };
-        let res = synthesize_speech_batch_impl(&inp).await;
+        let res = synthesize_speech_batch_impl(&inp, None).await;
         assert!(res.is_err());
         assert!(res.unwrap_err().contains("max_retries"));
     }
@@ -382,7 +446,7 @@ mod tests {
             max_concurrency: 2,
             max_retries: 0,
         };
-        let out = synthesize_speech_batch_impl(&inp).await.unwrap();
+        let out = synthesize_speech_batch_impl(&inp, None).await.unwrap();
         assert_eq!(out.results.len(), 2);
         // id 顺序对齐
         assert_eq!(out.results[0].id, "a");
@@ -408,7 +472,7 @@ mod tests {
             max_concurrency: 1, // 串行执行，便于断言顺序
             max_retries: 0,
         };
-        let out = synthesize_speech_batch_impl(&inp).await.unwrap();
+        let out = synthesize_speech_batch_impl(&inp, None).await.unwrap();
         assert_eq!(out.results.len(), 3);
         assert_eq!(out.results[0].id, "first");
         assert_eq!(out.results[1].id, "second");
@@ -458,10 +522,113 @@ mod tests {
             max_concurrency: 1,
             max_retries: 0,
         };
-        let out = synthesize_speech_batch_impl(&inp).await.unwrap();
+        let out = synthesize_speech_batch_impl(&inp, None).await.unwrap();
         assert_eq!(out.results.len(), 1);
         // 没有 edge-tts 或调用失败，audio_path 是 None，error 非空（"ssml" 关键字 / spawn 失败）
         // 这里不强制特定内容，只验证 ssml 路径至少走到了 synthesize_one
         assert!(out.results[0].error.is_some() || out.results[0].audio_path.is_some());
+    }
+
+    // ─── 缓存（Stage 14.5） ────────────────────────────────
+
+    #[test]
+    fn cache_key_deterministic_for_same_input() {
+        let a = seg("a", "hello");
+        let b = seg("a", "hello");
+        assert_eq!(cache_key_for(&a), cache_key_for(&b));
+    }
+
+    #[test]
+    fn cache_key_differs_for_different_voice() {
+        let mut a = seg("a", "hi");
+        let mut b = seg("a", "hi");
+        a.voice = "zh-CN-YunxiNeural".into();
+        b.voice = "zh-CN-XiaoxiaoNeural".into();
+        assert_ne!(cache_key_for(&a), cache_key_for(&b));
+    }
+
+    #[test]
+    fn cache_key_differs_for_different_text() {
+        let a = seg("a", "hi");
+        let b = seg("a", "bye");
+        assert_ne!(cache_key_for(&a), cache_key_for(&b));
+    }
+
+    #[test]
+    fn cache_key_differs_for_different_speed() {
+        let mut a = seg("a", "hi");
+        let mut b = seg("a", "hi");
+        a.speed = 1.0;
+        b.speed = 1.2;
+        assert_ne!(cache_key_for(&a), cache_key_for(&b));
+    }
+
+    #[test]
+    fn cache_key_handles_ssml_path() {
+        let doc1 = SsmlDocument {
+            xml_lang: "zh-CN".into(),
+            default_voice: None,
+            children: vec![SsmlInline::text("hi")],
+        };
+        let doc2 = SsmlDocument {
+            xml_lang: "zh-CN".into(),
+            default_voice: None,
+            children: vec![SsmlInline::text("hi")],
+        };
+        let mut a = ssml_seg("x", doc1);
+        let mut b = ssml_seg("x", doc2);
+        a.text = None;
+        b.text = None;
+        // 同样 SSML → 同样 key
+        assert_eq!(cache_key_for(&a), cache_key_for(&b));
+    }
+
+    #[tokio::test]
+    async fn batch_with_cache_hits_on_second_call() {
+        use tempfile::tempdir;
+        use crate::db::Db;
+        let dir = tempdir().unwrap();
+        let db = Db::open(&dir.path().join("test.db")).unwrap();
+
+        // 第一次：没有 edge-tts → 失败，但应该尝试 lookup + 写入（写时合成失败就不写）
+        let inp = TtsBatchInput {
+            segments: vec![seg("a", "hi")],
+            max_concurrency: 1,
+            max_retries: 0,
+        };
+        let out1 = synthesize_speech_batch_impl(&inp, Some(&db)).await.unwrap();
+        assert!(out1.results[0].error.is_some());
+
+        // 预填缓存
+        let key = cache_key_for(&inp.segments[0]);
+        db.upsert_tts_cache(&TtsCacheRow {
+            cache_key: key.clone(),
+            audio_path: "/tmp/cached.mp3".into(),
+            duration_secs: 9.9,
+            text_preview: "hi".into(),
+            created_at: 100,
+            accessed_at: 100,
+            access_count: 0,
+        })
+        .unwrap();
+
+        // 第二次：cache 命中，不调 edge-tts，直接返回 cached
+        let out2 = synthesize_speech_batch_impl(&inp, Some(&db)).await.unwrap();
+        assert!(out2.results[0].error.is_none());
+        assert_eq!(out2.results[0].audio_path.as_deref(), Some("/tmp/cached.mp3"));
+        assert_eq!(out2.results[0].duration_secs, 9.9);
+    }
+
+    #[tokio::test]
+    async fn batch_with_no_db_skips_cache() {
+        // 没有 db → 不报错，正常 batch 路径
+        let inp = TtsBatchInput {
+            segments: vec![seg("a", "hi")],
+            max_concurrency: 1,
+            max_retries: 0,
+        };
+        let out = synthesize_speech_batch_impl(&inp, None).await.unwrap();
+        // 没有 edge-tts → 失败，但 batch 本身不挂
+        assert!(out.results[0].error.is_some());
     }
 }
