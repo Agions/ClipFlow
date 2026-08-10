@@ -5,6 +5,7 @@
 //! 逐步替换为对具体产物类型的引用。
 
 use serde::{Deserialize, Serialize};
+use super::intent::{IntentConfig, DEFAULT_INTENT_CONFIG};
 
 /// 工程生命周期状态（由阶段产物推导，前端负责推导逻辑）
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -44,6 +45,8 @@ pub struct ProductionSource {
 pub struct Production {
     pub id: String,
     pub name: String,
+    /// v3 创作意图（驱动 L0-L2 各阶段策略）
+    pub intent: IntentConfig,
     pub source: ProductionSource,
     /// L0 产物：剧情时间线（M1 迁移后替换为 Storyline 引用）
     pub storyline: Option<serde_json::Value>,
@@ -64,12 +67,13 @@ pub struct Production {
 }
 
 impl Production {
-    /// 创建新的解说工程（初始 draft 状态）
-    pub fn new(id: String, name: String, source: ProductionSource) -> Self {
+    /// 创建新的解说工程（初始 draft 状态，intent 可选）
+    pub fn new(id: String, name: String, source: ProductionSource, intent: Option<IntentConfig>) -> Self {
         let now = crate::utils::now_iso8601();
         Self {
             id,
             name,
+            intent: intent.unwrap_or(DEFAULT_INTENT_CONFIG),
             source,
             storyline: None,
             plan: None,
@@ -81,5 +85,12 @@ impl Production {
             created_at: now.clone(),
             updated_at: now,
         }
+    }
+
+    /// 修改 intent（不可变更新，刷新 updatedAt）
+    pub fn with_intent(mut self, intent: IntentConfig) -> Self {
+        self.intent = intent;
+        self.updated_at = crate::utils::now_iso8601();
+        self
     }
 }
