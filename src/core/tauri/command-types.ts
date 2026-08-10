@@ -109,6 +109,8 @@ export type TauriCommandName =
   | 'project_load'
   | 'project_save'
   | 'project_delete'
+  | 'list_platform_presets'
+  | 'platform_export'
   | 'pipeline_start_phase'
   | 'pipeline_approve_phase'
   | 'pipeline_retry_phase'
@@ -407,6 +409,27 @@ type CommandNameToDefs = {
     output: ProjectDto;
   };
   project_delete: { input: { id: string }; output: null };
+
+  // Platform presets (Stage 15.2) — 数据驱动平台预设 + 一键导出
+  list_platform_presets: {
+    input: Record<string, never>;
+    output: Array<import('../domain/platform').PlatformPreset>;
+  };
+  platform_export: {
+    input: {
+      platformId: import('../domain/platform').PlatformId;
+      inputPath: string;
+      outputPath: string;
+      subtitlePath?: string | null;
+      burnSubtitles?: boolean | null;
+    };
+    output: {
+      outputPath: string;
+      duration: number;
+      fileSize: number;
+      platform: import('../domain/platform').PlatformPreset;
+    };
+  };
 
   // Pipeline (Stage 13) — 5 阶段流水线 IPC
   pipeline_start_phase: {

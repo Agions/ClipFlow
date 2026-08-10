@@ -15,6 +15,7 @@ import { fileOperations } from './methods/file-operations';
 import { project } from './methods/project';
 import { aiScript } from './methods/ai-script';
 import { pipeline } from './methods/pipeline';
+import { platform } from './methods/platform';
 
 export const tauri = {
   // ─── FFmpeg / Video analysis ──────────────────────────────
@@ -41,6 +42,9 @@ export const tauri = {
 
   // ─── Pipeline (v3 · 5 阶段流水线) ────────────────────────
   ...pipeline,
+
+  // ─── Platform presets + 一键导出 (Stage 15.2) ───────────
+  ...platform,
 
   // ─── AI Script ────────────────────────────────────────────
   ...aiScript,
