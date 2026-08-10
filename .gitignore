@@ -108,3 +108,6 @@ pnpm-lock.yaml
 # src-tauri/Cargo.lock: Tauri 2 binary project — track transitive deps
 .qoder
 .vscode
+
+# v3 重构规划文档（本地留底，不上 GitHub）
+docs/PLAN-v3-architecture.md
