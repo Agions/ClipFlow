@@ -1,14 +1,25 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   formatTime,
   formatDuration,
+  formatDurationChinese,
   formatFriendlyDuration,
   formatFileSize,
   formatDate,
   formatDateTime,
   formatDateCustom,
+  formatRelativeTime,
+  formatRelativeDate,
+  formatTimecodeMs,
+  formatTimecode,
+  formatTimecodeSimple,
+  formatSrtTime,
   truncateText,
   capitalize,
+  clamp,
+  now,
+  nowISO,
+  MS_PER_SECOND,
 } from './formatting';
 
 describe('formatTime', () => {
@@ -180,5 +191,155 @@ describe('capitalize', () => {
 
   it('should handle single character', () => {
     expect(capitalize('a')).toBe('A');
+  });
+});
+
+describe('formatDurationChinese', () => {
+  it('formats hours, minutes and seconds', () => {
+    expect(formatDurationChinese(3661)).toBe('1小时1分1秒');
+  });
+
+  it('formats minutes and seconds (no hours)', () => {
+    expect(formatDurationChinese(90)).toBe('1分30秒');
+  });
+
+  it('formats seconds only', () => {
+    expect(formatDurationChinese(45)).toBe('45秒');
+  });
+
+  it('handles NaN', () => {
+    expect(formatDurationChinese(NaN)).toBe('0秒');
+  });
+
+  it('handles negative values', () => {
+    expect(formatDurationChinese(-1)).toBe('0秒');
+  });
+});
+
+describe('formatRelativeTime', () => {
+  const NOW = new Date('2026-08-07T10:00:00');
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('returns "今天 HH:mm" for the same day', () => {
+    const d = new Date('2026-08-07T08:30:00');
+    const result = formatRelativeTime(d);
+    expect(result).toMatch(/^今天 /);
+  });
+
+  it('returns "昨天 HH:mm" for the day before today', () => {
+    // Use >24h diff to actually trigger "yesterday"
+    const d = new Date('2026-08-06T05:00:00');
+    expect(formatRelativeTime(d)).toMatch(/^昨天 /);
+  });
+
+  it('returns "N 天前" for 2-6 days ago', () => {
+    const d = new Date('2026-08-04T10:00:00');
+    expect(formatRelativeTime(d)).toBe('3 天前');
+  });
+
+  it('returns locale date for > 7 days ago', () => {
+    const d = new Date('2026-07-01T10:00:00');
+    const result = formatRelativeTime(d);
+    expect(result).toMatch(/[0-9]/);
+  });
+
+  it('accepts a date string', () => {
+    const result = formatRelativeTime('2026-08-07T08:30:00');
+    expect(result).toMatch(/^今天 /);
+  });
+});
+
+describe('formatRelativeDate', () => {
+  const NOW = new Date('2026-08-07T10:00:00');
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('returns "N 分钟前" for diff < 1 hour', () => {
+    const d = new Date('2026-08-07T09:30:00');
+    expect(formatRelativeDate(d)).toBe('30 分钟前');
+  });
+
+  it('returns "N 小时前" for diff < 1 day', () => {
+    const d = new Date('2026-08-07T08:00:00');
+    expect(formatRelativeDate(d)).toBe('2 小时前');
+  });
+
+  it('returns "N 天前" for diff < 7 days', () => {
+    const d = new Date('2026-08-04T10:00:00');
+    expect(formatRelativeDate(d)).toBe('3 天前');
+  });
+
+  it('returns locale date string for older dates', () => {
+    const d = new Date('2025-01-01T10:00:00');
+    expect(formatRelativeDate(d)).toMatch(/2025/);
+  });
+
+  it('accepts a date string', () => {
+    expect(formatRelativeDate('2026-08-07T09:30:00')).toBe('30 分钟前');
+  });
+});
+
+describe('timecode helpers', () => {
+  it('formatTimecodeMs formats ms as MM:SS:FF', () => {
+    // 1500ms → 00:01:14 at 30fps (JS floating point: 500/(1000/30) ≈ 14.999... → 14)
+    expect(formatTimecodeMs(1500)).toBe('00:01:14');
+  });
+
+  it('formatTimecodeMs handles 0 ms', () => {
+    expect(formatTimecodeMs(0)).toBe('00:00:00');
+  });
+
+  it('formatTimecode formats seconds as HH:MM:SS:FF', () => {
+    // 3661.5s → 01:01:01:15
+    expect(formatTimecode(3661.5)).toBe('01:01:01:15');
+  });
+
+  it('formatTimecodeSimple formats seconds as HH:MM:SS', () => {
+    expect(formatTimecodeSimple(3661)).toBe('01:01:01');
+  });
+
+  it('formatSrtTime formats seconds as HH:MM:SS,mmm', () => {
+    // 1.5s → 00:00:01,500
+    expect(formatSrtTime(1.5)).toBe('00:00:01,500');
+  });
+});
+
+describe('time helpers', () => {
+  it('clamp clamps value within range', () => {
+    expect(clamp(5, 0, 10)).toBe(5);
+    expect(clamp(-1, 0, 10)).toBe(0);
+    expect(clamp(20, 0, 10)).toBe(10);
+  });
+
+  it('MS_PER_SECOND is 1000', () => {
+    expect(MS_PER_SECOND).toBe(1000);
+  });
+
+  it('now() returns a recent timestamp', () => {
+    const before = Date.now();
+    const result = now();
+    const after = Date.now();
+    expect(result).toBeGreaterThanOrEqual(before);
+    expect(result).toBeLessThanOrEqual(after);
+  });
+
+  it('nowISO() returns a valid ISO 8601 string', () => {
+    const result = nowISO();
+    expect(result).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
   });
 });

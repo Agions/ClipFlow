@@ -8,16 +8,7 @@
  * - 本文件作为门面，保持原有 API 兼容
  */
 
-import { tauri } from '@/core/tauri';
-import { logger } from '@/shared/utils/logging';
-import type {
-  VideoInfo,
-  Scene,
-  VideoAnalysis,
-  ObjectDetection,
-  EmotionAnalysis,
-} from '@/types';
-import type { HighlightSegment, HighlightOptions } from '@/types';
+import type { VideoInfo, Scene, VideoAnalysis, ObjectDetection, EmotionAnalysis } from '@/types';
 
 // 导入拆分后的服务
 import { sceneDetectionService } from './scene-detection-service';
@@ -80,11 +71,7 @@ export class VisionService {
     objects: ObjectDetection[];
     emotions: EmotionAnalysis[];
   }> {
-    const {
-      minSceneDuration = 3,
-      detectObjects = true,
-      detectEmotions = true,
-    } = options;
+    const { minSceneDuration = 3, detectObjects = true, detectEmotions = true } = options;
 
     // 1. 基础场景分割
     const baseScenes = await sceneDetectionService.segmentScenes(videoInfo, minSceneDuration);
@@ -162,9 +149,9 @@ export class VisionService {
   ): Scene[] {
     // 预建查找表：sceneId → objects/emotions，避免 O(n²) 嵌套循环
     const objectMap = objectDetectionService.groupObjectsByScene(objects);
-    const emotionMap = new Map(emotions.map((e) => [e.sceneId, e]));
+    const emotionMap = new Map(emotions.map(e => [e.sceneId, e]));
 
-    return scenes.map((scene) => {
+    return scenes.map(scene => {
       const sceneObjects = objectMap.get(scene.id) ?? [];
       const sceneEmotion = emotionMap.get(scene.id) ?? null;
 
@@ -196,47 +183,11 @@ export class VisionService {
     return analysisReportService.generateReport(videoInfo, scenes, objects, emotions);
   }
 
-  /**
-   * Rust 高光检测 — 激活 highlight_detector.rs
-   *
-   * 使用 FFmpeg scdet 滤镜 + 音频短时能量分析，无需外部 AI 服务
-   * 识别高光片段（音频能量峰值 + 场景切换）
-   *
-   * @deprecated 使用 @/core/interfaces HighlightOptions 类型 + tauri.detectHighlights()
-   */
-  async detectHighlights(
-    videoInfo: VideoInfo,
-    options: Partial<HighlightOptions> = {}
-  ): Promise<HighlightSegment[]> {
-    const videoPath = videoInfo.path;
-
-    if (!videoPath) {
-      logger.info('[VisionService] detectHighlights: videoInfo.path is empty');
-      return [];
-    }
-
-    try {
-      const rawSegments = await tauri.detectHighlights(videoPath, {
-        threshold: options.threshold,
-        minDurationMs: options.minDurationMs ?? options.minDurationMs,
-        topN: options.topN,
-        windowMs: options.windowMs,
-      });
-
-      return rawSegments.map((h) => ({
-        startTime: h.startMs / 1000,
-        endTime: h.endMs / 1000,
-        score: h.score,
-        reason: h.reason as string,
-        audioScore: h.audioScore,
-        sceneScore: h.sceneScore,
-        motionScore: h.motionScore,
-      }));
-    } catch (error) {
-      logger.info('[VisionService] detectHighlights failed:', error);
-      return [];
-    }
-  }
+  // PR-1.3a: VisionService.detectHighlights() 已迁移到 highlightDetector helper
+  // 原因: 原 VisionService.detectHighlights 仅是 tauri.detectHighlights 的中转层
+  //      @deprecated 标记建议调用方直接使用 tauri.detectHighlights()
+  // 新位置: @/core/services/video/highlight-detector
+  // 迁移完成: build-candidates-step.ts + highlights.tsx
 }
 
 // 导出单例

@@ -8,7 +8,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Mock tauri module
 vi.mock('@/core/tauri', () => ({
   tauri: {
-    exportVideo: vi.fn().mockResolvedValue({ outputPath: '/output.mp4', duration: 120, fileSize: 1024 * 1024 * 10 }),
+    exportVideo: vi
+      .fn()
+      .mockResolvedValue({ outputPath: '/output.mp4', duration: 120, fileSize: 1024 * 1024 * 10 }),
     cancelExport: vi.fn().mockResolvedValue(undefined),
   },
 }));
@@ -100,7 +102,7 @@ describe('ExportService.exportVideo', () => {
         inputPath: '/input.mp4',
         outputPath: '/output.mp4',
         format: 'mp4',
-      }),
+      })
     );
     expect(result.outputPath).toBe('/output.mp4');
     expect(result.duration).toBe(120);
@@ -111,15 +113,15 @@ describe('ExportService.exportVideo', () => {
     const svc = new ExportService();
     svc.setConfig({ resolution: '720p' });
     await svc.exportVideo('/input.mp4', '/output.mp4', { format: 'mp4' });
-    expect(tauri.exportVideo).toHaveBeenCalledWith(
-      expect.objectContaining({ resolution: '720p' }),
-    );
+    expect(tauri.exportVideo).toHaveBeenCalledWith(expect.objectContaining({ resolution: '720p' }));
   });
 
   it('rejects on tauri failure', async () => {
     vi.mocked(tauri.exportVideo).mockRejectedValueOnce(new Error('export failed'));
     const svc = new ExportService();
-    await expect(svc.exportVideo('/in.mp4', '/out.mp4', { format: 'mp4' })).rejects.toThrow('export failed');
+    await expect(svc.exportVideo('/in.mp4', '/out.mp4', { format: 'mp4' })).rejects.toThrow(
+      'export failed'
+    );
   });
 });
 
@@ -150,5 +152,78 @@ describe('FORMAT_MIME_TYPES', () => {
 
   it('maps gif to image/gif', () => {
     expect(FORMAT_MIME_TYPES.gif).toBe('image/gif');
+  });
+
+  it('maps mkv to video/x-matroska', () => {
+    expect(FORMAT_MIME_TYPES.mkv).toBe('video/x-matroska');
+  });
+});
+
+describe('ExportService.cancelExport with active export', () => {
+  beforeEach(() => {
+    vi.mocked(tauri.exportVideo).mockReset();
+    vi.mocked(tauri.cancelExport).mockReset();
+    vi.mocked(tauri.cancelExport).mockResolvedValue(undefined);
+  });
+
+  it('calls tauri.cancelExport with the current export id while export is in flight', async () => {
+    // Hold the export open so currentExportId remains set
+    let resolveExport!: (v: { outputPath: string; duration: number; fileSize: number }) => void;
+    vi.mocked(tauri.exportVideo).mockImplementation(
+      () =>
+        new Promise(resolve => {
+          resolveExport = resolve;
+        })
+    );
+
+    const svc = new ExportService();
+    const exportPromise = svc.exportVideo('/in.mp4', '/out.mp4', { format: 'mp4' });
+
+    // While the export is still in flight, currentExportId is set
+    await svc.cancelExport();
+    expect(tauri.cancelExport).toHaveBeenCalledTimes(1);
+
+    // Resolve and clean up the dangling export promise
+    resolveExport({ outputPath: '/out.mp4', duration: 60, fileSize: 1024 });
+    await exportPromise.catch(() => undefined);
+  });
+
+  it('swallows tauri.cancelExport errors via warn log', async () => {
+    let resolveExport!: (v: { outputPath: string; duration: number; fileSize: number }) => void;
+    vi.mocked(tauri.exportVideo).mockImplementation(
+      () =>
+        new Promise(resolve => {
+          resolveExport = resolve;
+        })
+    );
+    vi.mocked(tauri.cancelExport).mockRejectedValueOnce(new Error('cancel crashed'));
+
+    const svc = new ExportService();
+    const exportPromise = svc.exportVideo('/in.mp4', '/out.mp4', { format: 'mp4' });
+
+    // Should not throw despite tauri.cancelExport failing
+    await expect(svc.cancelExport()).resolves.toBeUndefined();
+
+    // Clean up dangling export
+    resolveExport({ outputPath: '/out.mp4', duration: 60, fileSize: 1024 });
+    await exportPromise.catch(() => undefined);
+  });
+});
+
+describe('ExportService.getExportPresets + getFormatInfo', () => {
+  it('getExportPresets returns EXPORT_PRESETS reference', () => {
+    const svc = new ExportService();
+    const presets = svc.getExportPresets();
+    expect(typeof presets).toBe('object');
+    expect(presets).not.toBeNull();
+    expect(Object.keys(presets).length).toBeGreaterThan(0);
+  });
+
+  it('getFormatInfo returns the format descriptor for known formats', () => {
+    const svc = new ExportService();
+    const info = svc.getFormatInfo('mp4');
+    expect(info).toBeDefined();
+    expect(info?.name).toBeDefined();
+    expect(info?.container).toBeDefined();
   });
 });

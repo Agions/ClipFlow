@@ -38,18 +38,21 @@ describe('useLocalStorage', () => {
     const { result } = renderHook(() => useLocalStorage<number>('counter', 0));
 
     act(() => {
-      result.current[1]((prev) => prev + 1);
+      result.current[1](prev => prev + 1);
     });
     expect(result.current[0]).toBe(1);
 
     act(() => {
-      result.current[1]((prev) => prev + 1);
+      result.current[1](prev => prev + 1);
     });
     expect(result.current[0]).toBe(2);
   });
 
   it('handles complex objects', () => {
-    interface User { name: string; age: number }
+    interface User {
+      name: string;
+      age: number;
+    }
     const { result } = renderHook(() => useLocalStorage<User>('user', { name: 'init', age: 0 }));
 
     act(() => {
@@ -85,8 +88,15 @@ describe('useLocalStorage', () => {
 
   it('logs error and keeps state when localStorage.setItem fails', () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-      throw new Error('quota exceeded');
+    // jsdom binds setItem directly on the localStorage instance, so we must
+    // override it on the instance rather than on Storage.prototype.
+    const originalSetItem = window.localStorage.setItem;
+    Object.defineProperty(window.localStorage, 'setItem', {
+      configurable: true,
+      writable: true,
+      value: () => {
+        throw new Error('quota exceeded');
+      },
     });
 
     const { result } = renderHook(() => useLocalStorage('quota-key', 'init'));
@@ -97,7 +107,13 @@ describe('useLocalStorage', () => {
 
     // State should still update even if storage fails
     expect(result.current[0]).toBe('new-value');
-    setItemSpy.mockRestore();
+    // Error path executes logger.error → write() → console.error
+    expect(errorSpy).toHaveBeenCalled();
+    Object.defineProperty(window.localStorage, 'setItem', {
+      configurable: true,
+      writable: true,
+      value: originalSetItem,
+    });
     errorSpy.mockRestore();
   });
 });

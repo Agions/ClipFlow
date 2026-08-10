@@ -12,7 +12,6 @@ export { aiService } from './ai/ai-service';
 export { visionService } from './ai/vision-service';
 export { voiceSynthesisService, VoiceSynthesisService } from './ai/voice-synthesis-service';
 export { scriptGenerationService } from './ai/script-service';
-export { sceneCommentaryAlignmentService, SceneCommentaryAlignmentService } from './ai/scene-commentary-service';
 export { resolveLegacyModel, getLegacyModelCompatMap } from './ai/ai-model-adapter';
 
 // AI 剪辑批处理（ai-clip/ — 原 ai/batch/，现提升到 services/ 一级）
@@ -36,6 +35,3 @@ export { subtitleService, SubtitleService } from './subtitle/subtitle-service';
 // 视频特效 & 信号（video/ 子目录）
 export { videoEffectService, VideoEffectService } from './video/video-effect-service';
 export { detectEmotionPeaks, calculateEmotionScore } from './video/emotion-detector';
-
-// Commentary Mode 服务（解说模式核心服务）
-export * from './commentary';

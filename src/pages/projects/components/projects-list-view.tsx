@@ -4,8 +4,18 @@ import { Card } from '../../../components/ui/card';
 import { Badge } from '../../../components/ui/badge';
 import { Progress, ProgressTrack, ProgressIndicator } from '../../../components/ui/progress';
 import { Button } from '../../../components/ui/button';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../../components/ui/dropdown-menu';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../../../components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '../../../components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '../../../components/ui/tooltip';
 import type { ProjectUIStatus, ProjectView, ProjectUIStats } from '../types';
 
 interface ActionItem {
@@ -52,7 +62,10 @@ const ProjectsListView: React.FC<ProjectsListViewProps> = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="h-6 w-6 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--border-default)', borderTopColor: 'var(--accent-primary)' }} />
+        <div
+          className="h-6 w-6 rounded-full border-2 animate-spin"
+          style={{ borderColor: 'var(--border-default)', borderTopColor: 'var(--accent-primary)' }}
+        />
       </div>
     );
   }
@@ -64,7 +77,11 @@ const ProjectsListView: React.FC<ProjectsListViewProps> = ({
       ) : (
         projects.slice(0, 10).map(project => {
           const uiStatus = getProjectUIStatus(project);
-          const statusCfg = statusConfig[uiStatus.status];
+          // statusConfig 类型为 Record<ProjectStatus, ...>（含 failed）。
+          // getProjectUIStatus 返回 ProjectUIStatus（不含 failed）。
+          // 这里通过 keyof typeof statusConfig 让 TS 推断合法 key。
+          const statusCfg =
+            statusConfig[uiStatus.status as keyof typeof statusConfig] ?? statusConfig.draft;
 
           return (
             <Card
@@ -80,12 +97,18 @@ const ProjectsListView: React.FC<ProjectsListViewProps> = ({
                       <Badge
                         variant="secondary"
                         className="text-xs"
-                        style={{ backgroundColor: statusCfg.color + '20', color: statusCfg.color, borderColor: statusCfg.color + '40' }}
+                        style={{
+                          backgroundColor: statusCfg.color + '20',
+                          color: statusCfg.color,
+                          borderColor: statusCfg.color + '40',
+                        }}
                       >
                         {statusCfg.text}
                       </Badge>
                     )}
-                    <span className="text-xs text-muted-foreground">{formatDate(project.updatedAt)}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {formatDate(project.updatedAt)}
+                    </span>
                   </div>
 
                   {/* Title */}
@@ -122,7 +145,10 @@ const ProjectsListView: React.FC<ProjectsListViewProps> = ({
                     <Tooltip>
                       <TooltipTrigger
                         render={<Button variant="ghost" size="icon-sm" />}
-                        onClick={(e: React.MouseEvent) => { e.stopPropagation(); onPreloadProject(); }}
+                        onClick={(e: React.MouseEvent) => {
+                          e.stopPropagation();
+                          onPreloadProject();
+                        }}
                       >
                         <PlayCircle size={16} />
                       </TooltipTrigger>
@@ -132,7 +158,13 @@ const ProjectsListView: React.FC<ProjectsListViewProps> = ({
 
                   <DropdownMenu>
                     <DropdownMenuTrigger
-                      render={<Button variant="ghost" size="icon-sm" onClick={(e: React.MouseEvent) => e.stopPropagation()} />}
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                        />
+                      }
                     >
                       <MoreHorizontal size={16} />
                     </DropdownMenuTrigger>
@@ -142,7 +174,10 @@ const ProjectsListView: React.FC<ProjectsListViewProps> = ({
                           key={idx}
                           data-variant={item.danger ? 'destructive' : undefined}
                           className={item.danger ? 'text-destructive' : ''}
-                          onClick={(e: React.MouseEvent) => { e.stopPropagation(); item.onClick?.(); }}
+                          onClick={(e: React.MouseEvent) => {
+                            e.stopPropagation();
+                            item.onClick?.();
+                          }}
                         >
                           {item.label}
                         </DropdownMenuItem>

@@ -1,97 +1,72 @@
 import { invoke as tauriInvoke } from '@tauri-apps/api/core';
-import type {
-  TauriCommandName,
-  TauriCommandOutput,
-} from './command-types';
-import type {
-  CommentaryPipelineInput,
-  CommentaryPipelineOutput,
-} from '@/types';
+import type { TauriCommandName, TauriCommandOutput } from './command-types';
 
 // ============================================================
 // 命令名称常量（与 Rust 端保持一致）
 // ============================================================
 export const TauriCommand = {
-  CHECK_FFMPEG:             'check_ffmpeg',
-  ANALYZE_VIDEO:            'analyze_video',
-  GET_EXPORT_DIR:          'get_export_dir',
-  RUN_FFPROBE:             'run_ffprobe',
+  CHECK_FFMPEG: 'check_ffmpeg',
+  ANALYZE_VIDEO: 'analyze_video',
+  GET_EXPORT_DIR: 'get_export_dir',
+  RUN_FFPROBE: 'run_ffprobe',
 
-  DETECT_HIGHLIGHTS:       'detect_highlights',
-  DETECT_ZCR_BURSTS:       'detect_zcr_bursts',
-  DETECT_SMART_SEGMENTS:   'detect_smart_segments',
+  DETECT_HIGHLIGHTS: 'detect_highlights',
+  DETECT_ZCR_BURSTS: 'detect_zcr_bursts',
+  DETECT_SMART_SEGMENTS: 'detect_smart_segments',
 
-  EXPORT_VIDEO:            'export_video',
-  TRANSCODE_WITH_CROP:     'transcode_with_crop',
-  AUTONOMOUS_RENDER:       'render_autonomous_cut',
-  GENERATE_PREVIEW:        'generate_preview',
-  CUT_VIDEO:               'cut_video',
+  EXPORT_VIDEO: 'export_video',
+  TRANSCODE_WITH_CROP: 'transcode_with_crop',
+  AUTONOMOUS_RENDER: 'render_autonomous_cut',
+  GENERATE_PREVIEW: 'generate_preview',
+  CUT_VIDEO: 'cut_video',
 
-  TRANSCRIBE_AUDIO:        'transcribe_audio',
+  TRANSCRIBE_AUDIO: 'transcribe_audio',
 
-  SYNTHESIZE_SPEECH:       'synthesize_speech',
-  LIST_TTS_BACKENDS:       'list_tts_backends',
-  CHECK_TTS_AVAILABLE:     'check_tts_available',
-  MIX_AUDIO:               'mix_audio',
-  GET_AUDIO_DURATION:      'get_audio_duration',
+  SYNTHESIZE_SPEECH: 'synthesize_speech',
+  LIST_TTS_BACKENDS: 'list_tts_backends',
+  CHECK_TTS_AVAILABLE: 'check_tts_available',
+  MIX_AUDIO: 'mix_audio',
+  GET_AUDIO_DURATION: 'get_audio_duration',
 
-  RUN_AI_DIRECTOR_PLAN:   'run_ai_director_plan',
+  RUN_AI_DIRECTOR_PLAN: 'run_ai_director_plan',
 
-  TRANSLATE_TEXT:          'translate_text',
+  // L0 Understanding (v3)
+  ANALYZE_PRODUCTION: 'analyze_production',
 
-  FILE_READ:               'read_text_file',
-  FILE_DELETE:             'delete_file',
-  CLEAN_TEMP_FILE:         'clean_temp_file',
-  OPEN_FILE:               'open_file',
-  VOICE_DISCOVERY:         'voice_discovery',
-  GET_FILE_SIZE:           'get_file_size',
+  TRANSLATE_TEXT: 'translate_text',
 
-  PROJECT_LOAD:            'load_project_file',
-  PROJECT_SAVE:            'save_project_file',
-  PROJECT_DELETE:          'delete_project_file',
-  PROJECT_LIST:            'list_project_files',
-  LIST_APP_DATA_FILES:     'list_app_data_files',
-  CHECK_APP_DATA_DIR:      'check_app_data_directory',
+  FILE_READ: 'read_text_file',
+  FILE_DELETE: 'delete_file',
+  CLEAN_TEMP_FILE: 'clean_temp_file',
+  OPEN_FILE: 'open_file',
+  VOICE_DISCOVERY: 'voice_discovery',
+  GET_FILE_SIZE: 'get_file_size',
 
-  CANCEL_EXPORT:           'cancel_export',
+  PROJECT_LOAD: 'load_project_file',
+  PROJECT_SAVE: 'save_project_file',
+  PROJECT_DELETE: 'delete_project_file',
+  PROJECT_LIST: 'list_project_files',
+  LIST_APP_DATA_FILES: 'list_app_data_files',
+  CHECK_APP_DATA_DIR: 'check_app_data_directory',
 
-  GENERATE_NARRATION_SCRIPT:   'generate_narration_script',
+  CANCEL_EXPORT: 'cancel_export',
+
+  GENERATE_NARRATION_SCRIPT: 'generate_narration_script',
   ANALYZE_VIDEO_FOR_NARRATION: 'analyze_video_for_narration',
-  LIST_AVAILABLE_MODELS:       'list_available_models',
-
-  // Commentary Director
-  CREATE_DIRECTOR_SESSION:     'create_director_session',
-  GET_DIRECTOR_STATUS:         'get_director_status',
-  START_DIRECTOR_ANALYSIS:     'start_director_analysis',
-  GENERATE_DIRECTOR_PLAN:      'generate_director_plan',
-  APPROVE_DIRECTOR_PLAN:       'approve_director_plan',
-  REVISE_DIRECTOR_PLAN:        'revise_director_plan',
-  COMPLETE_DIRECTOR_RENDER:    'complete_director_render',
-  DESTROY_DIRECTOR_SESSION:    'destroy_director_session',
-
-  // Commentary Script Generator
-  GENERATE_COMMENTARY_SCRIPT:  'generate_commentary_script',
-
-  // Commentary Synthesizer
-  SYNTHESIZE_COMMENTARY_AUDIO: 'synthesize_commentary_audio',
-  ESTIMATE_TTS_DURATION:       'estimate_tts_duration',
-  LIST_COMMENTARY_VOICES:      'list_commentary_voices',
-
-  // Commentary Pipeline Orchestrator
-  RUN_COMMENTARY_PIPELINE:     'run_commentary_pipeline',
+  LIST_AVAILABLE_MODELS: 'list_available_models',
 
   // Auto-save
-  AUTO_SAVE_PROJECT:       'auto_save_project',
-  CLEAR_AUTOSAVE:          'clear_autosave',
+  AUTO_SAVE_PROJECT: 'auto_save_project',
+  CLEAR_AUTOSAVE: 'clear_autosave',
   LIST_RECOVERABLE_PROJECTS: 'list_recoverable_projects',
-  RECOVER_AUTOSAVE:        'recover_autosave',
-  PREVIEW_AUTOSAVE:        'preview_autosave',
+  RECOVER_AUTOSAVE: 'recover_autosave',
+  PREVIEW_AUTOSAVE: 'preview_autosave',
 
   // Crash recovery
-  LIST_CRASHES:            'list_crashes',
-  READ_CRASH:              'read_crash',
-  DELETE_CRASH:            'delete_crash',
-  CLEAR_CRASHES:           'clear_crashes',
+  LIST_CRASHES: 'list_crashes',
+  READ_CRASH: 'read_crash',
+  DELETE_CRASH: 'delete_crash',
+  CLEAR_CRASHES: 'clear_crashes',
 } as const;
 
 // 命令名称类型（与 command-types.ts 中的 TauriCommandName 保持一致）
@@ -105,7 +80,7 @@ export class TauriBridgeError extends Error {
     message: string,
     public readonly command: TauriCommand,
     public readonly cause?: unknown,
-    public readonly retryable = false,
+    public readonly retryable = false
   ) {
     super(message);
     this.name = 'TauriBridgeError';
@@ -122,14 +97,14 @@ export class TauriBridgeError extends Error {
         `Tauri invoke '${command}' failed: ${error.message}`,
         command,
         error,
-        isRetryable,
+        isRetryable
       );
     }
     return new TauriBridgeError(
       `Tauri invoke '${command}' failed: ${String(error)}`,
       command,
       error,
-      false,
+      false
     );
   }
 }
@@ -146,9 +121,7 @@ export interface BridgeOptions {
 // Helpers
 // ============================================================
 
-function normalizeArgs(
-  args: Record<string, unknown> | undefined,
-): Record<string, unknown> {
+function normalizeArgs(args: Record<string, unknown> | undefined): Record<string, unknown> {
   if (args && Object.keys(args).length > 0) return args;
   return {};
 }
@@ -169,31 +142,17 @@ function normalizeArgs(
 export async function invoke<C extends TauriCommandName>(
   command: C,
   args: Record<string, unknown> = {},
-  options?: BridgeOptions,
+  options?: BridgeOptions
 ): Promise<TauriCommandOutput<C>> {
   const { retries = 0, signal } = options ?? {};
   return executeWithRetry(command, normalizeArgs(args), retries, signal);
-}
-
-/**
- * 一键执行解说流水线（导演规划 + 脚本生成 + 配音合成）
- */
-export async function runCommentaryPipeline(
-  input: CommentaryPipelineInput,
-): Promise<CommentaryPipelineOutput> {
-  const payload: CommentaryPipelineInput = {
-    ...input,
-    autoApprove: true,
-  };
-
-  return invoke(TauriCommand.RUN_COMMENTARY_PIPELINE, payload as unknown as Record<string, unknown>) as Promise<CommentaryPipelineOutput>;
 }
 
 async function executeWithRetry<C extends TauriCommandName>(
   command: C,
   args: Record<string, unknown>,
   retries: number,
-  signal: AbortSignal | undefined,
+  signal: AbortSignal | undefined
 ): Promise<TauriCommandOutput<C>> {
   let lastError: unknown;
 
@@ -214,4 +173,3 @@ async function executeWithRetry<C extends TauriCommandName>(
 
   throw TauriBridgeError.fromInvoke(command as TauriCommand, lastError);
 }
-

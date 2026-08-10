@@ -106,3 +106,5 @@ INDUSTRY-RESEARCH.md
 # (placeholder — add docs as needed)
 pnpm-lock.yaml
 # src-tauri/Cargo.lock: Tauri 2 binary project — track transitive deps
+.qoder
+.vscode

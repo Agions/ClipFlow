@@ -13,8 +13,11 @@
  */
 export type ProjectStatus = 'draft' | 'processing' | 'completed' | 'failed';
 
-/** @deprecated Use {@link ProjectStatus}. Provided for back-compat only. */
-export type ProjectUIStatus = ProjectStatus;
+/**
+ * `ProjectUIStatus` 现位于 `@/shared/types`（含 `UIStatus = 'draft' | 'processing' | 'completed'`）。
+ * 真实项目 UI 视图（如 src/pages/projects/）都从 `@/shared/types` 导入。
+ * 历史别名已移除（PR-1.3）。如果需要完整的失败态语义，请使用 {@link ProjectStatus}。
+ */
 
 // ─── 项目模型 ───
 
@@ -100,7 +103,9 @@ export interface User {
 export interface AppSettings {
   autoSave: boolean;
   defaultAIModel?: import('./analysis').ModelProvider;
-  aiModelsSettings: Partial<Record<import('./analysis').ModelProvider, import('./analysis').AIModelSettings>>;
+  aiModelsSettings: Partial<
+    Record<import('./analysis').ModelProvider, import('./analysis').AIModelSettings>
+  >;
   theme?: 'light' | 'dark' | 'system';
 }
 

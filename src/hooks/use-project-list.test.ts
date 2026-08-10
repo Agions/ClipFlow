@@ -22,16 +22,34 @@ vi.mock('@/shared', () => ({
   },
 }));
 
-import { listProjects, deleteProject, PROJECTS_CHANGED_EVENT } from '@/core/services/project/project-file-service';
-import { notify } from '@/shared';
 import {
-  useProjectList,
-  getProjectUIStatus,
-  statusConfig,
-} from './use-project-list';
+  listProjects,
+  deleteProject,
+  PROJECTS_CHANGED_EVENT,
+} from '@/core/services/project/project-file-service';
+import { notify } from '@/shared';
+import { useProjectList, getProjectUIStatus, statusConfig } from './use-project-list';
+import type { ProjectView } from '@/types/project';
 import type { ProjectFileData } from '@/core/services/project/project-file-service';
 
-const sample = (id: string, overrides: Partial<ProjectFileData> = {}): ProjectFileData => ({
+/**
+ * 测试本地使用的 ProjectView 类型子集。
+ * ProjectFileData 已在 project-file-service 导出（用于测试 listProjects mock 返回）。
+ */
+type TestProjectView = Pick<
+  ProjectView,
+  | 'id'
+  | 'name'
+  | 'description'
+  | 'status'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'scripts'
+  | 'videos'
+  | 'videoPath'
+>;
+
+const sample = (id: string, overrides: Partial<TestProjectView> = {}): ProjectView => ({
   id,
   name: `Project ${id}`,
   description: 'desc',
@@ -42,11 +60,17 @@ const sample = (id: string, overrides: Partial<ProjectFileData> = {}): ProjectFi
   videos: [],
   videoPath: '',
   ...overrides,
-} as unknown as ProjectFileData);
+});
+
+/** 测试辅助：把 ProjectView 转换为 ProjectFileData（用于 listProjects mock）。 */
+const asFileData = (v: ProjectView): ProjectFileData => v as unknown as ProjectFileData;
 
 describe('useProjectList', () => {
   beforeEach(() => {
-    vi.mocked(listProjects).mockResolvedValue([sample('a'), sample('b', { status: 'completed' })]);
+    vi.mocked(listProjects).mockResolvedValue([
+      asFileData(sample('a')),
+      asFileData(sample('b', { status: 'completed' })),
+    ]);
     vi.mocked(deleteProject).mockResolvedValue(true);
   });
 
@@ -76,44 +100,72 @@ describe('useProjectList', () => {
 
   it('filters by search text', async () => {
     vi.mocked(listProjects).mockResolvedValue([
-      sample('a', { name: 'Alpha' }),
-      sample('b', { name: 'Beta' }),
+      asFileData(sample('a', { name: 'Alpha' })),
+      asFileData(sample('b', { name: 'Beta' })),
     ]);
     const { result } = renderHook(() => useProjectList());
     await waitFor(() => expect(result.current.loading).toBe(false));
     act(() => result.current.setSearchText('Alpha'));
-    expect(result.current.filteredProjects.map((p) => p.name)).toEqual(['Alpha']);
+    expect(result.current.filteredProjects.map(p => p.name)).toEqual(['Alpha']);
   });
 
   it('filters by status', async () => {
     vi.mocked(listProjects).mockResolvedValue([
-      sample('a', { status: 'draft' }),
-      sample('b', { status: 'completed' }),
+      asFileData(sample('a', { status: 'draft' })),
+      asFileData(sample('b', { status: 'completed' })),
     ]);
     const { result } = renderHook(() => useProjectList());
     await waitFor(() => expect(result.current.loading).toBe(false));
     act(() => result.current.setStatusFilter('completed'));
-    expect(result.current.filteredProjects.map((p) => p.id)).toEqual(['b']);
+    expect(result.current.filteredProjects.map(p => p.id)).toEqual(['b']);
   });
 
   it('orderedProjects: recentProjects come first', async () => {
     vi.mocked(listProjects).mockResolvedValue([
-      sample('a', { updatedAt: '2026-02-01T00:00:00Z' }),
-      sample('b', { updatedAt: '2026-01-01T00:00:00Z' }),
+      asFileData(sample('a', { updatedAt: '2026-02-01T00:00:00Z' })),
+      asFileData(sample('b', { updatedAt: '2026-01-01T00:00:00Z' })),
     ]);
     const { result } = renderHook(() => useProjectList({ recentProjects: ['b'] }));
     await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.orderedProjects.map((p) => p.id)).toEqual(['b', 'a']);
+    expect(result.current.orderedProjects.map(p => p.id)).toEqual(['b', 'a']);
   });
 
   it('orderedProjects: non-recent fall back to updatedAt desc', async () => {
     vi.mocked(listProjects).mockResolvedValue([
-      sample('old', { updatedAt: '2026-01-01T00:00:00Z' }),
-      sample('new', { updatedAt: '2026-03-01T00:00:00Z' }),
+      asFileData(sample('old', { updatedAt: '2026-01-01T00:00:00Z' })),
+      asFileData(sample('new', { updatedAt: '2026-03-01T00:00:00Z' })),
     ]);
     const { result } = renderHook(() => useProjectList());
     await waitFor(() => expect(result.current.loading).toBe(false));
-    expect(result.current.orderedProjects.map((p) => p.id)).toEqual(['new', 'old']);
+    expect(result.current.orderedProjects.map(p => p.id)).toEqual(['new', 'old']);
+  });
+
+  it('orderedProjects: both in recentProjects → sort by recent order (L169)', async () => {
+    vi.mocked(listProjects).mockResolvedValue([
+      asFileData(sample('a', { updatedAt: '2026-02-01T00:00:00Z' })),
+      asFileData(sample('b', { updatedAt: '2026-01-01T00:00:00Z' })),
+    ]);
+    // recent order: ['b', 'a'] — a is newer but should come second
+    const { result } = renderHook(() => useProjectList({ recentProjects: ['b', 'a'] }));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.orderedProjects.map(p => p.id)).toEqual(['b', 'a']);
+  });
+
+  it('orderedProjects: only b in recentProjects, a not → b before a (L171)', async () => {
+    // With 3 elements, the comparator must compare b against a (and c) in
+    // both orderings, eventually invoking L171 where aOrder===undefined
+    // and bOrder!==undefined in one direction.
+    vi.mocked(listProjects).mockResolvedValue([
+      asFileData(sample('a', { updatedAt: '2026-02-01T00:00:00Z' })),
+      asFileData(sample('b', { updatedAt: '2026-01-01T00:00:00Z' })),
+      asFileData(sample('c', { updatedAt: '2026-03-01T00:00:00Z' })),
+    ]);
+    const { result } = renderHook(() => useProjectList({ recentProjects: ['b'] }));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    // b must precede a (and c)
+    expect(result.current.orderedProjects.map(p => p.id).indexOf('b')).toBeLessThan(
+      result.current.orderedProjects.map(p => p.id).indexOf('a')
+    );
   });
 
   it('switches viewMode', () => {
@@ -171,23 +223,32 @@ describe('useProjectList', () => {
   it('projectActions: returns expected shape', () => {
     const { result } = renderHook(() => useProjectList());
     const actions = result.current.projectActions(sample('a'));
-    const keys = actions.map((a) => a.key);
+    const keys = actions.map(a => a.key);
     expect(keys).toEqual(['edit', 'editor', 'export', 'divider', 'delete']);
-    const del = actions.find((a) => a.key === 'delete')!;
+    const del = actions.find(a => a.key === 'delete')!;
     expect(del.danger).toBe(true);
+  });
+
+  it('projectActions: delete onClick sets deleteConfirmId (L217)', () => {
+    const { result } = renderHook(() => useProjectList());
+    const actions = result.current.projectActions(sample('a'));
+    const del = actions.find(a => a.key === 'delete')!;
+    expect(typeof del.onClick).toBe('function');
+    act(() => del.onClick!());
+    expect(result.current.deleteConfirmId).toBe('a');
   });
 
   it('statusFilters: counts per status', async () => {
     vi.mocked(listProjects).mockResolvedValue([
-      sample('a', { status: 'draft' }),
-      sample('b', { status: 'draft' }),
-      sample('c', { status: 'processing' }),
-      sample('d', { status: 'completed' }),
+      asFileData(sample('a', { status: 'draft' })),
+      asFileData(sample('b', { status: 'draft' })),
+      asFileData(sample('c', { status: 'processing' })),
+      asFileData(sample('d', { status: 'completed' })),
     ]);
     const { result } = renderHook(() => useProjectList());
     await waitFor(() => expect(result.current.loading).toBe(false));
-    const all = result.current.statusFilters.find((f) => f.filter === 'all')!;
-    const draft = result.current.statusFilters.find((f) => f.filter === 'draft')!;
+    const all = result.current.statusFilters.find(f => f.filter === 'all')!;
+    const draft = result.current.statusFilters.find(f => f.filter === 'draft')!;
     expect(all.value).toBe(4);
     expect(draft.value).toBe(2);
   });
@@ -217,7 +278,7 @@ describe('useProjectList', () => {
         status: 'draft',
         scripts: [{ id: 's' }] as never,
         videos: [{ id: 'v' }] as never,
-      }),
+      })
     );
     expect(ui.progress).toBe(45);
   });
@@ -227,7 +288,7 @@ describe('useProjectList', () => {
       sample('a', {
         status: 'draft',
         videos: [{ id: 'v' }] as never,
-      }),
+      })
     );
     expect(ui.progress).toBe(20);
   });

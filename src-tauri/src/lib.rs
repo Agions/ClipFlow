@@ -6,6 +6,8 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 pub mod binary;
 pub mod commands;
+pub mod domain;
+pub mod understanding;
 pub mod video;
 pub mod types;
 pub mod utils;
@@ -15,7 +17,7 @@ pub mod segment;
 pub mod llm;
 
 pub use commands::{
-    ai, auto_save, commentary, ffprobe, project, render, export_state, file_ops,
+    ai, auto_save, ffprobe, project, render, export_state, file_ops,
 };
 pub use types::*;
 
@@ -118,28 +120,13 @@ pub fn run() {
             auto_save::list_recoverable_projects,
             auto_save::recover_autosave,
             auto_save::preview_autosave,
+            // L0 Understanding layer (v3) — storyline 编排
+            // 直接引用子模块，避免 re-export 导致 Tauri 宏无法解析
+            understanding::storyline_builder::analyze_production,
             // LLM / AI 脚本生成
             commands::llm::generate_narration_script,
             commands::llm::analyze_video_for_narration,
             commands::llm::list_available_models,
-            // Commentary Mode (AI 影视解说) — 直接引用子模块，避免 re-export 导致 Tauri 宏无法解析
-            commentary::director::commands::create_director_session,
-            commentary::director::commands::get_director_status,
-            commentary::director::commands::start_director_analysis,
-            commentary::director::commands::generate_director_plan,
-            commentary::director::commands::approve_director_plan,
-            commentary::director::commands::revise_director_plan,
-            commentary::director::commands::complete_director_render,
-            commentary::director::commands::destroy_director_session,
-            commentary::script_generator::generate_commentary_script,
-            // Commentary Synthesizer (AI 影视解说 TTS) — 路径从 commentary_synthesizer
-            // 直接指向 sibling 的 synthesizer/commands 子模块，因为 commentary_synthesizer
-            // 只是 re-export shim，synthesizer/commands 才是 #[tauri::command] 宏展开位置。
-            commentary::synthesizer::commands::synthesize_commentary_audio,
-            commentary::synthesizer::commands::estimate_tts_duration,
-            commentary::synthesizer::commands::list_commentary_voices,
-            // Pipeline Orchestration (O2) — single-command Director + Script + TTS
-            commentary::pipeline::commands::run_commentary_pipeline,
             // Crash recovery (P0-3 companion): surface panic-hook crash
             // reports to the frontend so users can see / share them.
             commands::crash_recovery::list_crashes,

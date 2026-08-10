@@ -3,3 +3,4 @@
  */
 export * from './video-effect-service';
 export * from './emotion-detector';
+export * from './highlight-detector';

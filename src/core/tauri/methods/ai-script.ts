@@ -1,9 +1,11 @@
 import { invoke, TauriCommand } from '../invoke';
-import type { CommentaryScriptOutput } from '@/types';
+
+// v3 TODO: replace with `Script` type from @/types once domain layer lands (Stage 12.1)
+type Script = Record<string, unknown>;
 
 export const aiScript = {
   /** 生成解说脚本 */
-  async generateNarrationScript(input: { subtitles: string; style?: string; apiKey: string; provider?: string }): Promise<CommentaryScriptOutput> {
+  async generateNarrationScript(input: { subtitles: string; style?: string; apiKey: string; provider?: string }): Promise<Script> {
     return invoke(TauriCommand.GENERATE_NARRATION_SCRIPT, input);
   },
 

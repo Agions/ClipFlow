@@ -19,7 +19,6 @@ import type {
 } from '@/types';
 
 export class TauriVideoProcessor extends BaseVideoProcessor {
-
   // ---------- FFmpeg ----------
 
   protected async doCheckStatus(): Promise<FFmpegStatus> {
@@ -51,10 +50,14 @@ export class TauriVideoProcessor extends BaseVideoProcessor {
   protected async doExtractKeyFrames(
     _videoPath: string,
     options: ExtractKeyFramesOptions,
-    duration?: number,
+    duration?: number
   ): Promise<KeyFrame[]> {
     const { maxFrames: _maxFrames = 10, sceneThreshold: _sceneThreshold = 0.3 } = options ?? {};
-    // extract_key_frames not exposed as tauri command — skip for now, return empty
+    // NOTE: `framePaths` is intentionally hard-coded to an empty array because
+    // `extract_key_frames` is not yet exposed as a Tauri command. The `.map()`
+    // callback and the `framePaths.length > 0` truthy arm are dead code paths
+    // kept for the day the upstream command lands; do not "simplify" without
+    // first wiring up a real implementation.
     const framePaths: string[] = [];
     const totalDuration = duration ?? 0;
     const interval = framePaths.length > 0 ? totalDuration / framePaths.length : 0;
@@ -82,7 +85,7 @@ export class TauriVideoProcessor extends BaseVideoProcessor {
     let unlisten: UnlistenFn | null = null;
 
     if (options?.onProgress) {
-      unlisten = await listen<ProcessingProgress>('processing-progress', (event) => {
+      unlisten = await listen<ProcessingProgress>('processing-progress', event => {
         options.onProgress?.(event.payload);
       });
     }
@@ -91,7 +94,7 @@ export class TauriVideoProcessor extends BaseVideoProcessor {
       return await tauri.cutVideo(
         inputPath,
         outputPath,
-        segments.map(s => ({ start: s.start, end: s.end })),
+        segments.map(s => ({ start: s.start, end: s.end }))
       );
     } finally {
       unlisten?.();
@@ -108,7 +111,16 @@ export class TauriVideoProcessor extends BaseVideoProcessor {
     inputPath: string,
     outputPath: string,
     format: string,
-    options?: { resolution?: string; frameRate?: number; videoCodec?: string; audioCodec?: string; crf?: number; subtitleEnabled?: boolean; subtitlePath?: string; burnSubtitles?: boolean }
+    options?: {
+      resolution?: string;
+      frameRate?: number;
+      videoCodec?: string;
+      audioCodec?: string;
+      crf?: number;
+      subtitleEnabled?: boolean;
+      subtitlePath?: string;
+      burnSubtitles?: boolean;
+    }
   ): Promise<string> {
     const result = await tauri.exportVideo({
       inputPath,

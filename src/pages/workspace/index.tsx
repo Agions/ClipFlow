@@ -3,11 +3,7 @@
  * 采用标签页分离布局：AI第一人称解说 / AI解说 / AI混剪
  */
 import React, { useState, lazy, Suspense, useEffect } from 'react';
-import {
-  Mic,
-  User,
-  Scissors,
-} from 'lucide-react';
+import { Mic, User, Scissors } from 'lucide-react';
 import { useProjectStore } from '@/stores';
 import { useKeyboardShortcuts } from '../../hooks/use-keyboard-shortcuts';
 import KeyboardShortcutsHelp from '@/components/common/keyboard-shortcuts-help';
@@ -15,6 +11,7 @@ import { useEditorStore } from '@/stores';
 import { useShallow } from 'zustand/react/shallow';
 import { notify } from '@/shared';
 import { TAB_TO_FEATURE, type AIFunctionTabKey } from '@/pages/workspace/shared/function-mode-map';
+import { useFeatureFlag } from '@/shared/feature-flags';
 import styles from '@/components/video-editor/video-editor.module.less';
 
 const Workspace = lazy(() => import('@/pages/workspace/workspace'));
@@ -23,6 +20,8 @@ const VideoUpload = lazy(() => import('@/pages/workspace/edit-step/video-upload'
 const AIVisualizer = lazy(() => import('@/pages/workspace/assemble/ai-visualizer'));
 const ScriptWriting = lazy(() => import('@/pages/workspace/edit-step/script-writing'));
 const VideoComposing = lazy(() => import('@/pages/workspace/assemble/video-composing'));
+const TtsPage = lazy(() => import('@/pages/workspace/assemble/tts-page'));
+const SubtitleTable = lazy(() => import('@/pages/workspace/assemble/subtitle-table'));
 const VideoExport = lazy(() => import('@/pages/workspace/export/video-export'));
 const ClipRippling = lazy(() => import('@/pages/workspace/assemble/clip-rippling'));
 const CommentaryPanel = lazy(() => import('@/components/commentary-panel'));
@@ -76,7 +75,7 @@ const AIVideoEditorContent: React.FC = () => {
   const isPlaying = useEditorStore(s => s.isPlaying);
   const setIsPlaying = useEditorStore(s => s.setIsPlaying);
   const timelineActions = useEditorStore(
-    useShallow((s) => ({
+    useShallow(s => ({
       playheadMs: s.playheadMs,
       selectedClipId: s.selectedClipId,
       setPlayheadMs: s.setPlayheadMs,
@@ -99,11 +98,11 @@ const AIVideoEditorContent: React.FC = () => {
     onPause: () => {
       setIsPlaying(false);
     },
-    onSeek: (delta) => {
-      const newTime = Math.max(0, (timelineActions.playheadMs / 1000) + delta);
+    onSeek: delta => {
+      const newTime = Math.max(0, timelineActions.playheadMs / 1000 + delta);
       timelineActions.setPlayheadMs(newTime * 1000);
     },
-    onSeekTo: (time) => {
+    onSeekTo: time => {
       timelineActions.setPlayheadMs(time * 1000);
     },
     onDelete: () => {
@@ -159,14 +158,28 @@ const AIVideoEditorContent: React.FC = () => {
         return activeTab === 'commentary' ? (
           <CommentaryPanel
             videoPath={state.currentVideo?.path || ''}
-            subtitles={state.subtitleData.asr?.map(s => s.text).join('\n') || state.subtitleData.ocr?.map(s => s.text).join('\n') || ''}
+            subtitles={
+              state.subtitleData.asr?.map(s => s.text).join('\n') ||
+              state.subtitleData.ocr?.map(s => s.text).join('\n') ||
+              ''
+            }
             durationSecs={state.currentVideo?.duration}
           />
         ) : (
           <ScriptWriting onNext={goToNextStep} />
         );
       case 'video-synth':
-        return <VideoComposing onNext={goToNextStep} />;
+        // PR-4.1b：feature flag 灰度切换
+        // 关闭 experimental.tts-page → 渲染 video-composing（旧组件）
+        // 开启 experimental.tts-page → 渲染 tts-page + subtitle-table（新组件）
+        return useFeatureFlag('experimental.tts-page') ? (
+          <>
+            <TtsPage onNext={goToNextStep} />
+            <SubtitleTable onNext={goToNextStep} />
+          </>
+        ) : (
+          <VideoComposing onNext={goToNextStep} />
+        );
       case 'video-export':
         return <VideoExport onComplete={() => {}} />;
       default:
@@ -178,11 +191,8 @@ const AIVideoEditorContent: React.FC = () => {
   useEffect(() => {
     const handleKeydown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
-      if (
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable
-      ) return;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
+        return;
       if (e.key === '?' || (e.shiftKey && e.key === '/')) {
         e.preventDefault();
         setShortcutsHelpVisible(true);
@@ -207,9 +217,11 @@ const AIVideoEditorContent: React.FC = () => {
               key={func.key}
               className={`${styles.functionCard} ${activeTab === func.key ? styles.active : ''}`}
               onClick={() => setActiveTab(func.key as AIFunctionTabKey)}
-              style={{
-                '--func-color': func.color,
-              } as React.CSSProperties}
+              style={
+                {
+                  '--func-color': func.color,
+                } as React.CSSProperties
+              }
             >
               <div className={styles.functionIcon}>{func.icon}</div>
               <div className={styles.functionInfo}>
@@ -225,14 +237,10 @@ const AIVideoEditorContent: React.FC = () => {
       <div className={styles.workspace}>
         <Suspense
           fallback={
-            <div style={{ padding: 24, textAlign: 'center' }}>
-              正在加载 AI 工作流模块...
-            </div>
+            <div style={{ padding: 24, textAlign: 'center' }}>正在加载 AI 工作流模块...</div>
           }
         >
-          <Workspace>
-            {renderStepContent()}
-          </Workspace>
+          <Workspace>{renderStepContent()}</Workspace>
         </Suspense>
       </div>
     </div>

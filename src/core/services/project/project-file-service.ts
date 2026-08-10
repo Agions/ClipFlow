@@ -10,8 +10,7 @@ import { logger } from '@/shared/utils/logging';
 import { getConfigDir } from '@/core/utils/config-dir';
 import { AppError } from '@/core/errors';
 
-const errMsg = (err: unknown): string =>
-  err instanceof Error ? err.message : String(err);
+const errMsg = (err: unknown): string => (err instanceof Error ? err.message : String(err));
 
 export const PROJECTS_CHANGED_EVENT = 'StoryFab:projects:changed';
 
@@ -21,11 +20,19 @@ const emitProjectsChanged = (): void => {
   }
 };
 
-type ProjectFileData = {
+export type ProjectFileData = {
+  id?: string;
+  name?: string;
+  description?: string;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  scripts?: unknown[];
+  videos?: unknown[];
+  videoPath?: string;
   aiModel?: { apiKey?: string; [key: string]: unknown };
   [key: string]: unknown;
 };
-
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -41,9 +48,8 @@ const normalizeListedProject = (value: unknown): ProjectFileData | null => {
     merged.name = `项目 ${normalizedId.slice(0, 8)}`;
   }
   if (typeof merged.updatedAt !== 'string') {
-    merged.updatedAt = typeof merged.createdAt === 'string'
-      ? merged.createdAt
-      : new Date().toISOString();
+    merged.updatedAt =
+      typeof merged.createdAt === 'string' ? merged.createdAt : new Date().toISOString();
   }
   return merged;
 };
@@ -57,7 +63,7 @@ const ensureAppDataDir = async (): Promise<void> => {
   } catch (rustError) {
     logger.warn('Rust目录检查失败，回退到前端检查', { rustError });
   }
-  const dirExists = await exists(appDir, { baseDir: BaseDirectory.AppData }).catch((e) => {
+  const dirExists = await exists(appDir, { baseDir: BaseDirectory.AppData }).catch(e => {
     logger.error('检查目录是否存在时出错', { e });
     throw new AppError('APP_DIR_CHECK_FAILED', `检查目录出错: ${errMsg(e)}`, {
       originalError: e,
@@ -66,7 +72,7 @@ const ensureAppDataDir = async (): Promise<void> => {
   });
   if (dirExists) return;
   logger.info('应用数据目录不存在，创建目录', { appDir });
-  await mkdir(appDir, { baseDir: BaseDirectory.AppData, recursive: true }).catch((e) => {
+  await mkdir(appDir, { baseDir: BaseDirectory.AppData, recursive: true }).catch(e => {
     logger.error('创建目录失败', { e });
     throw new AppError('APP_DIR_CREATE_FAILED', `创建目录失败: ${errMsg(e)}`, {
       originalError: e,
@@ -74,18 +80,20 @@ const ensureAppDataDir = async (): Promise<void> => {
     });
   });
   const checkExists = await exists(appDir, { baseDir: BaseDirectory.AppData });
-  if (!checkExists) throw new AppError('APP_DIR_CREATE_DENIED', '无法创建应用数据目录，请检查权限', {
-    userMessage: '无法创建数据目录，请检查权限',
-  });
+  if (!checkExists)
+    throw new AppError('APP_DIR_CREATE_DENIED', '无法创建应用数据目录，请检查权限', {
+      userMessage: '无法创建数据目录，请检查权限',
+    });
   logger.info('应用数据目录创建成功');
 };
 
 export const saveProjectToFile = async (projectId: string, project: object): Promise<void> => {
   const normalizedProjectId = normalizeProjectId(projectId || '');
-  if (!project || !normalizedProjectId) throw new AppError('APP_PROJECT_INVALID', '无效的项目数据', {
-    userMessage: '无效的项目数据',
-  });
-  await ensureAppDataDir().catch((err) => {
+  if (!project || !normalizedProjectId)
+    throw new AppError('APP_PROJECT_INVALID', '无效的项目数据', {
+      userMessage: '无效的项目数据',
+    });
+  await ensureAppDataDir().catch(err => {
     throw new AppError('APP_DIR_ERROR', `应用数据目录错误: ${err.message || '未知错误'}`, {
       originalError: err,
       userMessage: '数据目录错误',
@@ -96,9 +104,10 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
     cleanProject.aiModel = { ...cleanProject.aiModel, apiKey: undefined };
   }
   const projectData = JSON.stringify(cleanProject, null, 2);
-  if (!projectData) throw new AppError('APP_PROJECT_SERIALIZE_EMPTY', '项目数据序列化为空', {
-    userMessage: '项目数据为空',
-  });
+  if (!projectData)
+    throw new AppError('APP_PROJECT_SERIALIZE_EMPTY', '项目数据序列化为空', {
+      userMessage: '项目数据为空',
+    });
   const projectPath = `story-fab/${normalizedProjectId}.json`;
   try {
     await tauri.saveProjectFile(normalizedProjectId, projectData);
@@ -108,23 +117,25 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
   } catch (rustErr) {
     logger.warn('通过Rust保存文件失败，尝试使用JS API保存', { rustErr });
   }
-  await writeTextFile(projectPath, projectData, { baseDir: BaseDirectory.AppData })
-    .catch(async () => {
+  await writeTextFile(projectPath, projectData, { baseDir: BaseDirectory.AppData }).catch(
+    async () => {
       const configDir = await getConfigDir();
       const backupPath = `${configDir}${normalizedProjectId}.json`;
       await writeTextFile(backupPath, projectData);
       emitProjectsChanged();
       logger.info('使用备用路径保存成功', { backupPath });
-    });
+    }
+  );
   emitProjectsChanged();
   logger.info('项目文件保存成功', { projectPath });
 };
 
 const loadProjectFromFile = async <T = ProjectFileData>(projectId: string): Promise<T> => {
   const candidates = buildProjectIdCandidates(projectId);
-  if (!candidates.length) throw new AppError('APP_PROJECT_ID_EMPTY', '项目ID不能为空', {
-    userMessage: '项目ID不能为空',
-  });
+  if (!candidates.length)
+    throw new AppError('APP_PROJECT_ID_EMPTY', '项目ID不能为空', {
+      userMessage: '项目ID不能为空',
+    });
   let lastError: unknown = null;
   for (const candidateId of candidates) {
     try {
@@ -170,7 +181,7 @@ const loadProjectFromFile = async <T = ProjectFileData>(projectId: string): Prom
     lastError = legacyRootError;
   }
   logger.error('读取项目文件失败', { lastError });
-  throw (lastError || new Error(`读取项目失败: ${projectId}`));
+  throw lastError || new Error(`读取项目失败: ${projectId}`);
 };
 
 export const loadProjectWithRetry = async <T = ProjectFileData>(
@@ -186,10 +197,10 @@ export const loadProjectWithRetry = async <T = ProjectFileData>(
     } catch (error) {
       lastError = error;
       if (attempt >= retries) break;
-      await new Promise((resolve) => setTimeout(resolve, retryDelayMs * Math.pow(2, attempt)));
+      await new Promise(resolve => setTimeout(resolve, retryDelayMs * Math.pow(2, attempt)));
     }
   }
-  throw (lastError || new Error(`读取项目失败: ${projectId}`));
+  throw lastError || new Error(`读取项目失败: ${projectId}`);
 };
 
 export const listProjects = async (): Promise<ProjectFileData[]> => {
@@ -209,12 +220,12 @@ export const listProjects = async (): Promise<ProjectFileData[]> => {
     }
     await ensureAppDataDir();
     const appDir = 'story-fab';
-    const files = await tauri.listAppDataFiles(appDir) as string[];
+    const files = (await tauri.listAppDataFiles(appDir)) as string[];
     if (!files || !Array.isArray(files) || files.length === 0) return [];
     const projects = await Promise.all(
       files
         .filter(file => file.endsWith('.json'))
-        .map(async (file) => {
+        .map(async file => {
           try {
             const projectId = file.replace('.json', '');
             return await loadProjectFromFile(projectId);
@@ -224,7 +235,9 @@ export const listProjects = async (): Promise<ProjectFileData[]> => {
           }
         })
     );
-    return projects.map(normalizeListedProject).filter((project): project is ProjectFileData => project !== null);
+    return projects
+      .map(normalizeListedProject)
+      .filter((project): project is ProjectFileData => project !== null);
   } catch (error) {
     logger.error('[listProjects] 列出项目失败:', error);
     throw error;

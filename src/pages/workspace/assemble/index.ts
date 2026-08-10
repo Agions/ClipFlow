@@ -5,6 +5,12 @@ export { default as VideoComposing } from './video-composing';
 export { default as AIVisualizer } from './ai-visualizer';
 export { Highlights } from './highlights/highlights';
 
+// PR-4.1b 实验性 UX 组件（feature flag 灰度）
+// 仅当 useFeatureFlag('experimental.tts-page') === true 时挂载
+// 关闭 flag 自动回落 video-composing
+export { default as TtsPage } from './tts-page';
+export { default as SubtitleTable } from './subtitle-table';
+
 export {
   aiVisualizerReducer,
   initialAIVisualizerState,

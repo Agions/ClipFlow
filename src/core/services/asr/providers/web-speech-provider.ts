@@ -6,7 +6,13 @@
  */
 import { logger } from '../../../../shared/utils/logging';
 import type { VideoInfo } from '@/types';
-import type { ASRResult, ASRSegment, ASROptions, SpeechRecognitionCtor, SpeechRecognitionEvent } from '../asr-types';
+import type {
+  ASRResult,
+  ASRSegment,
+  ASROptions,
+  SpeechRecognitionCtor,
+  SpeechRecognitionEvent,
+} from '../asr-types';
 import type { IASRProvider } from './types';
 
 /**
@@ -23,7 +29,7 @@ export class WebSpeechASRProvider implements IASRProvider {
     videoInfo: VideoInfo,
     opts: Required<ASROptions>
   ): Promise<ASRResult | null> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const SpeechRecognitionCtor = this._getSpeechRecognitionConstructor();
       if (!SpeechRecognitionCtor) {
         resolve(null);
@@ -34,6 +40,11 @@ export class WebSpeechASRProvider implements IASRProvider {
         const result = this._runRecognition(SpeechRecognitionCtor, opts);
         resolve(result);
       } catch (err) {
+        // 注意：L37/L38 catch 分支在当前实现下属于 dead code — _runRecognition
+        // 内部所有可能抛错的代码都在 `new Promise(...)` 的 executor 内执行，
+        // 抛错会被 Promise 边界自动吸收为 rejected Promise 而非同步抛出。
+        // 此处保留作为防御性逻辑（若未来 _runRecognition 重构为同步入口或
+        // executor 之前的代码被扩展时可自动生效）。
         logger.warn('[WebSpeechASR] Web Speech 调用失败:', String(err));
         resolve(null);
       }
@@ -54,7 +65,7 @@ export class WebSpeechASRProvider implements IASRProvider {
     SpeechRecognitionCtor: SpeechRecognitionCtor,
     opts: Required<ASROptions>
   ): Promise<ASRResult | null> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const recognition = new SpeechRecognitionCtor();
       recognition.lang = opts.language.replace('_', '-');
       recognition.continuous = true;

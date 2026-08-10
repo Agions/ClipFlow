@@ -39,14 +39,67 @@ describe('parseScriptContent', () => {
 
   it('generates unique ids for each segment', () => {
     const result = parseScriptContent('[0:00] A\n\n[0:05] B\n\n[0:10] C');
-    const ids = new Set(result.map((s) => s.id));
+    const ids = new Set(result.map(s => s.id));
     expect(ids.size).toBe(3);
+  });
+
+  it('appends continuation lines without timestamp into current segment', () => {
+    // 验证 line 71-72 + branch 4 (line 69) truthy 臂: 无时间戳行追加到当前段落
+    const result = parseScriptContent('[0:00] First line\ncontinued line\nstill more');
+    expect(result).toHaveLength(1);
+    expect(result[0]?.content).toBe('First line continued line still more');
+    expect(result[0]?.startTime).toBe(0);
+    // currentEndTime = startTime(0) + 10 + 2 + 2 = 14
+    expect(result[0]?.endTime).toBe(14);
+  });
+});
+
+describe('parseScriptContent — segment type detection', () => {
+  it('detects narration type from Chinese 旁白 keyword', () => {
+    // 验证 line 88 branch 5: includes('旁白') truthy 臂
+    const result = parseScriptContent('[0:00] 这是一段旁白内容');
+    expect(result[0]?.type).toBe('narration');
+  });
+
+  it('detects narration type from English "narration" keyword', () => {
+    const result = parseScriptContent('[0:00] This is a narration segment');
+    expect(result[0]?.type).toBe('narration');
+  });
+
+  it('detects dialogue type from Chinese 对话 keyword', () => {
+    // 验证 line 91 branch 7: includes('对话') truthy 臂
+    const result = parseScriptContent('[0:00] 角色对话内容');
+    expect(result[0]?.type).toBe('dialogue');
+  });
+
+  it('detects dialogue type from English "dialogue" keyword', () => {
+    const result = parseScriptContent('[0:00] Character dialogue line');
+    expect(result[0]?.type).toBe('dialogue');
+  });
+
+  it('detects description type from Chinese 描述 keyword', () => {
+    // 验证 line 94 branch 9: includes('描述') truthy 臂
+    const result = parseScriptContent('[0:00] 场景描述文字');
+    expect(result[0]?.type).toBe('description');
+  });
+
+  it('detects description type from English "description" keyword', () => {
+    const result = parseScriptContent('[0:00] Scene description text');
+    expect(result[0]?.type).toBe('description');
+  });
+
+  it('falls back to narration type when no keyword matches', () => {
+    const result = parseScriptContent('[0:00] 没有任何关键词的普通段落');
+    expect(result[0]?.type).toBe('narration');
   });
 });
 
 describe('createScriptDraft', () => {
   it('creates draft with all required fields', () => {
-    const draft = createScriptDraft('[0:00] First paragraph.\n\n[0:05] Second paragraph.', 'proj-1');
+    const draft = createScriptDraft(
+      '[0:00] First paragraph.\n\n[0:05] Second paragraph.',
+      'proj-1'
+    );
     expect(draft.projectId).toBe('proj-1');
     expect(draft.id).toBeDefined();
     expect(draft.createdAt).toBeDefined();
@@ -69,7 +122,9 @@ describe('formatScriptToText', () => {
       { id: 's1', startTime: 0, endTime: 5, content: 'First', type: 'narration' as const },
       { id: 's2', startTime: 5, endTime: 10, content: 'Second', type: 'narration' as const },
     ];
-    const formatted = formatScriptToText(segments as unknown as Parameters<typeof formatScriptToText>[0]);
+    const formatted = formatScriptToText(
+      segments as unknown as Parameters<typeof formatScriptToText>[0]
+    );
     expect(formatted).toBe('First\n\nSecond');
   });
 

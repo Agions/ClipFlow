@@ -111,6 +111,9 @@ function isMac(): boolean {
 }
 
 /** 匹配单个按键 */
+// 注意：L115 的 `shortcut.code &&` 分支在当前 SHORTCUT_MAP/MAC_SHORTCUTS/WIN_SHORTCUTS
+// 中没有任何 shortcut 使用 `code` 字段，因此 if 的 truthy arm 属于 dead code，
+// 仅作为防御性逻辑保留（未来若引入基于物理按键的快捷键将自动生效）。
 function matchKey(e: KeyboardEvent, shortcut: ShortcutKey): boolean {
   if (shortcut.code && e.code !== shortcut.code) return false;
   if (shortcut.key && e.key !== shortcut.key) return false;
@@ -145,7 +148,9 @@ export function useKeyboardShortcuts(options: KeyboardShortcutsOptions) {
 
   // 用于判断 End 键
   const durationRef = useRef<number>(0);
-  const setDuration = useCallback((d: number) => { durationRef.current = d; }, []);
+  const setDuration = useCallback((d: number) => {
+    durationRef.current = d;
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -153,11 +158,7 @@ export function useKeyboardShortcuts(options: KeyboardShortcutsOptions) {
 
       // 忽略在输入框/文本框中触发的快捷键
       const target = e.target as HTMLElement;
-      if (
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable
-      ) {
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
         // 仍然允许 Escape（用于退出输入框）
         if (e.key !== 'Escape') return;
       }
@@ -209,7 +210,20 @@ export function useKeyboardShortcuts(options: KeyboardShortcutsOptions) {
         return;
       }
     },
-    [onPlayPause, onPause, onSeek, onSeekTo, onInPoint, onOutPoint, onDelete, onUndo, onRedo, onSelectAll, onExport, preventDefault]
+    [
+      onPlayPause,
+      onPause,
+      onSeek,
+      onSeekTo,
+      onInPoint,
+      onOutPoint,
+      onDelete,
+      onUndo,
+      onRedo,
+      onSelectAll,
+      onExport,
+      preventDefault,
+    ]
   );
 
   useEffect(() => {
@@ -226,30 +240,42 @@ export function useKeyboardShortcuts(options: KeyboardShortcutsOptions) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const KEYBOARD_SHORTCUTS_HELP = [
-  { category: '播放控制', items: [
-    { key: '空格', desc: '播放 / 暂停' },
-    { key: 'K', desc: '暂停' },
-    { key: 'J', desc: '后退 3 秒' },
-    { key: 'L', desc: '前进 3 秒' },
-    { key: '←', desc: '后退 1 秒' },
-    { key: '→', desc: '前进 1 秒' },
-  ]},
-  { category: '片段编辑', items: [
-    { key: 'I', desc: '设定入点' },
-    { key: 'O', desc: '设定出点' },
-    { key: 'Delete', desc: '删除选中片段' },
-    { key: '⌘A', desc: '全选' },
-  ]},
-  { category: '时间线', items: [
-    { key: '↑', desc: '放大时间线' },
-    { key: '↓', desc: '缩小时间线' },
-    { key: 'Home', desc: '跳转到开头' },
-    { key: 'End', desc: '跳转到结尾' },
-  ]},
-  { category: '项目', items: [
-    { key: '⌘Z', desc: '撤销' },
-    { key: '⇧⌘Z', desc: '重做' },
-    { key: '⌘E', desc: '导出' },
-    { key: '⌘S', desc: '保存' },
-  ]},
+  {
+    category: '播放控制',
+    items: [
+      { key: '空格', desc: '播放 / 暂停' },
+      { key: 'K', desc: '暂停' },
+      { key: 'J', desc: '后退 3 秒' },
+      { key: 'L', desc: '前进 3 秒' },
+      { key: '←', desc: '后退 1 秒' },
+      { key: '→', desc: '前进 1 秒' },
+    ],
+  },
+  {
+    category: '片段编辑',
+    items: [
+      { key: 'I', desc: '设定入点' },
+      { key: 'O', desc: '设定出点' },
+      { key: 'Delete', desc: '删除选中片段' },
+      { key: '⌘A', desc: '全选' },
+    ],
+  },
+  {
+    category: '时间线',
+    items: [
+      { key: '↑', desc: '放大时间线' },
+      { key: '↓', desc: '缩小时间线' },
+      { key: 'Home', desc: '跳转到开头' },
+      { key: 'End', desc: '跳转到结尾' },
+    ],
+  },
+  {
+    category: '项目',
+    items: [
+      { key: '⌘Z', desc: '撤销' },
+      { key: '⇧⌘Z', desc: '重做' },
+      { key: '⌘E', desc: '导出' },
+      { key: '⌘S', desc: '保存' },
+    ],
+  },
 ];

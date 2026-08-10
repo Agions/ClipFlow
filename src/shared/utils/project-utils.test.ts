@@ -4,15 +4,45 @@
  * 原 project-store.test.ts 实际只覆盖 filterProjects/sortProjects，
  * 与 store 消费者无关，故迁移以让测试紧贴被测对象。
  */
-import { describe, it, expect } from 'vitest';
-import { filterProjects, sortProjects } from './project-utils';
+import { describe, it, expect, vi } from 'vitest';
+import { filterProjects, sortProjects, updateProject, getStatusColor } from './project-utils';
 import type { Project } from '@/types';
 
 // 每个字段值都不同，避免意外的 tie-breaking
 const mockProjects: Project[] = [
-  { id: '1', title: 'Zebra',   status: 'draft',     createdAt: '1970-01-01T00:00:09.000Z', updatedAt: '1970-01-01T00:00:09.000Z', duration: 30,  size: 100, tags: ['animal'], starred: true  },
-  { id: '2', title: 'Apple',   status: 'completed', createdAt: '1970-01-01T00:00:08.000Z', updatedAt: '1970-01-01T00:00:07.000Z', duration: 60,  size: 200, tags: ['fruit'], starred: false },
-  { id: '3', title: 'Banana',  status: 'draft',     createdAt: '1970-01-01T00:00:10.000Z', updatedAt: '1970-01-01T00:00:08.000Z', duration: 120, size: 300, tags: ['fruit'], starred: false },
+  {
+    id: '1',
+    title: 'Zebra',
+    status: 'draft',
+    createdAt: '1970-01-01T00:00:09.000Z',
+    updatedAt: '1970-01-01T00:00:09.000Z',
+    duration: 30,
+    size: 100,
+    tags: ['animal'],
+    starred: true,
+  },
+  {
+    id: '2',
+    title: 'Apple',
+    status: 'completed',
+    createdAt: '1970-01-01T00:00:08.000Z',
+    updatedAt: '1970-01-01T00:00:07.000Z',
+    duration: 60,
+    size: 200,
+    tags: ['fruit'],
+    starred: false,
+  },
+  {
+    id: '3',
+    title: 'Banana',
+    status: 'draft',
+    createdAt: '1970-01-01T00:00:10.000Z',
+    updatedAt: '1970-01-01T00:00:08.000Z',
+    duration: 120,
+    size: 300,
+    tags: ['fruit'],
+    starred: false,
+  },
 ];
 
 describe('filterProjects', () => {
@@ -87,5 +117,107 @@ describe('sortProjects', () => {
     const original = mockProjects.map(p => p.id);
     sortProjects(mockProjects, 'title', 'asc');
     expect(mockProjects.map(p => p.id)).toEqual(original);
+  });
+});
+
+describe('filterProjects — additional filters', () => {
+  it('should filter by starred=true', () => {
+    const result = filterProjects(mockProjects, { starred: true });
+    expect(result).toHaveLength(1);
+    expect(result[0].title).toBe('Zebra');
+  });
+
+  it('should filter by starred=false', () => {
+    const result = filterProjects(mockProjects, { starred: false });
+    expect(result).toHaveLength(2);
+  });
+
+  it('should filter by tags (any-of match)', () => {
+    const result = filterProjects(mockProjects, { tags: ['fruit'] });
+    expect(result.map(p => p.title).sort()).toEqual(['Apple', 'Banana']);
+  });
+
+  it('should match search against description (not just title)', () => {
+    const projects: Project[] = [
+      {
+        id: '1',
+        title: 'X',
+        status: 'draft',
+        createdAt: '',
+        updatedAt: '',
+        duration: 0,
+        size: 0,
+        tags: [],
+        starred: false,
+        description: 'introduction to bananas',
+      },
+      {
+        id: '2',
+        title: 'Y',
+        status: 'draft',
+        createdAt: '',
+        updatedAt: '',
+        duration: 0,
+        size: 0,
+        tags: [],
+        starred: false,
+      },
+    ];
+    const result = filterProjects(projects, { search: 'bananas' });
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe('1');
+  });
+});
+
+describe('updateProject', () => {
+  it('overrides fields and bumps updatedAt to a fresh ISO string', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-07T12:34:56.000Z'));
+    try {
+      const original: Project = {
+        id: '1',
+        title: 'Old',
+        status: 'draft',
+        createdAt: '2026-01-01T00:00:00Z',
+        updatedAt: '2026-01-01T00:00:00Z',
+        duration: 0,
+        size: 0,
+        tags: [],
+        starred: false,
+      };
+      const result = updateProject(original, { title: 'New' });
+      expect(result.title).toBe('New');
+      expect(result.id).toBe('1');
+      expect(result.status).toBe('draft');
+      expect(result.updatedAt).toBe('2026-08-07T12:34:56.000Z');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not mutate the original project', () => {
+    const original: Project = {
+      id: '1',
+      title: 'Old',
+      status: 'draft',
+      createdAt: 'x',
+      updatedAt: 'y',
+      duration: 0,
+      size: 0,
+      tags: [],
+      starred: false,
+    };
+    updateProject(original, { title: 'New' });
+    expect(original.title).toBe('Old');
+    expect(original.updatedAt).toBe('y');
+  });
+});
+
+describe('getStatusColor', () => {
+  it('returns semantic tag color for each known status', () => {
+    expect(getStatusColor('draft')).toBe('default');
+    expect(getStatusColor('processing')).toBe('processing');
+    expect(getStatusColor('completed')).toBe('success');
+    expect(getStatusColor('failed')).toBe('error');
   });
 });

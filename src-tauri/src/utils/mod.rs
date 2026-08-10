@@ -27,7 +27,7 @@ pub use process::{cmd_err, cmd_first_line, parse_scdet_output};
 pub use semaphore::{
     resource_error_to_user_message, ResourceError, ResourceLimiter,
 };
-pub use time::{chrono_like_timestamp, format_srt_time, format_time, parse_fraction};
+pub use time::{chrono_like_timestamp, format_srt_time, format_time, now_iso8601, parse_fraction};
 
 #[cfg(test)]
 mod tests {

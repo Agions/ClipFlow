@@ -36,7 +36,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '../dropdown-menu';
 import {
@@ -62,7 +61,7 @@ describe('Dialog', () => {
           <DialogTitle>Title</DialogTitle>
           <DialogDescription>Desc</DialogDescription>
         </DialogContent>
-      </Dialog>,
+      </Dialog>
     );
     // Trigger should be in the DOM
     expect(screen.getByText('Open')).toBeInTheDocument();
@@ -77,7 +76,7 @@ describe('Dialog', () => {
           <DialogTitle>Visible Title</DialogTitle>
           <DialogDescription>Visible Desc</DialogDescription>
         </DialogContent>
-      </Dialog>,
+      </Dialog>
     );
     // base-ui renders portal contents to body — query by text
     expect(screen.getByText('Visible Title')).toBeInTheDocument();
@@ -90,7 +89,7 @@ describe('Dialog', () => {
           <DialogTitle>Title</DialogTitle>
           <DialogClose>X</DialogClose>
         </DialogContent>
-      </Dialog>,
+      </Dialog>
     );
     const close = screen.getByText('X');
     expect(close).toBeInTheDocument();
@@ -103,7 +102,7 @@ describe('Dialog', () => {
           <DialogHeader data-testid="hdr">H</DialogHeader>
           <DialogFooter data-testid="ftr">F</DialogFooter>
         </DialogContent>
-      </Dialog>,
+      </Dialog>
     );
     expect(screen.getByTestId('hdr')).toHaveAttribute('data-slot', 'dialog-header');
     expect(screen.getByTestId('ftr')).toHaveAttribute('data-slot', 'dialog-footer');
@@ -122,7 +121,7 @@ describe('Drawer', () => {
           </DrawerHeader>
           <DrawerFooter>Foot</DrawerFooter>
         </DrawerContent>
-      </Drawer>,
+      </Drawer>
     );
     expect(screen.getByText('Open')).toBeInTheDocument();
   });
@@ -134,7 +133,7 @@ describe('Drawer', () => {
           <DrawerTitle>DTitle</DrawerTitle>
           <DrawerDescription>DDesc</DrawerDescription>
         </DrawerContent>
-      </Drawer>,
+      </Drawer>
     );
     expect(screen.getByText('DTitle')).toBeInTheDocument();
   });
@@ -146,7 +145,7 @@ describe('Drawer', () => {
           <DrawerHeader data-testid="dh">H</DrawerHeader>
           <DrawerFooter data-testid="df">F</DrawerFooter>
         </DrawerContent>
-      </Drawer>,
+      </Drawer>
     );
     expect(screen.getByTestId('dh')).toHaveAttribute('data-slot', 'drawer-header');
     expect(screen.getByTestId('df')).toHaveAttribute('data-slot', 'drawer-footer');
@@ -158,7 +157,7 @@ describe('Drawer', () => {
         <DrawerContent>
           <DrawerClose>X</DrawerClose>
         </DrawerContent>
-      </Drawer>,
+      </Drawer>
     );
     expect(screen.getByText('X')).toBeInTheDocument();
   });
@@ -172,7 +171,7 @@ describe('DropdownMenu', () => {
         <DropdownMenuContent>
           <DropdownMenuItem>Item 1</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>,
+      </DropdownMenu>
     );
     expect(screen.getByText('Open Menu')).toBeInTheDocument();
     expect(screen.queryByText('Item 1')).toBeNull();
@@ -188,7 +187,7 @@ describe('DropdownMenu', () => {
           <DropdownMenuSeparator data-testid="sep" />
           <DropdownMenuItem>Item 3</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>,
+      </DropdownMenu>
     );
     expect(screen.getByText('Item 1')).toBeInTheDocument();
     expect(screen.getByText('Item 2')).toBeInTheDocument();
@@ -204,7 +203,7 @@ describe('DropdownMenu', () => {
           <DropdownMenuSeparator data-testid="sep" />
           <DropdownMenuItem>B</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>,
+      </DropdownMenu>
     );
     expect(screen.getByTestId('sep')).toBeInTheDocument();
   });
@@ -224,7 +223,7 @@ describe('AlertDialog (custom implementation)', () => {
             <AlertDialogAction>OK</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>,
+      </AlertDialog>
     );
     const el = screen.getByTestId('ac');
     expect(el.className).toContain('fixed inset-0');
@@ -242,7 +241,7 @@ describe('AlertDialog (custom implementation)', () => {
         <AlertDialogContent onClose={onClose} data-testid="ac">
           <AlertDialogTitle>T</AlertDialogTitle>
         </AlertDialogContent>
-      </AlertDialog>,
+      </AlertDialog>
     );
     // Click the backdrop (the outer div)
     const backdrop = screen.getByTestId('ac');
@@ -257,7 +256,7 @@ describe('AlertDialog (custom implementation)', () => {
         <AlertDialogContent onClose={onClose}>
           <AlertDialogTitle>T</AlertDialogTitle>
         </AlertDialogContent>
-      </AlertDialog>,
+      </AlertDialog>
     );
     fireEvent.click(screen.getByText('T'));
     expect(onClose).not.toHaveBeenCalled();
@@ -271,7 +270,7 @@ describe('AlertDialog (custom implementation)', () => {
           <AlertDialogTitle>T</AlertDialogTitle>
           <AlertDialogAction onClick={onClick}>Confirm</AlertDialogAction>
         </AlertDialogContent>
-      </AlertDialog>,
+      </AlertDialog>
     );
     fireEvent.click(screen.getByText('Confirm'));
     expect(onClick).toHaveBeenCalled();
@@ -282,9 +281,11 @@ describe('AlertDialog (custom implementation)', () => {
     render(
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <a href="#" data-testid="link">Open</a>
+          <a href="#" data-testid="link">
+            Open
+          </a>
         </AlertDialogTrigger>
-      </AlertDialog>,
+      </AlertDialog>
     );
     fireEvent.click(screen.getByTestId('link'));
     expect(onClick).not.toHaveBeenCalled(); // No parent click — only cloneElement
@@ -296,7 +297,7 @@ describe('Tooltip', () => {
     render(
       <Tooltip title="Save">
         <button>Click</button>
-      </Tooltip>,
+      </Tooltip>
     );
     expect(screen.getByText('Click')).toBeInTheDocument();
   });
@@ -310,14 +311,18 @@ describe('Tooltip', () => {
         <TooltipContent data-testid="tip">
           <span>Tip body</span>
         </TooltipContent>
-      </Tooltip>,
+      </Tooltip>
     );
     expect(screen.getByText('Hover me')).toBeInTheDocument();
     expect(screen.getByText('Tip body')).toBeInTheDocument();
   });
 
   it('TooltipProvider renders without children', () => {
-    render(<TooltipProvider delay={100}><span>x</span></TooltipProvider>);
+    render(
+      <TooltipProvider delay={100}>
+        <span>x</span>
+      </TooltipProvider>
+    );
     expect(screen.getByText('x')).toBeInTheDocument();
   });
 });
@@ -327,7 +332,7 @@ describe('ScrollArea', () => {
     const { container } = render(
       <ScrollArea>
         <div>Content</div>
-      </ScrollArea>,
+      </ScrollArea>
     );
     expect(container.querySelector('[data-slot="scroll-area"]')).toBeInTheDocument();
   });
@@ -336,7 +341,7 @@ describe('ScrollArea', () => {
     render(
       <ScrollArea>
         <div>Inner content</div>
-      </ScrollArea>,
+      </ScrollArea>
     );
     expect(screen.getByText('Inner content')).toBeInTheDocument();
   });
@@ -345,7 +350,7 @@ describe('ScrollArea', () => {
     const { container } = render(
       <ScrollArea>
         <ScrollBar />
-      </ScrollArea>,
+      </ScrollArea>
     );
     // base-ui ScrollArea only renders a scrollbar in JS, hidden by default —
     // we verify the data-slot is present in the rendered tree
@@ -359,7 +364,7 @@ describe('ScrollArea', () => {
     const { container } = render(
       <ScrollArea>
         <div>scrollable</div>
-      </ScrollArea>,
+      </ScrollArea>
     );
     expect(container.querySelector('[data-slot="scroll-area"]')).toBeInTheDocument();
   });

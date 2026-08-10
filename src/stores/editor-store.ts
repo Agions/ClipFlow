@@ -13,6 +13,7 @@
 import { createPersistedStore } from './create-persisted-store';
 import { createJSONStorage } from 'zustand/middleware';
 import { createHistory } from './create-history';
+import { createSimpleSetters } from './create-simple-setters';
 import type { TimelineTrack, TimelineClip, AnimationKeyframe, TrackType } from '@/types';
 
 // ─── 素材工作态 shape（原 workspace 内声明的精简副本）────────────────────────
@@ -120,7 +121,13 @@ export interface EditorStore {
   addClipToTrack: (trackId: string, clipData: Omit<TimelineClip, 'id' | 'trackId'>) => string;
   removeClipFromTrack: (clipId: string) => void;
   updateClip: (clipId: string, updates: Partial<TimelineClip>) => void;
-  moveClip: (clipId: string, targetTrackId: string, newStartMs: number, newEndMs?: number, skipHistory?: boolean) => void;
+  moveClip: (
+    clipId: string,
+    targetTrackId: string,
+    newStartMs: number,
+    newEndMs?: number,
+    skipHistory?: boolean
+  ) => void;
   splitClip: (clipId: string, splitMs: number) => void;
   addKeyframe: (clipId: string, kfData: Omit<AnimationKeyframe, 'id'>) => string;
   removeKeyframe: (clipId: string, keyframeId: string) => void;
@@ -170,7 +177,7 @@ export const useEditorStore = createPersistedStore<EditorStore>({
   name: 'StoryFab-workspace',
   devtoolsName: 'EditorStore',
   storage: createJSONStorage(() => localStorage),
-  partialize: (state) => ({
+  partialize: state => ({
     video: state.video,
     zoom: state.zoom,
     volume: state.volume,
@@ -178,213 +185,223 @@ export const useEditorStore = createPersistedStore<EditorStore>({
     snapEnabled: state.snapEnabled,
     snapThreshold: state.snapThreshold,
   }),
-  state: (set, get) => ({
-    ...initialEditorState,
-    ...initialTimelineState,
+  state: (set, get) => {
+    // 纯赋值 setter：工厂生成（PR-1.5）
+    // 带 clamping / 副作用 / history / 跨字段读写 的 setter 保持手写
+    const simpleSetterMap = {
+      setVideo: 'video',
+      setScript: 'script',
+      setVoice: 'voice',
+      setActivePanel: 'activePanel',
+      setIsPlaying: 'isPlaying',
+      setCurrentTime: 'currentTime',
+      setMuted: 'muted',
+      setScrollPosition: 'scrollPosition',
+      setSnapEnabled: 'snapEnabled',
+    } as const satisfies Record<string, keyof EditorStore & string>;
+    const simpleSetters = createSimpleSetters<EditorStore, typeof simpleSetterMap>(
+      simpleSetterMap,
+      set
+    );
+    return {
+      ...initialEditorState,
+      ...initialTimelineState,
+      ...simpleSetters,
 
-    setVideo: (video) => set({ video }),
-    setScript: (script) => set({ script }),
-    setVoice: (voice) => set({ voice }),
-    setActivePanel: (activePanel) => set({ activePanel }),
-    setIsPlaying: (isPlaying) => set({ isPlaying }),
-    setCurrentTime: (currentTime) => set({ currentTime }),
-    setVolume: (volume) => set({ volume: Math.max(VOLUME_MIN, Math.min(VOLUME_MAX, volume)) }),
-    setMuted: (muted) => set({ muted }),
-    setSelection: (selection) => set((s) => ({ selection: { ...s.selection, ...selection } })),
-    clearSelection: () => set({ selection: { segmentId: undefined, multipleIds: [] } }),
-    setZoom: (zoom) => set({ zoom: Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom)) }),
-    setScrollPosition: (scrollPosition) => set({ scrollPosition }),
-    reset: () => set({ ...initialEditorState, ...initialTimelineState }),
+      setVolume: volume => set({ volume: Math.max(VOLUME_MIN, Math.min(VOLUME_MAX, volume)) }),
+      setSelection: selection => set(s => ({ selection: { ...s.selection, ...selection } })),
+      clearSelection: () => set({ selection: { segmentId: undefined, multipleIds: [] } }),
+      setZoom: zoom => set({ zoom: Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom)) }),
+      reset: () => set({ ...initialEditorState, ...initialTimelineState }),
 
-    setPlayheadMs: (ms) => set({ playheadMs: Math.max(0, ms) }),
-    setTimelineTracks: (tracks) => {
-      trackHistory.save(get().timelineTracks);
-      set({ timelineTracks: tracks });
-    },
+      setPlayheadMs: ms => set({ playheadMs: Math.max(0, ms) }),
+      setTimelineTracks: tracks => {
+        trackHistory.save(get().timelineTracks);
+        set({ timelineTracks: tracks });
+      },
 
-    addTimelineTrack: (type, name) => {
-      const id = crypto.randomUUID();
-      const typeNames: Record<string, string> = {
-        video: '视频',
-        audio: '音频',
-        subtitle: '字幕',
-        effect: '效果',
-      };
-      const count = get().timelineTracks.filter((t) => t.type === type).length;
-      const track: TimelineTrack = {
-        id,
-        type,
-        name: name || `${typeNames[type] || type}轨道 ${count + 1}`,
-        clips: [],
-        muted: false,
-        locked: false,
-        visible: true,
-        height: type === 'subtitle' ? 50 : 60,
-      };
-      set((s) => ({ timelineTracks: [...s.timelineTracks, track] }));
-      return id;
-    },
-
-    removeTimelineTrack: (trackId) => {
-      trackHistory.save(get().timelineTracks);
-      set((s) => ({ timelineTracks: s.timelineTracks.filter((t) => t.id !== trackId) }));
-    },
-
-    updateTimelineTrack: (trackId, updates) =>
-      set((s) => ({
-        timelineTracks: s.timelineTracks.map((t) =>
-          t.id === trackId ? { ...t, ...updates } : t,
-        ),
-      })),
-
-    addClipToTrack: (trackId, clipData) => {
-      const id = crypto.randomUUID();
-      const clip: TimelineClip = { ...clipData, id, trackId };
-      trackHistory.save(get().timelineTracks);
-      set((s) => ({
-        timelineTracks: s.timelineTracks.map((t) =>
-          t.id === trackId ? { ...t, clips: [...t.clips, clip] } : t,
-        ),
-        selectedClipId: id,
-        selectedTrackId: trackId,
-      }));
-      return id;
-    },
-
-    removeClipFromTrack: (clipId) => {
-      trackHistory.save(get().timelineTracks);
-      set((s) => ({
-        timelineTracks: s.timelineTracks.map((t) => ({
-          ...t,
-          clips: t.clips.filter((c) => c.id !== clipId),
-        })),
-        selectedClipId: s.selectedClipId === clipId ? undefined : s.selectedClipId,
-        selectedTrackId: s.selectedClipId === clipId ? undefined : s.selectedTrackId,
-      }));
-    },
-
-    updateClip: (clipId, updates) => {
-      trackHistory.save(get().timelineTracks);
-      set((s) => ({ timelineTracks: updateClipInTracks(s.timelineTracks, clipId, updates) }));
-    },
-
-    moveClip: (clipId, targetTrackId, newStartMs, newEndMs, skipHistory) => {
-      if (!skipHistory) trackHistory.save(get().timelineTracks);
-      set((s) => {
-        let clipToMove: TimelineClip | undefined;
-        const afterRemove = s.timelineTracks.map((t) => {
-          const clip = t.clips.find((c) => c.id === clipId);
-          if (clip) {
-            clipToMove = { ...clip, trackId: targetTrackId };
-          }
-          return clip ? { ...t, clips: t.clips.filter((c) => c.id !== clipId) } : t;
-        });
-        if (!clipToMove) return s;
-        const duration = clipToMove.endMs - clipToMove.startMs;
-        const updatedSourceEndMs =
-          newEndMs !== undefined
-            ? clipToMove.sourceStartMs + (newEndMs - newStartMs)
-            : clipToMove.sourceEndMs;
-        return {
-          timelineTracks: afterRemove.map((t) =>
-            t.id === targetTrackId
-              ? {
-                  ...t,
-                  clips: [
-                    ...t.clips,
-                    {
-                      ...clipToMove!,
-                      startMs: newStartMs,
-                      endMs: newEndMs ?? newStartMs + duration,
-                      sourceEndMs: updatedSourceEndMs,
-                    },
-                  ],
-                }
-              : t,
-          ),
+      addTimelineTrack: (type, name) => {
+        const id = crypto.randomUUID();
+        const typeNames: Record<string, string> = {
+          video: '视频',
+          audio: '音频',
+          subtitle: '字幕',
+          effect: '效果',
         };
-      });
-    },
+        const count = get().timelineTracks.filter(t => t.type === type).length;
+        const track: TimelineTrack = {
+          id,
+          type,
+          name: name || `${typeNames[type] || type}轨道 ${count + 1}`,
+          clips: [],
+          muted: false,
+          locked: false,
+          visible: true,
+          height: type === 'subtitle' ? 50 : 60,
+        };
+        set(s => ({ timelineTracks: [...s.timelineTracks, track] }));
+        return id;
+      },
 
-    splitClip: (clipId, splitMs) => {
-      trackHistory.save(get().timelineTracks);
-      set((s) => ({
-        timelineTracks: s.timelineTracks.map((t) => {
-          const index = t.clips.findIndex((c) => c.id === clipId);
-          if (index === -1) return t;
-          const clip = t.clips[index];
-          if (splitMs <= clip.startMs || splitMs >= clip.endMs) return t;
-          const offset = splitMs - clip.startMs;
-          const sourceSplit = clip.sourceStartMs + offset;
-          const leftClip: TimelineClip = { ...clip, endMs: splitMs, sourceEndMs: sourceSplit };
-          const rightClip: TimelineClip = {
-            ...clip,
-            id: crypto.randomUUID(),
-            startMs: splitMs,
-            endMs: clip.endMs,
-            sourceStartMs: sourceSplit,
+      removeTimelineTrack: trackId => {
+        trackHistory.save(get().timelineTracks);
+        set(s => ({ timelineTracks: s.timelineTracks.filter(t => t.id !== trackId) }));
+      },
+
+      updateTimelineTrack: (trackId, updates) =>
+        set(s => ({
+          timelineTracks: s.timelineTracks.map(t => (t.id === trackId ? { ...t, ...updates } : t)),
+        })),
+
+      addClipToTrack: (trackId, clipData) => {
+        const id = crypto.randomUUID();
+        const clip: TimelineClip = { ...clipData, id, trackId };
+        trackHistory.save(get().timelineTracks);
+        set(s => ({
+          timelineTracks: s.timelineTracks.map(t =>
+            t.id === trackId ? { ...t, clips: [...t.clips, clip] } : t
+          ),
+          selectedClipId: id,
+          selectedTrackId: trackId,
+        }));
+        return id;
+      },
+
+      removeClipFromTrack: clipId => {
+        trackHistory.save(get().timelineTracks);
+        set(s => ({
+          timelineTracks: s.timelineTracks.map(t => ({
+            ...t,
+            clips: t.clips.filter(c => c.id !== clipId),
+          })),
+          selectedClipId: s.selectedClipId === clipId ? undefined : s.selectedClipId,
+          selectedTrackId: s.selectedClipId === clipId ? undefined : s.selectedTrackId,
+        }));
+      },
+
+      updateClip: (clipId, updates) => {
+        trackHistory.save(get().timelineTracks);
+        set(s => ({ timelineTracks: updateClipInTracks(s.timelineTracks, clipId, updates) }));
+      },
+
+      moveClip: (clipId, targetTrackId, newStartMs, newEndMs, skipHistory) => {
+        if (!skipHistory) trackHistory.save(get().timelineTracks);
+        set(s => {
+          let clipToMove: TimelineClip | undefined;
+          const afterRemove = s.timelineTracks.map(t => {
+            const clip = t.clips.find(c => c.id === clipId);
+            if (clip) {
+              clipToMove = { ...clip, trackId: targetTrackId };
+            }
+            return clip ? { ...t, clips: t.clips.filter(c => c.id !== clipId) } : t;
+          });
+          if (!clipToMove) return s;
+          const duration = clipToMove.endMs - clipToMove.startMs;
+          const updatedSourceEndMs =
+            newEndMs !== undefined
+              ? clipToMove.sourceStartMs + (newEndMs - newStartMs)
+              : clipToMove.sourceEndMs;
+          return {
+            timelineTracks: afterRemove.map(t =>
+              t.id === targetTrackId
+                ? {
+                    ...t,
+                    clips: [
+                      ...t.clips,
+                      {
+                        ...clipToMove!,
+                        startMs: newStartMs,
+                        endMs: newEndMs ?? newStartMs + duration,
+                        sourceEndMs: updatedSourceEndMs,
+                      },
+                    ],
+                  }
+                : t
+            ),
           };
-          const newClips = [...t.clips];
-          newClips.splice(index, 1, leftClip, rightClip);
-          return { ...t, clips: newClips };
-        }),
-      }));
-    },
+        });
+      },
 
-    addKeyframe: (clipId, kfData) => {
-      trackHistory.save(get().timelineTracks);
-      const id = crypto.randomUUID();
-      const keyframe: AnimationKeyframe = { ...kfData, id };
-      set((s) => ({ timelineTracks: addKeyframeToClip(s.timelineTracks, clipId, keyframe) }));
-      return id;
-    },
+      splitClip: (clipId, splitMs) => {
+        trackHistory.save(get().timelineTracks);
+        set(s => ({
+          timelineTracks: s.timelineTracks.map(t => {
+            const index = t.clips.findIndex(c => c.id === clipId);
+            if (index === -1) return t;
+            const clip = t.clips[index];
+            if (splitMs <= clip.startMs || splitMs >= clip.endMs) return t;
+            const offset = splitMs - clip.startMs;
+            const sourceSplit = clip.sourceStartMs + offset;
+            const leftClip: TimelineClip = { ...clip, endMs: splitMs, sourceEndMs: sourceSplit };
+            const rightClip: TimelineClip = {
+              ...clip,
+              id: crypto.randomUUID(),
+              startMs: splitMs,
+              endMs: clip.endMs,
+              sourceStartMs: sourceSplit,
+            };
+            const newClips = [...t.clips];
+            newClips.splice(index, 1, leftClip, rightClip);
+            return { ...t, clips: newClips };
+          }),
+        }));
+      },
 
-    removeKeyframe: (clipId, keyframeId) => {
-      trackHistory.save(get().timelineTracks);
-      set((s) => ({ timelineTracks: removeKeyframeFromClip(s.timelineTracks, clipId, keyframeId) }));
-    },
+      addKeyframe: (clipId, kfData) => {
+        trackHistory.save(get().timelineTracks);
+        const id = crypto.randomUUID();
+        const keyframe: AnimationKeyframe = { ...kfData, id };
+        set(s => ({ timelineTracks: addKeyframeToClip(s.timelineTracks, clipId, keyframe) }));
+        return id;
+      },
 
-    updateKeyframe: (clipId, keyframeId, updates) => {
-      trackHistory.save(get().timelineTracks);
-      set((s) => ({ timelineTracks: updateKeyframeInClip(s.timelineTracks, clipId, keyframeId, updates) }));
-    },
+      removeKeyframe: (clipId, keyframeId) => {
+        trackHistory.save(get().timelineTracks);
+        set(s => ({
+          timelineTracks: removeKeyframeFromClip(s.timelineTracks, clipId, keyframeId),
+        }));
+      },
 
-    setTimelineSelection: (clipId, trackId) =>
-      set({ selectedClipId: clipId, selectedTrackId: trackId }),
+      updateKeyframe: (clipId, keyframeId, updates) => {
+        trackHistory.save(get().timelineTracks);
+        set(s => ({
+          timelineTracks: updateKeyframeInClip(s.timelineTracks, clipId, keyframeId, updates),
+        }));
+      },
 
-    clearTimelineSelection: () =>
-      set({ selectedClipId: undefined, selectedTrackId: undefined }),
+      setTimelineSelection: (clipId, trackId) =>
+        set({ selectedClipId: clipId, selectedTrackId: trackId }),
 
-    setInPoint: () => set({ inPointMs: get().playheadMs }),
-    setOutPoint: () => set({ outPointMs: get().playheadMs }),
+      clearTimelineSelection: () => set({ selectedClipId: undefined, selectedTrackId: undefined }),
 
-    selectAllClips: () => {
-      const allClipIds = get().timelineTracks.flatMap((t) => t.clips.map((c) => c.id));
-      if (allClipIds.length === 0) return;
-      const [firstId, ...restIds] = allClipIds;
-      const firstTrack = get().timelineTracks.find((t) =>
-        t.clips.some((c) => c.id === firstId),
-      );
-      set({
-        selectedClipId: firstId,
-        selectedTrackId: firstTrack?.id,
-        selectedMultipleIds: restIds,
-      });
-    },
+      setInPoint: () => set({ inPointMs: get().playheadMs }),
+      setOutPoint: () => set({ outPointMs: get().playheadMs }),
 
-    setTimelineDuration: (ms) => set({ timelineDuration: Math.max(0, ms) }),
-    setSnapEnabled: (enabled) => set({ snapEnabled: enabled }),
+      selectAllClips: () => {
+        const allClipIds = get().timelineTracks.flatMap(t => t.clips.map(c => c.id));
+        if (allClipIds.length === 0) return;
+        const [firstId, ...restIds] = allClipIds;
+        const firstTrack = get().timelineTracks.find(t => t.clips.some(c => c.id === firstId));
+        set({
+          selectedClipId: firstId,
+          selectedTrackId: firstTrack?.id,
+          selectedMultipleIds: restIds,
+        });
+      },
 
-    saveTrackHistory: () => trackHistory.save(get().timelineTracks),
-    undoTrack: () => {
-      const prev = trackHistory.undo(get().timelineTracks);
-      if (prev !== undefined) set({ timelineTracks: prev });
-    },
-    redoTrack: () => {
-      const next = trackHistory.redo(get().timelineTracks);
-      if (next !== undefined) set({ timelineTracks: next });
-    },
-    canUndoTrack: () => trackHistory.canUndo(),
-    canRedoTrack: () => trackHistory.canRedo(),
-  }),
+      setTimelineDuration: ms => set({ timelineDuration: Math.max(0, ms) }),
+
+      saveTrackHistory: () => trackHistory.save(get().timelineTracks),
+      undoTrack: () => {
+        const prev = trackHistory.undo(get().timelineTracks);
+        if (prev !== undefined) set({ timelineTracks: prev });
+      },
+      redoTrack: () => {
+        const next = trackHistory.redo(get().timelineTracks);
+        if (next !== undefined) set({ timelineTracks: next });
+      },
+      canUndoTrack: () => trackHistory.canUndo(),
+      canRedoTrack: () => trackHistory.canRedo(),
+    };
+  },
 });

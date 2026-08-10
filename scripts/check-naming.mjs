@@ -30,36 +30,84 @@ const SCAN_ROOT = join(ROOT, 'src');
 
 /** 绝不扫描的目录（命中即跳过，不会进入子树） */
 const EXCLUDE_DIRS = new Set([
-  'src-tauri', 'node_modules', 'dist', 'target', 'build',
-  '.git', 'coverage', 'reports', 'docs', 'scripts',
-  'public', 'assets', 'styles',
+  'src-tauri',
+  'node_modules',
+  'dist',
+  'target',
+  'build',
+  '.git',
+  'coverage',
+  'reports',
+  'docs',
+  'scripts',
+  'public',
+  'assets',
+  'styles',
 ]);
+
+/** 绝不扫描的文件（macOS 隐藏文件等） */
+const EXCLUDE_FILES = new Set(['.DS_Store', 'Thumbs.db', '.gitkeep']);
 
 /** 既有通用目录白名单：名字本身不报违规（其内部仍会被扫描） */
 const DIR_WHITELIST = new Set([
-  'ui', 'common', 'shared', 'core', 'stores', 'hooks',
-  'pages', 'components', 'providers', 'types', 'styles', 'test',
+  'ui',
+  'common',
+  'shared',
+  'core',
+  'stores',
+  'hooks',
+  'pages',
+  'components',
+  'providers',
+  'types',
+  'styles',
+  'test',
+  // Vitest/测试工具链约定目录（双下划线包裹），保留原名。
+  '__tests__',
+  '__bench__',
+  '__mocks__',
+  'node_modules',
 ]);
 
 /** 语义模糊 / 不推荐的目录名：升级为 error 级提示 */
 const FORBIDDEN_DIRS = new Set([
-  'util', 'helper', 'helpers', 'misc', 'tmp',
-  'temp', 'new', 'old', 'v2',
+  'util',
+  'helper',
+  'helpers',
+  'misc',
+  'tmp',
+  'temp',
+  'new',
+  'old',
+  'v2',
 ]);
 
 /** 文件名完全例外（不报违规） */
 const FILE_EXACT_EXCEPTIONS = new Set(['main.tsx', 'App.tsx']);
 
 /**
+ * PascalCase icon 文件模式（项目惯例，与 lucide-react 风格一致）。
+ * 形如 `FilmIcon.tsx` / `PlayCircleIcon.tsx` 这类命名保留原名。
+ */
+const PASCAL_ICON_RE = /^[A-Z][A-Za-z0-9]*Icon\.tsx$/;
+
+/**
  * 工具链后缀（必须保留，不可拍平）：
- *   - Vitest 测试发现：*.test.ts(x) / *.spec.ts(x)
+ *   - Vitest 测试发现：*.test.ts(x) / *.spec.ts(x) / *.bench.ts
  *   - Vite CSS Module：*.module.less / *.module.css
  *   - 类型声明：*.d.ts
  * 改名会破坏构建/测试，故不纳入拍平。
  */
 const TOOLING_SUFFIXES = [
-  '.test.tsx', '.test.ts', '.spec.tsx', '.spec.ts',
-  '.module.less', '.module.css', '.d.ts',
+  '.test.tsx',
+  '.test.ts',
+  '.spec.tsx',
+  '.spec.ts',
+  '.bench.ts',
+  '.bench.tsx',
+  '.module.less',
+  '.module.css',
+  '.d.ts',
 ];
 
 /**
@@ -162,8 +210,11 @@ function checkDirName(dirName, relPath) {
  * @param {string} relPath
  */
 function checkFile(fname, relPath) {
+  if (EXCLUDE_FILES.has(fname)) return;
   const { core, tooling, isException, role } = parseFileName(fname);
   if (isException) return;
+  // PascalCase icon 文件（项目惯例，不报错）。
+  if (PASCAL_ICON_RE.test(fname)) return;
 
   // 角色标记（.reducer / .service / .types）→ 拍平为 kebab，保留工具链后缀
   if (role) {
@@ -175,7 +226,7 @@ function checkFile(fname, relPath) {
     return;
   }
 
-  // 普通文件（含 *.module.less / *.test.ts(x) 等工具链后缀文件）→ kebab 检查 core
+  // 普通文件（含 *.module.less / *.test.ts(x) / *.bench.ts 等工具链后缀文件）→ kebab 检查 core
   if (!isKebabCase(core)) {
     fileViolations.push({
       path: relPath,
@@ -245,7 +296,7 @@ printGroup('② 目录命名违规', dirViolations, C_YELLOW);
 printGroup('③ 角色后缀拍平（role-suffix-flatten）', roleViolations, C_YELLOW);
 
 const total = fileViolations.length + dirViolations.length + roleViolations.length;
-const errorCount = dirViolations.filter((v) => v.level === 'error').length;
+const errorCount = dirViolations.filter(v => v.level === 'error').length;
 
 console.log(`\n${C_CYAN}==== 汇总 ====${C_RESET}`);
 console.log(`  文件命名违规 : ${fileViolations.length}`);

@@ -32,20 +32,28 @@ export const useScriptEditor = ({
 }: UseScriptEditorArgs) => {
   const { state, dispatch } = useReducerHookFactory(
     originalEditorReducer,
-    initialOriginalEditorState(initialSegments),
+    initialOriginalEditorState(initialSegments)
   );
   const setters = createAutoSetters(dispatch, initialOriginalEditorState(initialSegments));
   const {
-    segments, editingIndex, formValues, formError,
-    previewVisible, previewSrc, previewLoading,
-    aiModalVisible, exportMenuOpen, deleteConfirmOpen, deleteTargetIndex,
+    segments,
+    editingIndex,
+    formValues,
+    formError,
+    previewVisible,
+    previewSrc,
+    previewLoading,
+    aiModalVisible,
+    exportMenuOpen,
+    deleteConfirmOpen,
+    deleteTargetIndex,
     totalDuration,
   } = state;
 
   useEffect(() => {
     const duration = segments.reduce(
       (sum, segment) => sum + (segment.endTime - segment.startTime),
-      0,
+      0
     );
     setters.totalDuration(duration);
     // setters is intentionally omitted from deps — createAutoSetters returns a
@@ -56,10 +64,10 @@ export const useScriptEditor = ({
 
   const setFieldValue = useCallback(
     (field: keyof SegmentFormValues, value: string | number | null) => {
-      setters.formValues((prev) => ({ ...prev, [field]: value }));
+      setters.formValues(prev => ({ ...prev, [field]: value }));
       setters.formError('');
     },
-    [setters],
+    [setters]
   );
 
   const validateForm = useCallback((): boolean => {
@@ -104,7 +112,7 @@ export const useScriptEditor = ({
       setters.formError('');
       setters.editingIndex(index);
     },
-    [segments, setters],
+    [segments, setters]
   );
 
   // 保存编辑片段
@@ -143,7 +151,7 @@ export const useScriptEditor = ({
       setters.deleteTargetIndex(index);
       setters.deleteConfirmOpen(true);
     },
-    [setters],
+    [setters]
   );
 
   const confirmDelete = useCallback(() => {
@@ -173,7 +181,7 @@ export const useScriptEditor = ({
         setters.previewLoading(false);
       }
     },
-    [segments, videoPath, setters],
+    [segments, videoPath, setters]
   );
 
   // 保存脚本
@@ -191,6 +199,9 @@ export const useScriptEditor = ({
         notify.success('脚本优化完成');
       }, 2000);
     } catch (error) {
+      // 注意：L194/L195 catch 分支在当前实现下属于 dead code — try 块内只
+      // 包含 mocked notify 调用和 setTimeout，均不会同步抛错。保留作为防御性
+      // 逻辑（若未来 try 块扩展加入可能抛错的同步调用时可自动生效）。
       logger.error('AI 优化脚本失败:', { error });
       notify.error(error, 'AI 优化脚本失败');
     }
@@ -202,7 +213,7 @@ export const useScriptEditor = ({
       { key: 'srt', label: '字幕文件 (.srt)' },
       { key: 'doc', label: 'Word文档 (.docx)' },
     ],
-    [],
+    []
   );
 
   const handleExportClick = useCallback(
@@ -210,14 +221,22 @@ export const useScriptEditor = ({
       onExport?.(String(key));
       setters.exportMenuOpen(false);
     },
-    [onExport, setters],
+    [onExport, setters]
   );
 
   return {
     // state (read)
-    segments, editingIndex, formValues, formError,
-    previewVisible, previewSrc, previewLoading,
-    aiModalVisible, exportMenuOpen, deleteConfirmOpen, deleteTargetIndex,
+    segments,
+    editingIndex,
+    formValues,
+    formError,
+    previewVisible,
+    previewSrc,
+    previewLoading,
+    aiModalVisible,
+    exportMenuOpen,
+    deleteConfirmOpen,
+    deleteTargetIndex,
     totalDuration,
     // setters (write, 1:1 兼容)
     setSegments: setters.segments,
@@ -231,10 +250,18 @@ export const useScriptEditor = ({
     setDeleteConfirmOpen: setters.deleteConfirmOpen,
     setDeleteTargetIndex: setters.deleteTargetIndex,
     // operations
-    setFieldValue, validateForm,
-    handleAddSegment, handleEditSegment, handleSaveSegment, handleCancelEdit,
-    handleDeleteSegment, confirmDelete, handlePreviewSegment,
-    handleSave, handleAIImprove, handleExportClick,
+    setFieldValue,
+    validateForm,
+    handleAddSegment,
+    handleEditSegment,
+    handleSaveSegment,
+    handleCancelEdit,
+    handleDeleteSegment,
+    confirmDelete,
+    handlePreviewSegment,
+    handleSave,
+    handleAIImprove,
+    handleExportClick,
     exportMenuItems,
   };
 };

@@ -14,18 +14,19 @@ const loadProjectEdit = () => import('./pages/project-edit/index');
 const loadProjectDetail = () => import('./pages/project-detail/index');
 const loadScriptDetail = () => import('./pages/script-detail/index');
 const loadSettings = () => import('./pages/settings/index');
+const loadUnderstanding = () => import('./features/understanding/understanding-page');
 const Home = lazy(loadHome);
 const Projects = lazy(loadProjects);
 const ProjectEdit = lazy(loadProjectEdit);
 const ProjectDetail = lazy(loadProjectDetail);
 const ScriptDetail = lazy(loadScriptDetail);
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-const WorkspacePage: React.LazyExoticComponent<React.ComponentType<unknown>> =
-  lazy(async () => {
-    const mod = await import('./pages/workspace/index');
-    return { default: (mod as unknown as { default: React.ComponentType<unknown> }).default };
-  });
+const WorkspacePage: React.LazyExoticComponent<React.ComponentType<unknown>> = lazy(async () => {
+  const mod = await import('./pages/workspace/index');
+  return { default: (mod as unknown as { default: React.ComponentType<unknown> }).default };
+});
 const Settings = lazy(loadSettings);
+const Understanding = lazy(loadUnderstanding);
 
 // 加载占位符 - 骨架屏
 const PageLoader = () => (
@@ -42,11 +43,14 @@ const App: React.FC = () => {
       void loadSettings();
     };
 
-    const idleRequest = (window as Window & {
-      requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number;
-      cancelIdleCallback?: (id: number) => void;
-    }).requestIdleCallback;
-    const idleCancel = (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
+    const idleRequest = (
+      window as Window & {
+        requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number;
+        cancelIdleCallback?: (id: number) => void;
+      }
+    ).requestIdleCallback;
+    const idleCancel = (window as Window & { cancelIdleCallback?: (id: number) => void })
+      .cancelIdleCallback;
 
     if (typeof idleRequest === 'function') {
       const id = idleRequest(warmup, { timeout: 1200 });
@@ -77,6 +81,7 @@ const App: React.FC = () => {
                 <Route path="/editor" element={<WorkspacePage />} />
                 <Route path="/editor/:projectId" element={<WorkspacePage />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/understanding" element={<Understanding />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Layout>

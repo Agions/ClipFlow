@@ -12,23 +12,19 @@ import React, { useCallback } from 'react';
 import { useReducerHookFactory } from '@/shared/hooks/use-reducer-hook';
 import { Slider } from '@/components/ui/slider';
 import { Zap, Crosshair, Lightbulb } from 'lucide-react';
-import { visionService } from '@/core/services/ai/vision-service';
+import { highlightDetector } from '@/core/services/video/highlight-detector';
 import { useEditorStore } from '@/stores';
 import { notify } from '@/shared/utils/notify';
 import type { VideoInfo } from '@/types';
-import {
-  highlightsReducer,
-  initialHighlightsState,
-  type Highlight,
-} from './highlights-reducer';
+import { highlightsReducer, initialHighlightsState, type Highlight } from './highlights-reducer';
 import styles from './highlights.module.less';
 import { formatTime } from '@/shared/utils/formatting';
 
 const REASON_CONFIG: Record<string, { label: string; cls: string }> = {
   audio_energy: { label: 'Audio', cls: 'audio' },
-  scene_change:  { label: 'Scene', cls: 'scene'  },
-  motion_burst:  { label: 'Motion', cls: 'motion' },
-  combined:      { label: 'Combo', cls: 'combo'  },
+  scene_change: { label: 'Scene', cls: 'scene' },
+  motion_burst: { label: 'Motion', cls: 'motion' },
+  combined: { label: 'Combo', cls: 'combo' },
 };
 
 interface HighlightsProps {
@@ -37,19 +33,22 @@ interface HighlightsProps {
   defaultExpanded?: boolean;
 }
 
-const Highlights: React.FC<HighlightsProps> = ({ videoInfo, defaultExpanded: _defaultExpanded = false }) => {
+const Highlights: React.FC<HighlightsProps> = ({
+  videoInfo,
+  defaultExpanded: _defaultExpanded = false,
+}) => {
   const { state, dispatch } = useReducerHookFactory(highlightsReducer, initialHighlightsState);
   const { highlights, detected, loading, error, threshold, topN } = state;
-  const setPlayheadMs = useEditorStore((s) => s.setPlayheadMs);
+  const setPlayheadMs = useEditorStore(s => s.setPlayheadMs);
 
   const handleThresholdChange = (value: number | readonly number[]) => {
     const resolvedValue = Array.isArray(value) ? value[0] : value;
-    dispatch({ type:'SET_THRESHOLD', payload: resolvedValue });
+    dispatch({ type: 'SET_THRESHOLD', payload: resolvedValue });
   };
 
   const handleTopNChange = (value: number | readonly number[]) => {
     const resolvedValue = Array.isArray(value) ? value[0] : value;
-    dispatch({ type:'SET_TOPN', payload: resolvedValue });
+    dispatch({ type: 'SET_TOPN', payload: resolvedValue });
   };
 
   const detect = useCallback(async () => {
@@ -57,26 +56,29 @@ const Highlights: React.FC<HighlightsProps> = ({ videoInfo, defaultExpanded: _de
       notify.warning('视频路径不可用');
       return;
     }
-    dispatch({ type:'START_DETECT', payload: undefined });
+    dispatch({ type: 'START_DETECT', payload: undefined });
     try {
-      const result = await visionService.detectHighlights(videoInfo, {
+      // PR-1.3a: 迁移到 highlightDetector（去除 VisionService 中转）
+      const result = await highlightDetector.detectHighlights(videoInfo.path, {
         threshold,
         topN,
         minDurationMs: 500,
-        detectScene: true,
       });
-      dispatch({ type:'DETECT_SUCCESS', payload: result });
+      dispatch({ type: 'DETECT_SUCCESS', payload: result });
       notify.success(`检测到 ${result.length} 个高光`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      dispatch({ type:'DETECT_FAILURE', payload: msg });
+      dispatch({ type: 'DETECT_FAILURE', payload: msg });
       notify.error(err, `高光检测失败: ${msg}`);
     }
   }, [videoInfo, threshold, topN, dispatch]);
 
-  const handleSeek = useCallback((h: Highlight) => {
-    setPlayheadMs(h.startTime * MS_PER_SECOND);
-  }, [setPlayheadMs]);
+  const handleSeek = useCallback(
+    (h: Highlight) => {
+      setPlayheadMs(h.startTime * MS_PER_SECOND);
+    },
+    [setPlayheadMs]
+  );
 
   return (
     <div className={styles.container}>
@@ -94,7 +96,10 @@ const Highlights: React.FC<HighlightsProps> = ({ videoInfo, defaultExpanded: _de
           <div className={styles.controlGroup}>
             <span className={styles.controlLabel}>阈值</span>
             <Slider
-              min={1.0} max={3.0} step={0.1} value={threshold}
+              min={1.0}
+              max={3.0}
+              step={0.1}
+              value={threshold}
               onValueChange={handleThresholdChange}
               className={styles.slider}
               disabled={loading}
@@ -103,7 +108,10 @@ const Highlights: React.FC<HighlightsProps> = ({ videoInfo, defaultExpanded: _de
           <div className={styles.controlGroup}>
             <span className={styles.controlLabel}>Top</span>
             <Slider
-              min={3} max={30} step={1} value={topN}
+              min={3}
+              max={30}
+              step={1}
+              value={topN}
               onValueChange={handleTopNChange}
               className={styles.slider}
               disabled={loading}
@@ -152,7 +160,10 @@ const Highlights: React.FC<HighlightsProps> = ({ videoInfo, defaultExpanded: _de
                 role="listitem"
               >
                 <div className={styles.itemHeader}>
-                  <span className={styles.timecode} aria-label={`开始时间 ${formatTime(h.startTime)}`}>
+                  <span
+                    className={styles.timecode}
+                    aria-label={`开始时间 ${formatTime(h.startTime)}`}
+                  >
                     {formatTime(h.startTime)}
                   </span>
                   <div className={styles.scoreGroup}>
@@ -185,7 +196,10 @@ const Highlights: React.FC<HighlightsProps> = ({ videoInfo, defaultExpanded: _de
                 <button
                   type="button"
                   className={styles.seekBtn}
-                  onClick={(e) => { e.stopPropagation(); handleSeek(h); }}
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleSeek(h);
+                  }}
                   aria-label="定位到此高光"
                 >
                   <Crosshair size={12} /> 定位
@@ -201,4 +215,3 @@ const Highlights: React.FC<HighlightsProps> = ({ videoInfo, defaultExpanded: _de
 
 export { Highlights };
 export type { Highlight, HighlightsProps };
-

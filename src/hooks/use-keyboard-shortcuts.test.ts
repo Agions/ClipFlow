@@ -248,9 +248,8 @@ describe('useKeyboardShortcuts', () => {
     it('picks up enabled changes via the ref', () => {
       const onPlayPause = vi.fn();
       const { rerender } = renderHook(
-        ({ enabled }: { enabled: boolean }) =>
-          useKeyboardShortcuts({ onPlayPause, enabled }),
-        { initialProps: { enabled: false } },
+        ({ enabled }: { enabled: boolean }) => useKeyboardShortcuts({ onPlayPause, enabled }),
+        { initialProps: { enabled: false } }
       );
       fireKey({ key: ' ' });
       expect(onPlayPause).not.toHaveBeenCalled();
@@ -305,9 +304,7 @@ describe('useKeyboardShortcuts', () => {
     });
 
     it('does not call preventDefault when preventDefault=false', () => {
-      renderHook(() =>
-        useKeyboardShortcuts({ onPlayPause: vi.fn(), preventDefault: false }),
-      );
+      renderHook(() => useKeyboardShortcuts({ onPlayPause: vi.fn(), preventDefault: false }));
       const ev = fireKey({ key: ' ' });
       expect(ev.defaultPrevented).toBe(false);
     });
@@ -337,6 +334,41 @@ describe('useKeyboardShortcuts', () => {
     unmount();
     fireKey({ key: ' ' });
     expect(onPlayPause).not.toHaveBeenCalled();
+  });
+
+  // ─── 修饰键严格匹配（matchKey L119/L120/L122 truthy arms）───
+  describe('modifier strict matching', () => {
+    it('does not trigger Space when Ctrl is held but not required (L119)', () => {
+      const onPlayPause = vi.fn();
+      renderHook(() => useKeyboardShortcuts({ onPlayPause }));
+      // Space has shortcut.ctrl=undefined; sending ctrl+Space must NOT trigger
+      fireKey({ key: ' ', ctrl: true });
+      expect(onPlayPause).not.toHaveBeenCalled();
+    });
+
+    it('does not trigger Space when Meta is held but not required (L120)', () => {
+      const onPlayPause = vi.fn();
+      renderHook(() => useKeyboardShortcuts({ onPlayPause }));
+      // Space has shortcut.meta=undefined; sending meta+Space must NOT trigger
+      fireKey({ key: ' ', meta: true });
+      expect(onPlayPause).not.toHaveBeenCalled();
+    });
+
+    it('does not trigger Space when Alt is held but not required (L122)', () => {
+      const onPlayPause = vi.fn();
+      renderHook(() => useKeyboardShortcuts({ onPlayPause }));
+      // Space has shortcut.alt=undefined; sending alt+Space must NOT trigger
+      fireKey({ key: ' ', alt: true });
+      expect(onPlayPause).not.toHaveBeenCalled();
+    });
+
+    it('does not trigger Space when Shift is held but not required (sanity for L121)', () => {
+      const onPlayPause = vi.fn();
+      renderHook(() => useKeyboardShortcuts({ onPlayPause }));
+      // Space has shortcut.shift=undefined; sending shift+Space must NOT trigger
+      fireKey({ key: ' ', shift: true });
+      expect(onPlayPause).not.toHaveBeenCalled();
+    });
   });
 
   // ─── 帮助文档导出 ──────────────────────────────────

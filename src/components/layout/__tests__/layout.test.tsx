@@ -7,7 +7,7 @@
  * - main content area
  * - ShortcutOverlay trigger
  */
-import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Layout from '../layout';
@@ -45,9 +45,17 @@ vi.mock('react-router-dom', async () => {
 
 // Mock ShortcutOverlay — we only verify the trigger behavior
 vi.mock('@/components/shortcut-overlay', () => ({
-  ShortcutOverlay: ({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) => (
+  ShortcutOverlay: ({
+    open,
+    onOpenChange,
+  }: {
+    open: boolean;
+    onOpenChange: (v: boolean) => void;
+  }) => (
     <div data-testid="shortcut-overlay" data-open={open}>
-      <button data-testid="close-overlay" onClick={() => onOpenChange(false)}>close</button>
+      <button data-testid="close-overlay" onClick={() => onOpenChange(false)}>
+        close
+      </button>
     </div>
   ),
 }));
@@ -58,7 +66,7 @@ const renderWithRouter = (initialPath: string) =>
       <Layout>
         <div data-testid="main-child">child content</div>
       </Layout>
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 
 describe('Layout', () => {

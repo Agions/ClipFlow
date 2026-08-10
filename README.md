@@ -13,8 +13,12 @@ SPDX-License-Identifier: MIT
 [![Rust 1.77+](https://img.shields.io/badge/Rust-1.77+-DEA584?logo=rust&logoColor=black)](https://www.rust-lang.org/)
 [![Version](https://img.shields.io/badge/version-2.2.0-brightgreen.svg)](CHANGELOG.md)
 [![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/Agions/story-fab/actions)
-[![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen.svg)](https://github.com/Agions/story-fab/actions)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Coverage](https://img.shields.io/badge/coverage-19%25-red.svg)](coverage/index.html)
+
+> 📊 **真实覆盖率 19%**（stage 分阶段提升至 80%：M1=25% → M2=30% → M3=50% → M3.5=65% → M4=80%）
+> 来源：`coverage/index.html`（`npm run coverage` 本地生成）
+> 详细说明见 [`docs/NAMING_DD.md`](docs/NAMING_DD.md)（命名尽职调查）
+> [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 [📖 在线文档](https://agions.github.io/story-fab/) · [🔄 更新日志](CHANGELOG.md)
 
@@ -22,15 +26,15 @@ SPDX-License-Identifier: MIT
 
 ## 📋 项目概览
 
-| 指标 | 数值 |
-|------|------|
-| **前端组件** | 41+ 组件目录 |
-| **Tauri 命令** | 61 个 IPC 命令 |
-| **业务服务** | 13 个模块 |
-| **Rust 代码** | 27,000+ 行 |
-| **测试覆盖** | 98%+ |
-| **构建产物** | 1.3MB |
-| **支持平台** | Windows / macOS / Linux |
+| 指标           | 数值                    |
+| -------------- | ----------------------- |
+| **前端组件**   | 41+ 组件目录            |
+| **Tauri 命令** | 61 个 IPC 命令          |
+| **业务服务**   | 13 个模块               |
+| **Rust 代码**  | 27,000+ 行              |
+| **测试覆盖**   | **19%** （目标 80%）    |
+| **构建产物**   | 1.3MB                   |
+| **支持平台**   | Windows / macOS / Linux |
 
 ---
 
@@ -40,14 +44,14 @@ StoryFab 是一款革命性的桌面视频创作工具，将 **AI 智能分析**
 
 ### 🎯 核心优势
 
-| 特性 | 传统方案 | StoryFab |
-|------|----------|----------|
-| **隐私保护** | 视频上传云端 | ✅ 100% 本地处理 |
-| **AI 解说** | 手动编写脚本 | ✅ 5步Agent Pipeline自动生成 |
-| **字幕生成** | 在线转写服务 | ✅ 本地Whisper离线转写 |
-| **配音合成** | 付费配音员 | ✅ Edge TTS + Azure TTS多种音色 |
-| **工作流** | 多软件切换 | ✅ 一站式完成全链路 |
-| **成本** | 订阅制收费 | ✅ 完全开源免费 |
+| 特性         | 传统方案     | StoryFab                        |
+| ------------ | ------------ | ------------------------------- |
+| **隐私保护** | 视频上传云端 | ✅ 100% 本地处理                |
+| **AI 解说**  | 手动编写脚本 | ✅ 5步Agent Pipeline自动生成    |
+| **字幕生成** | 在线转写服务 | ✅ 本地Whisper离线转写          |
+| **配音合成** | 付费配音员   | ✅ Edge TTS + Azure TTS多种音色 |
+| **工作流**   | 多软件切换   | ✅ 一站式完成全链路             |
+| **成本**     | 订阅制收费   | ✅ 完全开源免费                 |
 
 ---
 
@@ -57,12 +61,12 @@ StoryFab 是一款革命性的桌面视频创作工具，将 **AI 智能分析**
 
 支持 Windows、macOS、Linux 三大平台，选择对应架构下载即可：
 
-| 平台 | 架构 | 下载链接 |
-|------|------|----------|
-| **Windows** | x64 | [下载安装包](https://github.com/Agions/story-fab/releases) |
-| **macOS** | Apple Silicon | [下载DMG](https://github.com/Agions/story-fab/releases) |
-| **macOS** | Intel | [下载DMG](https://github.com/Agions/story-fab/releases) |
-| **Linux** | x64 | [下载AppImage](https://github.com/Agions/story-fab/releases) |
+| 平台        | 架构          | 下载链接                                                     |
+| ----------- | ------------- | ------------------------------------------------------------ |
+| **Windows** | x64           | [下载安装包](https://github.com/Agions/story-fab/releases)   |
+| **macOS**   | Apple Silicon | [下载DMG](https://github.com/Agions/story-fab/releases)      |
+| **macOS**   | Intel         | [下载DMG](https://github.com/Agions/story-fab/releases)      |
+| **Linux**   | x64           | [下载AppImage](https://github.com/Agions/story-fab/releases) |
 
 > 💡 **首次启动**会自动下载 FFmpeg 和 Whisper 二进制，请确保网络连接正常。
 
@@ -86,6 +90,7 @@ npm run tauri -- build
 ```
 
 **前置要求：**
+
 - Node.js ≥ 18
 - npm / pnpm
 - Rust ≥ 1.77 ([安装指南](https://www.rust-lang.org/tools/install))
@@ -98,23 +103,28 @@ npm run tauri -- build
 StoryFab 提供两种专业工作流，满足不同创作场景：
 
 ### 📝 剪辑模式
+
 **适用场景**：直播回放、会议记录、游戏集锦、教学视频
 
 **核心能力：**
+
 - 🤖 AI 自动识别高光时刻
 - ✂️ 智能切片和剪辑
 - 📐 多比例导出（9:16 / 1:1 / 16:9 / 4:5 / 21:9）
 - 🎞️ 硬字幕烧录 + 软字幕双轨
 
 **典型工作流：**
+
 ```
 导入视频 → AI高光检测 → 手动微调 → 选择比例 → 导出成片
 ```
 
 ### 🎭 解说模式
+
 **适用场景**：短剧解说、电影影评、综艺节目、游戏剧情
 
 **核心能力：**
+
 - 🧠 **Director Agent** - 多轮对话式节奏策划
 - 📝 **Visual Agent** - 智能分镜设计
 - ✍️ **Narration Agent** - 自动生成解说文案
@@ -123,6 +133,7 @@ StoryFab 提供两种专业工作流，满足不同创作场景：
 - 🎬 一键生成完整解说视频
 
 **典型工作流：**
+
 ```
 导入视频 → Director策划 → 5步Agent Pipeline → TTS配音 → 字幕烧录 → 导出
 ```
@@ -134,26 +145,32 @@ StoryFab 提供两种专业工作流，满足不同创作场景：
 ## 🌟 核心特性
 
 ### 🤖 10+ 家 LLM 提供商
+
 支持全球主流 AI 模型，灵活切换：
+
 - **国际**：OpenAI (GPT-4o)、Anthropic (Claude 3.5)、Google (Gemini)
 - **国产**：Alibaba (Qwen)、ZhipuAI (GLM)、iFlytek (Spark)、DeepSeek、Moonshot (Kimi)
 - **本地**：Ollama 本地部署 + Custom API 自定义接入
 
 ### 🗣️ 专业 TTS 配音
+
 - **Edge TTS**：微软 Edge 免费引擎，几十种音色
 - **Azure TTS**：企业级语音服务，高质量输出
 
 ### 🎙️ 本地 Whisper 转写
+
 - 基于 `faster-whisper` 的离线字幕生成
 - 6 档模型可选（tiny / base / small / medium / large-v2 / large-v3）
 - 完全离线运行，视频不上传云端
 
 ### ⚡ GPU 加速渲染
+
 - FFmpeg NVENC（NVIDIA）/ VideoToolbox（macOS）硬件编码
 - 硬字幕烧录 + 软字幕多语言轨道
 - 支持自定义分辨率、码率、格式
 
 ### 🔒 隐私至上
+
 - 所有视频处理在本地完成
 - 原始素材、字幕、脚本永不上传
 - 离线也可使用核心功能（TTS 需联网）
@@ -190,6 +207,7 @@ graph TB
 ```
 
 📊 **项目规模：**
+
 - 📁 41+ 前端组件目录
 - 🔧 61 个 Tauri IPC 命令
 - 🧠 13 个业务服务模块

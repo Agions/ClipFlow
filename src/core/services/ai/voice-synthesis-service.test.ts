@@ -14,6 +14,16 @@ vi.mock('@/core/tauri', () => ({
   },
 }));
 
+// Mock @tauri-apps/plugin-fs used by synthesizeToBuffer / synthesizeAndSave
+const mockReadFile = vi.fn();
+const mockWriteFile = vi.fn();
+const mockRemove = vi.fn();
+vi.mock('@tauri-apps/plugin-fs', () => ({
+  readFile: (...args: unknown[]) => mockReadFile(...args),
+  writeFile: (...args: unknown[]) => mockWriteFile(...args),
+  remove: (...args: unknown[]) => mockRemove(...args),
+}));
+
 import { tauri } from '@/core/tauri';
 import {
   BUILTIN_VOICES,
@@ -24,7 +34,9 @@ import {
 describe('VoiceSynthesisService', () => {
   beforeEach(() => {
     // Restore default mock implementations after vi.clearAllMocks() in other tests
-    vi.mocked(tauri.listTTSBackends).mockResolvedValue([{ id: 'edge', name: 'Edge TTS', voices: 12 }] as unknown as Awaited<ReturnType<typeof tauri.listTTSBackends>>);
+    vi.mocked(tauri.listTTSBackends).mockResolvedValue([
+      { id: 'edge', name: 'Edge TTS', voices: 12 },
+    ] as unknown as Awaited<ReturnType<typeof tauri.listTTSBackends>>);
     vi.mocked(tauri.checkTTSAvailable).mockResolvedValue(true);
     vi.mocked(tauri.synthesizeSpeech).mockResolvedValue('/tmp/audio.mp3');
   });
@@ -81,7 +93,7 @@ describe('VoiceSynthesisService', () => {
     });
 
     it('BUILTIN_VOICES includes multiple languages', () => {
-      const langs = new Set(BUILTIN_VOICES.map((v) => v.lang));
+      const langs = new Set(BUILTIN_VOICES.map(v => v.lang));
       expect(langs.has('zh-CN')).toBe(true);
       expect(langs.has('en')).toBe(true);
       expect(langs.has('ja')).toBe(true);
@@ -136,7 +148,7 @@ describe('VoiceSynthesisService', () => {
           voice: 'zh-CN-YunxiNeural',
           format: 'mp3',
           backend: 'edge',
-        }),
+        })
       );
       expect(result.audioPath).toBe('/tmp/audio.mp3');
       expect(result.text).toBe('你好世界');
@@ -150,13 +162,13 @@ describe('VoiceSynthesisService', () => {
           text: 'hi',
           voice: 'en-US-GuyNeural',
           speed: 1.5,
-        }),
+        })
       );
     });
 
     it('invokes onProgress callback with correct stages', async () => {
       const stages: string[] = [];
-      await voiceSynthesisService.synthesize('test', undefined, (p) => {
+      await voiceSynthesisService.synthesize('test', undefined, p => {
         stages.push(p.stage);
       });
       expect(stages).toEqual(['queued', 'synthesizing', 'encoding', 'done']);
@@ -167,9 +179,9 @@ describe('VoiceSynthesisService', () => {
 
       const stages: string[] = [];
       await expect(
-        voiceSynthesisService.synthesize('test', undefined, (p) => {
+        voiceSynthesisService.synthesize('test', undefined, p => {
           stages.push(p.stage);
-        }),
+        })
       ).rejects.toThrow('synth failed');
 
       expect(stages).toContain('error');
@@ -185,6 +197,95 @@ describe('VoiceSynthesisService', () => {
   describe('preview (Web Speech API)', () => {
     it('does not throw in jsdom environment', () => {
       expect(() => voiceSynthesisService.preview('测试')).not.toThrow();
+    });
+  });
+
+  describe('synthesizeToBuffer', () => {
+    beforeEach(() => {
+      // Provide a fake Uint8Array with a real underlying ArrayBuffer
+      const fakeBytes = new Uint8Array([1, 2, 3, 4]);
+      mockReadFile.mockResolvedValue(fakeBytes);
+      mockWriteFile.mockResolvedValue(undefined);
+      mockRemove.mockResolvedValue(undefined);
+    });
+
+    it('synthesizes and returns a buffer + mp3 content-type for default mp3 format', async () => {
+      const result = await voiceSynthesisService.synthesizeToBuffer('hi');
+      expect(tauri.synthesizeSpeech).toHaveBeenCalled();
+      expect(mockReadFile).toHaveBeenCalledWith('/tmp/audio.mp3');
+      expect(result.buffer).toBeInstanceOf(ArrayBuffer);
+      expect(result.contentType).toBe('audio/mpeg');
+      expect(result.duration).toBe(0);
+    });
+
+    it('returns audio/wav content-type when format=wav', async () => {
+      const result = await voiceSynthesisService.synthesizeToBuffer('hi', { format: 'wav' });
+      expect(result.contentType).toBe('audio/wav');
+    });
+
+    it('returns audio/ogg content-type when format=ogg', async () => {
+      const result = await voiceSynthesisService.synthesizeToBuffer('hi', { format: 'ogg' });
+      expect(result.contentType).toBe('audio/ogg');
+    });
+
+    it('passes options through to synthesize (merged with config)', async () => {
+      await voiceSynthesisService.synthesizeToBuffer('hi', { voice: 'en-US-GuyNeural' });
+      expect(tauri.synthesizeSpeech).toHaveBeenCalledWith(
+        expect.objectContaining({ voice: 'en-US-GuyNeural' })
+      );
+    });
+
+    it('invokes onProgress callback chain', async () => {
+      const stages: string[] = [];
+      await voiceSynthesisService.synthesizeToBuffer('test', undefined, p => {
+        stages.push(p.stage);
+      });
+      expect(stages).toEqual(['queued', 'synthesizing', 'encoding', 'done']);
+    });
+  });
+
+  describe('synthesizeAndSave', () => {
+    beforeEach(() => {
+      const fakeBytes = new Uint8Array([5, 6, 7, 8]);
+      mockReadFile.mockResolvedValue(fakeBytes);
+      mockWriteFile.mockResolvedValue(undefined);
+      mockRemove.mockResolvedValue(undefined);
+    });
+
+    it('writes synthesized audio to the target path and removes the temp file', async () => {
+      const result = await voiceSynthesisService.synthesizeAndSave('hi', '/out/final.mp3');
+      expect(tauri.synthesizeSpeech).toHaveBeenCalled();
+      expect(mockReadFile).toHaveBeenCalledWith('/tmp/audio.mp3');
+      expect(mockWriteFile).toHaveBeenCalledWith('/out/final.mp3', expect.any(Uint8Array));
+      expect(mockRemove).toHaveBeenCalledWith('/tmp/audio.mp3');
+      expect(result.audioPath).toBe('/out/final.mp3');
+    });
+
+    it('passes options through to synthesize', async () => {
+      await voiceSynthesisService.synthesizeAndSave('hi', '/out/a.wav', {
+        voice: 'en-US-GuyNeural',
+        format: 'wav',
+      });
+      expect(tauri.synthesizeSpeech).toHaveBeenCalledWith(
+        expect.objectContaining({ voice: 'en-US-GuyNeural', format: 'wav' })
+      );
+    });
+
+    it('invokes onProgress callback chain', async () => {
+      const stages: string[] = [];
+      await voiceSynthesisService.synthesizeAndSave('test', '/out/a.mp3', undefined, p => {
+        stages.push(p.stage);
+      });
+      expect(stages).toEqual(['queued', 'synthesizing', 'encoding', 'done']);
+    });
+
+    it('propagates error when tauri.synthesizeSpeech fails', async () => {
+      vi.mocked(tauri.synthesizeSpeech).mockRejectedValueOnce(new Error('save failed'));
+      await expect(voiceSynthesisService.synthesizeAndSave('hi', '/out/a.mp3')).rejects.toThrow(
+        'save failed'
+      );
+      expect(mockWriteFile).not.toHaveBeenCalled();
+      expect(mockRemove).not.toHaveBeenCalled();
     });
   });
 });

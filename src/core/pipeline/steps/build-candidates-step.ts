@@ -10,13 +10,13 @@
  * 3. 过长的场景自动拆分
  */
 
-import { visionService } from '../../services/ai/vision-service';
-import type { VideoInfo, VideoAnalysis } from '@/types';
+import type { HighlightSegment, VideoInfo, VideoAnalysis } from '@/types';
 import type { CandidateClip } from '../../services/pipeline/clip-pipeline/clip-scorer';
 import type { ASRSegment } from '../../services/asr/asr-types';
 import { createStep, type Step, reportProgress } from '../step';
 import { logger } from '@/shared/utils/logging';
 import { tauri } from '../../../core/tauri';
+import { highlightDetector } from '../../services/video/highlight-detector';
 
 // ============================================================
 // Step Metadata
@@ -37,9 +37,9 @@ export interface BuildCandidatesInput {
   analysis: VideoAnalysis;
   /** ASR 分段结果（含时间戳），用于精确提取片段字幕 */
   asrSegments?: ASRSegment[];
-  maxHighlights?: number;   // 最多高光候选，默认 15
-  minDuration?: number;      // 最短片段秒数，默认 10
-  maxDuration?: number;     // 最长片段秒数，默认 120
+  maxHighlights?: number; // 最多高光候选，默认 15
+  minDuration?: number; // 最短片段秒数，默认 10
+  maxDuration?: number; // 最长片段秒数，默认 120
 }
 
 export type BuildCandidatesOutput = CandidateClip[];
@@ -48,9 +48,17 @@ export type BuildCandidatesOutput = CandidateClip[];
 // Step Implementation
 // ============================================================
 
-export const buildCandidatesStep: Step<BuildCandidatesInput, BuildCandidatesOutput> =
-  createStep(STEP_META, async (input, _ctx, options) => {
-    const { videoInfo, analysis, asrSegments, maxHighlights = 15, minDuration = 10, maxDuration = 120 } = input;
+export const buildCandidatesStep: Step<BuildCandidatesInput, BuildCandidatesOutput> = createStep(
+  STEP_META,
+  async (input, _ctx, options) => {
+    const {
+      videoInfo,
+      analysis,
+      asrSegments,
+      maxHighlights = 15,
+      minDuration = 10,
+      maxDuration = 120,
+    } = input;
     const candidates: CandidateClip[] = [];
     const scenes = analysis?.scenes ?? [];
 
@@ -61,13 +69,15 @@ export const buildCandidatesStep: Step<BuildCandidatesInput, BuildCandidatesOutp
     const inRange = (s: number, e: number, seg: { start: number; end: number }) =>
       seg.start < e && seg.end > s;
 
-    // ── Stage 1: Rust 高光检测 ──────────────────────────────
-    const highlights = await visionService.detectHighlights(videoInfo, {
-      topN: maxHighlights,
-      minDurationMs: 500,
-      detectScene: true,
-      threshold: 1.5,
-    });
+    // ── Stage 1: Rust 高光检测（PR-1.3a：迁移到 highlightDetector） ──
+    const highlights: HighlightSegment[] = await highlightDetector.detectHighlights(
+      videoInfo.path,
+      {
+        topN: maxHighlights,
+        minDurationMs: 500,
+        threshold: 1.5,
+      }
+    );
 
     logger.debug(`[BuildCandidatesStep] Rust 高光检测返回 ${highlights.length} 个片段`);
 
@@ -83,7 +93,12 @@ export const buildCandidatesStep: Step<BuildCandidatesInput, BuildCandidatesOutp
       });
     }
 
-    reportProgress(options?.onProgress, STEP_META.name, 0.6, `高光候选 ${highlights.length} 个，补充场景边界...`);
+    reportProgress(
+      options?.onProgress,
+      STEP_META.name,
+      0.6,
+      `高光候选 ${highlights.length} 个，补充场景边界...`
+    );
 
     // ── Stage 2: 场景边界补充候选 ──────────────────────────
     if (scenes.length > 0) {
@@ -99,11 +114,18 @@ export const buildCandidatesStep: Step<BuildCandidatesInput, BuildCandidatesOutp
 
         // 时长超限 → 拆分
         if (duration > maxDuration) {
-          const subClips = splitLongScene(scene.startTime, scene.endTime, maxDuration * 0.6, maxDuration);
-          candidates.push(...subClips.map(sc => ({
-            ...sc,
-            transcript: getCachedTranscript(asrSegments, sc.startTime, sc.endTime),
-          })));
+          const subClips = splitLongScene(
+            scene.startTime,
+            scene.endTime,
+            maxDuration * 0.6,
+            maxDuration
+          );
+          candidates.push(
+            ...subClips.map(sc => ({
+              ...sc,
+              transcript: getCachedTranscript(asrSegments, sc.startTime, sc.endTime),
+            }))
+          );
           continue;
         }
 
@@ -119,19 +141,22 @@ export const buildCandidatesStep: Step<BuildCandidatesInput, BuildCandidatesOutp
     reportProgress(options?.onProgress, STEP_META.name, 0.8, `共 ${candidates.length} 个候选片段`);
 
     return candidates;
-  });
+  }
+);
 
 // ============================================================
 // Helpers
 // ============================================================
 
 /** 调用 Rust detect_smart_segments 获取静音区间（秒） */
-async function fetchSilenceSegments(videoPath: string): Promise<Array<{ start: number; end: number }>> {
+async function fetchSilenceSegments(
+  videoPath: string
+): Promise<Array<{ start: number; end: number }>> {
   try {
-    const result = await tauri.detectSmartSegments(videoPath, {
+    const result = (await tauri.detectSmartSegments(videoPath, {
       min_silence_duration_ms: 500,
       threshold_db: -40,
-    }) as { silence_segments?: Array<{ start: number; end: number }> };
+    })) as { silence_segments?: Array<{ start: number; end: number }> };
     return result.silence_segments ?? [];
   } catch {
     logger.debug('[BuildCandidatesStep] detect_smart_segments 不可用，返回空静音段');
@@ -179,7 +204,7 @@ const transcriptCache = new LRUCache<string, string>(200);
 function getCachedTranscript(
   asrSegments: ASRSegment[] | undefined,
   startTime: number,
-  endTime: number,
+  endTime: number
 ): string {
   const key = `${startTime.toFixed(2)}_${endTime.toFixed(2)}`;
   const cached = transcriptCache.get(key);
@@ -193,7 +218,7 @@ function splitLongScene(
   start: number,
   end: number,
   _minPart: number,
-  maxPart: number,
+  maxPart: number
 ): CandidateClip[] {
   const clips: CandidateClip[] = [];
   let cursor = start;
@@ -215,7 +240,7 @@ function splitLongScene(
 function extractSceneTranscript(
   asrSegments: ASRSegment[] | undefined,
   startTime: number,
-  endTime: number,
+  endTime: number
 ): string {
   if (!asrSegments || asrSegments.length === 0) return '';
   const texts: string[] = [];
