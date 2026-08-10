@@ -12,6 +12,8 @@
 import type { VideoMetadata, Scene, SubtitleEntry, HighlightSegment } from '@/types/media';
 import type { DirectorPlan } from './plan';
 import type { ExportSettings } from '@/types/export';
+import type { IntentConfig } from './intent';
+import { DEFAULT_INTENT_CONFIG } from './intent';
 
 // ─── 工程状态 ───
 
@@ -61,6 +63,8 @@ export interface RenderResult {
 export interface Production {
   id: string;
   name: string;
+  /** v3 创作意图（驱动 L0-L2 各阶段策略） */
+  intent: IntentConfig;
   source: ProductionSource;
   /** L0 产物：剧情时间线（可空 = 尚未分析） */
   storyline: import('./storyline').Storyline | null;
@@ -87,7 +91,7 @@ export interface Production {
 /**
  * 创建新的解说工程
  *
- * @param input 源视频信息与工程名
+ * @param input 源视频信息与工程名（intent 可选，默认 short-drama）
  * @returns 初始 Production（status = draft，无任何产物）
  */
 export function createProduction(input: {
@@ -96,11 +100,13 @@ export function createProduction(input: {
   videoPath: string;
   durationSecs: number;
   metadata: VideoMetadata;
+  intent?: IntentConfig;
 }): Production {
   const now = new Date().toISOString();
   return {
     id: input.id ?? `production_${Date.now()}`,
     name: input.name,
+    intent: input.intent ?? DEFAULT_INTENT_CONFIG,
     source: {
       videoPath: input.videoPath,
       durationSecs: input.durationSecs,
@@ -116,6 +122,20 @@ export function createProduction(input: {
     status: 'draft',
     createdAt: now,
     updatedAt: now,
+  };
+}
+
+/**
+ * 修改工程的 intent（不可变更新，刷新 updatedAt）
+ *
+ * 注意：不修改 status（intent 变化不影响产物进度），但下游 step 在
+ * 重新执行时会读取新 intent 调整策略。
+ */
+export function withIntent(production: Production, intent: IntentConfig): Production {
+  return {
+    ...production,
+    intent,
+    updatedAt: new Date().toISOString(),
   };
 }
 

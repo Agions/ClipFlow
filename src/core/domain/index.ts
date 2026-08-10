@@ -3,7 +3,8 @@
  *
  * 分层说明：
  * - 本层是纯类型 + 纯函数（零框架依赖），供 stores / features / services 引用。
- * - 与旧架构的关系：本层为「新架构」的真源，旧 workflow.ts 将在 M5 阶段下线。
+ * - Stage 12.1 落地 v3 完整领域模型：Intent / Project(Production) / Storyline
+ *   / Plan / Script / Voice / Job / Assembly / Platform。
  */
 
 export * from './production';
@@ -12,3 +13,6 @@ export * from './plan';
 export * from './script';
 export * from './job';
 export * from './voice';
+export * from './intent';
+export * from './assembly';
+export * from './platform';
