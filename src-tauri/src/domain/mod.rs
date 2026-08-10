@@ -11,6 +11,7 @@ pub mod intent;
 pub mod job;
 pub mod platform;
 pub mod production;
+pub mod ssml;
 pub mod storyline;
 
 pub use assembly::{create_assembly, is_assembly_renderable, AssemblyKit, AudioSegment, AudioTrack, AudioTrackType, SubtitleCue, SubtitleTrack, VideoClip, VideoTrack};
