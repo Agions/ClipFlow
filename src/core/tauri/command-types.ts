@@ -11,6 +11,33 @@
 import type { VideoMetadataResult } from '@/types';
 import type { SubtitleTrack } from '@/types';
 
+// Project DTO（与 Rust ProjectDto 对齐，Stage 12.5）
+export type ProjectDto = {
+  id: string;
+  name: string;
+  intent: {
+    intent: string;
+    targetDurationSecs: number;
+    language: string;
+    audience: string;
+    toneIntensity: number;
+  };
+  videoPath: string;
+  subtitlePath: string | null;
+  createdAt: string;
+  updatedAt: string;
+  latestJob: {
+    id: string;
+    projectId: string;
+    phase: string;
+    phaseStatus: Record<string, string>;
+    progressPct: number;
+    error: { phase: string; message: string } | null;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
+};
+
 // ============================================================
 // 命令名称联合类型（与 TauriCommand 常量的值一一对应）
 // ============================================================
@@ -53,6 +80,11 @@ export type TauriCommandName =
   | 'list_project_files'
   | 'list_app_data_files'
   | 'check_app_data_directory'
+  | 'project_create'
+  | 'project_list'
+  | 'project_load'
+  | 'project_save'
+  | 'project_delete'
   | 'window_minimize'
   | 'window_maximize'
   | 'window_close'
@@ -283,6 +315,32 @@ type CommandNameToDefs = {
   };
   list_app_data_files: { input: { directory: string }; output: string[] };
   check_app_data_directory: { input: Record<string, never>; output: string };
+
+  // Project (v3 · SQLite-backed · Stage 12.5)
+  project_create: {
+    input: {
+      id?: string;
+      name: string;
+      videoPath: string;
+      durationSecs: number;
+      metadata: Record<string, unknown>;
+      intent?: { intent: string; targetDurationSecs: number; language: string; audience: string; toneIntensity: number };
+    };
+    output: ProjectDto;
+  };
+  project_list: { input: Record<string, never>; output: ProjectDto[] };
+  project_load: { input: { id: string }; output: ProjectDto };
+  project_save: {
+    input: {
+      id: string;
+      name: string;
+      intent: { intent: string; targetDurationSecs: number; language: string; audience: string; toneIntensity: number };
+      videoPath: string;
+      subtitlePath: string | null;
+    };
+    output: ProjectDto;
+  };
+  project_delete: { input: { id: string }; output: null };
 
   window_minimize: { input: Record<string, never>; output: Record<string, never> };
   window_maximize: { input: Record<string, never>; output: Record<string, never> };

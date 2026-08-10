@@ -1,9 +1,7 @@
 /**
- * Tauri API Surface — 9 个方法分桶的统一导出
+ * Tauri API Surface — 9 个方法分桶的统一导出（Stage 12.5 v3 重写）
  *
- * Stage 12 重构：删除 commentary 分桶（v2 整套 Director + Script + TTS 编排，v3 重写）
- *
- * 唯一约束：所有分桶的方法名必须唯一（madge + 静态检查已确认）。
+ * Stage 12.5：project 分桶改为 SQLite-backed（替代 v2 文件存储）
  * 未来新增方法时直接在对应分桶添加，tauri 自动包含。
  */
 
@@ -20,7 +18,6 @@ import { aiScript } from './methods/ai-script';
 export const tauri = {
   // ─── FFmpeg / Video analysis ──────────────────────────────
   ...videoAnalysis,
-  getExportDir: project.getExportDir,
 
   // ─── Highlight detection ──────────────────────────────────
   ...highlightDetection,
@@ -35,16 +32,11 @@ export const tauri = {
   ...tts,
   ...mixAudio,
 
-  // ─── File operations ──────────────────────────────────────
+  // ─── File operations + getExportDir ───────────────────────
   ...fileOperations,
 
-  // ─── Project ──────────────────────────────────────────────
-  saveProjectFile: project.saveProjectFile,
-  loadProjectFile: project.loadProjectFile,
-  deleteProjectFile: project.deleteProjectFile,
-  listProjectFiles: project.listProjectFiles,
-  listAppDataFiles: project.listAppDataFiles,
-  checkAppDataDirectory: project.checkAppDataDirectory,
+  // ─── Project (v3 · SQLite-backed) ─────────────────────────
+  ...project,
 
   // ─── AI Script ────────────────────────────────────────────
   ...aiScript,

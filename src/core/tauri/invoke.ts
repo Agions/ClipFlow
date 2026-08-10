@@ -42,10 +42,14 @@ export const TauriCommand = {
   VOICE_DISCOVERY: 'voice_discovery',
   GET_FILE_SIZE: 'get_file_size',
 
-  PROJECT_LOAD: 'load_project_file',
-  PROJECT_SAVE: 'save_project_file',
-  PROJECT_DELETE: 'delete_project_file',
-  PROJECT_LIST: 'list_project_files',
+  // Project (v3 · SQLite-backed · Stage 12.5) — 替代 v2 文件存储
+  PROJECT_CREATE: 'project_create',
+  PROJECT_LIST: 'project_list',
+  PROJECT_LOAD: 'project_load',
+  PROJECT_SAVE: 'project_save',
+  PROJECT_DELETE: 'project_delete',
+
+  // 旧 v2 文件存储命令（已删除，但留 enum 以兼容 v2 IPC 客户端）
   LIST_APP_DATA_FILES: 'list_app_data_files',
   CHECK_APP_DATA_DIR: 'check_app_data_directory',
 

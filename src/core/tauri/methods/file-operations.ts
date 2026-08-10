@@ -31,4 +31,9 @@ export const fileOperations = {
   async getFileSize(path: string): Promise<number> {
     return invoke(TauriCommand.GET_FILE_SIZE, { path }) as Promise<number>;
   },
+
+  /** 获取默认导出目录 */
+  async getExportDir(): Promise<string> {
+    return invoke(TauriCommand.GET_EXPORT_DIR, undefined) as Promise<string>;
+  },
 };
