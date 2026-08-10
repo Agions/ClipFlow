@@ -111,6 +111,8 @@ export type TauriCommandName =
   | 'project_delete'
   | 'list_platform_presets'
   | 'platform_export'
+  | 'assembly_kit_save'
+  | 'assembly_kit_load'
   | 'pipeline_start_phase'
   | 'pipeline_approve_phase'
   | 'pipeline_retry_phase'
@@ -429,6 +431,21 @@ type CommandNameToDefs = {
       fileSize: number;
       platform: import('../domain/platform').PlatformPreset;
     };
+  };
+
+  // AssemblyKit 持久化 (Stage 16.3) — 整段 JSON 存 SQLite
+  assembly_kit_save: {
+    input: { projectId: string; assemblyJson: string };
+    output: { projectId: string; createdAt: number; updatedAt: number };
+  };
+  assembly_kit_load: {
+    input: { projectId: string };
+    output: {
+      projectId: string;
+      assemblyJson: string;
+      createdAt: number;
+      updatedAt: number;
+    } | null;
   };
 
   // Pipeline (Stage 13) — 5 阶段流水线 IPC

@@ -40,6 +40,7 @@ pub use commands::render::{
 pub use commands::export_state::cancel_export;
 pub use commands::file_ops::{clean_temp_file, open_file, voice_discovery};
 pub use commands::platform::{list_platform_presets, platform_export, PlatformExportInput, PlatformExportResult};
+pub use commands::assembly::{assembly_kit_save, assembly_kit_load, AssemblyKitMeta, LoadedAssemblyKit};
 pub use video::processor::VideoProcessor;
 pub use video::ffmpeg_cmd::cut_video;
 pub use video::mix_audio::{mix_audio, MixAudioInput};
@@ -108,6 +109,9 @@ pub fn run() {
             // Platform presets + 平台导出（Stage 15.2）
             list_platform_presets,
             platform_export,
+            // AssemblyKit 持久化（Stage 16.3）
+            assembly_kit_save,
+            assembly_kit_load,
             // Whisper subtitle transcription (transcribe_audio lives in
             // subtitle/transcribe.rs; check_faster_whisper /
             // list_whisper_models / download_whisper_model /

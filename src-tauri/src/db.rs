@@ -84,6 +84,12 @@ impl Db {
             self.record_migration(2)?;
         }
 
+        // 迁移 003：AssemblyKit 持久化（Stage 16.3）
+        if current < 3 {
+            self.migrate_003()?;
+            self.record_migration(3)?;
+        }
+
         Ok(())
     }
 
@@ -96,6 +102,12 @@ impl Db {
     fn migrate_002(&self) -> DbResult<()> {
         let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
         conn.execute_batch(MIGRATION_002)?;
+        Ok(())
+    }
+
+    fn migrate_003(&self) -> DbResult<()> {
+        let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
+        conn.execute_batch(MIGRATION_003)?;
         Ok(())
     }
 
@@ -430,6 +442,53 @@ impl Db {
             .query_row("SELECT COUNT(*) FROM tts_cache", [], |row| row.get(0))?;
         Ok(n)
     }
+
+    // ─── AssemblyKit 持久化（Stage 16.3） ──────────────────
+
+    /// 保存/更新 AssemblyKit（按 project_id 主键）
+    pub fn upsert_assembly_kit(&self, kit: &AssemblyKitRow) -> DbResult<()> {
+        let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
+        conn.execute(
+            "INSERT INTO assembly_kits (project_id, assembly_json, created_at, updated_at)
+             VALUES (?1, ?2, ?3, ?4)
+             ON CONFLICT(project_id) DO UPDATE SET
+                assembly_json=excluded.assembly_json,
+                updated_at=excluded.updated_at",
+            params![kit.project_id, kit.assembly_json, kit.created_at, kit.updated_at],
+        )?;
+        Ok(())
+    }
+
+    /// 加载 AssemblyKit（按 project_id）
+    pub fn get_assembly_kit(&self, project_id: &str) -> DbResult<Option<AssemblyKitRow>> {
+        let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
+        let row: Option<AssemblyKitRow> = conn
+            .query_row(
+                "SELECT project_id, assembly_json, created_at, updated_at
+                 FROM assembly_kits WHERE project_id = ?1",
+                params![project_id],
+                |row| {
+                    Ok(AssemblyKitRow {
+                        project_id: row.get(0)?,
+                        assembly_json: row.get(1)?,
+                        created_at: row.get(2)?,
+                        updated_at: row.get(3)?,
+                    })
+                },
+            )
+            .optional()?;
+        Ok(row)
+    }
+
+    /// 删除 AssemblyKit（项目删除时级联）
+    pub fn delete_assembly_kit(&self, project_id: &str) -> DbResult<()> {
+        let conn = self.conn.lock().map_err(|_| DbError::Mutex)?;
+        conn.execute(
+            "DELETE FROM assembly_kits WHERE project_id = ?1",
+            params![project_id],
+        )?;
+        Ok(())
+    }
 }
 
 // ─── 行模型（DB row → Rust struct） ────────────────────────────
@@ -484,6 +543,16 @@ pub struct TtsCacheRow {
     pub created_at: i64,
     pub accessed_at: i64,
     pub access_count: i32,
+}
+
+/// AssemblyKit 持久化行（Stage 16.3）
+#[derive(Debug, Clone)]
+pub struct AssemblyKitRow {
+    pub project_id: String,
+    /// 完整 AssemblyKit JSON（避免拆列；AssemblyKit 结构可能演进）
+    pub assembly_json: String,
+    pub created_at: i64,
+    pub updated_at: i64,
 }
 
 // ─── 工具 ──────────────────────────────────────────────────────
@@ -579,6 +648,21 @@ CREATE INDEX idx_tts_cache_accessed_at ON tts_cache(accessed_at DESC);
 CREATE INDEX idx_tts_cache_created_at ON tts_cache(created_at);
 "#;
 
+// ─── 迁移 003：AssemblyKit 持久化（Stage 16.3） ───────────────
+
+const MIGRATION_003: &str = r#"
+-- 装配图：每个项目最多 1 个 AssemblyKit，存整段 JSON（结构可能演进）
+CREATE TABLE assembly_kits (
+    project_id TEXT PRIMARY KEY,
+    assembly_json TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_assembly_kits_updated_at ON assembly_kits(updated_at DESC);
+"#;
+
 // ─── 单元测试 ──────────────────────────────────────────────
 
 #[cfg(test)]
@@ -595,8 +679,8 @@ mod tests {
     #[test]
     fn open_runs_all_migrations() {
         let db = fresh_db();
-        // 001 (v3 完整 schema) + 002 (TTS 缓存)
-        assert_eq!(db.schema_version().unwrap(), 2);
+        // 001 (v3 完整 schema) + 002 (TTS 缓存) + 003 (AssemblyKit)
+        assert_eq!(db.schema_version().unwrap(), 3);
     }
 
     #[test]
@@ -773,5 +857,83 @@ mod tests {
         db.upsert_tts_cache(&cache_row("b", "/b.mp3", 2)).unwrap();
         db.upsert_tts_cache(&cache_row("c", "/c.mp3", 3)).unwrap();
         assert_eq!(db.tts_cache_count().unwrap(), 3);
+    }
+
+    // ─── AssemblyKit 持久化（Stage 16.3） ──────────────────
+
+    fn assembly_row(project_id: &str, json: &str) -> AssemblyKitRow {
+        AssemblyKitRow {
+            project_id: project_id.to_string(),
+            assembly_json: json.to_string(),
+            created_at: 1000,
+            updated_at: 2000,
+        }
+    }
+
+    fn ensure_project(db: &Db, id: &str) {
+        let p = ProjectRow {
+            id: id.to_string(),
+            name: "test".to_string(),
+            intent_json: "{}".to_string(),
+            video_path: "/v.mp4".to_string(),
+            subtitle_path: None,
+            created_at: 1,
+            updated_at: 1,
+        };
+        db.upsert_project(&p).unwrap();
+    }
+
+    #[test]
+    fn assembly_kit_upsert_then_get_round_trip() {
+        let db = fresh_db();
+        ensure_project(&db, "p1");
+        let row = assembly_row("p1", r#"{"id":"a1","videoTracks":[]}"#);
+        db.upsert_assembly_kit(&row).unwrap();
+
+        let got = db.get_assembly_kit("p1").unwrap().unwrap();
+        assert_eq!(got.project_id, "p1");
+        assert_eq!(got.assembly_json, r#"{"id":"a1","videoTracks":[]}"#);
+        assert_eq!(got.created_at, 1000);
+        assert_eq!(got.updated_at, 2000);
+    }
+
+    #[test]
+    fn assembly_kit_upsert_updates_json_and_timestamp() {
+        let db = fresh_db();
+        ensure_project(&db, "p1");
+        db.upsert_assembly_kit(&assembly_row("p1", "v1")).unwrap();
+        db.upsert_assembly_kit(&assembly_row("p1", "v2")).unwrap();
+
+        let got = db.get_assembly_kit("p1").unwrap().unwrap();
+        assert_eq!(got.assembly_json, "v2");
+        assert_eq!(got.created_at, 1000); // 不变
+        assert_eq!(got.updated_at, 2000);
+    }
+
+    #[test]
+    fn assembly_kit_get_missing_returns_none() {
+        let db = fresh_db();
+        assert!(db.get_assembly_kit("nonexistent").unwrap().is_none());
+    }
+
+    #[test]
+    fn assembly_kit_delete_removes_row() {
+        let db = fresh_db();
+        ensure_project(&db, "p1");
+        db.upsert_assembly_kit(&assembly_row("p1", "x")).unwrap();
+        assert!(db.get_assembly_kit("p1").unwrap().is_some());
+        db.delete_assembly_kit("p1").unwrap();
+        assert!(db.get_assembly_kit("p1").unwrap().is_none());
+    }
+
+    #[test]
+    fn assembly_kit_cascades_on_project_delete() {
+        let db = fresh_db();
+        ensure_project(&db, "p1");
+        db.upsert_assembly_kit(&assembly_row("p1", "x")).unwrap();
+
+        // 删 project → 应该级联删 assembly_kit
+        db.delete_project("p1").unwrap();
+        assert!(db.get_assembly_kit("p1").unwrap().is_none());
     }
 }

@@ -55,6 +55,10 @@ export const TauriCommand = {
   LIST_PLATFORM_PRESETS: 'list_platform_presets',
   PLATFORM_EXPORT: 'platform_export',
 
+  // AssemblyKit 持久化 (Stage 16.3)
+  ASSEMBLY_KIT_SAVE: 'assembly_kit_save',
+  ASSEMBLY_KIT_LOAD: 'assembly_kit_load',
+
   // Pipeline (v3 · 5 阶段流水线 · Stage 13) — 替代 v2 run_commentary_pipeline 黑盒
   PIPELINE_START_PHASE: 'pipeline_start_phase',
   PIPELINE_APPROVE_PHASE: 'pipeline_approve_phase',

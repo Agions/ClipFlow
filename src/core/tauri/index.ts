@@ -16,6 +16,7 @@ import { project } from './methods/project';
 import { aiScript } from './methods/ai-script';
 import { pipeline } from './methods/pipeline';
 import { platform } from './methods/platform';
+import { assembly } from './methods/assembly';
 
 export const tauri = {
   // ─── FFmpeg / Video analysis ──────────────────────────────
@@ -45,6 +46,9 @@ export const tauri = {
 
   // ─── Platform presets + 一键导出 (Stage 15.2) ───────────
   ...platform,
+
+  // ─── AssemblyKit 持久化 (Stage 16.3) ────────────────────
+  ...assembly,
 
   // ─── AI Script ────────────────────────────────────────────
   ...aiScript,

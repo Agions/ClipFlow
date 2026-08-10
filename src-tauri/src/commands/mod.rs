@@ -6,6 +6,7 @@
 //! `subtitle` transcription, `auto_save`, `llm`, `crash_recovery`,
 //! `export_state`, `ffprobe`, `file_ops`.
 pub mod ai;
+pub mod assembly;
 pub mod auto_save;
 pub mod crash_recovery;
 pub mod platform;
