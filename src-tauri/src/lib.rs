@@ -6,6 +6,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 pub mod binary;
 pub mod commands;
+pub mod db;
 pub mod domain;
 pub mod understanding;
 pub mod video;
