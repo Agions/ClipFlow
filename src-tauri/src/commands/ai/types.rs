@@ -74,6 +74,61 @@ pub struct SynthesizeSpeechOutput {
     pub duration_secs: f64,
 }
 
+// ─── TTS Batch（Stage 14.2） ──────────────────────────────────
+
+/// TTS Batch 单段输入
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TtsBatchSegmentInput {
+    /// 业务侧 ID（用于结果对齐）
+    pub id: String,
+    /// 朗读文本（与 ssml 二选一；都传时优先 ssml）
+    pub text: Option<String>,
+    /// 结构化 SSML（可选；提供时跳过 raw text 路径，直接 wrap 成标准 SSML）
+    pub ssml: Option<crate::domain::ssml::SsmlDocument>,
+    pub voice: String,
+    pub speed: f32,
+    pub format: String,
+    pub backend: String,
+}
+
+/// TTS Batch 输入
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TtsBatchInput {
+    pub segments: Vec<TtsBatchSegmentInput>,
+    /// 最大并发数（默认 3，1-8 范围内合法）
+    #[serde(default = "default_max_concurrency")]
+    pub max_concurrency: u8,
+    /// 失败重试次数（默认 2，0-3 范围内合法）
+    #[serde(default = "default_max_retries")]
+    pub max_retries: u8,
+}
+
+fn default_max_concurrency() -> u8 { 3 }
+fn default_max_retries() -> u8 { 2 }
+
+/// TTS Batch 单段结果
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TtsBatchResultItem {
+    pub id: String,
+    pub audio_path: Option<String>,
+    pub duration_secs: f64,
+    pub error: Option<String>,
+    /// 重试次数（成功也是 0，失败 = 实际重试次数）
+    pub retries: u8,
+}
+
+/// TTS Batch 输出
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TtsBatchOutput {
+    pub results: Vec<TtsBatchResultItem>,
+    /// 总耗时（秒）
+    pub total_secs: f64,
+}
+
 /// TTS 后端信息
 #[derive(Debug, Serialize)]
 pub struct TtsBackendInfo {

@@ -1,11 +1,32 @@
 //! TTS (Edge TTS) — command 入口
 
-use crate::commands::ai::tts_core::{check_tts_available_impl, list_tts_backends_impl, synthesize_speech_impl};
-use crate::commands::ai::types::{SynthesizeSpeechInput, SynthesizeSpeechOutput, TtsBackendInfo};
+use crate::commands::ai::tts_core::{check_tts_available_impl, list_tts_backends_impl, synthesize_speech_batch_impl, synthesize_speech_impl, synthesize_speech_ssml_impl};
+use crate::commands::ai::types::{SynthesizeSpeechInput, SynthesizeSpeechOutput, TtsBackendInfo, TtsBatchInput, TtsBatchOutput};
+use crate::domain::ssml::SsmlDocument;
 
 #[tauri::command]
 pub async fn synthesize_speech(input: SynthesizeSpeechInput) -> Result<SynthesizeSpeechOutput, String> {
     synthesize_speech_impl(&input).await
+}
+
+/// 接受结构化 SSML 的合成入口（Stage 14.1）
+#[tauri::command]
+pub async fn synthesize_speech_ssml(
+    doc: SsmlDocument,
+    voice: String,
+    speed: f32,
+    format: String,
+    backend: String,
+) -> Result<SynthesizeSpeechOutput, String> {
+    synthesize_speech_ssml_impl(&doc, &voice, speed, &format, &backend).await
+}
+
+/// 批量并发合成（Stage 14.2）— max_concurrency 默认 3，max_retries 默认 2
+#[tauri::command]
+pub async fn synthesize_speech_batch(
+    input: TtsBatchInput,
+) -> Result<TtsBatchOutput, String> {
+    synthesize_speech_batch_impl(&input).await
 }
 
 #[tauri::command]

@@ -14,7 +14,7 @@ mod tts;
 
 pub use detection::{detect_highlights, detect_zcr_bursts, detect_smart_segments};
 pub use director_plan::run_ai_director_plan;
-pub use tts::{check_tts_available, list_tts_backends, synthesize_speech, translate_text};
+pub use tts::{check_tts_available, list_tts_backends, synthesize_speech, synthesize_speech_batch, synthesize_speech_ssml, translate_text};
 pub use types::TtsBackendInfo;
 
 // ─── Render Commands ─────────────────────────────────────────────────────────

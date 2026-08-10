@@ -23,6 +23,8 @@ export const TauriCommand = {
   TRANSCRIBE_AUDIO: 'transcribe_audio',
 
   SYNTHESIZE_SPEECH: 'synthesize_speech',
+  SYNTHESIZE_SPEECH_SSML: 'synthesize_speech_ssml',
+  SYNTHESIZE_SPEECH_BATCH: 'synthesize_speech_batch',
   LIST_TTS_BACKENDS: 'list_tts_backends',
   CHECK_TTS_AVAILABLE: 'check_tts_available',
   MIX_AUDIO: 'mix_audio',

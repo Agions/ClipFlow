@@ -25,7 +25,7 @@ pub use types::*;
 pub use commands::ffprobe::{analyze_video, check_ffmpeg, run_ffprobe};
 pub use commands::ai::{
     detect_highlights, detect_zcr_bursts, detect_smart_segments,
-    get_export_dir, run_ai_director_plan, synthesize_speech, check_tts_available, list_tts_backends, TtsBackendInfo, translate_text,
+    get_export_dir, run_ai_director_plan, synthesize_speech, synthesize_speech_batch, synthesize_speech_ssml, check_tts_available, list_tts_backends, TtsBackendInfo, translate_text,
 };
 pub use commands::project::{
     project_create, project_list, project_load, project_save, project_delete, ProjectService,
@@ -117,6 +117,8 @@ pub fn run() {
             detect_smart_segments,
             // TTS / AI
             synthesize_speech,
+            synthesize_speech_ssml,
+            synthesize_speech_batch,
             check_tts_available,
             list_tts_backends,
             translate_text,

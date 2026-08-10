@@ -81,6 +81,8 @@ export type TauriCommandName =
   | 'subtitle_burn_in'
   | 'transcribe_audio'
   | 'synthesize_speech'
+  | 'synthesize_speech_ssml'
+  | 'synthesize_speech_batch'
   | 'list_tts_backends'
   | 'check_tts_available'
   | 'mix_audio'
@@ -262,6 +264,43 @@ type CommandNameToDefs = {
   synthesize_speech: {
     input: { text: string; voice: string; speed?: number; format?: string; backend?: string };
     output: { audioPath: string; durationSecs: number };
+  };
+  // Stage 14.1：结构化 SSML → 合成
+  synthesize_speech_ssml: {
+    input: {
+      doc: import('../domain/ssml').SsmlDocument;
+      voice: string;
+      speed: number;
+      format: string;
+      backend: string;
+    };
+    output: { audioPath: string; durationSecs: number };
+  };
+  // Stage 14.2：批量并发合成（max 8 并行，0-3 重试）
+  synthesize_speech_batch: {
+    input: {
+      segments: Array<{
+        id: string;
+        text?: string | null;
+        ssml?: import('../domain/ssml').SsmlDocument | null;
+        voice: string;
+        speed: number;
+        format: string;
+        backend: string;
+      }>;
+      maxConcurrency?: number;
+      maxRetries?: number;
+    };
+    output: {
+      results: Array<{
+        id: string;
+        audioPath: string | null;
+        durationSecs: number;
+        error: string | null;
+        retries: number;
+      }>;
+      totalSecs: number;
+    };
   };
   list_tts_backends: {
     input: Record<string, never>;
