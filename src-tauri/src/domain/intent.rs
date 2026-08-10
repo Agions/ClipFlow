@@ -107,8 +107,11 @@ pub fn is_valid_intent(s: &str) -> bool {
 /// 根据 intent 推导默认 IntentConfig
 pub fn intent_default_config(intent: ContentIntent) -> IntentConfig {
     IntentConfig {
+        intent,
         target_duration_secs: default_duration_by_intent(intent),
-        ..DEFAULT_INTENT_CONFIG
+        language: DEFAULT_INTENT_CONFIG.language,
+        audience: DEFAULT_INTENT_CONFIG.audience,
+        tone_intensity: DEFAULT_INTENT_CONFIG.tone_intensity,
     }
 }
 

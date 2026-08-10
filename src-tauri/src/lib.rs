@@ -28,8 +28,7 @@ pub use commands::ai::{
     get_export_dir, run_ai_director_plan, synthesize_speech, check_tts_available, list_tts_backends, TtsBackendInfo, translate_text,
 };
 pub use commands::project::{
-    check_app_data_directory, delete_file, delete_project_file, get_file_size,
-    list_app_data_files, list_project_files, load_project_file, read_text_file, save_project_file,
+    project_create, project_list, project_load, project_save, project_delete, ProjectService,
 };
 pub use commands::render::{
     export_video, render_autonomous_cut, transcode_with_crop, generate_preview,
@@ -74,16 +73,13 @@ pub fn run() {
         // 默认 (cpus-1) 个 permit，可通过 STORYFAB_RESOURCE_PERMITS 覆盖
         .manage(crate::utils::ResourceLimiter::shared())
         .invoke_handler(tauri::generate_handler![
+            // Project CRUD (v3 · SQLite)
+            project_create,
+            project_list,
+            project_load,
+            project_save,
+            project_delete,
             run_ai_director_plan,
-            check_app_data_directory,
-            save_project_file,
-            load_project_file,
-            delete_project_file,
-            list_project_files,
-            list_app_data_files,
-            delete_file,
-            read_text_file,
-            get_file_size,
             render_autonomous_cut,
             transcode_with_crop,
             generate_preview,
@@ -140,6 +136,24 @@ pub fn run() {
 
             let app_data_dir = app.path().app_data_dir().unwrap_or_default();
             tracing::info!("[StoryFab] App数据目录: {:?}", app_data_dir);
+
+            // 初始化 SQLite 数据库（自动迁移）
+            let db_path = app_data_dir.join("storyfab.db");
+            match crate::db::Db::open(&db_path) {
+                Ok(db) => {
+                    let schema_v = db.schema_version().unwrap_or(0);
+                    tracing::info!(
+                        "[StoryFab] SQLite 已就绪: {} (schema v{})",
+                        db_path.display(),
+                        schema_v
+                    );
+                    let db = std::sync::Arc::new(db);
+                    app.manage(crate::commands::project::ProjectService::new(db));
+                }
+                Err(e) => {
+                    tracing::error!("[StoryFab] SQLite 初始化失败: {}", e);
+                }
+            }
 
             // macOS / Windows / Linux 平台日志路径
             if let Ok(log_dir) = app_data_dir.join("logs").canonicalize() {
