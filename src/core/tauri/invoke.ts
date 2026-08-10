@@ -49,6 +49,13 @@ export const TauriCommand = {
   PROJECT_SAVE: 'project_save',
   PROJECT_DELETE: 'project_delete',
 
+  // Pipeline (v3 · 5 阶段流水线 · Stage 13) — 替代 v2 run_commentary_pipeline 黑盒
+  PIPELINE_START_PHASE: 'pipeline_start_phase',
+  PIPELINE_APPROVE_PHASE: 'pipeline_approve_phase',
+  PIPELINE_RETRY_PHASE: 'pipeline_retry_phase',
+  PIPELINE_SKIP_PHASE: 'pipeline_skip_phase',
+  PIPELINE_RUN_AUTO: 'pipeline_run_auto',
+
   // 旧 v2 文件存储命令（已删除，但留 enum 以兼容 v2 IPC 客户端）
   LIST_APP_DATA_FILES: 'list_app_data_files',
   CHECK_APP_DATA_DIR: 'check_app_data_directory',

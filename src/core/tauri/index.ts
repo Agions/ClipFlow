@@ -14,6 +14,7 @@ import { mixAudio } from './methods/mix-audio';
 import { fileOperations } from './methods/file-operations';
 import { project } from './methods/project';
 import { aiScript } from './methods/ai-script';
+import { pipeline } from './methods/pipeline';
 
 export const tauri = {
   // ─── FFmpeg / Video analysis ──────────────────────────────
@@ -37,6 +38,9 @@ export const tauri = {
 
   // ─── Project (v3 · SQLite-backed) ─────────────────────────
   ...project,
+
+  // ─── Pipeline (v3 · 5 阶段流水线) ────────────────────────
+  ...pipeline,
 
   // ─── AI Script ────────────────────────────────────────────
   ...aiScript,

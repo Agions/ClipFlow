@@ -38,6 +38,28 @@ export type ProjectDto = {
   } | null;
 };
 
+// PipelineJob DTO（与 Rust PipelineJob 对齐，Stage 13）
+// 5 阶段：understanding / planning / scripting / voicing / rendering
+export type PipelineJobDto = {
+  id: string;
+  phase: 'understanding' | 'planning' | 'scripting' | 'voicing' | 'rendering';
+  phaseStatus: Record<
+    'understanding' | 'planning' | 'scripting' | 'voicing' | 'rendering',
+    'pending' | 'running' | 'done' | 'failed' | 'skipped'
+  >;
+  progressPct: number;
+  error: { phase: string; message: string } | null;
+  artifacts: {
+    storylinePath: string | null;
+    planPath: string | null;
+    scriptPath: string | null;
+    audioDir: string | null;
+    outputPath: string | null;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
+
 // ============================================================
 // 命令名称联合类型（与 TauriCommand 常量的值一一对应）
 // ============================================================
@@ -85,6 +107,11 @@ export type TauriCommandName =
   | 'project_load'
   | 'project_save'
   | 'project_delete'
+  | 'pipeline_start_phase'
+  | 'pipeline_approve_phase'
+  | 'pipeline_retry_phase'
+  | 'pipeline_skip_phase'
+  | 'pipeline_run_auto'
   | 'window_minimize'
   | 'window_maximize'
   | 'window_close'
@@ -341,6 +368,36 @@ type CommandNameToDefs = {
     output: ProjectDto;
   };
   project_delete: { input: { id: string }; output: null };
+
+  // Pipeline (Stage 13) — 5 阶段流水线 IPC
+  pipeline_start_phase: {
+    input: {
+      projectId: string;
+      phase: 'understanding' | 'planning' | 'scripting' | 'voicing' | 'rendering';
+      params: Record<string, unknown> | null;
+    };
+    output: PipelineJobDto;
+  };
+  pipeline_approve_phase: {
+    input: {
+      projectId: string;
+      phase: string;
+      modifications: Record<string, unknown> | null;
+    };
+    output: PipelineJobDto;
+  };
+  pipeline_retry_phase: {
+    input: { projectId: string; phase: string };
+    output: PipelineJobDto;
+  };
+  pipeline_skip_phase: {
+    input: { projectId: string; phase: string };
+    output: PipelineJobDto;
+  };
+  pipeline_run_auto: {
+    input: { projectId: string };
+    output: PipelineJobDto;
+  };
 
   window_minimize: { input: Record<string, never>; output: Record<string, never> };
   window_maximize: { input: Record<string, never>; output: Record<string, never> };
