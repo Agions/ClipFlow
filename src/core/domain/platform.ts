@@ -29,6 +29,34 @@ export type PlatformId =
   | 'xiaohongshu' // 小红书
   | 'kuaishou'; // 快手
 
+// ─── 渲染阶段配置（Stage 15.1） ─────────────────────────
+
+/** 渲染阶段参数（被 PlatformPreset 引用，覆盖默认行为） */
+export interface RenderConfig {
+  /** 配音音量倍率（0.0-2.0，1.0 = 原音量） */
+  voiceVolume: number;
+  /** 背景音乐音量倍率（0.0-1.0） */
+  bgmVolume: number;
+  /** 原始视频原声音量倍率（0.0-1.0，0 = 静音） */
+  originalVolume: number;
+  /** 渲染速度（0.5-2.0，1.0 = 正常） */
+  speedFactor: number;
+  /** 是否启用淡入淡出（开头 1s + 结尾 1s） */
+  fadeInOut: boolean;
+  /** 最大时长（秒，0 = 不限；超出会自动剪辑） */
+  maxDurationSecs: number;
+}
+
+/** 默认渲染配置（适用多数平台） */
+export const DEFAULT_RENDER_CONFIG: RenderConfig = {
+  voiceVolume: 1.0,
+  bgmVolume: 0.3,
+  originalVolume: 0.0,
+  speedFactor: 1.0,
+  fadeInOut: true,
+  maxDurationSecs: 0,
+};
+
 // ─── 平台预设 ──────────────────────────────────────────
 
 export interface PlatformPreset {
@@ -59,6 +87,8 @@ export interface PlatformPreset {
   defaultSubtitleStyle: SubtitleStyle;
   /** 是否默认烧录字幕（YouTube/Shorts 平台倾向软字幕，烧录可选） */
   burnSubtitleByDefault: boolean;
+  /** 渲染阶段配置（Stage 15.1 新增） */
+  renderConfig: RenderConfig;
 }
 
 // ─── 主流平台预设（数据驱动 · 新增平台只加 JSON 不改代码） ─────
@@ -88,6 +118,7 @@ export const PLATFORM_PRESETS: Record<PlatformId, PlatformPreset> = {
       opacity: 1.0,
     },
     burnSubtitleByDefault: true,
+    renderConfig: { ...DEFAULT_RENDER_CONFIG, maxDurationSecs: 180 },
   },
   kuaishou: {
     id: 'kuaishou',
@@ -113,6 +144,7 @@ export const PLATFORM_PRESETS: Record<PlatformId, PlatformPreset> = {
       opacity: 1.0,
     },
     burnSubtitleByDefault: true,
+    renderConfig: { ...DEFAULT_RENDER_CONFIG, maxDurationSecs: 180 },
   },
   xiaohongshu: {
     id: 'xiaohongshu',
@@ -138,6 +170,7 @@ export const PLATFORM_PRESETS: Record<PlatformId, PlatformPreset> = {
       opacity: 0.9,
     },
     burnSubtitleByDefault: true,
+    renderConfig: { ...DEFAULT_RENDER_CONFIG, maxDurationSecs: 300 },
   },
   wechat: {
     id: 'wechat',
@@ -163,6 +196,7 @@ export const PLATFORM_PRESETS: Record<PlatformId, PlatformPreset> = {
       opacity: 0.85,
     },
     burnSubtitleByDefault: true,
+    renderConfig: { ...DEFAULT_RENDER_CONFIG, maxDurationSecs: 300 },
   },
   tiktok: {
     id: 'tiktok',
@@ -188,6 +222,7 @@ export const PLATFORM_PRESETS: Record<PlatformId, PlatformPreset> = {
       opacity: 1.0,
     },
     burnSubtitleByDefault: true,
+    renderConfig: { ...DEFAULT_RENDER_CONFIG, maxDurationSecs: 180 },
   },
   bilibili: {
     id: 'bilibili',
@@ -213,6 +248,7 @@ export const PLATFORM_PRESETS: Record<PlatformId, PlatformPreset> = {
       opacity: 1.0,
     },
     burnSubtitleByDefault: false,
+    renderConfig: { ...DEFAULT_RENDER_CONFIG, maxDurationSecs: 0, voiceVolume: 1.0, originalVolume: 0.5 },
   },
   youtube: {
     id: 'youtube',
@@ -238,6 +274,7 @@ export const PLATFORM_PRESETS: Record<PlatformId, PlatformPreset> = {
       opacity: 1.0,
     },
     burnSubtitleByDefault: false,
+    renderConfig: { ...DEFAULT_RENDER_CONFIG, maxDurationSecs: 0, voiceVolume: 1.0, originalVolume: 0.3 },
   },
   'youtube-shorts': {
     id: 'youtube-shorts',
@@ -263,6 +300,7 @@ export const PLATFORM_PRESETS: Record<PlatformId, PlatformPreset> = {
       opacity: 1.0,
     },
     burnSubtitleByDefault: true,
+    renderConfig: { ...DEFAULT_RENDER_CONFIG, maxDurationSecs: 60 },
   },
 };
 
@@ -281,4 +319,31 @@ export function getPlatform(id: PlatformId): PlatformPreset | null {
 /** 按 ID 查预设，找不到时回退到抖音 */
 export function requirePlatform(id: PlatformId): PlatformPreset {
   return PLATFORM_PRESETS[id] ?? PLATFORM_PRESETS.douyin;
+}
+
+// ─── 工厂 + 校验（Stage 15.1） ─────────────────────────
+
+/** 创建自定义渲染配置（partial patch） */
+export function createRenderConfig(patch: Partial<RenderConfig> = {}): RenderConfig {
+  return { ...DEFAULT_RENDER_CONFIG, ...patch };
+}
+
+/** 校验 RenderConfig 字段范围 */
+export function validateRenderConfig(c: RenderConfig): string | null {
+  if (c.voiceVolume < 0 || c.voiceVolume > 2.0) {
+    return `voiceVolume ${c.voiceVolume} 超出合法范围 0.0-2.0`;
+  }
+  if (c.bgmVolume < 0 || c.bgmVolume > 1.0) {
+    return `bgmVolume ${c.bgmVolume} 超出合法范围 0.0-1.0`;
+  }
+  if (c.originalVolume < 0 || c.originalVolume > 1.0) {
+    return `originalVolume ${c.originalVolume} 超出合法范围 0.0-1.0`;
+  }
+  if (c.speedFactor < 0.5 || c.speedFactor > 2.0) {
+    return `speedFactor ${c.speedFactor} 超出合法范围 0.5-2.0`;
+  }
+  if (c.maxDurationSecs < 0) {
+    return `maxDurationSecs 不能为负数`;
+  }
+  return null;
 }

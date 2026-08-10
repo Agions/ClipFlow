@@ -84,6 +84,39 @@ pub struct SubtitleStyle {
     pub opacity: f32,
 }
 
+// ─── 渲染阶段配置（Stage 15.1） ─────────────────────────
+
+/// 渲染阶段参数（被 PlatformPreset 引用）
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RenderConfig {
+    /// 配音音量倍率（0.0-2.0，1.0 = 原音量）
+    pub voice_volume: f32,
+    /// 背景音乐音量倍率（0.0-1.0）
+    pub bgm_volume: f32,
+    /// 原始视频原声音量倍率（0.0-1.0，0 = 静音）
+    pub original_volume: f32,
+    /// 渲染速度（0.5-2.0，1.0 = 正常）
+    pub speed_factor: f32,
+    /// 是否启用淡入淡出
+    pub fade_in_out: bool,
+    /// 最大时长（秒，0 = 不限；超出会自动剪辑）
+    pub max_duration_secs: u32,
+}
+
+impl Default for RenderConfig {
+    fn default() -> Self {
+        Self {
+            voice_volume: 1.0,
+            bgm_volume: 0.3,
+            original_volume: 0.0,
+            speed_factor: 1.0,
+            fade_in_out: true,
+            max_duration_secs: 0,
+        }
+    }
+}
+
 // ─── 平台预设 ──────────────────────────────────────────────────
 
 /// 平台预设
@@ -106,6 +139,8 @@ pub struct PlatformPreset {
     pub container: Container,
     pub default_subtitle_style: SubtitleStyle,
     pub burn_subtitle_by_default: bool,
+    /// 渲染阶段配置（Stage 15.1 新增）
+    pub render_config: RenderConfig,
 }
 
 // ─── 主流平台预设（数据驱动） ─────────────────────────────────
@@ -138,6 +173,7 @@ pub static PLATFORM_PRESETS: std::sync::LazyLock<std::collections::HashMap<Platf
                 opacity: 1.0,
             },
             burn_subtitle_by_default: true,
+            render_config: RenderConfig { max_duration_secs: 180, ..Default::default() },
         });
         m.insert(PlatformId::Kuaishou, PlatformPreset {
             id: PlatformId::Kuaishou,
@@ -163,6 +199,7 @@ pub static PLATFORM_PRESETS: std::sync::LazyLock<std::collections::HashMap<Platf
                 opacity: 1.0,
             },
             burn_subtitle_by_default: true,
+            render_config: RenderConfig { max_duration_secs: 180, ..Default::default() },
         });
         m.insert(PlatformId::Xiaohongshu, PlatformPreset {
             id: PlatformId::Xiaohongshu,
@@ -188,6 +225,7 @@ pub static PLATFORM_PRESETS: std::sync::LazyLock<std::collections::HashMap<Platf
                 opacity: 0.9,
             },
             burn_subtitle_by_default: true,
+            render_config: RenderConfig { max_duration_secs: 300, ..Default::default() },
         });
         m.insert(PlatformId::Wechat, PlatformPreset {
             id: PlatformId::Wechat,
@@ -213,6 +251,7 @@ pub static PLATFORM_PRESETS: std::sync::LazyLock<std::collections::HashMap<Platf
                 opacity: 0.85,
             },
             burn_subtitle_by_default: true,
+            render_config: RenderConfig { max_duration_secs: 300, ..Default::default() },
         });
         m.insert(PlatformId::Tiktok, PlatformPreset {
             id: PlatformId::Tiktok,
@@ -238,6 +277,7 @@ pub static PLATFORM_PRESETS: std::sync::LazyLock<std::collections::HashMap<Platf
                 opacity: 1.0,
             },
             burn_subtitle_by_default: true,
+            render_config: RenderConfig { max_duration_secs: 180, ..Default::default() },
         });
         m.insert(PlatformId::Bilibili, PlatformPreset {
             id: PlatformId::Bilibili,
@@ -263,6 +303,7 @@ pub static PLATFORM_PRESETS: std::sync::LazyLock<std::collections::HashMap<Platf
                 opacity: 1.0,
             },
             burn_subtitle_by_default: false,
+            render_config: RenderConfig { original_volume: 0.5, ..Default::default() },
         });
         m.insert(PlatformId::Youtube, PlatformPreset {
             id: PlatformId::Youtube,
@@ -288,6 +329,7 @@ pub static PLATFORM_PRESETS: std::sync::LazyLock<std::collections::HashMap<Platf
                 opacity: 1.0,
             },
             burn_subtitle_by_default: false,
+            render_config: RenderConfig { original_volume: 0.3, ..Default::default() },
         });
         m.insert(PlatformId::YoutubeShorts, PlatformPreset {
             id: PlatformId::YoutubeShorts,
@@ -313,6 +355,7 @@ pub static PLATFORM_PRESETS: std::sync::LazyLock<std::collections::HashMap<Platf
                 opacity: 1.0,
             },
             burn_subtitle_by_default: true,
+            render_config: RenderConfig { max_duration_secs: 60, ..Default::default() },
         });
         m
     });
@@ -335,4 +378,109 @@ pub fn require_platform(id: PlatformId) -> PlatformPreset {
         .get(&id)
         .cloned()
         .unwrap_or_else(|| get_platform(PlatformId::Douyin).expect("douyin preset always exists"))
+}
+
+// ─── 单元测试（Stage 15.1） ────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn list_platforms_returns_8_presets() {
+        let p = list_platforms();
+        assert_eq!(p.len(), 8);
+    }
+
+    #[test]
+    fn get_platform_returns_known_id() {
+        let p = get_platform(PlatformId::Douyin).expect("douyin exists");
+        assert_eq!(p.name, "抖音");
+        assert_eq!(p.width, 1080);
+    }
+
+    #[test]
+    fn get_platform_returns_none_for_missing() {
+        // 用一个确保 HashMap 不会越界写入的虚拟 id
+        // 因为 PlatformId 是 enum，所有值都在表里时不会 None
+        // 这里只能间接验证：枚举值集合 == 8
+        let p = list_platforms();
+        let mut seen = std::collections::HashSet::new();
+        for preset in &p {
+            assert!(seen.insert(preset.id));
+        }
+        assert_eq!(seen.len(), 8);
+    }
+
+    #[test]
+    fn all_presets_have_render_config() {
+        for p in list_platforms() {
+            assert!(p.render_config.voice_volume >= 0.0);
+            assert!(p.render_config.voice_volume <= 2.0);
+        }
+    }
+
+    #[test]
+    fn short_video_platforms_have_180s_limit() {
+        for id in [PlatformId::Douyin, PlatformId::Kuaishou, PlatformId::Tiktok] {
+            let p = get_platform(id).expect("preset exists");
+            assert_eq!(p.render_config.max_duration_secs, 180, "platform {:?}", id);
+        }
+    }
+
+    #[test]
+    fn long_form_platforms_have_no_limit() {
+        for id in [PlatformId::Bilibili, PlatformId::Youtube] {
+            let p = get_platform(id).expect("preset exists");
+            assert_eq!(p.render_config.max_duration_secs, 0, "platform {:?}", id);
+        }
+    }
+
+    #[test]
+    fn shorts_has_60s_limit() {
+        let p = get_platform(PlatformId::YoutubeShorts).expect("shorts exists");
+        assert_eq!(p.render_config.max_duration_secs, 60);
+    }
+
+    #[test]
+    fn render_config_default_values() {
+        let c = RenderConfig::default();
+        assert_eq!(c.voice_volume, 1.0);
+        assert_eq!(c.bgm_volume, 0.3);
+        assert_eq!(c.original_volume, 0.0);
+        assert_eq!(c.speed_factor, 1.0);
+        assert!(c.fade_in_out);
+        assert_eq!(c.max_duration_secs, 0);
+    }
+
+    #[test]
+    fn render_config_serializes_camel_case() {
+        let c = RenderConfig::default();
+        let json = serde_json::to_string(&c).expect("serialize");
+        assert!(json.contains("voiceVolume"));
+        assert!(json.contains("bgmVolume"));
+        assert!(json.contains("originalVolume"));
+        assert!(json.contains("speedFactor"));
+        assert!(json.contains("fadeInOut"));
+        assert!(json.contains("maxDurationSecs"));
+    }
+
+    #[test]
+    fn require_platform_falls_back_to_douyin() {
+        // 强制构造一个不在表里的 PlatformId 会破坏类型系统；
+        // 这里间接验证 require_platform 至少能正常返回 douyin
+        let p = require_platform(PlatformId::Douyin);
+        assert_eq!(p.id, PlatformId::Douyin);
+    }
+
+    #[test]
+    fn preset_serializes_to_camel_case_json() {
+        let p = get_platform(PlatformId::Douyin).unwrap();
+        let json = serde_json::to_string(&p).unwrap();
+        assert!(json.contains("\"aspectRatio\":\"9:16\""));
+        assert!(json.contains("\"videoBitrate\":3500"));
+        assert!(json.contains("\"videoCodec\":\"h264\""));
+        assert!(json.contains("\"burnSubtitleByDefault\":true"));
+        assert!(json.contains("\"renderConfig\""));
+    }
 }
