@@ -18,7 +18,7 @@ pub mod segment;
 pub mod llm;
 
 pub use commands::{
-    ai, auto_save, ffprobe, project, render, export_state, file_ops,
+    ai, auto_save, ffprobe, pipeline, project, render, export_state, file_ops,
 };
 pub use types::*;
 
@@ -29,6 +29,10 @@ pub use commands::ai::{
 };
 pub use commands::project::{
     project_create, project_list, project_load, project_save, project_delete, ProjectService,
+};
+pub use commands::pipeline::{
+    pipeline_approve_phase, pipeline_retry_phase, pipeline_run_auto, pipeline_skip_phase,
+    pipeline_start_phase,
 };
 pub use commands::render::{
     export_video, render_autonomous_cut, transcode_with_crop, generate_preview,
@@ -79,6 +83,12 @@ pub fn run() {
             project_load,
             project_save,
             project_delete,
+            // Pipeline 5 phase (v3 · 替代 v2 run_commentary_pipeline)
+            pipeline_start_phase,
+            pipeline_approve_phase,
+            pipeline_retry_phase,
+            pipeline_skip_phase,
+            pipeline_run_auto,
             run_ai_director_plan,
             render_autonomous_cut,
             transcode_with_crop,
