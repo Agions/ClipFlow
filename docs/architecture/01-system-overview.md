@@ -1,46 +1,73 @@
-# 系统目标架构设计 (System Architecture)
+# 系统整体架构与分层设计
 
-> 🎬 剧工 (Fablr) 系统的三层架构设计、IPC 机制与音视频处理流水线
+## 1. 架构总览与 Monorepo 分层
 
----
+Fablr (剧工) 采用现代化的 **Monorepo (Turborepo + pnpm workspaces)** 架构体系，将通用契约、基础工具、领域服务与高性能渲染组件严格分层解耦：
 
-## 一、系统架构全景图
+```mermaid
+graph TD
+    classDef typePkg fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#fff;
+    classDef utilPkg fill:#083344,stroke:#06b6d4,stroke-width:2px,color:#fff;
+    classDef corePkg fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#fff;
+    classDef uiPkg fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff;
+    classDef appPkg fill:#18192a,stroke:#e2e8f0,stroke-width:2px,color:#fff;
 
-剧工 (Fablr) 采用 **“前端极速 UI (React 18) + 后端高能引擎 (Rust / Tauri 2) + 跨平台音视频处理 (FFmpeg)”** 的三层架构，兼顾了桌面软件的极致性能与 Web 前端的高灵活性。
+    TYPES["@fablr/types<br/>(全域强类型契约 / DTO)"]:::typePkg
+    UTILS["@fablr/utils<br/>(通用工具 / 格式化 / 平台感知)"]:::utilPkg
+    CORE["@fablr/core<br/>(原子文件驱动 / 多Agent / 剪映逆向 / 自动更新)"]:::corePkg
+    UI["@fablr/ui<br/>(Canvas虚拟化时间轴 / 基础原子组件)"]:::uiPkg
+    APP["fablr 桌面端应用<br/>(React 18 + Zustand + Tauri 2 + Rust)"]:::appPkg
 
+    TYPES --> UTILS
+    TYPES --> CORE
+    TYPES --> UI
+    UTILS --> CORE
+    UTILS --> UI
+    CORE --> APP
+    UI --> APP
+    TYPES --> APP
+    UTILS --> APP
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        前端表示层 (React 18 + Vite 6)                        │
-│  · 4大工坊 UI  · Zustand 状态管理  · Local-First 缓存  · 响应式设计系统       │
-└──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │ Tauri 2 IPC Channel / Event
-┌──────────────────────────────────────▼──────────────────────────────────────┐
-│                        后端核心引擎 (Rust 1.80+ / Tauri 2)                  │
-│  · 模块化 DDD 仓储  · Async Worker  · Task Queue  · SQLite / OPFS 存储        │
-└──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │ Native Command Execution
-┌──────────────────────────────────────▼──────────────────────────────────────┐
-│                       底层音视频处理层 (FFmpeg / Whisper)                    │
-│  · 镜头切点提取  · 音轨 ASR 采样  · 5级消重指纹重构  · 剪映草稿 JSON 导出        │
-└─────────────────────────────────────────────────────────────────────────────┘
+
+---
+
+## 2. 各 Package 职责边界与规范
+
+| Package | 职责范围 | 典型模块 / 导出品 | 依赖约束 |
+| :--- | :--- | :--- | :--- |
+| **`@fablr/types`** | 系统全域类型契约、领域模型 DTO、IPC 接口规范 | `Project`, `ScriptBlock`, `AssetClip`, `AppUpdateInfo` | **零依赖**（禁止依赖任何其他包） |
+| **`@fablr/utils`** | 纯函数工具、文件大小/时间格式化、平台感知、防抖节流 | `formatFileSize`, `formatDuration`, `detectHostPlatform` | 仅允许依赖 `@fablr/types` |
+| **`@fablr/core`** | 领域核心服务、防竞态文件驱动、多 Agent 状态机、更新检测 | `AtomicProjectFileDriver`, `UpdaterService`, `DramaAgents` | 依赖 `types` 与 `utils` |
+| **`@fablr/ui`** | 硬件加速时间轴 Canvas 组件、工业级交互图元 | `VirtualTimelineCanvas`, `WaveformRenderer` | 依赖 `types` 与 `utils` |
+| **主应用 (`src/`)** | 路由、页面装配、Zustand 全局状态机、Tauri IPC 接入 | `AssetHubPage`, `ScriptStudioPage`, `WorkspacePage` | 聚合调用上方 Packages |
+
+---
+
+## 3. 全链路数据流转模型
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant UI as React 页面与工坊
+    participant Store as Zustand 全局状态
+    participant Core as @fablr/core (Atomic Driver)
+    participant Rust as Tauri 2 / Rust 引擎
+    participant Disk as 本地文件系统 (SQLite/JSON)
+
+    UI->>Store: 用户操作 (如编辑剧本/调整时间轴)
+    Store->>Core: 派发变更 (saveProject)
+    Core->>Core: 队列排队 + 热内存缓存合并 (防竞态)
+    Core->>Rust: 调用 invoke("project_save_atomic")
+    Rust->>Disk: 原子写入临时文件并原子重命名 (Atomic Rename)
+    Disk-->>Rust: 写入完成通知
+    Rust-->>Core: 返回最新项目指纹
+    Core-->>Store: 状态持久化成功
 ```
 
 ---
 
-## 二、架构设计哲学
+## 4. 技术栈选型原则
 
-### 1. 100% 本地优先 (Local-First)
-- **数据隐私第一**：原始音视频文件、剧本草稿及导出生成物均保留在用户的本地文件系统与 OPFS (Origin Private File System) 中。
-- **离线断点续作**：即使断网或意外关闭应用，基于 IndexedDB 与 SQLite 的状态持久化机制可保证 100% 秒级恢复工作现场。
-
-### 2. 工坊阶段制 (Phase-based Separation of Concerns)
-- 放弃传统的单向线性向导或认知负荷极高的大而全工具栏。
-- 将创作任务精细拆解为 **素材拆条 (Asset Hub)** → **剧本研磨 (Script Studio)** → **剪辑合成 (Workspace)** → **消重发布 (Export Hub)** 4 大模块化工坊。
-- 各工坊之间通过全局工程状态机共享数据，支持双向无缝流转与上下游“脏标记”智能通知。
-
----
-
-## 三、跨进程通信 (IPC) 与流调度
-
-- **Commands 机制**：前端通过 `@tauri-apps/api/core` 调用 Rust 提供的强类型异步 Command 指令。
-- **Events 广播**：Rust 后端在执行长耗时音视频转码、AI 拆条或消重渲染时，通过 `app_handle.emit_to` 实时向前端广播进度百分比与日志。
+1. **本地优先与绝对隐私**：所有媒体资产与草稿工程均存储于用户磁盘，零强制上传；
+2. **轻量极致与秒级启动**：基于 Tauri 2 + Rust，杜绝传统 Chromium 庞大臃肿的内存占用；
+3. **架构防腐与单向数据流**：强类型约束与严格的 Monorepo 分包，禁止跨层循环引用。
