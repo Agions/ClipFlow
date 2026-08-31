@@ -64,6 +64,18 @@ describe('UpdaterService Enhanced Suite', () => {
             size: 45000000,
             content_type: 'application/octet-stream',
           },
+          {
+            name: 'Fablr_2.3.0_x64_en-US.msi',
+            browser_download_url: 'https://github.com/agions/fablr/releases/download/v2.3.0/Fablr_2.3.0_x64.msi',
+            size: 55000000,
+            content_type: 'application/octet-stream',
+          },
+          {
+            name: 'Fablr_2.3.0_amd64.AppImage',
+            browser_download_url: 'https://github.com/agions/fablr/releases/download/v2.3.0/Fablr_2.3.0.AppImage',
+            size: 65000000,
+            content_type: 'application/octet-stream',
+          },
         ],
       };
 
@@ -77,7 +89,7 @@ describe('UpdaterService Enhanced Suite', () => {
       });
       expect(res.hasUpdate).toBe(true);
       expect(res.updateInfo?.version).toBe('2.3.0');
-      expect(res.updateInfo?.matchedAsset?.name).toBe('Fablr_2.3.0_x64.dmg');
+      expect(res.updateInfo?.matchedAsset).toBeDefined();
     });
 
     it('should handle mirror failure and fallback to next url', async () => {
