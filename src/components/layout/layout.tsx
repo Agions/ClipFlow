@@ -225,7 +225,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <TooltipTrigger
                 render={
                   <button
-                    className={`${styles.iconBtn} relative`}
+                    className={styles.iconBtn}
                     onClick={() => {
                       if (hasUnreadUpdate) {
                         openUpdateModal();
@@ -240,7 +240,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <div className="relative">
                   <Bell size={15} />
                   {hasUnreadUpdate && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-purple-400 ring-2 ring-[#0e0f18] animate-pulse" />
+                    <span className={styles.redDot} />
                   )}
                 </div>
               </TooltipTrigger>
