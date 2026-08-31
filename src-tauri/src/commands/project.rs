@@ -223,10 +223,7 @@ fn load_by_row(service: &ProjectService, row: ProjectRow) -> DbResult<ProjectDto
 fn job_to_dto(_service: &ProjectService, j: JobRow) -> DbResult<JobDto> {
     let phase_status: serde_json::Value =
         serde_json::from_str(&j.phase_status_json).map_err(sqlx_err)?;
-    let error = match j.error_json {
-        Some(s) => Some(serde_json::from_str(&s).map_err(sqlx_err)?),
-        None => None,
-    };
+    let error = j.error_json;
     Ok(JobDto {
         id: j.id,
         project_id: j.project_id,
