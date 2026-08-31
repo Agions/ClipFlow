@@ -6,6 +6,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import useLocalStorage from './use-local-storage';
+import { logger } from '@/shared/utils/logging';
 
 describe('useLocalStorage', () => {
   beforeEach(() => {
@@ -87,9 +88,7 @@ describe('useLocalStorage', () => {
   });
 
   it('logs error and keeps state when localStorage.setItem fails', () => {
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    // jsdom binds setItem directly on the localStorage instance, so we must
-    // override it on the instance rather than on Storage.prototype.
+    const loggerSpy = vi.spyOn(logger, 'error').mockImplementation(() => {});
     const originalSetItem = window.localStorage.setItem;
     Object.defineProperty(window.localStorage, 'setItem', {
       configurable: true,
@@ -107,13 +106,13 @@ describe('useLocalStorage', () => {
 
     // State should still update even if storage fails
     expect(result.current[0]).toBe('new-value');
-    // Error path executes logger.error → write() → console.error
-    expect(errorSpy).toHaveBeenCalled();
+    // Error path executes logger.error
+    expect(loggerSpy).toHaveBeenCalled();
     Object.defineProperty(window.localStorage, 'setItem', {
       configurable: true,
       writable: true,
       value: originalSetItem,
     });
-    errorSpy.mockRestore();
+    loggerSpy.mockRestore();
   });
 });

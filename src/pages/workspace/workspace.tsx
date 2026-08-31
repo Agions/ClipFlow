@@ -91,7 +91,7 @@ const Workspace: React.FC<WorkspaceProps> = memo(({ children }) => {
 
   // 自动滚动当前步骤到可视区
   useEffect(() => {
-    if (activeStepRef.current) {
+    if (activeStepRef.current && typeof activeStepRef.current.scrollIntoView === 'function') {
       activeStepRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
