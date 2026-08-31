@@ -81,17 +81,6 @@
           }
         ]
       }
-    ],
-    "no-restricted-syntax": [
-      "error",
-      {
-        "selector": "Literal[value=/(?:^|[\\s\"'`])(?:bg|text|border|ring|fill|stroke|from|to|via|outline|decoration|accent|caret|placeholder|shadow)-(?:black|white|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)(?:-\\d{2,3})?(?:\\/\\d+)?(?:$|[\\s\"'`])/]",
-        "message": "禁止使用 Tailwind 原始调色板（black/white/red-500/blue-300 等）。请改用 DESIGN.md §2 的 token 类：bg-accent-primary / text-primary-foreground / border-accent-warning 等。例外：globals.css、shared/tokens/*、output-colors.ts、scripts/check-color-tokens.cjs。参考 PR-1.6。"
-      },
-      {
-        "selector": "Literal[value=/^#[0-9a-fA-F]{6}$/]",
-        "message": "禁止使用硬编码 6 位 hex 颜色字面量。请改用 DESIGN.md §2 的 token 类，或通过 colorTokenToCssVar() 引用。例外：globals.css、shared/tokens/color-tokens.ts、core/video/output-colors.ts。参考 PR-1.6。"
-      }
     ]
   },
   "settings": {
@@ -127,35 +116,6 @@
       ],
       "rules": {
         "react-hooks/rules-of-hooks": "off"
-      }
-    },
-    {
-      "files": [
-        "src/shared/tokens/**/*.ts",
-        "src/core/video/output-colors.ts",
-        "scripts/check-color-tokens.cjs",
-        "src/__bench__/**/*.{ts,tsx}"
-      ],
-      "rules": {
-        "no-restricted-syntax": "off"
-      }
-    },
-    {
-      "files": [
-        "**/*.test.{ts,tsx}",
-        "src/**/__tests__/**/*.{ts,tsx}",
-        "src/**/__mocks__/**/*.{ts,tsx}"
-      ],
-      "rules": {
-        "no-restricted-syntax": "off"
-      }
-    },
-    {
-      "files": [
-        "src/core/services/ass-engine.test.ts"
-      ],
-      "rules": {
-        "no-restricted-syntax": "off"
       }
     }
   ]

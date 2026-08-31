@@ -668,4 +668,6 @@ export const WorkspaceStudioPage: React.FC = () => {
   );
 };
 
-export default withErrorBoundary(WorkspaceStudioPage, { name: 'WorkspaceStudioPage' });
+const WorkspacePage = withErrorBoundary(WorkspaceStudioPage, { name: 'WorkspaceStudioPage' });
+export { WorkspacePage };
+export default WorkspacePage;
