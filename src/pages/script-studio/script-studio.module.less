@@ -1,0 +1,480 @@
+/**
+ * 剧工 (Fablr) — 剧本研磨工坊样式
+ * 100% 像素级实现 script_studio_ui 设计稿：黑曜石工业级双栏分镜台
+ */
+
+@ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 24px;
+  background: #08080c;
+  color: #ffffff;
+  min-height: calc(100vh - 48px);
+  box-sizing: border-box;
+}
+
+/* ── 顶部流程流转条 ── */
+.topBarRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 8px 16px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.genreBadge {
+  font-size: 10px;
+  color: #c084fc;
+  background: rgba(192, 132, 252, 0.12);
+  border: 1px solid rgba(192, 132, 252, 0.25);
+  padding: 2px 7px;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.pipelineSteps {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #18192a;
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.stepBtn {
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  color: #94a3b8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+.activeStepBtn {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c084fc;
+  font-weight: 600;
+}
+
+.topRightBtns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.outlineBtn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+}
+
+.primaryStudioBtn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+
+  &:hover {
+    box-shadow: 0 6px 18px rgba(139, 92, 246, 0.5);
+  }
+}
+
+/* ── 三栏主视口 ── */
+.threeColumnGrid {
+  display: grid;
+  grid-template-columns: 240px 1fr 260px;
+  gap: 14px;
+  align-items: start;
+}
+
+/* 1. 左栏：人物小传 */
+.leftColumn {
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panelTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.characterList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.characterCard {
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s @ease-out;
+
+  &:hover {
+    border-color: rgba(139, 92, 246, 0.5);
+  }
+}
+
+.activeCharacter {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 1px #8b5cf6;
+}
+
+.characterAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.characterMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.characterName {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.characterRoleTag {
+  font-size: 9px;
+  color: #c084fc;
+}
+
+.characterBio {
+  font-size: 10px;
+  color: #94a3b8;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.storyTimelineBox {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.storyTimelineTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.timelineNodesFlow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timelineNode {
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 10px;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.activeNode {
+  border-color: #8b5cf6;
+  color: #c084fc;
+  font-weight: 600;
+}
+
+.nodeDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* 2. 中栏：双栏分镜 */
+.centerColumn {
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.screenplayHeader {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.headerColumnTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.shotsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shotRow {
+  background: #151628;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: rgba(139, 92, 246, 0.5);
+  }
+}
+
+.activeShotRow {
+  border-color: #8b5cf6 !important;
+  background: #18192f !important;
+  box-shadow: 0 0 0 1px #8b5cf6;
+}
+
+.timecodeRuler {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: -4px;
+}
+
+.timecodeText {
+  font-size: 10px;
+  font-family: monospace;
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.visualCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.visualText {
+  font-size: 12px;
+  color: #e2e8f0;
+  line-height: 1.5;
+}
+
+.narrationCol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+.narrationText {
+  font-size: 12px;
+  color: #ffffff;
+  line-height: 1.5;
+}
+
+.goldenHookBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  padding: 2px 7px;
+  border-radius: 4px;
+  align-self: flex-start;
+}
+
+.aiPolishToolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.polishActionBtn {
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #c084fc;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover {
+    background: rgba(139, 92, 246, 0.25);
+  }
+}
+
+/* 3. 右栏：Agent 状态与情绪曲线 */
+.rightColumn {
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.agentList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agentCard {
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.agentCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.agentIconCircle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agentName {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.agentReadyTag {
+  font-size: 9px;
+  color: #34d399;
+}
+
+.agentActivityDesc {
+  font-size: 10px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.emotionCurveCard {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.curveHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.curveTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.curveSvgWrap {
+  width: 100%;
+}
+
+.curveTimelineLabels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #64748b;
+}

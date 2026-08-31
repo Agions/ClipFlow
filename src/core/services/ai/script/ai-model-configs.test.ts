@@ -209,7 +209,7 @@ describe('STYLE_GUIDANCE_MAP', () => {
   });
 
   it('each entry is a non-empty string', () => {
-    Object.entries(STYLE_GUIDANCE_MAP).forEach(([key, value]) => {
+    Object.entries(STYLE_GUIDANCE_MAP).forEach(([_key, value]) => {
       expect(typeof value).toBe('string');
       expect(value.length).toBeGreaterThan(0);
     });
@@ -224,7 +224,7 @@ describe('TONE_GUIDANCE_MAP', () => {
   });
 
   it('each entry is a non-empty string', () => {
-    Object.entries(TONE_GUIDANCE_MAP).forEach(([key, value]) => {
+    Object.entries(TONE_GUIDANCE_MAP).forEach(([_key, value]) => {
       expect(typeof value).toBe('string');
       expect(value.length).toBeGreaterThan(0);
     });

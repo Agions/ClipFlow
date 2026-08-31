@@ -30,4 +30,4 @@ export const PROJECT_AUTO_SAVE_KEY = 'project_autosave_enabled';
 // 文件大小限制（被 video-upload 使用）
 export const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
 
-export type ProjectSaveBehavior = 'stay' | 'detail';
+export type ProjectSaveBehavior = 'stay' | 'detail' | 'workspace' | 'script' | 'asset';

@@ -141,21 +141,28 @@ const ProjectDetail: React.FC = () => {
     if (activeScript) void loadScriptEditor();
   }, [activeScript]);
 
+  const setProjectRef = useRef(setProject);
+  setProjectRef.current = setProject;
+  const setActiveScriptRef = useRef(setActiveScript);
+  setActiveScriptRef.current = setActiveScript;
+
   useEffect(() => {
     const requestId = ++loadRequestSeqRef.current;
     const isStale = () => !mountedRef.current || requestId !== loadRequestSeqRef.current;
     if (!projectId || isStale()) return;
-    setProject(null);
-    setActiveScript(null);
+    setProjectRef.current(null);
+    setActiveScriptRef.current(null);
     setLoading(true);
     setLoadError('');
     loadProjectWithRetry<ProjectData>(projectId, { retries: 2, retryDelayMs: 260 })
       .then((currentProject) => {
         if (isStale()) return;
         const normalizedProject = normalizeProjectFile(currentProject);
-        setProject(normalizedProject);
+        setProjectRef.current(normalizedProject);
         addRecentProject(normalizedProject.id);
-        if (normalizedProject.scripts && normalizedProject.scripts.length > 0) setActiveScript(normalizedProject.scripts[0]);
+        if (normalizedProject.scripts && normalizedProject.scripts.length > 0) {
+          setActiveScriptRef.current(normalizedProject.scripts[0]);
+        }
       })
       .catch((error) => {
         if (isStale()) return;
@@ -164,7 +171,7 @@ const ProjectDetail: React.FC = () => {
         notify.error(error, '加载项目失败，请重试');
       })
       .finally(() => { if (isStale()) return; setLoading(false); });
-  }, [addRecentProject, projectId, setProject, setActiveScript, setLoading, setLoadError]);
+  }, [addRecentProject, projectId]);
 
   const handleDeleteProject = useCallback(() => { setDeleteConfirmOpen(true); }, [setDeleteConfirmOpen]);
 
@@ -251,7 +258,7 @@ const ProjectDetail: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">AI驱动脚本编辑</h2>
             <div className="flex gap-2">
-              <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleGenerateScript} disabled={aiLoading}>{aiLoading ? '生成中...' : 'AI 一键生成'}</Button>
+              <Button className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground" onClick={handleGenerateScript} disabled={aiLoading}>{aiLoading ? '生成中...' : 'AI 一键生成'}</Button>
               <Button variant="outline" onClick={handleCreateScript}>新建空脚本</Button>
             </div>
           </div>
@@ -267,7 +274,7 @@ const ProjectDetail: React.FC = () => {
           <AudioLines size={48} className="text-muted-foreground" />
           <h3 className="text-lg font-semibold">全自动音画同步引擎</h3>
           <p className="text-muted-foreground">结合TTS合成声音与画面关键帧自动对齐，提供影院级配音体验。</p>
-          <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={() => notify.info('功能开发中，敬请期待！')}>即将推出</Button>
+          <Button className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground" onClick={() => notify.info('功能开发中，敬请期待！')}>即将推出</Button>
         </div>
       );
       case 'edit': if (!activeScript) return null; return <Suspense fallback={<StepFallback />}><VideoProcessingController videoPath={project.videoUrl ?? ''} segments={activeScript.content.map(s => ({ start: s.startTime, end: s.endTime, type: s.type, content: s.content }))} /></Suspense>;
@@ -280,22 +287,74 @@ const ProjectDetail: React.FC = () => {
   return (
     <TooltipProvider>
       <div className={styles.container}>
-        <div className={styles.header}>
+        <div className="flex items-center justify-between bg-[#111220] border border-white/8 rounded-xl p-4 mb-4 flex-wrap gap-3">
           <div className="flex items-center gap-3">
             <Tooltip>
               <TooltipTrigger>
-                <Button variant="ghost" size="icon" onClick={() => navigate('/projects')}><ArrowLeft size={16} /></Button>
+                <button
+                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white flex items-center justify-center border border-white/10 transition-colors cursor-pointer"
+                  onClick={() => navigate('/projects')}
+                  aria-label="返回项目列表"
+                >
+                  <ArrowLeft size={15} />
+                </button>
               </TooltipTrigger>
               <TooltipContent>返回项目列表</TooltipContent>
             </Tooltip>
             <div>
-              <div className="text-xs text-muted-foreground">当前工作区</div>
-              <h1 className="text-xl font-bold">{project.name}</h1>
+              <div className="text-[10px] text-text-tertiary font-mono">工程项目中心</div>
+              <h1 className="text-base font-bold text-white flex items-center gap-2">
+                {project.name}
+                <span className="text-[10px] text-purple-400 bg-purple-950/60 border border-purple-800/40 px-2 py-0.5 rounded-full font-medium">
+                  {project.updatedAt ? `更新于 ${project.updatedAt.slice(0, 10)}` : '进行中'}
+                </span>
+              </h1>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={() => setDrawerVisible(true)}><Settings size={14} className="mr-1" />项目信息</Button>
-            <Button variant="destructive" onClick={handleDeleteProject}><Delete size={14} className="mr-1" />删除</Button>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* 4 工坊流转步骤条 */}
+            <div className="flex items-center gap-1 bg-[#18192a] p-1 rounded-lg border border-white/5">
+              <button
+                className="px-2.5 py-1 text-xs text-purple-300 hover:text-white rounded hover:bg-white/5 transition-colors cursor-pointer"
+                onClick={() => navigate(`/asset-hub/${project.id}`)}
+              >
+                1. 素材拆条
+              </button>
+              <button
+                className="px-2.5 py-1 text-xs text-purple-300 hover:text-white rounded hover:bg-white/5 transition-colors cursor-pointer"
+                onClick={() => navigate(`/script-studio/${project.id}`)}
+              >
+                2. 剧本研磨
+              </button>
+              <button
+                className="px-2.5 py-1 text-xs bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded shadow-sm transition-colors cursor-pointer"
+                onClick={() => navigate(`/workspace/${project.id}`)}
+              >
+                3. 剪辑工作台
+              </button>
+              <button
+                className="px-2.5 py-1 text-xs text-purple-300 hover:text-white rounded hover:bg-white/5 transition-colors cursor-pointer"
+                onClick={() => navigate(`/export-hub/${project.id}`)}
+              >
+                4. 消重发布
+              </button>
+            </div>
+
+            <button
+              className="text-xs bg-white/5 hover:bg-white/10 text-text-secondary hover:text-white font-medium px-3 py-1.5 rounded-lg border border-white/8 flex items-center gap-1.5 transition-colors cursor-pointer"
+              onClick={() => setDrawerVisible(true)}
+            >
+              <Settings size={13} />
+              <span>属性信息</span>
+            </button>
+            <button
+              className="text-xs bg-red-950/40 hover:bg-red-900/60 text-red-300 hover:text-red-200 font-medium px-3 py-1.5 rounded-lg border border-red-800/40 flex items-center gap-1.5 transition-colors cursor-pointer"
+              onClick={handleDeleteProject}
+            >
+              <Delete size={13} />
+              <span>删除</span>
+            </button>
           </div>
         </div>
 

@@ -55,23 +55,6 @@
 
 .progressBar {
   margin-bottom: 12px;
-  
-  :global(.ant-slider) {
-    margin: 0;
-  }
-  
-  :global(.ant-slider-rail) {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  
-  :global(.ant-slider-track) {
-    background-color: @film-amber;
-  }
-  
-  :global(.ant-slider-handle) {
-    border-color: @film-amber;
-    box-shadow: 0 0 0 2px rgba(200, 149, 108, 0.2);
-  }
 }
 
 .controlButtons {
@@ -121,31 +104,12 @@
   padding: 12px 8px;
   background-color: rgba(0, 0, 0, 0.8);
   border-radius: 4px;
-  
-  :global(.ant-slider) {
-    height: 80px;
-    margin: 0 auto;
-  }
 }
 
 /* 暗色模式适配 — Cinematic Darkroom */
 :global(.dark) {
   .videoPlayerContainer {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-
-  .progressBar {
-    :global(.ant-slider-rail) {
-      background-color: rgba(255, 255, 255, 0.15);
-    }
-
-    :global(.ant-slider-track) {
-      background-color: @film-amber;
-    }
-
-    :global(.ant-slider-handle) {
-      border-color: @film-amber;
-    }
   }
 
   .controlButton {

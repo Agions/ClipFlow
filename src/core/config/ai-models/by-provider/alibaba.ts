@@ -1,18 +1,40 @@
 /**
- * 阿里云 Qwen 模型目录（3 个）
- *
- * Stage 8 PR-3.1：从 catalog.ts 拆分而来。
+ * 阿里云 Qwen 模型目录（2026年8月最新）
  */
 import type { AIModel } from '@/types';
 
 export const alibabaModels: AIModel[] = [
   {
-    id: 'qwen3.6-max-preview',
-    name: 'Qwen3.6 Max (Preview)',
+    id: 'qwen3.8-max',
+    name: 'Qwen3.8 Max',
+    provider: 'alibaba',
+    category: ['text', 'code', 'image', 'video'],
+    description: '阿里云通义千问 2026 年 8 月最新 2.4T 参数 MoE 旗舰，100 万超长上下文，影视解说与复杂长剧本分析最强推荐。',
+    features: ['最高智能', '中文专家', '2.4T MoE', '1M 上下文'],
+    tokenLimit: 1000000,
+    contextWindow: 1000000,
+    isPro: true,
+    pricing: { input: 0, output: 0, unit: 'see dashscope.aliyun.com' },
+  },
+  {
+    id: 'qwen3.8-27b',
+    name: 'Qwen3.8 27B',
+    provider: 'alibaba',
+    category: ['text', 'code', 'image', 'video'],
+    description: '阿里云通义千问 2026 年 8 月高性能模型，原生支持视觉与视频理解，自带 Thinking 深度思考模式。',
+    features: ['多模态', '深度思考', '高性能'],
+    tokenLimit: 131072,
+    contextWindow: 131072,
+    isPro: true,
+    pricing: { input: 0, output: 0, unit: 'see dashscope.aliyun.com' },
+  },
+  {
+    id: 'qwen3.7-plus',
+    name: 'Qwen3.7 Plus',
     provider: 'alibaba',
     category: ['text', 'code', 'image'],
-    description: '阿里云通义千问最高智能预览版（2026-04），适合高质量解说稿与复杂文案创作。',
-    features: ['最高智能', '中文专家', '复杂推理'],
+    description: '阿里云通义千问旗舰模型，中文能力突出，适合中文解说文案生成与台词改写。',
+    features: ['中文优化', '多模态', '成本可控'],
     tokenLimit: 131072,
     contextWindow: 131072,
     isPro: true,
@@ -23,8 +45,8 @@ export const alibabaModels: AIModel[] = [
     name: 'Qwen3.6 Plus',
     provider: 'alibaba',
     category: ['text', 'code', 'image'],
-    description: '阿里云通义千问旗舰模型（2026-04），中文能力突出，适合中文解说文案生成与改写。',
-    features: ['中文优化', '多模态', '成本可控'],
+    description: '阿里云通义千问高性价比旗舰，中文长文本理解与影视叙事极佳。',
+    features: ['中文优化', '多模态', '高性价比'],
     tokenLimit: 131072,
     contextWindow: 131072,
     isPro: true,
@@ -35,7 +57,7 @@ export const alibabaModels: AIModel[] = [
     name: 'Qwen3.6 Flash',
     provider: 'alibaba',
     category: ['text', 'code', 'image'],
-    description: '阿里云通义千问高速模型（2026-04），响应快，适合批量分析与低延迟任务。',
+    description: '阿里云通义千问高速模型，响应极快，适合批量分析与低延迟任务。',
     features: ['高速', '低成本', '中文优化'],
     tokenLimit: 131072,
     contextWindow: 131072,

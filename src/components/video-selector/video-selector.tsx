@@ -242,7 +242,7 @@ const VideoSelector: React.FC<VideoSelectorProps> = ({
       <div className={`relative ${loading || isAnalyzing ? 'opacity-60 pointer-events-none' : ''}`}>
         {loading || isAnalyzing ? (
           <div className="flex items-center justify-center py-12">
-            <div className="h-6 w-6 rounded-full border-2 border-orange-500/30 border-t-orange-500 animate-spin" />
+            <div className="h-6 w-6 rounded-full border-2 border-accent-primary/30 border-t-accent-primary animate-spin" />
             <span className="ml-2 text-sm text-muted-foreground">
               {isAnalyzing ? '分析视频中...' : '加载中...'}
             </span>
@@ -299,7 +299,7 @@ const VideoSelector: React.FC<VideoSelectorProps> = ({
                   移除
                 </Button>
                 <Button
-                  className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white"
+                  className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground"
                   onClick={handlePlayVideo}
                 >
                   <PlayCircle className="mr-1 size-4" />

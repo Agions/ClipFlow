@@ -11,6 +11,7 @@ import { notify } from '@/shared';
 import { useAppStore } from '@/stores/app-store';
 import styles from './project-setup.module.less';
 import { ArrowRight, User, PenTool, Grid3x3, Plus } from 'lucide-react';
+import { OUT_SUBTITLE_FG, OUT_SUBTITLE_BG, OUT_SUBTITLE_STROKE } from '@/core/video/output-colors';
 
 interface ProjectCreateProps {
   onNext?: () => void;
@@ -40,9 +41,27 @@ const MODE_OPTIONS = [
 
 // 项目模板（内部使用，不对外展示）
 const PROJECT_TEMPLATES_INTERNAL = {
-  'first-person': { videoQuality: 'high' as const, outputFormat: 'mp4' as const, resolution: '1080p' as const, frameRate: 30 as 24 | 30 | 60, subtitleEnabled: true },
-  narration: { videoQuality: 'high' as const, outputFormat: 'mp4' as const, resolution: '1080p' as const, frameRate: 30 as 24 | 30 | 60, subtitleEnabled: true },
-  remix: { videoQuality: 'medium' as const, outputFormat: 'mp4' as const, resolution: '1080p' as const, frameRate: 30 as 24 | 30 | 60, subtitleEnabled: true },
+  'first-person': {
+    videoQuality: 'high' as const,
+    outputFormat: 'mp4' as const,
+    resolution: '1080p' as const,
+    frameRate: 30 as 24 | 30 | 60,
+    subtitleEnabled: true,
+  },
+  narration: {
+    videoQuality: 'high' as const,
+    outputFormat: 'mp4' as const,
+    resolution: '1080p' as const,
+    frameRate: 30 as 24 | 30 | 60,
+    subtitleEnabled: true,
+  },
+  remix: {
+    videoQuality: 'medium' as const,
+    outputFormat: 'mp4' as const,
+    resolution: '1080p' as const,
+    frameRate: 30 as 24 | 30 | 60,
+    subtitleEnabled: true,
+  },
 };
 
 const normalizeText = (value?: string) => value?.trim().replace(/\s+/g, ' ') || '';
@@ -67,7 +86,9 @@ const ProjectCreate: React.FC<ProjectCreateProps> = memo(({ onNext }) => {
 
     const normalizedName = normalizeText(projectName) || createDefaultProjectName();
     const normalizedDescription = normalizeText(description);
-    const template = PROJECT_TEMPLATES_INTERNAL[selectedMode as keyof typeof PROJECT_TEMPLATES_INTERNAL] || PROJECT_TEMPLATES_INTERNAL.narration;
+    const template =
+      PROJECT_TEMPLATES_INTERNAL[selectedMode as keyof typeof PROJECT_TEMPLATES_INTERNAL] ||
+      PROJECT_TEMPLATES_INTERNAL.narration;
 
     setLoading(true);
     try {
@@ -90,10 +111,10 @@ const ProjectCreate: React.FC<ProjectCreateProps> = memo(({ onNext }) => {
           subtitleStyle: {
             fontFamily: '思源黑体',
             fontSize: 24,
-            color: '#ffffff',
-            backgroundColor: 'rgba(0,0,0,0.5)',
+            color: OUT_SUBTITLE_FG,
+            backgroundColor: OUT_SUBTITLE_BG,
             outline: true,
-            outlineColor: '#000000',
+            outlineColor: OUT_SUBTITLE_STROKE,
             position: 'bottom',
             alignment: 'center',
           },
@@ -121,7 +142,10 @@ const ProjectCreate: React.FC<ProjectCreateProps> = memo(({ onNext }) => {
   // 已有项目时显示信息卡
   if (state.project) {
     const mode = MODE_OPTIONS.find(m => m.id === state.project?.templateId) || MODE_OPTIONS[1];
-    const templateSettings = PROJECT_TEMPLATES_INTERNAL[state.project.templateId as keyof typeof PROJECT_TEMPLATES_INTERNAL] || PROJECT_TEMPLATES_INTERNAL.narration;
+    const templateSettings =
+      PROJECT_TEMPLATES_INTERNAL[
+        state.project.templateId as keyof typeof PROJECT_TEMPLATES_INTERNAL
+      ] || PROJECT_TEMPLATES_INTERNAL.narration;
 
     return (
       <div className={styles.stepContent}>
@@ -132,9 +156,7 @@ const ProjectCreate: React.FC<ProjectCreateProps> = memo(({ onNext }) => {
 
         <div className={styles.projectCard}>
           <div className={styles.projectHeader}>
-            <div className={styles.projectIconBox}>
-              {mode.icon}
-            </div>
+            <div className={styles.projectIconBox}>{mode.icon}</div>
             <div className={styles.projectMeta}>
               <div className={styles.projectName}>{state.project.name}</div>
               {state.project.description && (
@@ -151,12 +173,19 @@ const ProjectCreate: React.FC<ProjectCreateProps> = memo(({ onNext }) => {
             <div className={styles.infoItem}>
               <span className={styles.infoLabel}>创建时间</span>
               <span className={styles.infoValue}>
-                {new Date(state.project.createdAt ?? Date.now()).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                {new Date(state.project.createdAt ?? Date.now()).toLocaleString('zh-CN', {
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
               </span>
             </div>
             <div className={styles.infoItem}>
               <span className={styles.infoLabel}>输出格式</span>
-              <span className={styles.infoValue}>{templateSettings.outputFormat.toUpperCase()}</span>
+              <span className={styles.infoValue}>
+                {templateSettings.outputFormat.toUpperCase()}
+              </span>
             </div>
             <div className={styles.infoItem}>
               <span className={styles.infoLabel}>分辨率</span>
@@ -185,14 +214,14 @@ const ProjectCreate: React.FC<ProjectCreateProps> = memo(({ onNext }) => {
       <div className={styles.modeSection}>
         <span className={styles.modeLabel}>选择创作模式</span>
         <div className={styles.modeGrid}>
-          {MODE_OPTIONS.map((mode) => (
+          {MODE_OPTIONS.map(mode => (
             <div
               key={mode.id}
               className={`${styles.modeCard} ${selectedMode === mode.id ? styles.modeActive : ''}`}
               onClick={() => setSelectedMode(mode.id)}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && setSelectedMode(mode.id)}
+              onKeyDown={e => e.key === 'Enter' && setSelectedMode(mode.id)}
               aria-pressed={selectedMode === mode.id}
             >
               <div className={styles.modeCheckIcon}>
@@ -209,14 +238,16 @@ const ProjectCreate: React.FC<ProjectCreateProps> = memo(({ onNext }) => {
       {/* 玻璃拟态表单卡片 */}
       <div className={styles.formCard}>
         <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel} htmlFor="projectName">项目名称</label>
+          <label className={styles.fieldLabel} htmlFor="projectName">
+            项目名称
+          </label>
           <div className={styles.inputWrapper}>
             <input
               id="projectName"
               className={styles.textInput}
               type="text"
               value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
+              onChange={e => setProjectName(e.target.value)}
               placeholder="例如：产品宣传视频"
               maxLength={50}
               aria-label="项目名称"
@@ -225,13 +256,15 @@ const ProjectCreate: React.FC<ProjectCreateProps> = memo(({ onNext }) => {
         </div>
 
         <div className={styles.fieldGroup}>
-          <label className={styles.fieldLabel} htmlFor="projectDesc">项目描述（可选）</label>
+          <label className={styles.fieldLabel} htmlFor="projectDesc">
+            项目描述（可选）
+          </label>
           <div className={styles.inputWrapper}>
             <textarea
               id="projectDesc"
               className={styles.textareaInput}
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               placeholder="简要描述项目的目标和内容..."
               maxLength={200}
               rows={3}
@@ -252,7 +285,10 @@ const ProjectCreate: React.FC<ProjectCreateProps> = memo(({ onNext }) => {
       </div>
 
       <div className={styles.hintAlert}>
-        <strong><span aria-hidden="true">💡</span> 提示：</strong> 选择创作模式后，AI 将根据该模式生成最适合的文案和效果
+        <strong>
+          <span aria-hidden="true">💡</span> 提示：
+        </strong>{' '}
+        选择创作模式后，AI 将根据该模式生成最适合的文案和效果
       </div>
     </div>
   );
@@ -260,4 +296,3 @@ const ProjectCreate: React.FC<ProjectCreateProps> = memo(({ onNext }) => {
 
 ProjectCreate.displayName = 'ProjectCreate';
 export default ProjectCreate;
-

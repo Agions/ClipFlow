@@ -54,7 +54,7 @@ const OriginalEditor: React.FC<OriginalEditorProps> = ({
               <Edit3 size={14} className="mr-1" />
               AI优化
             </Button>
-            <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleSave}>
+            <Button className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground" onClick={handleSave}>
               <Save size={14} className="mr-1" />
               保存
             </Button>

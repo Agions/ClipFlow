@@ -17,21 +17,21 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from '@/components/ui/select';
 import { notify } from '@/shared';
 import { formatTime } from '@/shared/utils/formatting';
-import {
-  Zap,
-  CheckCircle,
-  Download,
-} from 'lucide-react';
+import { Zap, CheckCircle, Download } from 'lucide-react';
 import { tauri } from '@/core/tauri';
 import { motion } from '@/components/common/motion-shim';
 import { ClipRepurposingPipeline } from '@/core/services/pipeline/clip-pipeline/pipeline';
 import type { VideoInfo, VideoAnalysis } from '@/types';
-import type {
-  RepurposingOptions,
-} from '@/core/services/pipeline/clip-pipeline/pipeline';
+import type { RepurposingOptions } from '@/core/services/pipeline/clip-pipeline/pipeline';
 import { transcodeWithCrop } from '@/core/services/export/transcode-crop-service';
 import styles from './clip-rippling.module.less';
 import {
@@ -58,21 +58,33 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
   const { state: storyState } = useProjectStore();
   const { currentVideo, analysis } = storyState;
   const videoPath = currentVideo?.path ?? '';
-  const videoInfo = useMemo<VideoInfo>(() => (
-    currentVideo
-      ? {
-          id: currentVideo.id || `video_${Date.now()}`,
-          name: currentVideo.name || 'video',
-          path: currentVideo.path,
-          duration: currentVideo.duration,
-          width: currentVideo.width ?? 1920,
-          height: currentVideo.height ?? 1080,
-          size: currentVideo.size || 0,
-          fps: DEFAULT_FPS,
-          format: 'mp4',
-        }
-      : { id: '', name: '', path: '', duration: 0, width: 1920, height: 1080, size: 0, fps: DEFAULT_FPS, format: 'mp4' }
-  ), [currentVideo]);
+  const videoInfo = useMemo<VideoInfo>(
+    () =>
+      currentVideo
+        ? {
+            id: currentVideo.id || `video_${Date.now()}`,
+            name: currentVideo.name || 'video',
+            path: currentVideo.path,
+            duration: currentVideo.duration,
+            width: currentVideo.width ?? 1920,
+            height: currentVideo.height ?? 1080,
+            size: currentVideo.size || 0,
+            fps: DEFAULT_FPS,
+            format: 'mp4',
+          }
+        : {
+            id: '',
+            name: '',
+            path: '',
+            duration: 0,
+            width: 1920,
+            height: 1080,
+            size: 0,
+            fps: DEFAULT_FPS,
+            format: 'mp4',
+          },
+    [currentVideo]
+  );
 
   // All UI/data state centralized in reducer
   const {
@@ -91,7 +103,18 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
     resetRun,
   } = useClipRippling();
 
-  const { platform, selectedFormats, targetCount, running, progress, stage, results, selectedClips, exporting, exportedPaths } = state;
+  const {
+    platform,
+    selectedFormats,
+    targetCount,
+    running,
+    progress,
+    stage,
+    results,
+    selectedClips,
+    exporting,
+    exportedPaths,
+  } = state;
 
   const handleRun = useCallback(async () => {
     if (!videoPath || !videoInfo) {
@@ -118,15 +141,13 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
         },
       };
 
-      const result = await pipeline.run(
-        videoInfo,
-        analysis ?? ({} as VideoAnalysis),
-        options
-      );
+      const result = await pipeline.run(videoInfo, analysis ?? ({} as VideoAnalysis), options);
 
       setResults(result.clips);
       // 默认全选
-      setSelectedClips(new Set(result.clips.map(c => c.clip.id).filter((id): id is string => id !== undefined)));
+      setSelectedClips(
+        new Set(result.clips.map(c => c.clip.id).filter((id): id is string => id !== undefined))
+      );
       notify.success(`生成 ${result.clips.length} 个短片段`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -134,7 +155,20 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
     } finally {
       setRunning(false);
     }
-  }, [videoPath, videoInfo, analysis, platform, selectedFormats, targetCount, resetRun, setStage, setProgress, setResults, setSelectedClips, setRunning]);
+  }, [
+    videoPath,
+    videoInfo,
+    analysis,
+    platform,
+    selectedFormats,
+    targetCount,
+    resetRun,
+    setStage,
+    setProgress,
+    setResults,
+    setSelectedClips,
+    setRunning,
+  ]);
 
   const handleExport = useCallback(async () => {
     if (selectedClips.size === 0) {
@@ -148,7 +182,9 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
 
     setExporting(true);
     const exported: string[] = [];
-    const clipsToExport = results.filter(c => c.clip.id !== undefined && selectedClips.has(c.clip.id));
+    const clipsToExport = results.filter(
+      c => c.clip.id !== undefined && selectedClips.has(c.clip.id)
+    );
 
     // 动态获取导出目录
     const exportDir = await tauri.getExportDir().catch(() => '/tmp/story-fab');
@@ -182,8 +218,12 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}><span aria-hidden="true">🎬</span> AI 智能拆条</h2>
-        <p className={styles.subtitle}>长视频 → 多段精彩短片段，自动识别高光 · 多维评分 · 多格式导出</p>
+        <h2 className={styles.title}>
+          <span aria-hidden="true">🎬</span> AI 智能拆条
+        </h2>
+        <p className={styles.subtitle}>
+          长视频 → 多段精彩短片段，自动识别高光 · 多维评分 · 多格式导出
+        </p>
       </div>
 
       {/* 控制面板 */}
@@ -198,11 +238,11 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-            {PLATFORM_OPTIONS.map(o => (
-              <SelectItem key={o.value} value={o.value}>
-                {o.emoji} {o.label}
-              </SelectItem>
-            ))}
+              {PLATFORM_OPTIONS.map(o => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.emoji} {o.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -217,9 +257,11 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-            {TARGET_CLIP_COUNTS.map(n => (
-              <SelectItem key={n} value={String(n)}>{n} 个</SelectItem>
-            ))}
+              {TARGET_CLIP_COUNTS.map(n => (
+                <SelectItem key={n} value={String(n)}>
+                  {n} 个
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -232,7 +274,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
                 key={fmt.value}
                 color={selectedFormats.includes(fmt.value as AspectRatio) ? 'orange' : 'default'}
                 onClick={() => toggleSelectedFormat(fmt.value as AspectRatio)}
-                className={`${styles.actionBtn} ${selectedFormats.includes(fmt.value as AspectRatio) ? 'bg-orange-500' : ''}`}
+                className={`${styles.actionBtn} ${selectedFormats.includes(fmt.value as AspectRatio) ? 'bg-accent-primary' : ''}`}
               >
                 {fmt.emoji} {fmt.label}
               </Badge>
@@ -246,7 +288,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
         {!running && results.length === 0 && (
           <Button
             onClick={handleRun}
-            className={`${styles.runButton} bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white w-full`}
+            className={`${styles.runButton} bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground w-full`}
           >
             <Zap className="mr-1" />
             开始 AI 拆条分析
@@ -260,10 +302,26 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
               className="[&_[data-slot=slider-track]]:bg-accent-primary/20"
             />
             <p className={styles.progressStage}>
-              {stage === 'analyzing' && <><span aria-hidden="true">🔍</span> 识别高光片段...</>}
-              {stage === 'scoring' && <><span aria-hidden="true">📊</span> 多维评分中...</>}
-              {stage === 'generating_seo' && <><span aria-hidden="true">✨</span> 生成 SEO 元数据...</>}
-              {stage === 'exporting' && <><span aria-hidden="true">📦</span> 准备导出...</>}
+              {stage === 'analyzing' && (
+                <>
+                  <span aria-hidden="true">🔍</span> 识别高光片段...
+                </>
+              )}
+              {stage === 'scoring' && (
+                <>
+                  <span aria-hidden="true">📊</span> 多维评分中...
+                </>
+              )}
+              {stage === 'generating_seo' && (
+                <>
+                  <span aria-hidden="true">✨</span> 生成 SEO 元数据...
+                </>
+              )}
+              {stage === 'exporting' && (
+                <>
+                  <span aria-hidden="true">📦</span> 准备导出...
+                </>
+              )}
             </p>
           </div>
         )}
@@ -275,12 +333,15 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
           <div className={styles.clipsHeader}>
             <span className={styles.clipsTitle}>
               📋 生成 {results.length} 个短片段
-              <Badge variant="default" className={`bg-green-100 text-green-700 ${styles.badgeMarginLeft}`}>
+              <Badge
+                variant="default"
+                className={`bg-accent-success/15 text-accent-success ${styles.badgeMarginLeft}`}
+              >
                 已选 {selectedClips.size} 个
               </Badge>
             </span>
             <Button
-              className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white"
+              className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground"
               onClick={handleExport}
               disabled={selectedClips.size === 0 || exporting}
             >
@@ -322,10 +383,7 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
                     {Object.entries(score.dimensions ?? {}).map(([dim, val]) => (
                       <div key={dim} className={styles.dimBar}>
                         <span className={styles.dimLabel}>{dimLabel(dim)}</span>
-                        <Progress
-                          value={Math.round(val)}
-                          className="flex-1 min-w-[60px]"
-                        />
+                        <Progress value={Math.round(val)} className="flex-1 min-w-[60px]" />
                         <span className={styles.dimScore}>{Math.round(val)}</span>
                       </div>
                     ))}
@@ -335,10 +393,16 @@ const ClipRepurpose: React.FC<ClipRepurposeProps> = memo(({ onNext }) => {
                   {seo && (
                     <div className={styles.seoSection}>
                       <p className={styles.seoTitle}>📝 {seo.title}</p>
-                      <p className={styles.seoDesc}>{seo.description?.slice(0, SEO_DESCRIPTION_MAX_LENGTH)}...</p>
+                      <p className={styles.seoDesc}>
+                        {seo.description?.slice(0, SEO_DESCRIPTION_MAX_LENGTH)}...
+                      </p>
                       <div className={styles.hashtags}>
                         {seo.hashtags?.slice(0, HASHTAGS_MAX_COUNT).map(tag => (
-                          <Badge key={tag} variant="default" className={`bg-blue-100 text-blue-700 ${styles.tagBadge}`}>
+                          <Badge
+                            key={tag}
+                            variant="default"
+                            className={`bg-accent-secondary/15 text-accent-secondary ${styles.tagBadge}`}
+                          >
                             #{tag}
                           </Badge>
                         ))}

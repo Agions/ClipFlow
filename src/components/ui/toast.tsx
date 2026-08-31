@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import React, { createContext, useState, useCallback, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
-import { X, CheckCircle, AlertCircle, AlertTriangle, Info, Loader } from "lucide-react";
-import styles from "@/components/ui/toast.module.less";
-import { logger } from "@/shared/utils/logging";
+import React, { createContext, useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { X, CheckCircle, AlertCircle, AlertTriangle, Info, Loader } from 'lucide-react';
+import styles from '@/components/ui/toast.module.less';
+import { logger } from '@/shared/utils/logging';
 
-type ToastType = "success" | "error" | "warning" | "info" | "loading";
+type ToastType = 'success' | 'error' | 'warning' | 'info' | 'loading';
 
 interface Toast {
   id: string;
@@ -23,18 +23,18 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   const typeIcons: Record<ToastType, React.ReactNode> = {
-    success: <CheckCircle size={16} className="text-green-500" />,
-    error: <AlertCircle size={16} className="text-red-500" />,
-    warning: <AlertTriangle size={16} className="text-yellow-500" />,
-    info: <Info size={16} className="text-blue-500" />,
-    loading: <Loader size={16} className="animate-spin text-gray-500" />,
+    success: <CheckCircle size={16} className="text-accent-success" />,
+    error: <AlertCircle size={16} className="text-accent-danger" />,
+    warning: <AlertTriangle size={16} className="text-accent-warning" />,
+    info: <Info size={16} className="text-accent-info" />,
+    loading: <Loader size={16} className="animate-spin text-text-tertiary" />,
   };
 
   return (
     <div className={styles.toastItem} data-type={toast.type}>
       <div className={styles.toastIcon}>{typeIcons[toast.type]}</div>
       <div className={styles.toastContent}>{toast.content}</div>
-      {toast.type !== "loading" && (
+      {toast.type !== 'loading' && (
         <button className={styles.toastClose} onClick={onClose}>
           <X size={14} />
         </button>
@@ -61,35 +61,40 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const addToast = useCallback((opts: { type: ToastType; content: string; duration?: number; key?: string }) => {
-    const id = opts.key || `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    const duration = opts.duration ?? (opts.type === "error" ? 6000 : 3000);
+  const addToast = useCallback(
+    (opts: { type: ToastType; content: string; duration?: number; key?: string }) => {
+      const id = opts.key || `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const duration = opts.duration ?? (opts.type === 'error' ? 6000 : 3000);
 
-    if (opts.key) {
-      removeToast(id);
-    }
+      if (opts.key) {
+        removeToast(id);
+      }
 
-    setToasts(prev => [...prev, { id, type: opts.type, content: opts.content, duration }]);
+      setToasts(prev => [...prev, { id, type: opts.type, content: opts.content, duration }]);
 
-    if (duration > 0) {
-      const timer = setTimeout(() => removeToast(id), duration);
-      timersRef.current.set(id, timer);
-    }
-  }, [removeToast]);
+      if (duration > 0) {
+        const timer = setTimeout(() => removeToast(id), duration);
+        timersRef.current.set(id, timer);
+      }
+    },
+    [removeToast]
+  );
 
   // Subscribe to notify events
   useEffect(() => {
     let cleanup: (() => void) | undefined;
     let cancelled = false;
-    import('../../shared/utils/notify').then(({ subscribeToToast }) => {
-      // If cleanup already ran before import resolved, don't subscribe
-      if (cancelled) return;
-      cleanup = subscribeToToast((event) => {
-        addToast(event);
+    import('../../shared/utils/notify')
+      .then(({ subscribeToToast }) => {
+        // If cleanup already ran before import resolved, don't subscribe
+        if (cancelled) return;
+        cleanup = subscribeToToast(event => {
+          addToast(event);
+        });
+      })
+      .catch(err => {
+        logger.error('[Toast] Failed to load notify module', err);
       });
-    }).catch((err) => {
-      logger.error('[Toast] Failed to load notify module', err);
-    });
     return () => {
       cancelled = true;
       cleanup?.();
@@ -98,7 +103,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const ctx: ToastContextValue = {
     toast: addToast,
-    destroy: (key) => {
+    destroy: key => {
       if (key) {
         removeToast(key);
       }

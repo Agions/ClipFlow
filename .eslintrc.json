@@ -23,12 +23,27 @@
       "jsx": true
     }
   },
-  "plugins": ["@typescript-eslint", "react", "react-hooks"],
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "react-hooks"
+  ],
   "rules": {
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-empty-object-type": "off",
-    "@typescript-eslint/ban-ts-comment": ["warn", { "ts-ignore": "allow-with-description" }],
+    "@typescript-eslint/ban-ts-comment": [
+      "warn",
+      {
+        "ts-ignore": "allow-with-description"
+      }
+    ],
     "no-prototype-builtins": "off",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
@@ -44,13 +59,38 @@
       "error",
       {
         "paths": [
-          { "name": "antd", "message": "StoryFab 禁止使用 antd，请改用 shadcn/ui (@/components/ui/*)。参考 ADR-002。" },
-          { "name": "@ant-design/icons", "message": "StoryFab 禁止使用 @ant-design/*，请改用 lucide-react。参考 ADR-002。" },
-          { "name": "@ant-design/colors", "message": "StoryFab 禁止使用 @ant-design/*。参考 ADR-002。" }
+          {
+            "name": "antd",
+            "message": "StoryFab 禁止使用 antd，请改用 shadcn/ui (@/components/ui/*)。参考 ADR-002。"
+          },
+          {
+            "name": "@ant-design/icons",
+            "message": "StoryFab 禁止使用 @ant-design/*，请改用 lucide-react。参考 ADR-002。"
+          },
+          {
+            "name": "@ant-design/colors",
+            "message": "StoryFab 禁止使用 @ant-design/*。参考 ADR-002。"
+          }
         ],
         "patterns": [
-          { "group": ["@ant-design/*"], "message": "StoryFab 禁止使用 @ant-design/*。参考 ADR-002。" }
+          {
+            "group": [
+              "@ant-design/*"
+            ],
+            "message": "StoryFab 禁止使用 @ant-design/*。参考 ADR-002。"
+          }
         ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "Literal[value=/(?:^|[\\s\"'`])(?:bg|text|border|ring|fill|stroke|from|to|via|outline|decoration|accent|caret|placeholder|shadow)-(?:black|white|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)(?:-\\d{2,3})?(?:\\/\\d+)?(?:$|[\\s\"'`])/]",
+        "message": "禁止使用 Tailwind 原始调色板（black/white/red-500/blue-300 等）。请改用 DESIGN.md §2 的 token 类：bg-accent-primary / text-primary-foreground / border-accent-warning 等。例外：globals.css、shared/tokens/*、output-colors.ts、scripts/check-color-tokens.cjs。参考 PR-1.6。"
+      },
+      {
+        "selector": "Literal[value=/^#[0-9a-fA-F]{6}$/]",
+        "message": "禁止使用硬编码 6 位 hex 颜色字面量。请改用 DESIGN.md §2 的 token 类，或通过 colorTokenToCssVar() 引用。例外：globals.css、shared/tokens/color-tokens.ts、core/video/output-colors.ts。参考 PR-1.6。"
       }
     ]
   },
@@ -61,13 +101,20 @@
   },
   "overrides": [
     {
-      "files": ["src/core/**/*.{ts,tsx}"],
+      "files": [
+        "src/core/**/*.{ts,tsx}"
+      ],
       "rules": {
         "no-restricted-imports": [
           "error",
           {
             "patterns": [
-              { "group": ["@/services/*"], "message": "src/core/** 禁止引用 src/services/** (shim 层)，请直接 import @/core/... 参考 ADR-101。" }
+              {
+                "group": [
+                  "@/services/*"
+                ],
+                "message": "src/core/** 禁止引用 src/services/** (shim 层)，请直接 import @/core/... 参考 ADR-101。"
+              }
             ]
           }
         ]
@@ -80,6 +127,35 @@
       ],
       "rules": {
         "react-hooks/rules-of-hooks": "off"
+      }
+    },
+    {
+      "files": [
+        "src/shared/tokens/**/*.ts",
+        "src/core/video/output-colors.ts",
+        "scripts/check-color-tokens.cjs",
+        "src/__bench__/**/*.{ts,tsx}"
+      ],
+      "rules": {
+        "no-restricted-syntax": "off"
+      }
+    },
+    {
+      "files": [
+        "**/*.test.{ts,tsx}",
+        "src/**/__tests__/**/*.{ts,tsx}",
+        "src/**/__mocks__/**/*.{ts,tsx}"
+      ],
+      "rules": {
+        "no-restricted-syntax": "off"
+      }
+    },
+    {
+      "files": [
+        "src/core/services/ass-engine.test.ts"
+      ],
+      "rules": {
+        "no-restricted-syntax": "off"
       }
     }
   ]

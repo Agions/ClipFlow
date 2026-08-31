@@ -34,7 +34,7 @@ export function StorylinePreview({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <CheckCircle className="size-4 text-green-600" />
+          <CheckCircle className="size-4 text-accent-success" />
           剧情时间线构建完成
         </CardTitle>
       </CardHeader>

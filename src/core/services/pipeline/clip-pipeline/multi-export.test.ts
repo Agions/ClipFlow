@@ -10,7 +10,6 @@ import {
   QUALITY_PRESETS,
   type AspectRatio,
   type ClipExportRequest,
-  type ExportTask,
 } from './multi-export';
 
 function makeRequest(overrides: Partial<ClipExportRequest> = {}): ClipExportRequest {

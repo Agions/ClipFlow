@@ -35,7 +35,7 @@ export const BatchProcessing: React.FC<BatchProcessingProps> = ({
     <div className="batchContainer">
       <div className="batchHeader">
         <Button
-          className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white"
+          className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground"
           onClick={onAddBatchItem}
         >
           <Plus className="mr-1" size={16} />
@@ -44,7 +44,7 @@ export const BatchProcessing: React.FC<BatchProcessingProps> = ({
 
         <Tooltip title="开始处理所有批次项">
           <Button
-            className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white"
+            className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground"
             onClick={onStartBatchProcessing}
             disabled={processingBatch || batchItems.length === 0}
           >
@@ -81,7 +81,7 @@ export const BatchProcessing: React.FC<BatchProcessingProps> = ({
                   </div>
                   <div className="batchItemActions">
                     {item.completed && (
-                      <Badge variant="default" className="bg-green-500/20 text-green-400 border-green-500/30">已完成</Badge>
+                      <Badge variant="default" className="bg-accent-success/20 text-accent-success border-accent-success/30">已完成</Badge>
                     )}
                     <Button
                       variant="ghost"

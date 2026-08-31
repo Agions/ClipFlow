@@ -13,6 +13,7 @@
  */
 
 // ─── 音轨 ────────────────────────────────────────────────
+import { OUT_SUBTITLE_FG, OUT_SUBTITLE_STROKE } from '@/core/video/output-colors';
 
 /** 音轨类型 */
 export type AudioTrackType = 'narration' | 'dialogue' | 'sfx' | 'bgm';
@@ -157,8 +158,8 @@ export function createAssembly(productionId: string, platformId: string): Assemb
           id: 'default',
           fontFamily: 'Source Han Sans',
           fontSize: 22,
-          color: '#FFFFFF',
-          strokeColor: '#000000',
+          color: OUT_SUBTITLE_FG,
+          strokeColor: OUT_SUBTITLE_STROKE,
           strokeWidth: 2,
           position: 'bottom',
           opacity: 1.0,
@@ -175,9 +176,7 @@ export function createAssembly(productionId: string, platformId: string): Assemb
 
 /** 校验：装配图是否可渲染（至少 1 视频轨 + 1 配音轨 + 总时长 > 0） */
 export function isAssemblyRenderable(kit: AssemblyKit): boolean {
-  const hasVideo = kit.videoTracks.some((t) => t.clips.length > 0);
-  const hasNarration = kit.audioTracks.some(
-    (t) => t.type === 'narration' && t.segments.length > 0,
-  );
+  const hasVideo = kit.videoTracks.some(t => t.clips.length > 0);
+  const hasNarration = kit.audioTracks.some(t => t.type === 'narration' && t.segments.length > 0);
   return hasVideo && hasNarration && kit.totalDurationSecs > 0;
 }

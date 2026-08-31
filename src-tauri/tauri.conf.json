@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
-  "productName": "StoryFab",
+  "productName": "Fablr",
   "version": "2.2.0",
-  "identifier": "com.story-fab.desktop",
+  "identifier": "com.fablr.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "StoryFab — AI 智能视频创作",
+        "title": "Fablr (剧工) — AI 影视/短剧解说创作平台",
         "label": "main",
         "width": 1200,
         "height": 800,
@@ -53,10 +53,10 @@
       "icons/icon.ico"
     ],
 "category": "Video",
-    "shortDescription": "AI-powered video creation tool",
-    "longDescription": "StoryFab is an AI-driven video creation tool supporting dual-mode workflows: clip mode for smart segmentation and highlight extraction, and commentary mode for automatic narration with TTS synthesis.",
-    "publisher": "StoryFab",
-    "copyright": "Copyright © 2024-2025 StoryFab",
+    "shortDescription": "Fablr — AI-powered drama & movie recap creation studio",
+    "longDescription": "Fablr (剧工) is a local-first AI drama and movie recap video creation studio supporting multi-agent screenplay crafting, smart asset segmentation, CapCut draft export, and anti-deduplication matrix publishing.",
+    "publisher": "Fablr Studio",
+    "copyright": "Copyright © 2026 Fablr",
     "windows": {
       "nsis": {
         "installMode": "currentUser",
@@ -94,19 +94,10 @@
     }
   },
   "plugins": {
-    "notification": {
-      "all": true
-    },
-    "global-shortcut": {
-      "all": true
-    },
-    "clipboard-manager": {
-      "all": true
-    },
     "deep-link": {
       "desktop": {
         "schemes": [
-          "story-fab"
+          "fablr"
         ]
       }
     }

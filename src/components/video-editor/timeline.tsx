@@ -21,23 +21,18 @@ const getSegmentStyle = (segment: ScriptSegment, duration: number): SegmentStyle
   const left = `${(segment.startTime / duration) * 100}%`;
   const width = `${((segment.endTime - segment.startTime) / duration) * 100}%`;
 
-  // 根据片段类型设置颜色
-  let color = '#6b8cce'; // 默认为蓝色（旁白）
+  // 根据片段类型设置颜色（使用 DESIGN.md §2.1.6 timeline 专属 token）
+  let color = 'var(--timeline-video)'; // 默认为 video 蓝（旁白）
   if (segment.type === 'dialogue') {
-    color = '#5a9e6f'; // 对话为绿色
+    color = 'var(--accent-success)'; // 对话为绿色
   } else if (segment.type === 'description') {
-    color = '#c49660'; // 描述为橙色
+    color = 'var(--timeline-subtitle)'; // 描述为琥珀
   }
 
   return { left, width, color };
 };
 
-const Timeline: React.FC<TimelineProps> = ({
-  segments,
-  duration,
-  onSegmentClick,
-  onDragStart,
-}) => {
+const Timeline: React.FC<TimelineProps> = ({ segments, duration, onSegmentClick, onDragStart }) => {
   const timelineRef = useRef<HTMLDivElement>(null);
 
   return (

@@ -111,3 +111,6 @@ pnpm-lock.yaml
 
 # v3 重构规划文档（本地留底，不上 GitHub）
 docs/PLAN-v3-architecture.md
+
+# verify:tokens 脚本生成的临时编译产物（避免污染 git status）
+.cache/

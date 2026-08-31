@@ -1,0 +1,318 @@
+/**
+ * 剧工 (Fablr) — 智能消重与多平台矩阵发布样式
+ * 100% 像素级实现黑曜石工业级消重发布台
+ */
+
+@ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 24px;
+  background: #08080c;
+  color: #ffffff;
+  min-height: calc(100vh - 48px);
+  box-sizing: border-box;
+}
+
+/* ── 顶部流程流转条 ── */
+.topToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 8px 16px;
+}
+
+.versionBadge {
+  font-size: 10px;
+  color: #22d3ee;
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  padding: 2px 7px;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+.pipelineSteps {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #18192a;
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.stepBtn {
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  color: #94a3b8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+.activeStepBtn {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c084fc;
+  font-weight: 600;
+}
+
+.primaryPublishBtn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+  width: 100%;
+  transition: all 0.2s @ease-out;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.55);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* ── 三栏核心网格 ── */
+.threeColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.studioColumn {
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.colHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* 1. 画幅切换 */
+.ratioGroup {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.ratioCard {
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: rgba(139, 92, 246, 0.5);
+  }
+}
+
+.activeRatio {
+  border-color: #8b5cf6 !important;
+  background: rgba(139, 92, 246, 0.12) !important;
+  box-shadow: 0 0 0 1px #8b5cf6;
+}
+
+.ratioNumber {
+  font-size: 13px;
+  font-weight: 800;
+  color: #c084fc;
+  font-family: monospace;
+}
+
+.ratioTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.ratioSub {
+  font-size: 8px;
+  color: #94a3b8;
+}
+
+.previewMonitorBox {
+  background: #151628;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+}
+
+.aspectPreviewScreen {
+  background: radial-gradient(circle, #1e1b38 0%, #0d0e1a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 10px;
+}
+
+.liveSubtitleText {
+  font-size: 10px;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* 2. 5 级消重滤镜链 */
+.filterChainList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filterCard {
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filterTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filterName {
+  font-size: 11px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.activeTag {
+  font-size: 9px;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.filterDesc {
+  font-size: 10px;
+  color: #94a3b8;
+  margin: 0;
+  padding-left: 20px;
+}
+
+/* 3. 平台矩阵列表 */
+.platformList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.platformItem {
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    border-color: rgba(139, 92, 246, 0.4);
+  }
+}
+
+.activePlatform {
+  border-color: rgba(139, 92, 246, 0.6);
+  background: #1c1d32;
+}
+
+.platformName {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.platformDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.accountSubText {
+  font-size: 9px;
+  color: #94a3b8;
+}
+
+.publishStatusBadge {
+  font-size: 9px;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.statusPublished {
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.15);
+  font-weight: 600;
+}
+
+.publishBox {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

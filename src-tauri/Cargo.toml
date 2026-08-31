@@ -1,13 +1,13 @@
 [package]
-name = "story-fab"
+name = "fablr"
 version = "2.2.0"
-description = "story-fab - 开源 AI 影视解说创作工坊 (Tauri 2 + Rust)。长视频 → AI 拆条 + 多 Agent 智能解说 + 本地 Whisper 字幕 + 配音合成。"
+description = "fablr (剧工) - 开源 AI 影视/短剧解说创作平台 (Tauri 2 + Rust)。长视频/短剧拆条 + 多 Agent 智能剧本研磨 + 本地 Whisper 字幕 + 配音合成 + 剪映草稿导出与消重发布。"
 authors = ["Agions <agions@qq.com>"]
 license = "MIT"
 edition = "2021"
 
 [lib]
-name = "story_fab_lib"
+name = "fablr_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

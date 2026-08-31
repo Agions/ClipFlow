@@ -5,14 +5,7 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 
-import {
-  ChainPipeline,
-  createStep,
-  reportProgress,
-  type PipelineContext,
-  type Step,
-  type StepOptions,
-} from './step';
+import { ChainPipeline, createStep, reportProgress, type PipelineContext, type Step } from './step';
 
 // ─── createStep ───────────────────────────────────────────────────────────────
 

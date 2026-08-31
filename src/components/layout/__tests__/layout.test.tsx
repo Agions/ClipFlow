@@ -92,9 +92,24 @@ describe('Layout', () => {
     expect(screen.getByRole('heading', { name: '项目' })).toBeInTheDocument();
   });
 
-  it('shows "项目" page title on /workspace', () => {
+  it('shows "专业视听剪辑工作台" page title on /workspace', () => {
     renderWithRouter('/workspace/abc');
-    expect(screen.getByRole('heading', { name: '项目' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '专业视听剪辑工作台' })).toBeInTheDocument();
+  });
+
+  it('shows "AI 剧本研磨工坊" page title on /script-studio', () => {
+    renderWithRouter('/script-studio');
+    expect(screen.getByRole('heading', { name: 'AI 剧本研磨工坊' })).toBeInTheDocument();
+  });
+
+  it('shows "智能素材库" page title on /asset-hub', () => {
+    renderWithRouter('/asset-hub');
+    expect(screen.getByRole('heading', { name: '智能素材库' })).toBeInTheDocument();
+  });
+
+  it('shows "消重发布中心" page title on /export-hub', () => {
+    renderWithRouter('/export-hub');
+    expect(screen.getByRole('heading', { name: '消重发布中心' })).toBeInTheDocument();
   });
 
   it('shows "设置" page title on /settings', () => {
@@ -102,28 +117,28 @@ describe('Layout', () => {
     expect(screen.getByRole('heading', { name: '设置' })).toBeInTheDocument();
   });
 
-  it('falls back to "StoryFab" for unknown paths', () => {
+  it('falls back to "Fablr" for unknown paths', () => {
     renderWithRouter('/random/unknown');
-    expect(screen.getByRole('heading', { name: 'StoryFab' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Fablr' })).toBeInTheDocument();
   });
 
   it('logo navigates to / on click', () => {
     renderWithRouter('/projects');
-    const logo = screen.getByRole('button', { name: 'StoryFab 首页' });
+    const logo = screen.getByRole('button', { name: '剧工首页' });
     fireEvent.click(logo);
     expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
   it('logo triggers navigation on Enter key', () => {
     renderWithRouter('/projects');
-    const logo = screen.getByRole('button', { name: 'StoryFab 首页' });
+    const logo = screen.getByRole('button', { name: '剧工首页' });
     fireEvent.keyDown(logo, { key: 'Enter' });
     expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
   it('logo triggers navigation on Space key', () => {
     renderWithRouter('/projects');
-    const logo = screen.getByRole('button', { name: 'StoryFab 首页' });
+    const logo = screen.getByRole('button', { name: '剧工首页' });
     fireEvent.keyDown(logo, { key: ' ' });
     expect(mockNavigate).toHaveBeenCalledWith('/');
   });
@@ -166,6 +181,6 @@ describe('Layout', () => {
   it('renders user info in topbar', () => {
     renderWithRouter('/');
     expect(screen.getByRole('button', { name: '用户菜单' })).toBeInTheDocument();
-    expect(screen.getByText('Agions')).toBeInTheDocument();
+    expect(screen.getByText('创作者')).toBeInTheDocument();
   });
 });

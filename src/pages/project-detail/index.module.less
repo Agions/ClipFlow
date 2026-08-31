@@ -69,37 +69,6 @@
 .headerActions {
   display: flex;
   gap: 12px;
-
-  :global {
-    .ant-btn {
-      font-family: var(--font-display, 'Outfit', sans-serif);
-      font-weight: 500;
-      border-radius: @radius-md;
-      transition: all 0.2s ease;
-
-      &.ant-btn-primary {
-        .amber-btn-primary();
-        color: @ink-black !important;
-        box-shadow: @shadow-glow-amber;
-
-        &:hover {
-          filter: brightness(1.1);
-          transform: translateY(-1px);
-        }
-      }
-
-      &:not(.ant-btn-primary) {
-        background: @bg-surface;
-        border-color: @border-default;
-        color: @text-secondary;
-
-        &:hover {
-          border-color: @film-amber;
-          color: @film-amber;
-        }
-      }
-    }
-  }
 }
 
 /* 工作流容器 */
@@ -118,12 +87,7 @@
   border: 1px solid @border-subtle;
   backdrop-filter: blur(20px);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-
-  &:hover {
-    border-color: rgba(200, 149, 108, 0.3);
-    transform: translateY(-2px);
-    box-shadow: @shadow-glow-amber;
-  }
+  margin-bottom: 24px;
 
   .cardHeader {
     display: flex;
@@ -140,10 +104,6 @@
       display: flex;
       align-items: center;
       gap: 8px;
-
-      .anticon {
-        color: @film-amber;
-      }
     }
   }
 
@@ -159,11 +119,6 @@
   .cardActions {
     display: flex;
     gap: 8px;
-
-    :global .ant-btn {
-      font-size: 13px;
-      height: 36px;
-    }
   }
 }
 
@@ -211,33 +166,6 @@
       font-weight: 700;
       color: @text-primary;
     }
-  }
-}
-
-/* 标签 */
-:global {
-  .ant-tag {
-    border-radius: 4px;
-    font-size: 11px;
-    padding: 2px 8px;
-  }
-
-  .ant-tag-blue {
-    background: rgba(90, 158, 158, 0.15);
-    border-color: rgba(90, 158, 158, 0.3);
-    color: #06b6d4;
-  }
-
-  .ant-tag-green {
-    background: rgba(90, 158, 111, 0.15);
-    border-color: rgba(90, 158, 111, 0.3);
-    color: #5a9e6f;
-  }
-
-  .ant-tag-orange {
-    background: rgba(196, 150, 96, 0.15);
-    border-color: rgba(196, 150, 96, 0.3);
-    color: #f59e0b;
   }
 }
 

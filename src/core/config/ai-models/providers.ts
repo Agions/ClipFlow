@@ -116,8 +116,8 @@ interface ModelVerificationMeta {
   note?: string;
 }
 
-export const MODEL_CATALOG_VERIFIED_AT = '2026-05-13';
-export const DEFAULT_MODEL_ID = 'gpt-4o' as const;
+export const MODEL_CATALOG_VERIFIED_AT = '2026-08-21';
+export const DEFAULT_MODEL_ID = 'qwen3.8-max' as const;
 
 export const MODEL_VERIFICATION: Record<string, ModelVerificationMeta> = {
   // OpenAI

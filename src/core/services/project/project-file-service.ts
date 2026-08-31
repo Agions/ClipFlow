@@ -9,6 +9,7 @@ import { normalizeProjectId, buildProjectIdCandidates } from '@/core/utils/proje
 import { logger } from '@/shared/utils/logging';
 import { getConfigDir } from '@/core/utils/config-dir';
 import { AppError } from '@/core/errors';
+import { atomicFileDriver } from '@fablr/core';
 
 const errMsg = (err: unknown): string => (err instanceof Error ? err.message : String(err));
 
@@ -79,7 +80,7 @@ const ensureAppDataDir = async (): Promise<void> => {
       userMessage: '创建数据目录失败',
     });
   });
-  const checkExists = await exists(appDir, { baseDir: BaseDirectory.AppData });
+  const checkExists = await exists(appDir, { baseDir: BaseDirectory.AppData }).catch(() => false);
   if (!checkExists)
     throw new AppError('APP_DIR_CREATE_DENIED', '无法创建应用数据目录，请检查权限', {
       userMessage: '无法创建数据目录，请检查权限',
@@ -93,41 +94,47 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
     throw new AppError('APP_PROJECT_INVALID', '无效的项目数据', {
       userMessage: '无效的项目数据',
     });
-  await ensureAppDataDir().catch(err => {
-    throw new AppError('APP_DIR_ERROR', `应用数据目录错误: ${err.message || '未知错误'}`, {
-      originalError: err,
-      userMessage: '数据目录错误',
+
+  // 使用 AtomicProjectFileDriver 队列防并发冲突
+  await atomicFileDriver.writeAtomic(normalizedProjectId, project, async (cleanData: object) => {
+    await ensureAppDataDir().catch(err => {
+      throw new AppError('APP_DIR_ERROR', `应用数据目录错误: ${err.message || '未知错误'}`, {
+        originalError: err,
+        userMessage: '数据目录错误',
+      });
     });
-  });
-  const cleanProject = { ...(project as ProjectFileData) };
-  if (cleanProject.aiModel?.apiKey) {
-    cleanProject.aiModel = { ...cleanProject.aiModel, apiKey: undefined };
-  }
-  const projectData = JSON.stringify(cleanProject, null, 2);
-  if (!projectData)
-    throw new AppError('APP_PROJECT_SERIALIZE_EMPTY', '项目数据序列化为空', {
-      userMessage: '项目数据为空',
-    });
-  const projectPath = `story-fab/${normalizedProjectId}.json`;
-  try {
-    await tauri.saveProjectFile(normalizedProjectId, projectData);
-    emitProjectsChanged();
-    logger.info('文件写入成功 (通过Rust函数)', { projectPath });
-    return;
-  } catch (rustErr) {
-    logger.warn('通过Rust保存文件失败，尝试使用JS API保存', { rustErr });
-  }
-  await writeTextFile(projectPath, projectData, { baseDir: BaseDirectory.AppData }).catch(
-    async () => {
-      const configDir = await getConfigDir();
-      const backupPath = `${configDir}${normalizedProjectId}.json`;
-      await writeTextFile(backupPath, projectData);
-      emitProjectsChanged();
-      logger.info('使用备用路径保存成功', { backupPath });
+    const cleanProject = { ...(cleanData as ProjectFileData) };
+    if (cleanProject.aiModel?.apiKey) {
+      cleanProject.aiModel = { ...cleanProject.aiModel, apiKey: undefined };
     }
-  );
-  emitProjectsChanged();
-  logger.info('项目文件保存成功', { projectPath });
+    const projectData = JSON.stringify(cleanProject, null, 2);
+    if (!projectData)
+      throw new AppError('APP_PROJECT_SERIALIZE_EMPTY', '项目数据序列化为空', {
+        userMessage: '项目数据为空',
+      });
+    const projectPath = `story-fab/${normalizedProjectId}.json`;
+    try {
+      await tauri.saveProjectFile(normalizedProjectId, projectData);
+      emitProjectsChanged();
+      logger.info('文件写入成功 (通过Rust函数)', { projectPath });
+      return;
+    } catch (rustErr) {
+      logger.warn('通过Rust保存文件失败，尝试使用JS API保存', { rustErr });
+    }
+    await writeTextFile(projectPath, projectData, { baseDir: BaseDirectory.AppData }).catch(
+      async () => {
+        const configDir = await getConfigDir();
+        if (configDir) {
+          const backupPath = `${configDir}${normalizedProjectId}.json`;
+          await writeTextFile(backupPath, projectData);
+          emitProjectsChanged();
+          logger.info('使用备用路径保存成功', { backupPath });
+        }
+      }
+    );
+    emitProjectsChanged();
+    logger.info('项目文件保存成功', { projectPath });
+  });
 };
 
 const loadProjectFromFile = async <T = ProjectFileData>(projectId: string): Promise<T> => {
@@ -161,19 +168,21 @@ const loadProjectFromFile = async <T = ProjectFileData>(projectId: string): Prom
   //兼容历史版本：尝试从旧配置目录加载
   try {
     const configDir = await getConfigDir();
-    for (const candidateId of candidates) {
-      const legacyPaths = [
-        `${configDir}${candidateId}.json`,
-        `${configDir}story-fab/${candidateId}.json`,
-      ];
-      for (const legacyPath of legacyPaths) {
-        try {
-          const found = await exists(legacyPath);
-          if (!found) continue;
-          const content = await readTextFile(legacyPath);
-          return JSON.parse(content) as T;
-        } catch (legacyError) {
-          lastError = legacyError;
+    if (configDir) {
+      for (const candidateId of candidates) {
+        const legacyPaths = [
+          `${configDir}${candidateId}.json`,
+          `${configDir}story-fab/${candidateId}.json`,
+        ];
+        for (const legacyPath of legacyPaths) {
+          try {
+            const found = await exists(legacyPath);
+            if (!found) continue;
+            const content = await readTextFile(legacyPath);
+            return JSON.parse(content) as T;
+          } catch (legacyError) {
+            lastError = legacyError;
+          }
         }
       }
     }

@@ -1,31 +1,53 @@
-import { Suspense } from 'react';
+/**
+ * 剧工 (Fablr) — 项目管理中心 (Project Hub)
+ * 100% 对齐 project_hub_ui 设计稿：黑曜石工业级项目管理枢纽
+ */
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Skeleton } from '../../components/ui/skeleton';
-import { Plus } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Grid3X3,
+  List,
+  Play,
+  Trash2,
+  X,
+  Settings,
+  User,
+  Sparkles,
+} from 'lucide-react';
+import { withErrorBoundary } from '@/components/common/error-boundary';
 import { useAppStore } from '@/stores/app-store';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../../components/ui/alert-dialog';
-import { ProjectsToolbar } from './components/projects-toolbar';
-import { StatusFilterBar } from './components/status-filter-bar';
-import { ProjectCard } from './components/project-card';
-import { useProjectList, statusConfig, getProjectUIStatus } from '../../hooks/use-project-list';
-import { formatRelativeDate } from '../../shared/utils/formatting';
-import type { ProjectView } from './types';
-import React from 'react';
-import { Edit3, Trash2, Play, Download } from 'lucide-react';
-import styles from '././index.module.less';
+import { useProjectList } from '@/hooks/use-project-list';
+import { formatRelativeDate } from '@/shared/utils/formatting';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import styles from './index.module.less';
 
-const loadProjectsListView = () => import('./components/projects-list-view');
-const ProjectsListView = React.lazy(loadProjectsListView);
+const POSTER_GRADIENTS = [
+  'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%)',
+  'linear-gradient(135deg, #092c3e 0%, #085a6a 50%, #0d9488 100%)',
+  'linear-gradient(135deg, #2e1065 0%, #581c87 50%, #7e22ce 100%)',
+  'linear-gradient(135deg, #1c1917 0%, #292524 50%, #44403c 100%)',
+  'linear-gradient(135deg, #450a0a 0%, #7f1d1d 50%, #991b1b 100%)',
+];
 
 const ProjectManager: React.FC = () => {
   const navigate = useNavigate();
   const { userSettings: settings, addRecentProject } = useAppStore();
-  
+
   const {
     viewMode,
     searchText,
     statusFilter,
-    loading,
     deleteConfirmId,
     filteredProjects,
     statusFilters,
@@ -36,123 +58,350 @@ const ProjectManager: React.FC = () => {
     confirmDelete,
   } = useProjectList({ recentProjects: settings.recentProjects });
 
-  const projectActions = (project: ProjectView): Array<{
-    key: string;
-    label?: string;
-    icon?: React.ReactNode;
-    danger?: boolean;
-    onClick?: () => void;
-    type?: 'divider';
-  }> => [
-    { key: 'edit', label: '编辑项目', icon: <Edit3 size={14} />, onClick: () => navigate(`/project/edit/${project.id}`) },
-    { key: 'editor', label: '进入工作台', icon: <Play size={14} />, onClick: () => navigate(`/editor/${project.id}`) },
-    { key: 'export', label: '导出', icon: <Download size={14} /> },
-    { key: 'divider', type: 'divider' as const },
-    { key: 'delete', label: '删除', icon: <Trash2 size={14} />, danger: true, onClick: () => setDeleteConfirmId(project.id) },
-  ];
+  // Selected project for Right Inspector
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+
+  const activeSelectedProject =
+    filteredProjects.find(p => p.id === selectedProjectId) || filteredProjects[0] || null;
 
   return (
     <div className={styles.pageContainer}>
-      {/* 工具栏 */}
-      <Suspense fallback={null}>
-        <ProjectsToolbar
-          searchText={searchText}
-          statusFilter={statusFilter}
-          viewMode={viewMode}
-          onSearchChange={setSearchText}
-          onStatusFilterChange={setStatusFilter}
-          onViewModeChange={setViewMode}
-          onNewProject={() => navigate('/project/new')}
-        />
-      </Suspense>
+      {/* ── 顶部工具检索栏 ── */}
+      <div className={styles.topSearchRow}>
+        <div className={styles.searchBox}>
+          <Search size={15} className="text-text-tertiary" />
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="搜索项目、素材或台词关键词..."
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+          />
+        </div>
 
-      {/* 项目统计 */}
-      <Suspense fallback={null}>
-        <StatusFilterBar
-          statusFilters={statusFilters}
-          currentFilter={statusFilter}
-          onFilterChange={setStatusFilter}
-        />
-      </Suspense>
+        <div className={styles.topActionRight}>
+          <select className={styles.dropdownSelect} defaultValue="time">
+            <option value="time">按创建时间排序</option>
+            <option value="name">按项目名称排序</option>
+          </select>
 
-      {/* 内容区 */}
-      {viewMode === 'grid' ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {/* 创建项目卡片 */}
-          <div
-            className={`${styles.createCard} rounded-xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors`}
+          <button
+            className={styles.newProjectHeaderBtn}
             onClick={() => navigate('/project/new')}
           >
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/10 flex items-center justify-center text-primary mb-3">
-              <Plus size={22} />
+            <Plus size={15} />
+            新建创作项目
+          </button>
+        </div>
+      </div>
+
+      {/* ── 状态过滤器与视图切换 ── */}
+      <div className={styles.filterToolbar}>
+        <div className={styles.filterTabs}>
+          {statusFilters.map(f => (
+            <button
+              key={f.filter}
+              className={`${styles.tabBtn} ${statusFilter === f.filter ? styles.activeTabBtn : ''}`}
+              onClick={() => setStatusFilter(f.filter)}
+            >
+              {f.label} <span className={styles.countBadge}>{f.value}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className={styles.viewToggleGroup}>
+          <button
+            className={`${styles.viewToggleBtn} ${viewMode === 'grid' ? styles.activeView : ''}`}
+            onClick={() => setViewMode('grid')}
+            title="网格视图"
+          >
+            <Grid3X3 size={15} />
+          </button>
+          <button
+            className={`${styles.viewToggleBtn} ${viewMode === 'list' ? styles.activeView : ''}`}
+            onClick={() => setViewMode('list')}
+            title="列表视图"
+          >
+            <List size={15} />
+          </button>
+        </div>
+      </div>
+
+      {/* ── 主体区域：项目卡片网格 + 右侧检查官 ── */}
+      <div className={styles.mainContentGrid}>
+        {/* 左/中：卡片流或列表 */}
+        <div className={styles.cardsArea}>
+          {filteredProjects.length === 0 ? (
+            <div className={styles.emptyStateContainer}>
+              <Sparkles size={40} className="text-purple-400 opacity-40 mb-2" />
+              <div className="text-sm font-bold text-white mb-1">未检索到匹配的创作项目</div>
+              <div className="text-xs text-text-tertiary mb-4">可以尝试调整搜索关键词或重置状态过滤</div>
+              <button
+                className={styles.newProjectHeaderBtn}
+                onClick={() => navigate('/project/new')}
+              >
+                <Plus size={15} /> 新建创作项目
+              </button>
             </div>
-            <span className="text-primary font-medium">创建新项目</span>
-          </div>
+          ) : viewMode === 'grid' ? (
+            <div className={styles.projectGrid}>
+              {filteredProjects.map((project, idx) => {
+                const isSelected = activeSelectedProject?.id === project.id;
+                const isCompleted = project.status === 'completed';
+                const isProcessing = project.status === 'processing';
+                const statusLabel = isCompleted ? '已完成' : isProcessing ? '渲染中 65%' : '草稿中';
+                const posterGradient = POSTER_GRADIENTS[idx % POSTER_GRADIENTS.length];
 
-          {filteredProjects.map(project => {
-            const uiStatus = getProjectUIStatus(project);
-            return (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                uiStatus={uiStatus}
-                statusConfig={statusConfig}
-                formatDate={formatRelativeDate}
-                onOpen={() => {
-                  addRecentProject(project.id);
-                  navigate(`/project/${project.id}`);
-                }}
-                onDelete={() => setDeleteConfirmId(project.id)}
-                 onPreload={() => { void import('../../pages/project-edit/index'); void import('../../pages/workspace/index'); }}
-                projectActions={projectActions}
-              />
-            );
-          })}
+                return (
+                  <div
+                    key={project.id}
+                    className={`${styles.projectCard} ${isSelected ? styles.selectedCard : ''}`}
+                    onClick={() => setSelectedProjectId(project.id)}
+                  >
+                    {/* 16:9 封面 */}
+                    <div
+                      className={styles.cardPoster}
+                      style={{ background: posterGradient }}
+                    >
+                      <span className={styles.timeTag}>03:15</span>
+                      <span className={styles.resTag}>2K/24fps</span>
+                      <div className={styles.centerPlayBtn}>
+                        <Play size={20} className="fill-white text-white ml-0.5" />
+                      </div>
+                    </div>
 
-          {filteredProjects.length === 0 && !loading && (
-            <div className="col-span-24 text-center py-16 text-muted-foreground">
-              暂无匹配的项目
+                    {/* 卡片详情 */}
+                    <div className={styles.cardBody}>
+                      <div className={styles.cardProjectTitle}>{project.name}</div>
+                      <div className={styles.tagRow}>
+                        <span className={styles.hashTag}>#影视解说</span>
+                        <span className={styles.hashTag}>#科幻动作</span>
+                        <span className={styles.hashTag}>{isCompleted ? '#已完成' : '#处理中'}</span>
+                      </div>
+
+                      <div className={styles.progressRow}>
+                        <span className="text-[10px] text-text-tertiary">状态: {statusLabel}</span>
+                        <div className={styles.progressTrack}>
+                          <div
+                            className={styles.progressFill}
+                            style={{
+                              width: isCompleted ? '100%' : isProcessing ? '65%' : '20%',
+                              background: isCompleted
+                                ? '#10b981'
+                                : 'linear-gradient(90deg, #8b5cf6, #06b6d4)',
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className={styles.creatorRow}>
+                        <div className="flex items-center gap-1.5 text-text-tertiary text-[11px]">
+                          <User size={11} /> 创作者: 专业解说员
+                        </div>
+                      </div>
+
+                      {/* 底部 3 按钮操作组 */}
+                      <div className={styles.actionRow}>
+                        <button
+                          type="button"
+                          className={styles.enterStudioBtn}
+                          onClick={e => {
+                            e.stopPropagation();
+                            addRecentProject(project.id);
+                            navigate(`/workspace/${project.id}`);
+                          }}
+                        >
+                          进入工作台
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.secondaryActionBtn}
+                          onClick={e => {
+                            e.stopPropagation();
+                            navigate('/export-hub');
+                          }}
+                        >
+                          导出
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.dangerActionBtn}
+                          onClick={e => {
+                            e.stopPropagation();
+                            setDeleteConfirmId(project.id);
+                          }}
+                        >
+                          删除
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            /* 列表视图 */
+            <div className="flex flex-col gap-2">
+              {filteredProjects.map((project, idx) => (
+                <div
+                  key={project.id}
+                  className={`${styles.listItem} ${activeSelectedProject?.id === project.id ? styles.selectedCard : ''}`}
+                  onClick={() => setSelectedProjectId(project.id)}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={styles.listThumb}
+                      style={{ background: POSTER_GRADIENTS[idx % POSTER_GRADIENTS.length] }}
+                    >
+                      <Play size={14} className="fill-white text-white" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-bold text-sm text-white truncate">{project.name}</div>
+                      <div className="text-xs text-text-tertiary truncate">
+                        {project.description || 'AI 影视解说 · 5轨合成项目'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-xs text-text-secondary">
+                    <span>{formatRelativeDate(project.updatedAt)}</span>
+                    <button
+                      type="button"
+                      className={styles.enterStudioBtn}
+                      onClick={e => {
+                        e.stopPropagation();
+                        addRecentProject(project.id);
+                        navigate(`/workspace/${project.id}`);
+                      }}
+                    >
+                      进入工作台
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.dangerActionBtn}
+                      onClick={e => {
+                        e.stopPropagation();
+                        setDeleteConfirmId(project.id);
+                      }}
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
-      ) : (
-        <Suspense fallback={<div className="text-center py-8"><Skeleton className="w-48 h-8 mx-auto" /></div>}>
-          <ProjectsListView
-            projects={filteredProjects}
-            loading={loading}
-            statusConfig={statusConfig}
-            getProjectUIStatus={getProjectUIStatus}
-            formatDate={formatRelativeDate}
-            onOpenProject={(projectId) => {
-              addRecentProject(projectId);
-              navigate(`/project/${projectId}`);
-            }}
-            onOpenEditor={(projectId) => {
-              addRecentProject(projectId);
-              navigate(`/editor/${projectId}`);
-            }}
-            onPreloadProject={() => { void import('../../pages/project-edit/index'); }}
-            onPreloadEditor={() => { void import('../../pages/workspace/index'); }}
-            projectActions={projectActions}
-          />
-        </Suspense>
-      )}
 
-      {/* 删除确认弹窗 */}
+        {/* ── 右侧：快速项目信息检查官 (Quick Project Inspector) ── */}
+        {activeSelectedProject && (
+          <aside className={styles.inspectorSidebar}>
+            <div className={styles.inspectorHeader}>
+              <span className={styles.inspectorTitle}>快速项目信息检查官</span>
+              <button
+                className={styles.closeInspectorBtn}
+                onClick={() => setSelectedProjectId(null)}
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            {/* 封面与时间码 */}
+            <div
+              className={styles.inspectorCover}
+              style={{ background: POSTER_GRADIENTS[0] }}
+            >
+              <span className={styles.timeTag}>03:15</span>
+              <Play size={32} className="fill-white text-white/90" />
+            </div>
+
+            {/* 属性清单 */}
+            <div className={styles.propList}>
+              <div className={styles.propItem}>
+                <span className={styles.propLabel}>项目名称</span>
+                <span className={styles.propValue}>{activeSelectedProject.name}</span>
+              </div>
+
+              <div className={styles.propItem}>
+                <span className={styles.propLabel}>工程 ID</span>
+                <span className={`${styles.propValue} font-mono text-[11px] text-text-tertiary`}>
+                  {activeSelectedProject.id}
+                </span>
+              </div>
+
+              <div className={styles.propItem}>
+                <span className={styles.propLabel}>创作者</span>
+                <span className={styles.propValue}>专业版创作者</span>
+              </div>
+
+              <div className={styles.propItem}>
+                <span className={styles.propLabel}>渲染状态</span>
+                <span className="text-cyan-400 font-semibold text-xs">
+                  {activeSelectedProject.status === 'completed' ? '已渲染完成' : '制作中 · 65%'}
+                </span>
+              </div>
+
+              <div className={styles.propItem}>
+                <span className={styles.propLabel}>更新时间</span>
+                <span className={styles.propValue}>
+                  {formatRelativeDate(activeSelectedProject.updatedAt)}
+                </span>
+              </div>
+
+              <div className={styles.propItem}>
+                <span className={styles.propLabel}>标签分类</span>
+                <div className="flex gap-1 flex-wrap">
+                  <span className={styles.hashTag}>#预告片</span>
+                  <span className={styles.hashTag}>#科幻</span>
+                  <span className={styles.hashTag}>#处理中</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 检查官底部直达按钮 */}
+            <div className={styles.inspectorFooter}>
+              <button
+                className={styles.inspectorPrimaryBtn}
+                onClick={() => {
+                  addRecentProject(activeSelectedProject.id);
+                  navigate(`/workspace/${activeSelectedProject.id}`);
+                }}
+              >
+                进入工作台
+              </button>
+              <button
+                className={styles.inspectorSecondaryBtn}
+                onClick={() => navigate(`/project/edit/${activeSelectedProject.id}`)}
+              >
+                <Settings size={13} /> 项目设置
+              </button>
+            </div>
+          </aside>
+        )}
+      </div>
+
+      {/* ── 删除确认弹窗 ── */}
       {deleteConfirmId && (
         <AlertDialog open onOpenChange={() => setDeleteConfirmId(null)}>
-          <AlertDialogContent>
+          <AlertDialogContent className="bg-[#141522] border border-white/10 text-white">
             <AlertDialogHeader>
-              <AlertDialogTitle>确认删除</AlertDialogTitle>
-              <AlertDialogDescription>删除后无法恢复，确定要删除此项目吗？</AlertDialogDescription>
+              <AlertDialogTitle>确认彻底删除该创作项目？</AlertDialogTitle>
+              <AlertDialogDescription className="text-text-tertiary">
+                删除后该项目草稿、分镜台词与本地渲染中间缓存将无法恢复。
+              </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setDeleteConfirmId(null)}>取消</AlertDialogCancel>
+              <AlertDialogCancel
+                onClick={() => setDeleteConfirmId(null)}
+                className="bg-white/10 text-white border-0"
+              >
+                取消
+              </AlertDialogCancel>
               <AlertDialogAction
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                className="bg-red-600 hover:bg-red-700 text-white"
                 onClick={() => confirmDelete(deleteConfirmId)}
               >
-                删除
+                确认删除
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -162,4 +411,4 @@ const ProjectManager: React.FC = () => {
   );
 };
 
-export default ProjectManager;
+export default withErrorBoundary(ProjectManager, { name: 'ProjectManager' });

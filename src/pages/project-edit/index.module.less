@@ -1,24 +1,28 @@
-/* StoryFab X - Project Edit Cinema Director Styles */
-/* 电影导演工作室风格 - 项目编辑页 */
+/**
+ * 剧工 (Fablr) — 项目新建与编辑工作台样式
+ * 黑曜石工业级导演工作台 (Obsidian Dark Studio)
+ */
 
 @import (reference) '../../styles/mixins.less';
 @import (reference) '../../styles/variables.less';
 
-@bg-primary: #0c0c0e;
-
-@radius-xl: 16px;
+@ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
 .container {
-  max-width: 1200px;
+  max-width: 1080px;
   margin: 0 auto;
-  padding: 24px;
-  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 20px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-sizing: border-box;
+  animation: fadeIn 0.3s @ease-out;
 }
 
-@keyframes fadeInUp {
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -26,323 +30,387 @@
   }
 }
 
-/* 页面头部 */
-.header {
+/* ── 页面头部 Header ── */
+.headerWrapper {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  justify-content: space-between;
+  gap: 16px;
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 20px;
+  flex-wrap: wrap;
+}
 
-  h3 {
-    font-family: var(--font-display, 'Outfit', sans-serif);
-    font-weight: 700;
-    font-size: 24px;
-    color: @text-primary;
-    margin: 0;
-  }
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
 
-  :global {
-    .ant-btn-primary {
-      .amber-btn-primary();
-      color: @ink-black !important;
-      font-family: var(--font-display, 'Outfit', sans-serif);
-      font-weight: 500;
-      box-shadow: @shadow-glow-amber;
+.backBtn {
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
 
-      &:hover {
-        filter: brightness(1.1);
-        transform: translateY(-1px);
-      }
-    }
+  &:hover {
+    background: #202238;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.15);
   }
 }
 
-/* 自动保存状态 */
-.autoSaveStatus {
-  margin-bottom: 20px;
-  padding: 10px 16px;
-  background: @bg-surface;
-  border-radius: @radius-md;
-  border: 1px solid @border-subtle;
+.titleCol {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pageHeading {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-
-  .saveDot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #5a9e6f;
-  }
-
-  .saveText {
-    font-size: 13px;
-    color: @text-muted;
-  }
 }
 
-/* 卡片 */
-.card {
-  margin-bottom: 24px;
-  border-radius: @radius-lg;
-  background: @bg-card;
-  border: 1px solid @border-subtle;
-  backdrop-filter: blur(20px);
-  overflow: hidden;
-
-  :global {
-    .ant-card-head {
-      background: transparent;
-      border-bottom: 1px solid @border-subtle;
-
-      .ant-card-head-title {
-        font-family: var(--font-display, 'Outfit', sans-serif);
-        font-weight: 600;
-        color: @text-primary;
-      }
-    }
-
-    .ant-card-body {
-      padding: 24px;
-    }
-  }
+.projectBadge {
+  font-size: 10px;
+  color: #c084fc;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font-weight: 600;
 }
 
-/* 步骤条 */
-.stepsContainer {
-  margin-bottom: 24px;
-  padding: 24px;
-  background: @bg-card;
-  border-radius: @radius-lg;
-  border: 1px solid @border-subtle;
-  backdrop-filter: blur(20px);
-
-  :global {
-    .ant-steps {
-      .ant-steps-item {
-        .ant-steps-item-icon {
-          background: @bg-surface;
-          border-color: @border-default;
-
-          .ant-steps-icon {
-            color: @text-muted;
-          }
-        }
-
-        &.ant-steps-item-process {
-          .ant-steps-item-icon {
-            background: linear-gradient(135deg, @film-amber 0%, #c49464 100%);
-            border-color: @film-amber;
-
-            .ant-steps-icon {
-              color: @ink-black;
-            }
-          }
-
-          .ant-steps-item-title {
-            color: @film-amber !important;
-            font-weight: 600;
-          }
-        }
-
-        &.ant-steps-item-finish {
-          .ant-steps-item-icon {
-            background: rgba(200, 149, 108, 0.15);
-            border-color: @film-amber;
-
-            .ant-steps-icon {
-              color: @film-amber;
-            }
-          }
-        }
-
-        .ant-steps-item-title {
-          color: @text-secondary;
-        }
-
-        .ant-steps-item-description {
-          color: @text-muted;
-        }
-      }
-    }
-  }
+.pageSubheading {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 0;
 }
 
-.stepsContent {
-  margin-top: 24px;
-}
-
-/* 步骤卡片 */
-.stepCard {
-  border-radius: @radius-lg;
-  background: @bg-card;
-  border: 1px solid @border-subtle;
-  backdrop-filter: blur(20px);
-
-  h4 {
-    font-family: var(--font-display, 'Outfit', sans-serif);
-    font-weight: 600;
-    font-size: 18px;
-    color: @text-primary;
-    margin-bottom: 20px;
-  }
-
-  :global {
-    .ant-card-body {
-      padding: 24px;
-    }
-  }
-}
-
-/* 表单样式 */
-.formSection {
-  margin-bottom: 24px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  .sectionTitle {
-    font-family: var(--font-display, 'Outfit', sans-serif);
-    font-weight: 600;
-    font-size: 16px;
-    color: @text-primary;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    .anticon {
-      color: @film-amber;
-    }
-  }
-}
-
-:global {
-  .ant-form-item {
-    margin-bottom: 20px;
-
-    .ant-form-item-label {
-      padding-bottom: 8px;
-
-      > label {
-        color: @text-secondary;
-        font-family: var(--font-body, 'DM Sans', sans-serif);
-      }
-    }
-  }
-
-  .ant-input,
-  .ant-input-affix-wrapper,
-  .ant-select-selector,
-  .ant-picker {
-    background: @bg-surface !important;
-    border-color: @border-default !important;
-    border-radius: @radius-md !important;
-    color: @text-primary !important;
-
-    &::placeholder {
-      color: @text-muted !important;
-    }
-
-    &:hover {
-      border-color: rgba(200, 149, 108, 0.5) !important;
-    }
-
-    &:focus,
-    &-focused {
-      border-color: @film-amber !important;
-      box-shadow: 0 0 0 3px @film-amber-glow !important;
-    }
-  }
-
-  .ant-radio-wrapper {
-    color: @text-secondary;
-  }
-
-  .ant-radio-checked .ant-radio-inner {
-    border-color: @film-amber !important;
-
-    &::after {
-      background: @film-amber;
-    }
-  }
-
-  .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: @film-amber !important;
-    border-color: @film-amber !important;
-  }
-
-  .ant-switch {
-    background: @bg-surface;
-
-    &-checked {
-      background: @film-amber !important;
-      box-shadow: @shadow-glow-amber;
-    }
-  }
-}
-
-/* 按钮组 */
-.buttonGroup {
+.headerRightActions {
   display: flex;
+  align-items: center;
   gap: 12px;
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid @border-subtle;
+  flex-wrap: wrap;
+}
 
-  :global {
-    .ant-btn {
-      font-family: var(--font-display, 'Outfit', sans-serif);
-      font-weight: 500;
-      border-radius: @radius-md;
-      height: 44px;
-      padding: 0 32px;
-      transition: all 0.2s ease;
+.controlItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #94a3b8;
+}
 
-      &.ant-btn-primary {
-        background: linear-gradient(135deg, @film-amber 0%, #c49464 100%) !important;
-        border: none !important;
-        color: @ink-black !important;
-        box-shadow: @shadow-glow-amber;
+.saveProjectBtn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+  transition: all 0.2s @ease-out;
 
-        &:hover {
-          filter: brightness(1.1);
-          transform: translateY(-1px);
-        }
-      }
+  &:hover {
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.55);
+    transform: translateY(-1px);
+  }
 
-      &:not(.ant-btn-primary) {
-        background: @bg-surface;
-        border-color: @border-default;
-        color: @text-secondary;
-
-        &:hover {
-          border-color: @film-amber;
-          color: @film-amber;
-        }
-      }
-    }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
   }
 }
 
-/* 响应式 */
-@media (max-width: 768px) {
-  .container {
-    padding: 16px;
+/* ── 自动保存胶囊条 ── */
+.autoSaveBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+
+.autoSavePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+
+.statusDotActive {
+  background: #34d399;
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
+}
+
+.statusDotSaving {
+  background: #fbbf24;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ── 项目基本信息卡片 (ProjectForm) ── */
+.infoCard {
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.formRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.charCount {
+  font-size: 10px;
+  color: #64748b;
+}
+
+.darkInput {
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #ffffff;
+  outline: none;
+  transition: all 0.15s;
+
+  &:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25);
   }
 
-  .header {
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
+  &::placeholder {
+    color: #64748b;
+  }
+}
+
+.darkTextarea {
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #ffffff;
+  outline: none;
+  resize: vertical;
+  min-height: 56px;
+  transition: all 0.15s;
+
+  &:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25);
   }
 
-  .buttonGroup {
-    flex-direction: column;
+  &::placeholder {
+    color: #64748b;
+  }
+}
 
-    :global .ant-btn {
-      width: 100%;
-    }
+/* ── 步骤导航指示器 ── */
+.stepsNavbar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.stepNavBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+
+  &:hover {
+    background: #18192a;
+  }
+}
+
+.activeStepNavBtn {
+  background: #18192a !important;
+  border-color: rgba(139, 92, 246, 0.5) !important;
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.15);
+}
+
+.stepIconCircle {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #151628;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.activeStepIconCircle {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: #8b5cf6;
+  color: #c084fc;
+}
+
+.stepTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.stepMainTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.stepSubtitle {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* ── 步骤卡片容器 ── */
+.stepCard {
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stepCardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stepCardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stepCardDesc {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.stepBottomActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 16px;
+  margin-top: 8px;
+}
+
+.nextStepBtn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+  transition: all 0.2s @ease-out;
+  margin-left: auto;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.55);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.prevStepBtn {
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+
+  &:hover {
+    background: #202238;
+    color: #ffffff;
   }
 }

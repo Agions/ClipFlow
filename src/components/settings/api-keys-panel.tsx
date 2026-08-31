@@ -97,8 +97,8 @@ const ApiKeysPanel: React.FC<ApiKeysPanelProps> = ({ apiKeys, onUpdateKey, onDel
                       className="pr-8"
                     />
                     <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                      {config?.isValid === true && <Check size={14} className="text-green-500" />}
-                      {config?.isValid === false && <X size={14} className="text-red-500" />}
+                      {config?.isValid === true && <Check size={14} className="text-accent-success" />}
+                      {config?.isValid === false && <X size={14} className="text-accent-danger" />}
                     </div>
                   </div>
                   <Button
@@ -110,7 +110,7 @@ const ApiKeysPanel: React.FC<ApiKeysPanelProps> = ({ apiKeys, onUpdateKey, onDel
                     {isVisible ? <EyeOff size={14} /> : <Eye size={14} />}
                   </Button>
                   <Button
-                    className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white"
+                    className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground"
                     disabled={isTesting}
                     onClick={() => handleTest(provider, config?.key || '')}
                     aria-label={`验证 ${PROVIDER_NAMES[provider]} 密钥`}

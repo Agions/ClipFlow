@@ -45,9 +45,13 @@ interface UseProjectEditStateOptions {
 
 function readSaveBehavior(): ProjectSaveBehavior {
   try {
-    return localStorage.getItem(PROJECT_SAVE_BEHAVIOR_KEY) === 'detail' ? 'detail' : 'stay';
+    const val = localStorage.getItem(PROJECT_SAVE_BEHAVIOR_KEY);
+    if (val === 'workspace' || val === 'script' || val === 'asset' || val === 'detail' || val === 'stay') {
+      return val as ProjectSaveBehavior;
+    }
+    return 'workspace';
   } catch {
-    return 'stay';
+    return 'workspace';
   }
 }
 

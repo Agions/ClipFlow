@@ -13,7 +13,7 @@
  *  - 空 transcript 兜底
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { SEOGenerator, seoGenerator, type SocialPlatform, type SEOMetadata } from './seo-generator';
+import { SEOGenerator, seoGenerator, type SocialPlatform } from './seo-generator';
 import type { ClipScore, CandidateClip } from './clip-scorer';
 
 function makeScore(overrides: Partial<ClipScore> = {}): ClipScore {

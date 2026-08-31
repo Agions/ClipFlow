@@ -1,30 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="StoryFab">
-  <title>StoryFab</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="剧工">
+  <title>剧工</title>
   <defs>
-    <linearGradient id="sfFavBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0B0F1F"/>
-      <stop offset="100%" stop-color="#1A1F3A"/>
+    <linearGradient id="favBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#08080d"/>
+      <stop offset="100%" stop-color="#18192b"/>
     </linearGradient>
-    <linearGradient id="sfFavAccent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#7C3AED"/>
-      <stop offset="50%" stop-color="#EC4899"/>
-      <stop offset="100%" stop-color="#F59E0B"/>
+    <linearGradient id="favGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="50%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
     </linearGradient>
   </defs>
 
-  <!-- Rounded square -->
-  <rect width="64" height="64" rx="14" ry="14" fill="url(#sfFavBg)"/>
+  <rect width="64" height="64" rx="16" ry="16" fill="url(#favBg)"/>
+  <rect width="62" height="62" x="1" y="1" rx="15" ry="15" fill="none" stroke="url(#favGrad)" stroke-width="1.5" stroke-opacity="0.5"/>
 
-  <!-- Mini film strip -->
-  <rect x="8" y="28" width="48" height="8" rx="1.5" fill="url(#sfFavAccent)" opacity="0.85"/>
-
-  <!-- Center SF monogram (compact) -->
-  <g transform="translate(32 32)">
-    <path d="M -8 -6 C -8 -10 -4 -11 0 -11 C 4 -11 7 -10 7 -6 C 7 -2 -3 0 -7 4 C -10 7 -10 11 -6 11 C -2 11 2 10 5 7"
-          fill="none" stroke="url(#sfFavAccent)" stroke-width="2.5"
-          stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M 5 -11 L 5 11 M 5 -11 L 13 -11 M 5 -2 L 11 -2"
-          fill="none" stroke="#F8FAFC" stroke-width="2.5"
-          stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="url(#favGrad)">
+    <rect x="16" y="16" width="9" height="32" rx="3"/>
+    <path d="M 16 16 L 45 16 C 47 16 48 18 47 20 L 44 25 C 43 26 42 27 40 27 L 25 27 L 16 16 Z"/>
+    <path d="M 25 31 L 39 31 C 41 31 42 33 41 34 L 39 38 C 38 39 37 40 35 40 L 25 40 Z"/>
+    <polygon points="34,43 43,43 47,48 38,48" fill="#f59e0b"/>
   </g>
+
+  <circle cx="46" cy="18" r="2.5" fill="#06b6d4"/>
 </svg>

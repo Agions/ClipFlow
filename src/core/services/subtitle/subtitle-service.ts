@@ -17,6 +17,7 @@ import { AppError } from '@/core/errors';
 import { tauri } from '@/core/tauri';
 import { ASR_LANG_CODES, TRANSLATION_LANG_NAMES, normalizeLangCode } from './language-codes';
 import { createMinimalVideoInfo } from '@/types/video-info';
+import { OUT_SUBTITLE_FG, OUT_SUBTITLE_STROKE, OUT_SUBTITLE_BG } from '@/core/video/output-colors';
 
 // ============================================================
 // 类型定义
@@ -35,10 +36,10 @@ export interface SubtitleTranslateOptions {
 const DEFAULT_SUBTITLE_STYLE: SubtitleStyle = {
   fontFamily: 'Arial, sans-serif',
   fontSize: 24,
-  color: '#FFFFFF',
-  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  color: OUT_SUBTITLE_FG,
+  backgroundColor: OUT_SUBTITLE_BG,
   outline: true,
-  outlineColor: '#000000',
+  outlineColor: OUT_SUBTITLE_STROKE,
   position: 'bottom',
   alignment: 'center',
   opacity: 1,
@@ -66,27 +67,24 @@ export class SubtitleService extends BaseService {
     language: string = 'auto',
     onProgress?: (progress: WhisperProgress) => void
   ): Promise<SubtitleTrack> {
-    return this.executeRequest(
-      async () => {
-        logger.info('[SubtitleService] Whisper 转录:', { audioPath, modelSize, language });
+    return this.executeRequest(async () => {
+      logger.info('[SubtitleService] Whisper 转录:', { audioPath, modelSize, language });
 
-        try {
-          const result = await whisperService.transcribe(audioPath, modelSize, language, onProgress);
-          const { language: detectedLanguage, entries } = whisperService.toSubtitleFormat(result);
+      try {
+        const result = await whisperService.transcribe(audioPath, modelSize, language, onProgress);
+        const { language: detectedLanguage, entries } = whisperService.toSubtitleFormat(result);
 
-          return {
-            id: crypto.randomUUID(),
-            language: detectedLanguage,
-            entries,
-            style: DEFAULT_SUBTITLE_STYLE,
-          };
-        } catch (error) {
-          logger.error('[SubtitleService] Whisper 转录失败，改用 ASR:', error);
-          return this.extractSubtitles(audioPath, { language });
-        }
-      },
-      'Whisper 转录',
-    );
+        return {
+          id: crypto.randomUUID(),
+          language: detectedLanguage,
+          entries,
+          style: DEFAULT_SUBTITLE_STYLE,
+        };
+      } catch (error) {
+        logger.error('[SubtitleService] Whisper 转录失败，改用 ASR:', error);
+        return this.extractSubtitles(audioPath, { language });
+      }
+    }, 'Whisper 转录');
   }
 
   /**
@@ -203,7 +201,7 @@ export class SubtitleService extends BaseService {
       return 'medium';
     };
 
-    return entries.map((e) => ({ ...e, quality: calcQuality(e.confidence) }));
+    return entries.map(e => ({ ...e, quality: calcQuality(e.confidence) }));
   }
 
   /**
@@ -218,7 +216,7 @@ export class SubtitleService extends BaseService {
   ): Array<SubtitleEntry & { quality: string }> {
     if (!maxDuration || entries.length === 0) return entries;
 
-    const lastValidIndex = entries.findIndex((e) => e.endTime > maxDuration);
+    const lastValidIndex = entries.findIndex(e => e.endTime > maxDuration);
     return lastValidIndex > 0 ? entries.slice(0, lastValidIndex) : entries;
   }
 
@@ -227,33 +225,27 @@ export class SubtitleService extends BaseService {
    * @param track 字幕轨道
    * @param format 格式
    */
-  async generateSubtitleFile(
-    track: SubtitleTrack,
-    format: 'srt' | 'vtt' | 'ass'
-  ): Promise<string> {
-    return this.executeRequest(
-      async () => {
-        logger.info('[SubtitleService] 生成字幕文件:', {
-          trackId: track.id,
-          format,
-          entries: track.entries.length,
-        });
+  async generateSubtitleFile(track: SubtitleTrack, format: 'srt' | 'vtt' | 'ass'): Promise<string> {
+    return this.executeRequest(async () => {
+      logger.info('[SubtitleService] 生成字幕文件:', {
+        trackId: track.id,
+        format,
+        entries: track.entries.length,
+      });
 
-        switch (format) {
-          case 'srt':
-            return trackToSRT(track);
-          case 'vtt':
-            return trackToVTT(track);
-          case 'ass':
-            return trackToASS(track);
-          default:
-            throw new AppError('APP_SUBTITLE_FORMAT_UNSUPPORTED', `不支持的格式: ${format}`, {
-              userMessage: `字幕格式不支持: ${format}`,
-            });
-        }
-      },
-      '生成字幕文件',
-    );
+      switch (format) {
+        case 'srt':
+          return trackToSRT(track);
+        case 'vtt':
+          return trackToVTT(track);
+        case 'ass':
+          return trackToASS(track);
+        default:
+          throw new AppError('APP_SUBTITLE_FORMAT_UNSUPPORTED', `不支持的格式: ${format}`, {
+            userMessage: `字幕格式不支持: ${format}`,
+          });
+      }
+    }, '生成字幕文件');
   }
 
   /**
@@ -267,56 +259,61 @@ export class SubtitleService extends BaseService {
   ): Promise<SubtitleTrack> {
     const { targetLanguage, provider = 'mymemory' } = options;
 
-    return this.executeRequest(
-      async () => {
-        logger.info('[SubtitleService] 翻译字幕:', {
-          sourceLang: track.language,
-          targetLang: targetLanguage,
-          provider,
-        });
+    return this.executeRequest(async () => {
+      logger.info('[SubtitleService] 翻译字幕:', {
+        sourceLang: track.language,
+        targetLang: targetLanguage,
+        provider,
+      });
 
-        const targetLangName = TRANSLATION_LANG_NAMES[targetLanguage] || targetLanguage;
+      const targetLangName = TRANSLATION_LANG_NAMES[targetLanguage] || targetLanguage;
 
-        // 分批翻译
-        const BATCH_SIZE = 20;
-        const translatedEntries: SubtitleEntry[] = [];
+      // 分批翻译
+      const BATCH_SIZE = 20;
+      const translatedEntries: SubtitleEntry[] = [];
 
-        for (let i = 0; i < track.entries.length; i += BATCH_SIZE) {
-          const batch = track.entries.slice(i, i + BATCH_SIZE);
-          const textsToTranslate = batch.map((e) => e.text).join('\n');
+      for (let i = 0; i < track.entries.length; i += BATCH_SIZE) {
+        const batch = track.entries.slice(i, i + BATCH_SIZE);
+        const textsToTranslate = batch.map(e => e.text).join('\n');
 
-          try {
-            const translatedText = await this.translateText(textsToTranslate, targetLangName, provider);
-            const lines = translatedText.split('\n').filter((l) => l.trim());
+        try {
+          const translatedText = await this.translateText(
+            textsToTranslate,
+            targetLangName,
+            provider
+          );
+          const lines = translatedText.split('\n').filter(l => l.trim());
 
-            batch.forEach((entry, index) => {
-              translatedEntries.push({
-                ...entry,
-                id: `${entry.id}-tl`,
-                text: lines[index]?.trim() || entry.text,
-              });
+          batch.forEach((entry, index) => {
+            translatedEntries.push({
+              ...entry,
+              id: `${entry.id}-tl`,
+              text: lines[index]?.trim() || entry.text,
             });
-          } catch (error) {
-            logger.warn('[SubtitleService] 批次翻译失败，使用原文:', error);
-            translatedEntries.push(...batch.map((e) => ({ ...e, id: `${e.id}-tl` })));
-          }
+          });
+        } catch (error) {
+          logger.warn('[SubtitleService] 批次翻译失败，使用原文:', error);
+          translatedEntries.push(...batch.map(e => ({ ...e, id: `${e.id}-tl` })));
         }
+      }
 
-        return {
-          ...track,
-          id: crypto.randomUUID(),
-          language: targetLanguage,
-          entries: translatedEntries,
-        };
-      },
-      '翻译字幕',
-    );
+      return {
+        ...track,
+        id: crypto.randomUUID(),
+        language: targetLanguage,
+        entries: translatedEntries,
+      };
+    }, '翻译字幕');
   }
 
   /**
    * 调用翻译 API
    */
-  private async translateText(text: string, targetLang: string, _provider: string): Promise<string> {
+  private async translateText(
+    text: string,
+    targetLang: string,
+    _provider: string
+  ): Promise<string> {
     const langCode = normalizeLangCode(targetLang);
 
     try {
@@ -349,35 +346,31 @@ export class SubtitleService extends BaseService {
     outputPath: string,
     _style?: Partial<SubtitleStyle>
   ): Promise<string> {
-    return this.executeRequest(
-      async () => {
-        logger.info('[SubtitleService] 烧录字幕:', {
-          video: videoPath,
-          subtitle: subtitlePath,
-          output: outputPath,
-        });
+    return this.executeRequest(async () => {
+      logger.info('[SubtitleService] 烧录字幕:', {
+        video: videoPath,
+        subtitle: subtitlePath,
+        output: outputPath,
+      });
 
-        const result = await tauri.exportVideo({
-          inputPath: videoPath,
-          outputPath,
-          format: 'mp4',
-          resolution: 'original',
-          frameRate: 30,
-          videoCodec: 'h264',
-          audioCodec: 'aac',
-          crf: 23,
-          subtitleEnabled: true,
-          subtitlePath,
-          burnSubtitles: true,
-        });
+      const result = await tauri.exportVideo({
+        inputPath: videoPath,
+        outputPath,
+        format: 'mp4',
+        resolution: 'original',
+        frameRate: 30,
+        videoCodec: 'h264',
+        audioCodec: 'aac',
+        crf: 23,
+        subtitleEnabled: true,
+        subtitlePath,
+        burnSubtitles: true,
+      });
 
-        logger.info('[SubtitleService] 字幕烧录完成:', result);
-        return result.outputPath;
-      },
-      '烧录字幕',
-    );
+      logger.info('[SubtitleService] 字幕烧录完成:', result);
+      return result.outputPath;
+    }, '烧录字幕');
   }
-
 }
 
 // 导出单例

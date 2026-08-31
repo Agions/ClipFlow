@@ -227,7 +227,7 @@ describe('AlertDialog (custom implementation)', () => {
     );
     const el = screen.getByTestId('ac');
     expect(el.className).toContain('fixed inset-0');
-    expect(el.className).toContain('bg-black/80');
+    expect(el.className).toContain('bg-bg-elevated/80');
     expect(screen.getByText('Confirm')).toBeInTheDocument();
     expect(screen.getByText('Are you sure?')).toBeInTheDocument();
     expect(screen.getByText('Cancel')).toBeInTheDocument();

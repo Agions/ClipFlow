@@ -87,7 +87,7 @@ const SegmentEditForm: React.FC<SegmentEditFormProps> = ({
 
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={onCancel}>取消</Button>
-          <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" size="sm" onClick={onSave}>保存</Button>
+          <Button className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground" size="sm" onClick={onSave}>保存</Button>
         </div>
       </Card>
     </div>

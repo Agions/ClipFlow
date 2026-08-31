@@ -194,7 +194,7 @@ describe('Spin', () => {
   it('applies size classes', () => {
     const { container } = render(<Spin size="large" />);
     const spinner = container.querySelector('.animate-spin') as HTMLElement;
-    expect(spinner.className).toContain('w-8');
+    expect(spinner.className).toContain('size-spin-lg');
   });
 });
 

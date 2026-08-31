@@ -64,22 +64,35 @@ const ScriptDetail: React.FC = () => {
     return () => { mountedRef.current = false; };
   }, []);
 
+  const setProjectRef = useRef(setProject);
+  setProjectRef.current = setProject;
+  const setScriptRef = useRef(setScript);
+  setScriptRef.current = setScript;
+  const setSegmentsRef = useRef(setSegments);
+  setSegmentsRef.current = setSegments;
+  const setLoadErrorRef = useRef(setLoadError);
+  setLoadErrorRef.current = setLoadError;
+  const setLoadingRef = useRef(setLoading);
+  setLoadingRef.current = setLoading;
+  const resetForLoadRef = useRef(resetForLoad);
+  resetForLoadRef.current = resetForLoad;
+
   useEffect(() => {
     const requestId = ++loadRequestSeqRef.current;
     const isStale = () => !mountedRef.current || requestId !== loadRequestSeqRef.current;
 
     if (!scriptId) {
       if (isStale()) return;
-      resetForLoad();
-      setLoadError('参数错误：缺少脚本ID');
-      setLoading(false);
+      resetForLoadRef.current();
+      setLoadErrorRef.current('参数错误：缺少脚本ID');
+      setLoadingRef.current(false);
       return;
     }
 
     const loadData = async () => {
       try {
         if (isStale()) return;
-        resetForLoad();
+        resetForLoadRef.current();
         let currentProject: ProjectWithScripts | undefined;
         if (projectId) {
           currentProject = await loadProjectWithRetry(projectId, { retries: 2, retryDelayMs: 260 }) as ProjectWithScripts | undefined;
@@ -90,7 +103,7 @@ const ScriptDetail: React.FC = () => {
 
         if (!currentProject) {
           if (isStale()) return;
-          setLoadError('找不到所属项目');
+          setLoadErrorRef.current('找不到所属项目');
           return;
         }
 
@@ -98,28 +111,30 @@ const ScriptDetail: React.FC = () => {
         const currentScript = normalizedProject.scripts?.find((s) => s.id === scriptId);
         if (!currentScript) {
           if (isStale()) return;
-          setLoadError('找不到脚本，请确认脚本是否已被删除');
+          setLoadErrorRef.current('找不到脚本，请确认脚本是否已被删除');
           return;
         }
 
         if (isStale()) return;
-        setProject(normalizedProject);
-        setScript(currentScript);
-        setSegments(currentScript?.content ?? []);
+        setProjectRef.current(normalizedProject);
+        setScriptRef.current(currentScript);
+        setSegmentsRef.current(currentScript?.content ?? []);
         addRecentProject(normalizedProject.id);
       } catch (error) {
         if (isStale()) return;
         logger.error('加载脚本详情失败:', { error });
         const detail = error instanceof Error ? error.message : '未知错误';
-        setLoadError(detail);
+        setLoadErrorRef.current(detail);
         notify.error(error, '加载脚本失败，请重试');
       } finally {
-        setLoading(false);
+        if (!isStale()) {
+          setLoadingRef.current(false);
+        }
       }
     };
 
     void loadData();
-  }, [addRecentProject, projectId, scriptId, reloadToken, resetForLoad, setLoadError, setLoading, setProject, setScript, setSegments]);
+  }, [addRecentProject, projectId, scriptId, reloadToken]);
 
   useEffect(() => {
     if (!loading && project && script) {
@@ -225,7 +240,7 @@ const ScriptDetail: React.FC = () => {
             <ArrowLeft size={16} className="mr-1" />
             返回项目
           </Button>
-          <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleSave} disabled={isSaving || isDeleting}>
+          <Button className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground" onClick={handleSave} disabled={isSaving || isDeleting}>
             <Save size={14} className="mr-1" />
             {isSaving ? '保存中...' : '保存'}
           </Button>

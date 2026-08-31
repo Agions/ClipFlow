@@ -15,11 +15,17 @@ const loadProjectDetail = () => import('./pages/project-detail/index');
 const loadScriptDetail = () => import('./pages/script-detail/index');
 const loadSettings = () => import('./pages/settings/index');
 const loadUnderstanding = () => import('./features/understanding/understanding-page');
+const loadScriptStudio = () => import('./pages/script-studio/index');
+const loadAssetHub = () => import('./pages/asset-hub/index');
+const loadExportHub = () => import('./pages/export-hub/index');
 const Home = lazy(loadHome);
 const Projects = lazy(loadProjects);
 const ProjectEdit = lazy(loadProjectEdit);
 const ProjectDetail = lazy(loadProjectDetail);
 const ScriptDetail = lazy(loadScriptDetail);
+const ScriptStudio = lazy(loadScriptStudio);
+const AssetHub = lazy(loadAssetHub);
+const ExportHub = lazy(loadExportHub);
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
 const WorkspacePage: React.LazyExoticComponent<React.ComponentType<unknown>> = lazy(async () => {
   const mod = await import('./pages/workspace/index');
@@ -80,6 +86,12 @@ const App: React.FC = () => {
                 <Route path="/workspace/:projectId" element={<WorkspacePage />} />
                 <Route path="/editor" element={<WorkspacePage />} />
                 <Route path="/editor/:projectId" element={<WorkspacePage />} />
+                <Route path="/script-studio" element={<ScriptStudio />} />
+                <Route path="/script-studio/:projectId" element={<ScriptStudio />} />
+                <Route path="/asset-hub" element={<AssetHub />} />
+                <Route path="/asset-hub/:projectId" element={<AssetHub />} />
+                <Route path="/export-hub" element={<ExportHub />} />
+                <Route path="/export-hub/:projectId" element={<ExportHub />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/understanding" element={<Understanding />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

@@ -23,7 +23,6 @@ interface UseProjectDetailResult {
 }
 
 // module-level single-arg action creators — 稳定引用配合 useBoundActions useMemo。
-// 多参数 action（如 UPDATE_ACTIVE_SCRIPT_FROM_SEGMENTS）保持 inline 在 hook 内。
 const singleArgCreators = {
   SET_ACTIVE_STEP: (step: string) => ({ type: 'SET_ACTIVE_STEP' as const, payload: step }),
   SET_PROJECT: (project: ProjectDetailState['project']) => ({

@@ -113,7 +113,7 @@
 // =============================================
 .input-base() {
   background: @bg-surface !important;
-  border-color: @border-default !important;
+  border: 1px solid @border-default !important;
   border-radius: @radius-md !important;
   color: @text-primary !important;
   transition: all 0.2s ease;
@@ -126,8 +126,7 @@
     border-color: rgba(200, 149, 108, 0.3) !important;
   }
 
-  &:focus,
-  &-focused {
+  &:focus {
     border-color: @primary-color !important;
     box-shadow: 0 0 0 3px @primary-glow !important;
   }
@@ -135,33 +134,16 @@
 
 .input-affix-wrapper-base() {
   background: @bg-surface !important;
-  border-color: @border-default !important;
+  border: 1px solid @border-default !important;
   border-radius: @radius-lg !important;
   padding: 8px 14px !important;
   transition: all 0.2s ease;
 
   &:hover,
-  &:focus,
-  &.ant-input-affix-wrapper-focused {
+  &:focus {
     border-color: @primary-color !important;
     box-shadow: 0 0 0 3px @primary-glow !important;
     background: rgba(20, 21, 32, 0.95) !important;
-  }
-
-  .ant-input {
-    background: transparent !important;
-    color: @text-primary !important;
-    font-family: @font-body;
-    font-size: 14px;
-
-    &::placeholder {
-      color: @text-tertiary !important;
-    }
-  }
-
-  .ant-input-prefix {
-    color: @text-tertiary;
-    margin-right: 8px;
   }
 }
 
@@ -171,19 +153,6 @@
 .select-dropdown-base() {
   background-color: var(--bg-color-elevated, @bg-elevated);
   border-color: var(--border-color, @border-primary);
-
-  .ant-select-item {
-    color: var(--text-color-primary, @text-primary);
-
-    &:hover {
-      background-color: rgba(107, 140, 206, 0.1);
-    }
-
-    &-selected {
-      background-color: rgba(107, 140, 206, 0.15);
-      color: var(--primary-color, @primary-color);
-    }
-  }
 }
 
 // 选择器下拉菜单 - 琥珀色变体
@@ -191,20 +160,6 @@
   background: @bg-elevated !important;
   border: 1px solid @border-default !important;
   border-radius: @radius-md !important;
-
-  .ant-select-item {
-    color: @text-primary !important;
-    font-family: @font-body !important;
-
-    &-option-selected {
-      background: rgba(200, 149, 108, 0.12) !important;
-      color: @primary-color !important;
-    }
-
-    &-option-active {
-      background: rgba(255, 255, 255, 0.04) !important;
-    }
-  }
 }
 
 // =============================================
@@ -430,41 +385,5 @@
     background: rgba(200, 149, 108, 0.20) !important;
     border-color: @primary-color !important;
     transform: scale(1.1);
-  }
-
-  .anticon {
-    font-size: 14px;
-    color: @text-primary;
-  }
-}
-
-// =============================================
-// 分页样式
-// =============================================
-.pagination-base() {
-  .ant-pagination-item {
-    background-color: transparent;
-    border-color: @border-default;
-
-    a {
-      color: @text-primary;
-    }
-
-    &:hover {
-      border-color: @primary-color;
-
-      a {
-        color: @primary-color;
-      }
-    }
-  }
-
-  .ant-pagination-item-active {
-    background-color: rgba(107, 140, 206, 0.15);
-    border-color: @primary-color;
-
-    a {
-      color: @primary-color;
-    }
   }
 }

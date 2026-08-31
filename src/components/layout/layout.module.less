@@ -1,242 +1,252 @@
 /**
- * StoryFab — Cinematic Darkroom Layout
- *
- * A professional film-editing-suite shell. Narrow icon rail on the left,
- * thin top bar, maximum content area. Warm charcoal with amber accents.
- *
- * Design tokens from globals.css (CSS custom properties).
- * This file uses LESS variables only for layout dimensions and easing.
+ * 剧工 (Fablr) — 专业 Dark Studio 侧边栏与主布局样式
+ * 100% 像素级还原现代影视工业设计系统
  */
 
-// ─── Layout Dimensions ────────────────────────────────────────────
-@sidebar-width: 64px;
+@sidebar-width: 220px;
 @topbar-height: 48px;
-
-// ─── Easing ───────────────────────────────────────────────────────
 @ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-// ─── Layout Shell ─────────────────────────────────────────────────
 .shell {
   display: flex;
   min-height: 100vh;
-  background: var(--bg-base);
+  background: #08080c;
+  color: #ffffff;
 }
 
-// ─── Left Icon Rail ───────────────────────────────────────────────
+/* ── 左侧 220px Dark Studio 侧边栏导航 ── */
 .sidebar {
   width: @sidebar-width;
   min-height: 100vh;
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border-subtle);
+  background: #0e0f18;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  align-items: center;
   position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
   z-index: 200;
-  transition: width 300ms @ease-out;
-  overflow: hidden;
+  transition: width 250ms @ease-out;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 14px 12px;
+  box-sizing: border-box;
 }
 
-// Logo
-.logo {
-  height: @topbar-height;
-  width: 100%;
+/* 顶部 Brand 区域 */
+.brandHeader {
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid var(--border-subtle);
+  gap: 10px;
+  padding: 4px 6px 14px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   cursor: pointer;
-  transition: background 200ms @ease-out;
-  flex-shrink: 0;
+  border-radius: 8px;
+  transition: background 0.15s;
 
   &:hover {
-    background: var(--bg-hover);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: -2px;
+    background: rgba(255, 255, 255, 0.03);
   }
 }
 
 .logoIcon {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.logoText {
-  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  background: var(--gradient-hero);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-// New Project Button (icon-only in rail)
-.newProjectBtn {
-  display: none;
-}
-
-.newProjectBtnIcon {
+  border-radius: 9px;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin: 8px auto;
-  background: var(--gradient-hero);
-  color: var(--bg-base);
-  border: none;
-  border-radius: 8px;
+  filter: drop-shadow(0 4px 10px rgba(168, 85, 247, 0.4));
+}
+
+.brandTextCol {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.brandTitle {
   font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.brandSubtitle {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+/* 新建创作项目主按钮 */
+.newProjectBtn {
+  margin: 14px 0 10px 0;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   cursor: pointer;
-  transition:
-    box-shadow 200ms @ease-out,
-    transform 150ms @ease-out;
-  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+  transition: all 0.2s;
+  width: 100%;
 
   &:hover {
-    box-shadow: var(--glow-amber);
     transform: translateY(-1px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: 2px;
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
   }
 }
 
-// Navigation
+.newProjectBtnIcon {
+  display: none;
+}
+
+/* 导航分组 */
+.navSectionTitle {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  padding: 10px 8px 4px 8px;
+}
+
+/* 导航项列表 */
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 8px 0;
+  gap: 3px;
   flex: 1;
   width: 100%;
-  align-items: center;
 }
 
 .navItem {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
   background: transparent;
   border: none;
-  color: var(--text-tertiary);
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
-  transition:
-    background 200ms @ease-out,
-    color 200ms @ease-out;
+  transition: all 0.15s ease;
   position: relative;
-  flex-shrink: 0;
+  text-align: left;
 
   &:hover {
-    background: var(--bg-hover);
-    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
+    color: #ffffff;
   }
 
   &.active {
-    background: rgba(200, 149, 108, 0.1);
-    color: var(--accent-primary);
+    background: rgba(139, 92, 246, 0.16);
+    color: #c084fc;
+    font-weight: 600;
+    border: 1px solid rgba(139, 92, 246, 0.3);
 
     .navIcon {
-      color: var(--accent-primary);
+      color: #c084fc;
     }
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: -2px;
   }
 }
 
 .navIcon {
-  font-size: 16px;
+  font-size: 15px;
   flex-shrink: 0;
-  transition: color 200ms;
-}
-
-.navLabel {
-  display: none;
-}
-
-// Active indicator — subtle amber dot (film perforation motif)
-.navIndicator {
-  position: absolute;
-  left: -8px;
-  width: 3px;
-  height: 12px;
-  border-radius: 0 2px 2px 0;
-  background: var(--accent-primary);
-  box-shadow: var(--glow-amber-sm);
-
-  @media (prefers-reduced-motion: reduce) {
-    display: none;
-  }
-}
-
-// Sidebar Bottom
-.sidebarBottom {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 0 12px;
-  border-top: 1px solid var(--border-subtle);
+}
+
+.navLabel {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navIndicator {
+  position: absolute;
+  right: 8px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c084fc;
+  box-shadow: 0 0 8px #c084fc;
+}
+
+/* 底部区域 */
+.sidebarBottom {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
   width: 100%;
 }
 
-.collapseBtn {
-  width: 32px;
-  height: 32px;
+.userCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #141522;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
-  color: var(--text-tertiary);
-  cursor: pointer;
-  transition:
-    background 200ms @ease-out,
-    color 200ms,
-    border-color 200ms;
-
-  &:hover {
-    background: var(--bg-hover);
-    color: var(--text-primary);
-    border-color: var(--border-strong);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: 2px;
-  }
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
 }
 
-// ─── Top Bar ──────────────────────────────────────────────────────
+.userMeta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.userName {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.userStatus {
+  font-size: 9px;
+  color: #34d399;
+}
+
+/* ── 顶部栏 Topbar ── */
 .topbar {
   height: @topbar-height;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-subtle);
+  background: #0e0f18;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -246,7 +256,6 @@
   left: @sidebar-width;
   right: 0;
   z-index: 100;
-  transition: left 300ms @ease-out;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -254,47 +263,84 @@
 .topbarLeft {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .pageTitle {
-  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  color: #ffffff;
   margin: 0;
+}
+
+.statusPills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gpuPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 9999px;
+}
+
+.pulseDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.computePill {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  color: #c084fc;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-family: monospace;
 }
 
 .topbarRight {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 6px;
 }
 
 .iconBtn {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: none;
-  border-radius: 8px;
-  color: var(--text-tertiary);
+  border-radius: 6px;
+  color: #94a3b8;
   cursor: pointer;
-  transition:
-    background 120ms,
-    color 120ms;
+  transition: all 0.15s;
 
   &:hover {
-    background: var(--bg-hover);
-    color: var(--text-primary);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: 2px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
   }
 }
 
@@ -302,80 +348,55 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 8px 3px 3px;
+  padding: 2px 8px 2px 2px;
   background: transparent;
-  border: 1px solid var(--border-default);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 9999px;
   cursor: pointer;
-  transition:
-    background 200ms @ease-out,
-    border-color 200ms;
-  margin-left: 4px;
 
   &:hover {
-    background: var(--bg-hover);
-    border-color: var(--border-strong);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: 2px;
+    background: rgba(255, 255, 255, 0.06);
   }
 }
 
-.avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--gradient-hero);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--bg-base);
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-}
-
-.userName {
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-// ─── Main Content ─────────────────────────────────────────────────
+/* ── 主工作区内容容器 ── */
 .content {
   flex: 1;
   margin-left: @sidebar-width;
   margin-top: @topbar-height;
-  padding: 20px;
+  padding: 0;
   min-height: calc(100vh - @topbar-height);
-  background: var(--bg-base);
-  transition: margin-left 300ms @ease-out;
+  background: #08080c;
+  overflow: auto;
 }
 
-// ─── Responsive ────────────────────────────────────────────────────
 @media (max-width: 768px) {
   .sidebar {
-    width: 48px;
+    width: 64px;
+    padding: 10px 6px;
+  }
+
+  .brandTextCol,
+  .navLabel,
+  .navSectionTitle,
+  .userMeta,
+  .newProjectBtnLabel {
+    display: none;
+  }
+
+  .newProjectBtn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    margin: 8px auto;
+    justify-content: center;
   }
 
   .topbar {
-    left: 48px;
-    padding: 0 12px;
+    left: 64px;
   }
 
   .content {
-    margin-left: 48px;
-    padding: 12px;
-
-    &.contentExpanded {
-      margin-left: 48px;
-    }
-  }
-
-  .userName {
-    display: none;
+    margin-left: 64px;
   }
 }

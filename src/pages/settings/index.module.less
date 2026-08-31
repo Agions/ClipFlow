@@ -1,431 +1,295 @@
-/* StoryFab X - Settings Page Cinema Director Styles */
-/* 电影导演工作室风格 - 设置页面 */
-
-@bg-primary: #0c0c0e;
-
-@radius-xl: 16px;
-
-@import (reference) '../../styles/mixins.less';
-@import (reference) '../../styles/variables.less';
-
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
-  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-
-  @media (max-width: 768px) {
-    padding: 16px;
-  }
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 48px);
+  background: #08080c;
+  color: #ffffff;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* 顶部标题栏 */
 .header {
-  margin-bottom: 32px;
-
-  h2 {
-    font-family: var(--font-display, 'Outfit', sans-serif);
-    font-weight: 700;
-    font-size: 28px;
-    color: @text-primary;
-    margin-bottom: 8px;
-
-    @media (max-width: 768px) {
-      font-size: 24px;
-    }
-  }
-}
-
-/* 设置卡片 - 电影胶片风格 */
-.settingsCard {
-  .settings-card();
-}
-
-/* 标签页 */
-.tabs {
-  min-height: 500px;
-
-  :global {
-    .ant-tabs-nav {
-      width: 220px;
-      padding: 16px 0;
-
-      @media (max-width: 768px) {
-        width: 100%;
-      }
-    }
-
-    .ant-tabs-tab {
-      padding: 14px 20px;
-      margin: 4px 12px;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      border-radius: @radius-md;
-      color: @text-secondary;
-      font-family: var(--font-display, 'Outfit', sans-serif);
-      font-weight: 500;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.03);
-        color: @text-primary;
-      }
-
-      @media (max-width: 768px) {
-        margin: 0 4px;
-        padding: 12px 16px;
-      }
-    }
-
-    .ant-tabs-tab-active {
-      background: rgba(200, 149, 108, 0.1) !important;
-
-      .ant-tabs-tab-btn {
-        color: @film-amber !important;
-      }
-    }
-
-    .ant-tabs-ink-bar {
-      background: @film-amber;
-      box-shadow: 0 0 10px @film-amber-glow;
-    }
-
-    .ant-tabs-content-holder {
-      background: @bg-elevated;
-      border-left: 1px solid @border-subtle;
-
-      @media (max-width: 768px) {
-        border-left: none;
-        border-top: 1px solid @border-subtle;
-      }
-    }
-
-    .ant-tabs-content {
-      padding: 24px;
-    }
-
-    .ant-tabs-tabpane {
-      padding: 0;
-    }
-  }
-}
-
-/* 表单样式 */
-.formSection {
-  margin-bottom: 32px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  .sectionTitle {
-    font-family: var(--font-display, 'Outfit', sans-serif);
-    font-weight: 600;
-    font-size: 18px;
-    color: @text-primary;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid @border-subtle;
-  }
-}
-
-.formRow {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0 -12px 20px;
-
-  > * {
-    padding: 0 12px;
-  }
-
-  &.twoCol > * {
-    flex: 1;
-    min-width: 50%;
-
-    @media (max-width: 576px) {
-      min-width: 100%;
-    }
-  }
-
-  &.threeCol > * {
-    flex: 1;
-    min-width: 33.33%;
-
-    @media (max-width: 768px) {
-      min-width: 50%;
-    }
-
-    @media (max-width: 576px) {
-      min-width: 100%;
-    }
-  }
-}
-
-/* 输入框 */
-:global {
-  .ant-form-item {
-    margin-bottom: 20px;
-
-    .ant-form-item-label {
-      padding-bottom: 8px;
-
-      > label {
-        color: @text-secondary;
-        font-family: var(--font-body, 'DM Sans', sans-serif);
-        font-weight: 500;
-      }
-    }
-  }
-
-  .ant-input,
-  .ant-input-affix-wrapper,
-  .ant-select-selector,
-  .ant-picker {
-    .input-base();
-  }
-
-  .ant-input-password-icon {
-    color: @text-muted;
-  }
-
-  .ant-select-arrow {
-    color: @text-muted;
-  }
-
-  .ant-select-dropdown {
-    .select-dropdown-amber();
-  }
-
-  .ant-switch {
-    background: @bg-surface;
-
-    &-checked {
-      background: @film-amber !important;
-      box-shadow: @shadow-glow-amber;
-    }
-  }
-
-  .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: @film-amber !important;
-    border-color: @film-amber !important;
-  }
-
-  .ant-radio-checked .ant-radio-inner {
-    border-color: @film-amber !important;
-
-    &::after {
-      background: @film-amber;
-    }
-  }
-}
-
-/* 按钮 */
-.formActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid @border-subtle;
-
-  :global {
-    .ant-btn {
-      font-family: var(--font-display, 'Outfit', sans-serif);
-      font-weight: 500;
-      border-radius: @radius-md;
-      height: 40px;
-      padding: 0 24px;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .ant-btn-primary {
-      .amber-btn-primary();
-      color: @ink-black !important;
-      box-shadow: @shadow-glow-amber;
-
-      &:hover {
-        filter: brightness(1.1);
-        transform: translateY(-1px);
-        box-shadow: 0 0 40px @film-amber-glow;
-      }
-    }
-
-    .ant-btn-default {
-      background: @bg-surface;
-      border-color: @border-default;
-      color: @text-secondary;
-
-      &:hover {
-        border-color: @film-amber;
-        color: @film-amber;
-      }
-    }
-  }
-}
-
-/* API 密钥输入框 */
-.apiKeyInput {
-  position: relative;
-
-  .keyPrefix {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: @text-muted;
-    font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 12px;
-    z-index: 1;
-  }
-
-  :global {
-    .ant-input {
-      padding-left: 80px;
-      font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    }
-  }
-}
-
-/* 模型选择卡片 */
-.modelCard {
-  padding: 16px;
-  border-radius: @radius-lg;
-  background: @bg-surface;
-  border: 1px solid @border-default;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-
-  &:hover {
-    border-color: rgba(200, 149, 108, 0.3);
-    transform: translateY(-2px);
-  }
-
-  &.selected {
-    border-color: @film-amber;
-    background: rgba(200, 149, 108, 0.08);
-    box-shadow: 0 0 20px @film-amber-glow;
-  }
-
-  .modelName {
-    font-family: var(--font-display, 'Outfit', sans-serif);
-    font-weight: 600;
-    font-size: 15px;
-    color: @text-primary;
-    margin-bottom: 4px;
-  }
-
-  .modelProvider {
-    font-size: 12px;
-    color: @text-muted;
-  }
-
-  .modelCheck {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    color: @film-amber;
-    font-size: 18px;
-  }
-}
-
-/* 路径配置 */
-.pathConfig {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #11121c;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
 
-  .pathInput {
-    flex: 1;
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pageTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.pageSubtitle {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* 主分栏布局 */
+.layoutGrid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 左侧导航菜单 */
+.sidebarNav {
+  background: #0e0f18;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.04);
   }
 
-  .pathBtn {
-    flex-shrink: 0;
+  &.activeItem {
+    background: rgba(139, 92, 246, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    font-weight: 600;
   }
 }
 
-/* 描述文本 */
-.formDescription {
-  font-size: 13px;
-  color: @text-muted;
-  margin-top: 4px;
+/* 右侧内容视口 */
+.contentViewport {
+  padding: 24px 32px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 960px;
+}
+
+/* 统一区块卡片 */
+.sectionCard {
+  background: #12131d;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 12px;
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionDesc {
+  font-size: 12px;
+  color: #94a3b8;
   line-height: 1.5;
 }
 
-/* 徽章 */
-.badge {
-  display: inline-flex;
+/* 设置项表单行 */
+.settingRow {
+  display: flex;
   align-items: center;
-  padding: 2px 8px;
-  border-radius: 4px;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.settingMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 60%;
+}
+
+.settingLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.settingHint {
   font-size: 11px;
-  font-weight: 500;
+  color: #94a3b8;
+}
 
-  &.badge-primary {
-    background: rgba(200, 149, 108, 0.15);
-    color: @film-amber;
-    border: 1px solid rgba(200, 149, 108, 0.3);
-  }
+/* 控制器组件样式 */
+.selectControl {
+  background: #181926;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  min-width: 200px;
+  cursor: pointer;
 
-  &.badge-success {
-    background: rgba(90, 158, 111, 0.15);
-    color: #5a9e6f;
-    border: 1px solid rgba(90, 158, 111, 0.3);
-  }
-
-  &.badge-warning {
-    background: rgba(196, 150, 96, 0.15);
-    color: #f59e0b;
-    border: 1px solid rgba(196, 150, 96, 0.3);
+  &:focus {
+    outline: none;
+    border-color: #8b5cf6;
   }
 }
 
-/* 分割线 */
-.divider {
-  height: 1px;
-  background: @border-subtle;
-  margin: 24px 0;
+.inputControl {
+  background: #181926;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  min-width: 260px;
+  font-family: monospace;
+
+  &:focus {
+    outline: none;
+    border-color: #8b5cf6;
+  }
 }
 
-/* 响应式 */
-@media (max-width: 768px) {
-  .tabs {
-    :global {
-      .ant-tabs-nav {
-        padding: 8px 0;
-      }
+/* 模型供应商卡片网格 */
+.providerGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
 
-      .ant-tabs-content-holder {
-        border-left: none;
-        border-top: 1px solid @border-subtle;
-      }
+.providerCard {
+  background: #171825;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s;
 
-      .ant-tabs-content {
-        padding: 16px;
-      }
-    }
+  &:hover {
+    border-color: rgba(139, 92, 246, 0.4);
+    background: #1c1d2d;
   }
+}
 
-  .formRow {
-    margin: 0 -8px 16px;
+.providerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-    > * {
-      padding: 0 8px;
-    }
+.providerName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.statusBadge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.statusActive {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.statusInactive {
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+/* 按钮样式 */
+.primaryBtn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+
+  &:hover {
+    opacity: 0.95;
   }
+}
 
-  .formActions {
-    flex-direction: column;
+.dangerBtn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 8px;
+  cursor: pointer;
 
-    :global .ant-btn {
-      width: 100%;
-    }
+  &:hover {
+    background: rgba(239, 68, 68, 0.25);
   }
+}
+
+/* 缓存与存储统计 */
+.storageBarTrack {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.storageBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+  border-radius: 999px;
 }

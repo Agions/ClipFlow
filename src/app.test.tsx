@@ -8,8 +8,8 @@
  *  - 卸载清理（requestIdleCallback / setTimeout fallback）
  *  - requestIdleCallback 不可用时回退到 setTimeout
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // Mock all lazy-loaded modules

@@ -1,0 +1,265 @@
+.container {
+  display: flex;
+  height: calc(100vh - 48px);
+  background: #08080c;
+  color: #ffffff;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ── 左侧文档导航 ── */
+.docsSidebar {
+  width: 280px;
+  background: #0e0f18;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 16px 12px;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #151624;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+
+  &:focus-within {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+  }
+}
+
+.searchInput {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 12px;
+  width: 100%;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::placeholder {
+    color: #64748b;
+  }
+}
+
+.categoryGroup {
+  margin-bottom: 18px;
+}
+
+.categoryTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+}
+
+.docNavItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: #ffffff;
+  }
+
+  &.activeDoc {
+    background: rgba(139, 92, 246, 0.15);
+    color: #c084fc;
+    font-weight: 600;
+    border-color: rgba(139, 92, 246, 0.3);
+  }
+}
+
+/* ── 右侧主阅读视口 ── */
+.readingViewport {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 48px;
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 文档头部 Meta */
+.docHeader {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 20px;
+  margin-bottom: 28px;
+}
+
+.docBreadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #8b5cf6;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.docTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  margin: 0 0 8px 0;
+}
+
+.docDesc {
+  font-size: 14px;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0 0 14px 0;
+}
+
+.docMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Markdown 渲染样式 */
+.markdownContent {
+  font-size: 14px;
+  line-height: 1.75;
+  color: #cbd5e1;
+
+  h1, h2, h3, h4 {
+    color: #ffffff;
+    font-weight: 700;
+    margin-top: 28px;
+    margin-bottom: 12px;
+    letter-spacing: -0.3px;
+  }
+
+  h1 { font-size: 22px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 8px; }
+  h2 { font-size: 18px; color: #f1f5f9; }
+  h3 { font-size: 15px; color: #e2e8f0; }
+
+  p {
+    margin-bottom: 16px;
+  }
+
+  ul, ol {
+    margin-bottom: 16px;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  li {
+    color: #94a3b8;
+    strong {
+      color: #ffffff;
+    }
+  }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #c084fc;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  pre {
+    background: #11121d;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 16px 0;
+    position: relative;
+
+    code {
+      background: transparent;
+      padding: 0;
+      border: none;
+      color: #38bdf8;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  }
+
+  blockquote {
+    border-left: 3px solid #8b5cf6;
+    padding: 8px 16px;
+    margin: 16px 0;
+    background: rgba(139, 92, 246, 0.08);
+    border-radius: 0 8px 8px 0;
+    color: #cbd5e1;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: #11121d;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    th {
+      background: #161726;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 13px;
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    td {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #94a3b8;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 28px 0;
+  }
+}

@@ -38,14 +38,6 @@
     color: @text-primary;
     margin: 0;
   }
-
-  :global {
-    .ant-btn-primary {
-      .amber-btn-primary();
-      color: @ink-black !important;
-      box-shadow: @shadow-glow-amber;
-    }
-  }
 }
 
 /* 信息卡片 */
@@ -107,42 +99,6 @@
   backdrop-filter: blur(20px);
   margin-bottom: 24px;
   overflow: hidden;
-
-  :global {
-    .ant-tabs-nav {
-      padding: 0 16px;
-      margin-bottom: 0;
-
-      .ant-tabs-tab {
-        padding: 16px 20px;
-        color: @text-secondary;
-        font-family: var(--font-display, 'Outfit', sans-serif);
-
-        &:hover {
-          color: @text-primary;
-        }
-
-        &.ant-tabs-tab-active {
-          .ant-tabs-tab-btn {
-            color: @film-amber !important;
-          }
-        }
-      }
-    }
-
-    .ant-tabs-ink-bar {
-      background: @film-amber;
-      box-shadow: @shadow-glow-amber;
-    }
-
-    .ant-tabs-content-holder {
-      background: @bg-elevated;
-    }
-
-    .ant-tabs-content {
-      padding: 24px;
-    }
-  }
 }
 
 /* 编辑器容器 */

@@ -220,31 +220,31 @@ export function useProjectList(options: UseProjectListOptions = {}): UseProjectL
     []
   );
 
-  // 状态过滤器数据
+  // 状态过滤器数据（颜色用 DESIGN.md §2 CSS var，自动响应主题）
   const statusFilters = useMemo(
     () => [
       {
         label: '全部',
         value: projects.length,
-        color: '#c8956c',
+        color: 'var(--accent-primary)',
         filter: 'all' as ProjectStatusFilter,
       },
       {
         label: '草稿',
         value: projects.filter(p => getProjectUIStatus(p).status === 'draft').length,
-        color: '#6b6760',
+        color: 'var(--text-tertiary)',
         filter: 'draft' as ProjectStatusFilter,
       },
       {
         label: '制作中',
         value: projects.filter(p => getProjectUIStatus(p).status === 'processing').length,
-        color: '#c49660',
+        color: 'var(--accent-amber)',
         filter: 'processing' as ProjectStatusFilter,
       },
       {
         label: '已完成',
         value: projects.filter(p => getProjectUIStatus(p).status === 'completed').length,
-        color: '#5a9e6f',
+        color: 'var(--accent-success)',
         filter: 'completed' as ProjectStatusFilter,
       },
     ],

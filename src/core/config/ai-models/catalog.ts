@@ -33,10 +33,10 @@ export const AI_MODELS: AIModel[] = [
 // =============================================================================
 
 export const MODEL_RECOMMENDATIONS: Record<string, string[]> = {
-  script:   ['gpt-5.5', 'claude-opus-4.7', 'qwen3.6-plus', 'deepseek-v4-flash', 'kimi-k2.6'],
-  analysis: ['gpt-5.5', 'claude-opus-4.7', 'gemini-2.5-pro', 'qwen3.6-max-preview'],
-  code:     ['o3', 'claude-sonnet-4.6', 'deepseek-v4-pro', 'deepseek-v4-flash'],
-  fast:     ['qwen3.6-flash', 'gpt-5.4-mini', 'glm-5-turbo', 'deepseek-v4-flash'],
+  script:   ['qwen3.8-max', 'claude-fable-5', 'gpt-5.6-sol', 'kimi-k3', 'glm-5.3', 'deepseek-v4-pro'],
+  analysis: ['gemini-3.7-flash', 'gpt-5.6-sol', 'claude-fable-5', 'qwen3.8-max'],
+  code:     ['claude-opus-5', 'deepseek-v4-pro', 'gpt-5.6-sol', 'qwen3.8-27b'],
+  fast:     ['qwen3.6-flash', 'gpt-5.6-luna', 'gemini-3.5-flash-lite', 'deepseek-v4-flash', 'glm-5-turbo'],
 };
 
 // =============================================================================

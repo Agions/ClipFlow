@@ -1,9 +1,9 @@
 {
-  "name": "story-fab",
-  "productName": "StoryFab",
+  "name": "fablr",
+  "productName": "Fablr",
   "private": true,
   "version": "2.2.0",
-  "description": "开源 AI 影视解说创作工坊 (Tauri 2 + Rust)。长视频 → AI 拆条 + 多 Agent 智能解说 + 本地 Whisper 字幕 + 配音合成，9:16/1:1/16:9 多格式导出，100% 本地处理零上传。",
+  "description": "Fablr (剧工) — 开源 AI 影视/短剧解说创作工坊 (Tauri 2 + Rust)。长视频/短剧拆条 + 多 Agent 智能剧本研磨 + 本地 Whisper 字幕 + 配音合成 + 剪映草稿导出与多平台消重发布，100% 本地优先处理。",
   "author": "Agions <agions@qq.com>",
   "license": "MIT",
   "type": "module",
@@ -26,15 +26,14 @@
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
     "test:run": "npx vitest run",
-    "docs:build": "cp CHANGELOG.md docs/CHANGELOG.md && npx vitepress build docs",
-    "docs:preview": "npx vitepress preview docs",
-    "docs:jsdoc": "jsdoc -c jsdoc.json",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
     "test:ci": "vitest run --coverage",
-    "bench": "vitest bench --run src/__bench__",
     "verify:antd": "node scripts/check-antd.mjs",
     "verify:naming": "node scripts/check-naming.mjs",
     "verify:circular": "node scripts/check-circular-deps.mjs",
-    "verify:all": "npm run verify:antd && npm run verify:naming && npm run verify:circular"
+    "verify:tokens": "node scripts/check-color-tokens.cjs",
+    "verify:all": "npm run verify:antd && npm run verify:naming && npm run verify:circular && npm run verify:tokens"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

@@ -29,7 +29,6 @@ import {
   generateScriptWithOpenAI,
   analyzeKeyFramesWithAI,
 } from './script-generation-service';
-import { AppError } from '@/core/errors';
 
 const invokeMock = vi.mocked(invokeAIModel);
 const getApiKeyMock = vi.mocked(getApiKey);

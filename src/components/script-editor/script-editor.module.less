@@ -150,10 +150,6 @@
 
 .segmentsTable {
   margin-bottom: 24px;
-  
-  :global(.ant-table-cell) {
-    vertical-align: top;
-  }
 }
 
 .contentCell {
@@ -179,10 +175,6 @@
 .timeInputs {
   display: flex;
   gap: 16px;
-  
-  :global(.ant-form-item) {
-    flex: 1;
-  }
 }
 
 .formActions {
@@ -251,26 +243,9 @@
   }
 }
 
-// 当前编辑中的行高亮
-:global {
-  .ant-table-row.editing {
-    background-color: #e6f7ff;
-    
-    td {
-      animation: pulse 2s infinite;
-    }
-  }
-}
-
 .timeline {
   margin-top: 16px;
   margin-bottom: 16px;
-  
-  :global(.ant-timeline-item-content) {
-    margin-left: 16px;
-    width: calc(100% - 32px);
-    min-height: 40px;
-  }
 }
 
 .segmentItem {

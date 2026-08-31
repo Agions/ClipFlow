@@ -7,6 +7,7 @@ import type { VideoInfo, Scene } from '@/types';
 import type { SceneFeatureSet } from '../types';
 import { SCENE_TYPES } from '../types';
 import { logger } from '../../../../shared/utils/logging';
+import { OUT_SCENE_PALETTE } from '@/core/video/output-colors';
 
 // ============================================
 // 场景检测配置
@@ -29,10 +30,7 @@ class SceneDetectionService {
    * @param minDuration 最小场景时长（秒）
    * @returns 场景列表
    */
-  async segmentScenes(
-    videoInfo: VideoInfo,
-    minDuration: number = 3
-  ): Promise<Scene[]> {
+  async segmentScenes(videoInfo: VideoInfo, minDuration: number = 3): Promise<Scene[]> {
     const scenes: Scene[] = [];
     const segmentDuration = Math.max(minDuration, videoInfo.duration / 20);
     const numScenes = Math.floor(videoInfo.duration / segmentDuration);
@@ -74,7 +72,7 @@ class SceneDetectionService {
    */
   async classifyScenes(scenes: Scene[], videoInfo: VideoInfo): Promise<Scene[]> {
     return Promise.all(
-      scenes.map(async (scene) => {
+      scenes.map(async scene => {
         // 基于场景位置和内容进行分类
         const position = scene.startTime / videoInfo.duration;
 
@@ -144,10 +142,7 @@ class SceneDetectionService {
   /**
    * 匹配场景类型
    */
-  private matchSceneType(
-    features: SceneFeatureSet,
-    position: number
-  ): SceneClassificationResult {
+  private matchSceneType(features: SceneFeatureSet, position: number): SceneClassificationResult {
     // 开场检测
     if (position < 0.15) {
       return {
@@ -173,16 +168,16 @@ class SceneDetectionService {
     let maxConfidence = 0;
 
     if (features.hasFaces && features.motion > 0.5) {
-      bestMatch = SCENE_TYPES.find((s) => s.id === 'interview') || SCENE_TYPES[0];
+      bestMatch = SCENE_TYPES.find(s => s.id === 'interview') || SCENE_TYPES[0];
       maxConfidence = 0.75;
     } else if (features.hasText) {
-      bestMatch = SCENE_TYPES.find((s) => s.id === 'text') || SCENE_TYPES[0];
+      bestMatch = SCENE_TYPES.find(s => s.id === 'text') || SCENE_TYPES[0];
       maxConfidence = 0.8;
     } else if (features.motion > 0.6) {
-      bestMatch = SCENE_TYPES.find((s) => s.id === 'action') || SCENE_TYPES[0];
+      bestMatch = SCENE_TYPES.find(s => s.id === 'action') || SCENE_TYPES[0];
       maxConfidence = 0.7;
     } else if (features.complexity > 0.6) {
-      bestMatch = SCENE_TYPES.find((s) => s.id === 'product') || SCENE_TYPES[0];
+      bestMatch = SCENE_TYPES.find(s => s.id === 'product') || SCENE_TYPES[0];
       maxConfidence = 0.65;
     }
 
@@ -229,7 +224,9 @@ class SceneDetectionService {
    * 生成主导颜色
    */
   private generateDominantColors(): string[] {
-    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F'];
+    // ⚠️ BETA mock：调色板用于模拟占位输出，实际 CV 分析接入后由真实算法返回
+    // 调色板集中管理于 @/core/video/output-colors (OUT_SCENE_PALETTE)
+    const colors = OUT_SCENE_PALETTE;
     const numColors = Math.floor(Math.random() * 2) + 2;
     const shuffled = [...colors].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, numColors);

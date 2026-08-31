@@ -20,6 +20,11 @@
  *   }
  */
 export * from './ivideo-processor';
-export { BaseVideoProcessor, VideoProcessingError, normalizeVideoError } from './base-video-processor';
+export {
+  BaseVideoProcessor,
+  VideoProcessingError,
+  normalizeVideoError,
+} from './base-video-processor';
 export { videoProcessor, TauriVideoProcessor } from './tauri-video-processor';
 export * from './formatters';
+export * from './output-colors';

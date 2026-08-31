@@ -143,18 +143,18 @@ const VideoAnalyzer: React.FC<VideoAnalyzerProps> = ({
           <div className={styles.progress + ' space-y-2'}>
             <Progress value={progress} className="w-full">
               <ProgressTrack className="h-1">
-                <ProgressIndicator className="bg-orange-500" />
+                <ProgressIndicator className="bg-accent-primary" />
               </ProgressTrack>
             </Progress>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <div className="h-4 w-4 rounded-full border-2 border-orange-500/30 border-t-orange-500 animate-spin" />
+              <div className="h-4 w-4 rounded-full border-2 border-accent-primary/30 border-t-accent-primary animate-spin" />
               <span>分析中...</span>
             </div>
           </div>
         )}
 
         <Button
-          className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white"
+          className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground"
           onClick={handleAnalyze}
           disabled={!selectedVideoUrl || loading}
         >

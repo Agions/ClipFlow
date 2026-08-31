@@ -2,10 +2,7 @@
  * VideoStep — 选择视频步骤
  */
 import React from 'react';
-import { Card } from '../../../../components/ui/card';
-import { Video } from 'lucide-react';
-import { Button } from '../../../../components/ui/button';
-import { cn } from '@/shared/utils/cn';
+import { Video, ArrowRight } from 'lucide-react';
 import VideoSelector from '@/components/video-selector/video-selector';
 import type { VideoMetadata } from '@/core/video';
 import styles from '@/pages/project-edit/index.module.less';
@@ -27,17 +24,33 @@ export const VideoStep: React.FC<VideoStepProps> = ({
   onVideoRemove,
   onNext,
 }) => (
-  <Card className={styles.stepCard}>
-    <h3 className="text-lg font-semibold mb-2 flex items-center gap-2"><Video size={18} /> 选择视频</h3>
-    <p className="text-sm text-muted-foreground mb-4">请选择要编辑的视频文件，支持 MP4、MOV、AVI 等常见格式。</p>
+  <div className={styles.stepCard}>
+    <div className={styles.stepCardHeader}>
+      <div className={styles.stepCardTitle}>
+        <Video size={16} className="text-purple-400" />
+        <span>1. 导入待剪辑影视原片</span>
+      </div>
+      <p className={styles.stepCardDesc}>
+        支持 MP4、MOV、AVI、MKV、WEBM 等常见 4K/1080P 影视格式，导入后将自动提取元数据与音频流。
+      </p>
+    </div>
+
     <VideoSelector
       initialVideoPath={videoPath}
       onVideoSelect={onVideoSelect}
       onVideoRemove={onVideoRemove}
       loading={loading}
     />
-    <div className={cn(styles.stepActions, 'flex items-center gap-2')}>
-      <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={onNext} disabled={!videoSelected}>下一步</Button>
+
+    <div className={styles.stepBottomActions}>
+      <button
+        className={styles.nextStepBtn}
+        onClick={onNext}
+        disabled={!videoSelected || loading}
+      >
+        <span>下一步：启动 AI 智能拆条与分析</span>
+        <ArrowRight size={14} />
+      </button>
     </div>
-  </Card>
+  </div>
 );

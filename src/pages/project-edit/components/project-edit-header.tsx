@@ -1,7 +1,7 @@
+/**
+ * 剧工 (Fablr) — 项目新建/编辑页顶部操作栏
+ */
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { ArrowLeft, Save } from 'lucide-react';
 import type { ProjectSaveBehavior } from '@/shared/constants/constants';
 import styles from '@/pages/project-edit/index.module.less';
@@ -20,35 +20,74 @@ interface ProjectEditHeaderProps {
 }
 
 export const ProjectEditHeader = React.memo<ProjectEditHeaderProps>(({
-  isNewProject, loading, initialLoading, saving, saveBehavior,
-  autoSaveEnabled, onBack, onSave, onSaveBehaviorChange, onAutoSaveToggle,
+  isNewProject,
+  loading,
+  initialLoading,
+  saving,
+  saveBehavior,
+  autoSaveEnabled,
+  onBack,
+  onSave,
+  onSaveBehaviorChange,
+  onAutoSaveToggle,
 }) => (
-  <div className={styles.header}>
-    <Button variant="ghost" icon={<ArrowLeft />} onClick={onBack}>返回</Button>
-    <h3 className="text-base font-semibold">{isNewProject ? '创建新项目' : '编辑项目'}</h3>
-    <div className="flex items-center gap-4">
-      <div className={styles.saveBehaviorControl}>
-        <span className={styles.saveBehaviorLabel}>保存后：</span>
-        <Select value={saveBehavior} onValueChange={(v: string | null) => onSaveBehaviorChange(v as ProjectSaveBehavior)}>
-          <SelectTrigger size="sm" className="w-36">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="stay">留在编辑页</SelectItem>
-            <SelectItem value="detail">跳转项目详情</SelectItem>
-          </SelectContent>
-        </Select>
+  <div className={styles.headerWrapper}>
+    {/* 左侧：返回与标题 */}
+    <div className={styles.headerLeft}>
+      <button className={styles.backBtn} onClick={onBack} aria-label="返回项目列表">
+        <ArrowLeft size={14} />
+        <span>返回</span>
+      </button>
+
+      <div className={styles.titleCol}>
+        <div className={styles.pageHeading}>
+          <span>{isNewProject ? '新建影视创作工程' : '编辑影视创作工程'}</span>
+          <span className={styles.projectBadge}>
+            {isNewProject ? '新工程' : '草稿'}
+          </span>
+        </div>
+        <p className={styles.pageSubheading}>
+          配置工程参数并导入原片素材，开启 AI 智能拆条与剧本研磨流水线
+        </p>
       </div>
-      <div className={styles.saveBehaviorControl}>
-        <span className={styles.saveBehaviorLabel}>自动保存：</span>
-        <Switch size="sm" checked={autoSaveEnabled} onCheckedChange={onAutoSaveToggle} />
+    </div>
+
+    {/* 右侧：保存选项与主操作按钮 */}
+    <div className={styles.headerRightActions}>
+      <div className={styles.controlItem}>
+        <span>保存后：</span>
+        <select
+          className={styles.darkInput}
+          style={{ padding: '4px 8px', fontSize: '11px', height: '28px' }}
+          value={saveBehavior}
+          onChange={e => onSaveBehaviorChange(e.target.value as ProjectSaveBehavior)}
+        >
+          <option value="workspace">直达剪辑工作台 (推荐)</option>
+          <option value="script">进入剧本研磨工坊</option>
+          <option value="asset">进入素材拆条工坊</option>
+          <option value="stay">留在编辑页</option>
+          <option value="detail">查看项目总览</option>
+        </select>
       </div>
-      <Button
-        variant="default" icon={<Save />} onClick={onSave}
+
+      <div className={styles.controlItem}>
+        <span>自动保存</span>
+        <input
+          type="checkbox"
+          checked={autoSaveEnabled}
+          onChange={e => onAutoSaveToggle(e.target.checked)}
+          className="accent-purple-500 cursor-pointer"
+        />
+      </div>
+
+      <button
+        className={styles.saveProjectBtn}
+        onClick={onSave}
         disabled={loading || initialLoading || saving}
       >
-        保存项目
-      </Button>
+        <Save size={13} />
+        <span>{saving ? '正在保存中...' : '保存工程'}</span>
+      </button>
     </div>
   </div>
 ));

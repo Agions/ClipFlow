@@ -92,7 +92,7 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({
               <Edit size={14} className="mr-1" />
               AI优化
             </Button>
-            <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white"  onClick={handleSave}>
+            <Button className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground"  onClick={handleSave}>
               <Save size={14} className="mr-1" />
               保存
             </Button>
@@ -185,7 +185,7 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({
           <p className="text-sm text-muted-foreground">点击确定开始优化。</p>
           <DialogFooter>
             <Button variant="outline" onClick={() => dispatch({ type:'SET_AI_MODAL_VISIBLE', payload: false })}>取消</Button>
-            <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={handleAIImprove}>确定</Button>
+            <Button className="bg-accent-primary hover:bg-accent-primary-hover text-primary-foreground" onClick={handleAIImprove}>确定</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

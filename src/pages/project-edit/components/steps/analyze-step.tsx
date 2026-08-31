@@ -2,10 +2,7 @@
  * AnalyzeStep — 分析视频步骤
  */
 import React from 'react';
-import { Card } from '../../../../components/ui/card';
-import { Button } from '../../../../components/ui/button';
-import { Loader2, PenLine } from 'lucide-react';
-import { cn } from '@/shared/utils/cn';
+import { Sparkles, ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
 import VideoSelector from '@/components/video-selector/video-selector';
 import styles from '@/pages/project-edit/index.module.less';
 
@@ -32,50 +29,75 @@ export const AnalyzeStep: React.FC<AnalyzeStepProps> = ({
   onPrev,
   onNext,
 }) => (
-  <Card className={styles.stepCard}>
-    <h3 className="text-lg font-semibold mb-2 flex items-center gap-2"><PenLine size={18} /> 分析视频内容</h3>
-    <p className="text-sm text-muted-foreground mb-4">分析视频获取关键帧和内容信息，生成脚本草稿。</p>
-
-    <div className={cn('min-h-[200px]', loading && 'opacity-50')}>
-      {loading && <div className="flex items-center gap-2 mb-4"><Loader2 className="animate-spin" size={16} /><span className="text-sm">正在分析视频...</span></div>}
-      <div className={styles.analyzeContent}>
-        <VideoSelector
-          initialVideoPath={videoPath}
-          onVideoSelect={onVideoSelect}
-          onVideoRemove={onVideoRemove}
-          loading={false}
-        />
-
-        {keyFrames.length > 0 && (
-          <div className={styles.keyFrames}>
-            <h4 className="text-base font-medium mb-2">已提取 {keyFrames.length} 个关键帧</h4>
-            <div className={styles.keyFramesList}>
-              {keyFrames.map((frame, index) => (
-                <img
-                  key={index}
-                  src={frame}
-                  alt={`关键帧 ${index + 1}`}
-                  className={styles.keyFrameImage}
-                  loading="lazy"
-                  decoding="async"
-                  draggable={false}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+  <div className={styles.stepCard}>
+    <div className={styles.stepCardHeader}>
+      <div className={styles.stepCardTitle}>
+        <Sparkles size={16} className="text-cyan-400" />
+        <span>2. AI 视听多模态深度拆解</span>
       </div>
+      <p className={styles.stepCardDesc}>
+        自动探测镜头切点、提取关键高清帧与 ASR 语音台词，生成剧本研磨分镜草稿。
+      </p>
     </div>
 
-    <div className={cn(styles.stepActions, 'flex items-center gap-2')}>
-      <Button variant="outline" onClick={onPrev}>上一步</Button>
-      {scriptSegmentsCount > 0 ? (
-        <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={onNext}>下一步</Button>
-      ) : (
-        <Button className="bg-[--accent-primary] hover:bg-[--accent-primary-hover] text-white" onClick={onAnalyze} disabled={loading}>
-          {loading ? '分析中...' : '分析视频'}
-        </Button>
+    <div>
+      <VideoSelector
+        initialVideoPath={videoPath}
+        onVideoSelect={onVideoSelect}
+        onVideoRemove={onVideoRemove}
+        loading={false}
+      />
+
+      {keyFrames.length > 0 && (
+        <div className="mt-4 p-3 bg-[#18192a] rounded-lg border border-white/5">
+          <div className="text-xs font-semibold text-white mb-2">已智能提取 {keyFrames.length} 个镜头关键帧</div>
+          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+            {keyFrames.map((frame, index) => (
+              <img
+                key={index}
+                src={frame}
+                alt={`关键帧 ${index + 1}`}
+                className="w-full aspect-video object-cover rounded border border-white/10"
+                loading="lazy"
+                decoding="async"
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {scriptSegmentsCount > 0 && (
+        <div className="mt-3 text-xs text-emerald-400 font-medium">
+          ✓ 已同步生成 {scriptSegmentsCount} 组解说台词与分镜映射
+        </div>
       )}
     </div>
-  </Card>
+
+    <div className={styles.stepBottomActions}>
+      <button className={styles.prevStepBtn} onClick={onPrev}>
+        <ArrowLeft size={14} />
+        <span>上一步：重新选择原片</span>
+      </button>
+
+      <div className="flex items-center gap-2">
+        <button
+          className={styles.prevStepBtn}
+          onClick={onAnalyze}
+          disabled={loading}
+        >
+          {loading ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
+          <span>{loading ? '正在深度分析中...' : '重新启动 AI 分析'}</span>
+        </button>
+
+        <button
+          className={styles.nextStepBtn}
+          onClick={onNext}
+          disabled={loading}
+        >
+          <span>下一步：剧本研磨与分镜编排</span>
+          <ArrowRight size={14} />
+        </button>
+      </div>
+    </div>
+  </div>
 );

@@ -1,16 +1,15 @@
+/**
+ * 剧工 (Fablr) — 视频文件选择与拖拽上传组件样式
+ * 电影导演工作台深色风格 (Obsidian Dark)
+ */
 
 @import (reference) '../../styles/mixins.less';
 @import (reference) '../../styles/variables.less';
 
-
 .videoSelector {
   width: 100%;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-
-  @media (max-width: 576px) {
-    border-radius: 0;
-  }
 }
 
 .uploadArea {
@@ -18,12 +17,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #d9d9d9;
-  border-radius: 8px;
-  background-color: #fafafa;
+  border: 1.5px dashed rgba(139, 92, 246, 0.35);
+  border-radius: 12px;
+  background: radial-gradient(circle at 50% 30%, rgba(139, 92, 246, 0.08) 0%, #111220 100%);
   cursor: pointer;
-  padding: 32px;
-  transition: all 0.3s;
+  padding: 40px 24px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
 
   @media (max-width: 576px) {
     padding: 24px 16px;
@@ -31,45 +31,57 @@
   }
 
   &:hover {
-    border-color: @film-amber;
-    background-color: #f0f7ff;
+    border-color: #8b5cf6;
+    background: radial-gradient(circle at 50% 30%, rgba(139, 92, 246, 0.16) 0%, #15162a 100%);
+    box-shadow: 0 0 24px rgba(139, 92, 246, 0.2);
+    transform: translateY(-1px);
   }
 
   &.dragging {
-    border-color: @film-amber;
-    background-color: #fffbe6;
+    border-color: #a855f7;
+    background: radial-gradient(circle at 50% 30%, rgba(168, 85, 247, 0.25) 0%, #181932 100%);
+    box-shadow: 0 0 32px rgba(168, 85, 247, 0.35);
     transform: scale(1.01);
   }
 
   p {
     margin: 0;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
 
     &.uploadTip {
       font-size: 12px;
-      color: rgba(0, 0, 0, 0.45);
+      color: #94a3b8;
+      font-weight: 400;
       margin-top: 8px;
+      line-height: 1.6;
 
       @media (max-width: 576px) {
         font-size: 11px;
-        text-align: center;
       }
     }
   }
 }
 
 .uploadIcon {
-  font-size: 48px;
-  color: #d9d9d9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #c084fc;
   margin-bottom: 16px;
-  transition: all 0.3s;
-
-  @media (max-width: 576px) {
-    font-size: 36px;
-    margin-bottom: 12px;
-  }
+  transition: all 0.25s;
 
   .uploadArea:hover & {
-    color: @film-amber;
+    background: rgba(139, 92, 246, 0.25);
+    border-color: #8b5cf6;
+    transform: scale(1.05);
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);
   }
 }
 
@@ -78,8 +90,14 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  box-sizing: border-box;
 
   @media (max-width: 576px) {
+    padding: 12px;
     gap: 12px;
   }
 }
@@ -90,105 +108,69 @@
   overflow: hidden;
   background-color: #000;
   position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   
   &::before {
     content: '';
     display: block;
-    padding-top: 56.25%; /* 16:9宽高比 */
+    padding-top: 56.25%; /* 16:9 宽高比 */
   }
-}
 
-.videoPlayer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.metadataCard {
-  width: 100%;
-  
-  :global(.ant-card-head) {
-    border-bottom: 1px solid #f0f0f0;
-    min-height: 40px;
-    padding: 0 16px;
-  }
-  
-  :global(.ant-card-head-title) {
-    padding: 8px 0;
-    font-size: 14px;
-  }
-  
-  :global(.ant-card-body) {
-    padding: 12px 16px;
-  }
-  
-  p {
-    margin-bottom: 6px;
-    font-size: 13px;
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.videoActions {
-  display: flex;
-  justify-content: center;
-  margin-top: 8px;
-}
-
-/* 响应式布局 */
-@media (min-width: 768px) {
-  .videoPreviewContainer {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  
-  .videoPreview {
-    flex: 1;
-    min-width: 300px;
-  }
-  
-  .metadataCard {
-    width: 240px;
-    flex-shrink: 0;
-  }
-  
-  .videoActions {
+  video {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    justify-content: flex-start;
+    height: 100%;
+    object-fit: contain;
   }
 }
 
-/* 暗黑模式适配 */
-:global(.dark) {
-  .uploadArea {
-    background-color: #1f1f1f;
-    border-color: #434343;
-    
-    &:hover {
-      background-color: #141414;
-      border-color: @film-amber;
-    }
-    
-    .uploadTip {
-      color: rgba(255, 255, 255, 0.45);
-    }
+.videoInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.videoName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  word-break: break-all;
+}
+
+.metadataGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.metadataItem {
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .metaLabel {
+    font-size: 10px;
+    color: #94a3b8;
   }
-  
-  .uploadIcon {
-    color: #434343;
+
+  .metaValue {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+    font-family: monospace;
   }
-  
-  .metadataCard {
-    background-color: #1f1f1f;
-    
-    :global(.ant-card-head) {
-      border-bottom-color: #303030;
-    }
-  }
-} 
+}
+
+.actionRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}

@@ -18,7 +18,7 @@
  *   pickBestTransition(type)               → 按 transition 名字查找
  *
  * 配套 CHANGELOG [Unreleased] / P1 — 自动转场建议（30+ 规则矩阵）。
- * 详见 docs/dev/tauri-commands.md § Rust-side Highlight Detection。
+ * 算法详见本文件实现；如未来补充架构图，可指向 docs/refactor/DESIGN.md。
  */
 
 import type { SmartVideoSegment } from '@/types';
@@ -28,14 +28,7 @@ import type { SmartVideoSegment } from '@/types';
 // ============================================
 
 /** 推荐转场类型（与 SmartVideoSegment.suggestedTransition.type 保持一致） */
-export type TransitionType =
-  | 'none'
-  | 'fade'
-  | 'dissolve'
-  | 'wipe'
-  | 'slide'
-  | 'zoom'
-  | 'glitch';
+export type TransitionType = 'none' | 'fade' | 'dissolve' | 'wipe' | 'slide' | 'zoom' | 'glitch';
 
 /** 转场推荐结果（与 SmartVideoSegment.suggestedTransition 形状一致） */
 interface TransitionSuggestion {
@@ -68,7 +61,7 @@ function normType(s: SmartVideoSegment | undefined | null): string {
 
 /** 持续时间按段长调整 */
 function pickDuration(seg: SmartVideoSegment): number {
-  const d = seg.durationMs ?? (seg.endMs - seg.startMs);
+  const d = seg.durationMs ?? seg.endMs - seg.startMs;
   if (d < SHORT_SEG_MS) return SHORT_DURATION_MS;
   if (d > LONG_SEG_MS) return LONG_DURATION_MS;
   return DEFAULT_DURATION_MS;
@@ -79,7 +72,7 @@ function suggest(
   type: TransitionType,
   reason: string,
   confidence: number,
-  duration: number,
+  duration: number
 ): TransitionSuggestion {
   return { type, reason, confidence, duration };
 }
@@ -100,7 +93,7 @@ export function suggestTransition(
   prev?: SmartVideoSegment,
   // Reserved for future curr→next rules; currently the matrix is prev→curr only.
   // Accept the argument today so callers can pass it without churn.
-  next?: SmartVideoSegment,
+  next?: SmartVideoSegment
 ): TransitionSuggestion {
   // Reference `next` so the noUnusedParameters check is satisfied. The parameter
   // is part of the public API surface and will be wired up in a follow-up.
@@ -114,7 +107,12 @@ export function suggestTransition(
   // 1) 显式场景切换 → dissolve / glitch（视觉上"切"的语义最强）
   if (isSceneChange) {
     if (ct === 'action' || pt === 'action') {
-      return suggest('glitch', 'scene change with action context — glitch reinforces cut', 0.92, dur);
+      return suggest(
+        'glitch',
+        'scene change with action context — glitch reinforces cut',
+        0.92,
+        dur
+      );
     }
     if (ct === 'transition' || pt === 'transition') {
       return suggest('dissolve', 'scene change between transition segments', 0.85, dur);
@@ -157,46 +155,162 @@ interface Rule {
 
 const RULE_MATRIX: Record<string, Rule> = {
   // --- action ---
-  'action->action':      { type: 'slide',  reason: 'continuous action — slide preserves momentum',           confidence: 0.85 },
-  'action->dialogue':    { type: 'fade',   reason: 'action to dialogue — fade signals tone shift',          confidence: 0.78 },
-  'action->silence':     { type: 'fade',   reason: 'action to silence — fade to mark breath',              confidence: 0.72 },
-  'action->transition':  { type: 'wipe',   reason: 'action to transition — wipe reinforces the cut',        confidence: 0.74 },
-  'action->content':     { type: 'slide',  reason: 'action to content — slide keeps flow',                 confidence: 0.7  },
+  'action->action': {
+    type: 'slide',
+    reason: 'continuous action — slide preserves momentum',
+    confidence: 0.85,
+  },
+  'action->dialogue': {
+    type: 'fade',
+    reason: 'action to dialogue — fade signals tone shift',
+    confidence: 0.78,
+  },
+  'action->silence': {
+    type: 'fade',
+    reason: 'action to silence — fade to mark breath',
+    confidence: 0.72,
+  },
+  'action->transition': {
+    type: 'wipe',
+    reason: 'action to transition — wipe reinforces the cut',
+    confidence: 0.74,
+  },
+  'action->content': {
+    type: 'slide',
+    reason: 'action to content — slide keeps flow',
+    confidence: 0.7,
+  },
 
   // --- dialogue ---
-  'dialogue->action':    { type: 'wipe',   reason: 'dialogue to action — wipe signals energy bump',        confidence: 0.82 },
-  'dialogue->dialogue':  { type: 'fade',   reason: 'continuous dialogue — fade prevents visual fatigue',   confidence: 0.7  },
-  'dialogue->silence':   { type: 'fade',   reason: 'dialogue to silence — fade marks the pause',           confidence: 0.75 },
-  'dialogue->transition':{ type: 'dissolve', reason: 'dialogue to transition — dissolve bridges naturally', confidence: 0.68 },
-  'dialogue->content':   { type: 'dissolve', reason: 'dialogue to content — dissolve is gentle',           confidence: 0.65 },
+  'dialogue->action': {
+    type: 'wipe',
+    reason: 'dialogue to action — wipe signals energy bump',
+    confidence: 0.82,
+  },
+  'dialogue->dialogue': {
+    type: 'fade',
+    reason: 'continuous dialogue — fade prevents visual fatigue',
+    confidence: 0.7,
+  },
+  'dialogue->silence': {
+    type: 'fade',
+    reason: 'dialogue to silence — fade marks the pause',
+    confidence: 0.75,
+  },
+  'dialogue->transition': {
+    type: 'dissolve',
+    reason: 'dialogue to transition — dissolve bridges naturally',
+    confidence: 0.68,
+  },
+  'dialogue->content': {
+    type: 'dissolve',
+    reason: 'dialogue to content — dissolve is gentle',
+    confidence: 0.65,
+  },
 
   // --- silence ---
-  'silence->action':     { type: 'zoom',   reason: 'silence to action — zoom punch signals "go"',          confidence: 0.8  },
-  'silence->dialogue':   { type: 'fade',   reason: 'silence to dialogue — fade eases the listener back in', confidence: 0.78 },
-  'silence->silence':    { type: 'fade',   reason: 'back-to-back silence — fade marks the gap',           confidence: 0.6  },
-  'silence->transition': { type: 'fade',   reason: 'silence to transition — fade is unobtrusive',          confidence: 0.62 },
-  'silence->content':    { type: 'dissolve', reason: 'silence to content — dissolve wakes viewer up',      confidence: 0.66 },
+  'silence->action': {
+    type: 'zoom',
+    reason: 'silence to action — zoom punch signals "go"',
+    confidence: 0.8,
+  },
+  'silence->dialogue': {
+    type: 'fade',
+    reason: 'silence to dialogue — fade eases the listener back in',
+    confidence: 0.78,
+  },
+  'silence->silence': {
+    type: 'fade',
+    reason: 'back-to-back silence — fade marks the gap',
+    confidence: 0.6,
+  },
+  'silence->transition': {
+    type: 'fade',
+    reason: 'silence to transition — fade is unobtrusive',
+    confidence: 0.62,
+  },
+  'silence->content': {
+    type: 'dissolve',
+    reason: 'silence to content — dissolve wakes viewer up',
+    confidence: 0.66,
+  },
 
   // --- transition ---
-  'transition->action':  { type: 'glitch', reason: 'transition to action — glitch bridges to high energy', confidence: 0.86 },
-  'transition->dialogue':{ type: 'dissolve', reason: 'transition to dialogue — dissolve eases in',         confidence: 0.7  },
-  'transition->silence': { type: 'fade',   reason: 'transition to silence — fade calms the pace',          confidence: 0.68 },
-  'transition->transition':{ type: 'fade', reason: 'back-to-back transitions — fade keeps it quiet',       confidence: 0.6  },
-  'transition->content': { type: 'dissolve', reason: 'transition to content — dissolve integrates',       confidence: 0.66 },
+  'transition->action': {
+    type: 'glitch',
+    reason: 'transition to action — glitch bridges to high energy',
+    confidence: 0.86,
+  },
+  'transition->dialogue': {
+    type: 'dissolve',
+    reason: 'transition to dialogue — dissolve eases in',
+    confidence: 0.7,
+  },
+  'transition->silence': {
+    type: 'fade',
+    reason: 'transition to silence — fade calms the pace',
+    confidence: 0.68,
+  },
+  'transition->transition': {
+    type: 'fade',
+    reason: 'back-to-back transitions — fade keeps it quiet',
+    confidence: 0.6,
+  },
+  'transition->content': {
+    type: 'dissolve',
+    reason: 'transition to content — dissolve integrates',
+    confidence: 0.66,
+  },
 
   // --- content ---
-  'content->action':     { type: 'wipe',   reason: 'content to action — wipe adds energy',                 confidence: 0.76 },
-  'content->dialogue':   { type: 'fade',   reason: 'content to dialogue — fade shifts focus',               confidence: 0.72 },
-  'content->silence':    { type: 'fade',   reason: 'content to silence — fade marks quiet',                confidence: 0.68 },
-  'content->transition': { type: 'dissolve', reason: 'content to transition — dissolve is gentle',        confidence: 0.64 },
-  'content->content':    { type: 'dissolve', reason: 'content to content — dissolve avoids samey feel',   confidence: 0.6  },
+  'content->action': {
+    type: 'wipe',
+    reason: 'content to action — wipe adds energy',
+    confidence: 0.76,
+  },
+  'content->dialogue': {
+    type: 'fade',
+    reason: 'content to dialogue — fade shifts focus',
+    confidence: 0.72,
+  },
+  'content->silence': {
+    type: 'fade',
+    reason: 'content to silence — fade marks quiet',
+    confidence: 0.68,
+  },
+  'content->transition': {
+    type: 'dissolve',
+    reason: 'content to transition — dissolve is gentle',
+    confidence: 0.64,
+  },
+  'content->content': {
+    type: 'dissolve',
+    reason: 'content to content — dissolve avoids samey feel',
+    confidence: 0.6,
+  },
 
   // --- unknown (首段 prev 未定义时 fallback) ---
-  'unknown->action':     { type: 'wipe',   reason: 'opening action — wipe sets energetic tone',            confidence: 0.6  },
-  'unknown->dialogue':   { type: 'fade',   reason: 'opening dialogue — fade is unobtrusive',               confidence: 0.55 },
-  'unknown->silence':    { type: 'fade',   reason: 'opening silence — fade is calm',                       confidence: 0.5  },
-  'unknown->transition': { type: 'fade',   reason: 'opening transition — fade is safe',                    confidence: 0.5  },
-  'unknown->content':    { type: 'dissolve', reason: 'opening content — dissolve is balanced',             confidence: 0.5  },
+  'unknown->action': {
+    type: 'wipe',
+    reason: 'opening action — wipe sets energetic tone',
+    confidence: 0.6,
+  },
+  'unknown->dialogue': {
+    type: 'fade',
+    reason: 'opening dialogue — fade is unobtrusive',
+    confidence: 0.55,
+  },
+  'unknown->silence': { type: 'fade', reason: 'opening silence — fade is calm', confidence: 0.5 },
+  'unknown->transition': {
+    type: 'fade',
+    reason: 'opening transition — fade is safe',
+    confidence: 0.5,
+  },
+  'unknown->content': {
+    type: 'dissolve',
+    reason: 'opening content — dissolve is balanced',
+    confidence: 0.5,
+  },
 };
 
 // ============================================
@@ -207,9 +321,7 @@ const RULE_MATRIX: Record<string, Rule> = {
  * 批量为 segments 数组里的每个片段生成 suggestedTransition。
  * 不修改原数组，返回新数组。
  */
-export function suggestTransitions(
-  segments: SmartVideoSegment[],
-): SmartVideoSegment[] {
+export function suggestTransitions(segments: SmartVideoSegment[]): SmartVideoSegment[] {
   if (!Array.isArray(segments) || segments.length === 0) return [];
 
   return segments.map((curr, i) => {

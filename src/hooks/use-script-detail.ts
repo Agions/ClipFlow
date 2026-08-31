@@ -69,8 +69,6 @@ export function useScriptDetail(): UseScriptDetailResult {
       setIsDeleting: actions.SET_IS_DELETING,
       setDeleteConfirmOpen: actions.SET_DELETE_CONFIRM_OPEN,
       incrementReloadToken: () => actions.INCREMENT_RELOAD_TOKEN(undefined),
-      // resetForLoad 和 resetForReload 历史上都 dispatch RESET action（共用 reducer），
-      // 这里用同样的 RESET action 绑定两个不同语义名，保持 API 兼容。
       resetForLoad: () => actions.RESET(undefined),
       resetForReload: () => actions.RESET(undefined),
     }),

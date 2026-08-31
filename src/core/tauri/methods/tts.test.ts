@@ -49,7 +49,7 @@ describe('tts tauri methods', () => {
       });
     });
 
-    it('forwards optional fields when omitted', async () => {
+    it('forwards optional fields with defaults when omitted', async () => {
       invokeMock.mockResolvedValue({ audioPath: '/tmp/min.wav' });
 
       const result = await tts.synthesizeSpeech({
@@ -61,6 +61,9 @@ describe('tts tauri methods', () => {
       expect(invokeMock).toHaveBeenCalledWith(TauriCommand.SYNTHESIZE_SPEECH, {
         text: 'hi',
         voice: 'en-US-AriaNeural',
+        speed: 1,
+        format: 'mp3',
+        backend: 'edge',
       });
     });
 

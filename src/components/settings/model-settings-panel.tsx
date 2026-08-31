@@ -34,8 +34,8 @@ const ModelSettingsPanel: React.FC<ModelSettingsPanelProps> = ({
       </CardHeader>
       <CardContent className="space-y-4">
         {!isModelSelectable && (
-          <div className="rounded-md border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm">
-            <p className="font-medium text-yellow-500 mb-1">暂无可选模型</p>
+          <div className="rounded-md border border-accent-warning/30 bg-accent-warning/10 px-4 py-3 text-sm">
+            <p className="font-medium text-accent-warning mb-1">暂无可选模型</p>
             <p className="text-muted-foreground text-xs">请先在 API 密钥管理中配置至少一个提供商的 API 密钥，模型列表将自动同步。</p>
           </div>
         )}
@@ -57,9 +57,9 @@ const ModelSettingsPanel: React.FC<ModelSettingsPanelProps> = ({
                     <span>{model.name}</span>
                     <Badge variant="secondary" className="text-xs">{PROVIDER_NAMES[model.provider as keyof typeof PROVIDER_NAMES]}</Badge>
                     {MODEL_VERIFICATION[model.id]?.verified ? (
-                      <Badge className="bg-green-500/20 text-green-500 border-green-500/40 text-xs">已核验</Badge>
+                      <Badge className="bg-accent-success/20 text-accent-success border-accent-success/40 text-xs">已核验</Badge>
                     ) : (
-                      <Badge className="bg-yellow-500/20 text-yellow-500 border-yellow-500/40 text-xs">需手动确认</Badge>
+                      <Badge className="bg-accent-warning/20 text-accent-warning border-accent-warning/40 text-xs">需手动确认</Badge>
                     )}
                   </div>
                 </SelectItem>
@@ -85,7 +85,7 @@ const ModelSettingsPanel: React.FC<ModelSettingsPanelProps> = ({
                 </Badge>
                 <Badge
                   variant="secondary"
-                  className={`text-xs ${MODEL_VERIFICATION[selectedModel.id]?.verified ? 'bg-green-500/20 text-green-500 border-green-500/40' : 'bg-yellow-500/20 text-yellow-500 border-yellow-500/40'}`}
+                  className={`text-xs ${MODEL_VERIFICATION[selectedModel.id]?.verified ? 'bg-accent-success/20 text-accent-success border-accent-success/40' : 'bg-accent-warning/20 text-accent-warning border-accent-warning/40'}`}
                 >
                   核验日期 {MODEL_VERIFICATION[selectedModel.id]?.checkedAt || '待确认'}
                 </Badge>

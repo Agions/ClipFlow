@@ -1,401 +1,552 @@
 /**
- * StoryFab Home — Cinematic Darkroom
- *
- * Film-editing-suite aesthetic with amber/gold accents,
- * film-strip pipeline indicators, and light-leak effects.
- * All colors from globals.css CSS custom properties.
+ * 剧工 (Fablr) — 控制台仪表盘样式
+ * 100% 像素级实现 home_dashboard_ui 设计稿：黑曜石工业级剪辑工作台
  */
 
-// ─── Easing ───────────────────────────────────────────────────────
 @ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-// ─── Container ────────────────────────────────────────────────────
 .container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 4px;
-  animation: fadeSlideUp 400ms @ease-out both;
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 28px;
+  background: #08080c;
+  color: #ffffff;
+  min-height: calc(100vh - 48px);
+  box-sizing: border-box;
 }
 
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// ─── Hero Section ─────────────────────────────────────────────────
+/* ── 顶部 Hero 区域：AI 视频生成流水线 ── */
 .heroBanner {
-  margin-bottom: 20px;
+  background: linear-gradient(135deg, #111220 0%, #15162b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
-  overflow: hidden;
+  padding: 22px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
   position: relative;
-  padding: 40px 36px;
-  background: var(--gradient-hero);
-  border: 1px solid rgba(200, 149, 108, 0.2);
+  overflow: hidden;
 
   &::before {
     content: '';
     position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 48px 48px;
+    top: -50%;
+    left: -20%;
+    width: 60%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
     pointer-events: none;
   }
+}
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: -60px;
-    right: -60px;
-    width: 240px;
-    height: 240px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
+.heroLeftCol {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 380px;
+  z-index: 1;
 }
 
 .heroTitle {
-  color: #fff;
-  margin: 0 0 6px;
-  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 26px;
-  letter-spacing: -0.02em;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-  position: relative;
-  z-index: 1;
-}
-
-.heroParagraph {
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 14px;
-  margin: 0 0 24px;
-  position: relative;
-  z-index: 1;
-}
-
-.heroIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
-  color: rgba(255, 255, 255, 0.6);
-  position: relative;
-  z-index: 1;
-}
-
-// ─── Stats Cards ──────────────────────────────────────────────────
-.statsRow {
-  margin-bottom: 20px;
-}
-
-.statsCard {
-  border-radius: 12px;
-  padding: 16px 20px;
-  transition: all 200ms @ease-out;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-
-  &:hover {
-    border-color: var(--border-default);
-    transform: translateY(-1px);
-  }
-}
-
-.statIcon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.statLabel {
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-tertiary);
-}
-
-.statValue {
-  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   font-size: 22px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.4px;
+  margin: 0;
 }
 
-.statSuffix {
+.heroDesc {
   font-size: 12px;
-  font-weight: 400;
-  margin-left: 2px;
-  color: var(--text-tertiary);
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0;
 }
 
-// ─── Recent Projects ──────────────────────────────────────────────
-.recentProjectsCard {
-  margin-bottom: 20px;
-  border-radius: 12px;
-  padding: 20px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-}
-
-.projectCard {
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 200ms @ease-out;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-subtle);
-  padding: 14px;
-
-  &:hover {
-    border-color: var(--accent-primary-dim);
-    transform: translateY(-2px);
-    box-shadow: var(--glow-amber-sm);
-  }
-}
-
-.projectCardTitle {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.projectCardLight {
-  background: var(--bg-elevated);
-  border-color: var(--border-default);
-}
-
-// ─── Workflow Pipeline (Signature Element) ────────────────────────
-.workflowCard {
-  height: 100%;
-  border-radius: 12px;
-  padding: 20px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  position: relative;
-  overflow: hidden;
-
-  // Film light-leak effect across the top
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--gradient-light-leak);
-    animation: lightLeak 8s linear infinite;
-    background-size: 200% 100%;
-  }
-}
-
-@keyframes lightLeak {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-.workflowItem {
-  padding: 14px 10px;
-  border-radius: 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 200ms @ease-out;
-  border: 1px solid transparent;
-  position: relative;
-
-  &:hover {
-    background: var(--bg-hover);
-    border-color: var(--border-default);
-    transform: translateY(-2px);
-  }
-}
-
-.workflowIcon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  display: inline-flex;
+.heroBtnGroup {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-  position: relative;
-}
-
-.workflowStepTitle {
-  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
-  font-weight: 600;
-  font-size: 12px;
-  color: var(--text-primary);
-  position: relative;
-}
-
-.workflowStepDesc {
-  font-size: 10px;
-  color: var(--text-tertiary);
-  position: relative;
-  margin-top: 2px;
-}
-
-// ─── Activities ───────────────────────────────────────────────────
-.activitiesCard {
-  height: 100%;
-  border-radius: 12px;
-  padding: 20px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-}
-
-.activityDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
+  gap: 10px;
   margin-top: 6px;
 }
 
-.activityTitle {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.activityDesc {
-  font-size: 11px;
-  color: var(--text-tertiary);
-}
-
-.activityTime {
-  font-size: 10px;
-  color: var(--text-disabled);
-}
-
-.processingTag {
+.heroPrimaryBtn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(196, 150, 96, 0.12);
-  color: var(--accent-warning);
-}
-
-// ─── Text Utilities ───────────────────────────────────────────────────
-.textTertiary { color: var(--text-tertiary); }
-.textDisabled { color: var(--text-disabled); }
-
-// ─── Stat Icon Color Variants ─────────────────────────────────────
-.statIconAmber { background: rgba(200, 149, 108, 0.1); color: #c8956c; }
-.statIconSuccess { background: rgba(90, 158, 111, 0.1); color: #5a9e6f; }
-.statIconWarning { background: rgba(196, 150, 96, 0.1); color: #c49660; }
-.statIconCyan { background: rgba(90, 158, 158, 0.1); color: #5a9e9e; }
-.statIconBlue { background: rgba(107, 140, 206, 0.1); color: #6b8cce; }
-
-// ─── Activity Dot Color Variants ──────────────────────────────────
-.activityDotAmber { background: #c8956c; }
-.activityDotSuccess { background: #5a9e6f; }
-.activityDotWarning { background: #c49660; }
-.activityDotCyan { background: #5a9e9e; }
-.activityDotBlue { background: #6b8cce; }
-
-// ─── Workflow Icon Color Variants ─────────────────────────────────
-.workflowIconAmber { background: rgba(200, 149, 108, 0.1); color: #c8956c; }
-.workflowIconGold { background: rgba(212, 165, 116, 0.1); color: #d4a574; }
-.workflowIconWarm { background: rgba(184, 133, 106, 0.1); color: #b8856a; }
-.workflowIconCyan { background: rgba(90, 158, 158, 0.1); color: #5a9e9e; }
-.workflowIconSuccess { background: rgba(90, 158, 111, 0.1); color: #5a9e6f; }
-.workflowIconBlue { background: rgba(107, 140, 206, 0.1); color: #6b8cce; }
-
-// ─── AI Models ────────────────────────────────────────────────────
-.aiModelsCard {
-  margin-top: 16px;
-  border-radius: 12px;
-  padding: 16px 20px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-}
-
-.aiModelTag {
-  font-size: 11px;
-  border-radius: 4px;
-  padding: 3px 8px;
-  background: rgba(200, 149, 108, 0.08);
-  border: 1px solid rgba(200, 149, 108, 0.15);
-  color: var(--accent-gold);
-  transition: all 150ms @ease-out;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+  transition: all 0.2s @ease-out;
 
   &:hover {
-    background: rgba(200, 149, 108, 0.15);
-    border-color: rgba(200, 149, 108, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.55);
   }
 }
 
-.aiModelTagLight {
-  background: rgba(160, 112, 64, 0.06);
-  border-color: rgba(160, 112, 64, 0.12);
-  color: var(--accent-primary);
+.heroSecondaryBtn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
 }
 
-.cardLight {
-  background: var(--bg-elevated);
-  border-color: var(--border-default);
+/* 5 阶段工作流卡片引导 */
+.pipelineFlow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1;
 }
 
-// ─── Text Utilities ───────────────────────────────────────────────────
-.textXs { font-size: var(--font-size-xs); }
-.textSm { font-size: var(--font-size-sm); }
-.textBase { font-size: var(--font-size-base); }
-.fontMedium { font-weight: var(--font-weight-medium); }
-.fontSemibold { font-weight: var(--font-weight-semibold); }
-.fontBold { font-weight: var(--font-weight-bold); }
-.trackingWider { letter-spacing: 0.05em; }
-.uppercase { text-transform: uppercase; }
+.flowStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #18192a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.2s @ease-out;
+  min-width: 80px;
 
-// ─── Spacing Utilities ──────────────────────────────────────────────
-.mb1 { margin-bottom: var(--space-1); }
-.mb2 { margin-bottom: var(--space-2); }
-.mb3 { margin-bottom: var(--space-3); }
-.mb4 { margin-bottom: var(--space-4); }
-.mt1 { margin-top: var(--space-1); }
-.mt2 { margin-top: var(--space-2); }
-.mt3 { margin-top: var(--space-3); }
-.mt4 { margin-top: var(--space-4); }
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #8b5cf6;
+    background: #1f2038;
+  }
+}
 
-// ─── Flex Utilities ─────────────────────────────────────────────────
-.flexGrow { flex: 1 1 0; }
-.flexCenter {
+.stepActive {
+  border-color: rgba(139, 92, 246, 0.6);
+  background: linear-gradient(180deg, #1e1b38 0%, #151628 100%);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
+}
+
+.stepIconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.itemsCenter { align-items: center; }
-.justifyCenter { justify-content: center; }
-.justifyBetween { justify-content: space-between; }
-.gap1 { gap: var(--space-1); }
-.gap2 { gap: var(--space-2); }
-.gap3 { gap: var(--space-3); }
-.gap4 { gap: var(--space-4); }
+.stepLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.flowArrow {
+  color: #64748b;
+}
+
+/* ── 主体双栏布局 ── */
+.mainLayoutGrid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  align-items: start;
+}
+
+.projectSectionCol {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sectionHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.sectionBadge {
+  font-size: 11px;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.viewMoreBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+
+  &:hover {
+    color: #c084fc;
+  }
+}
+
+/* 优雅空状态 */
+.emptyCardState {
+  background: #111220;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.emptyIcon {
+  color: #64748b;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.emptyTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.emptyDesc {
+  font-size: 12px;
+  color: #94a3b8;
+  max-width: 320px;
+  margin-bottom: 16px;
+}
+
+.emptyCreateBtn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+/* 响应式海报卡片网格 */
+.projectGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.projectCard {
+  background: #121322;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s @ease-out;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.2);
+
+    .playIconHover {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+}
+
+.cardPoster {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ratioBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  color: #e2e8f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.playIconHover {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  opacity: 0;
+  transition: all 0.2s @ease-out;
+}
+
+.cardInfoBody {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.projectCardTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardMetaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.cardBottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.statusBadge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.badgeCompleted {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.badgeProcessing {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+.badgePending {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.cardQuickBtns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.quickActionBtn {
+  font-size: 10px;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 2px 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+}
+
+/* 新建占位卡片 */
+.newProjectPlaceholderCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  min-height: 180px;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.04);
+  }
+}
+
+.newPlusCircle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c084fc;
+}
+
+.newCardText {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* ── 右侧侧边栏面板 ── */
+.analyticsSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sideCard {
+  background: #111220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sideCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sideCardTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.queueList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.queueItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.queueInfoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.queueName {
+  color: #e2e8f0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.queuePercent {
+  color: #38bdf8;
+  font-family: monospace;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #6366f1);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.tokenStatBox {
+  display: flex;
+  flex-direction: column;
+}
+
+.tokenBigNumber {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: monospace;
+  letter-spacing: -0.5px;
+  margin: 2px 0 4px 0;
+}
+
+.chartWaveWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chartMonthLabels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #64748b;
+  font-family: monospace;
+}

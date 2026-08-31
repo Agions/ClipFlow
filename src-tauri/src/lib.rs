@@ -152,18 +152,18 @@ pub fn run() {
             commands::crash_recovery::clear_crashes,
         ])
         .setup(|app| {
-            tracing::info!("[StoryFab] 应用初始化中...");
+            tracing::info!("[Fablr] 应用初始化中...");
 
             let app_data_dir = app.path().app_data_dir().unwrap_or_default();
-            tracing::info!("[StoryFab] App数据目录: {:?}", app_data_dir);
+            tracing::info!("[Fablr] App数据目录: {:?}", app_data_dir);
 
             // 初始化 SQLite 数据库（自动迁移）
-            let db_path = app_data_dir.join("storyfab.db");
+            let db_path = app_data_dir.join("fablr.db");
             match crate::db::Db::open(&db_path) {
                 Ok(db) => {
                     let schema_v = db.schema_version().unwrap_or(0);
                     tracing::info!(
-                        "[StoryFab] SQLite 已就绪: {} (schema v{})",
+                        "[Fablr] SQLite 已就绪: {} (schema v{})",
                         db_path.display(),
                         schema_v
                     );
@@ -171,23 +171,23 @@ pub fn run() {
                     app.manage(crate::commands::project::ProjectService::new(db));
                 }
                 Err(e) => {
-                    tracing::error!("[StoryFab] SQLite 初始化失败: {}", e);
+                    tracing::error!("[Fablr] SQLite 初始化失败: {}", e);
                 }
             }
 
             // macOS / Windows / Linux 平台日志路径
             if let Ok(log_dir) = app_data_dir.join("logs").canonicalize() {
-                tracing::info!("[StoryFab] 日志目录: {:?}", log_dir);
+                tracing::info!("[Fablr] 日志目录: {:?}", log_dir);
             }
 
             if let Some(window) = app.get_webview_window("main") {
-                tracing::info!("[StoryFab] 主窗口已获取");
+                tracing::info!("[Fablr] 主窗口已获取");
 
                 // 确保窗口标题正确
-                let _ = window.set_title("StoryFab - AI 视频创作平台");
+                let _ = window.set_title("Fablr (剧工) — AI 影视/短剧解说创作平台");
             }
 
-            tracing::info!("[StoryFab] 启动完成");
+            tracing::info!("[Fablr] 启动完成");
             Ok(())
         })
         .run(tauri::generate_context!())

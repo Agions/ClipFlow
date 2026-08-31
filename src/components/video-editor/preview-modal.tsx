@@ -56,7 +56,7 @@ const PreviewModal: React.FC<PreviewModalProps> = ({
           </div>
         ) : (
           <div className={styles.previewError}>
-            <span className="text-red-500">无法生成预览，请重试</span>
+            <span className="text-accent-danger">无法生成预览，请重试</span>
           </div>
         )}
         <DialogFooter>

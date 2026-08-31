@@ -35,10 +35,10 @@ const PrerequisiteStep: React.FC<PrerequisiteStepProps> = ({ dispatch }) => {
           style={{
             marginTop: '14px',
             padding: '8px 20px',
-            background: 'rgba(250, 173, 20, 0.12)',
-            border: '1px solid rgba(250, 173, 20, 0.25)',
+            background: 'color-mix(in srgb, var(--accent-amber) 12%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--accent-amber) 25%, transparent)',
             borderRadius: '8px',
-            color: '#c49660',
+            color: 'var(--accent-amber)',
             fontFamily: 'Figtree, sans-serif',
             fontSize: '13px',
             cursor: 'pointer',

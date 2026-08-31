@@ -1,281 +1,81 @@
-# 贡献指南
+# 剧工 (Fablr) — 开发者贡献指南
 
-感谢你对 StoryFab 的关注！我们欢迎所有形式的贡献。
+感谢你对「剧工 (Fablr)」开源项目的关注！我们欢迎所有形式的贡献。
 
-## 📋 贡献流程
+---
 
-### 1. 准备工作
+## 📋 1. 贡献流程
+
+### 1.1 准备工作
 
 ```bash
-# Fork 本仓库
-# 克隆你的 Fork
-git clone https://github.com/YOUR_USERNAME/story-fab.git
-cd story-fab
+# 克隆仓库
+git clone https://github.com/Agions/fablr.git
+cd fablr
 
-# 添加 upstream remote
-git remote add upstream https://github.com/Agions/story-fab.git
+# 安装前端依赖
+pnpm install
 ```
 
-### 2. 创建分支
+### 1.2 创建特性分支
 
 ```bash
-# 从 main 拉取最新代码
+# 从 main 分支拉取最新代码
 git checkout main
-git pull upstream main
+git pull origin main
 
 # 创建特性分支
-git checkout -b feature/AmazingFeature
-# 或
-git checkout -b fix/BugFix
+git checkout -b feature/amazing-feature
 ```
 
-**分支命名规范：**
-- `feature/xxx` - 新功能
-- `fix/xxx` - Bug 修复
-- `docs/xxx` - 文档更新
-- `refactor/xxx` - 代码重构
-- `test/xxx` - 测试相关
-- `chore/xxx` - 构建/工具链
-
-### 3. 开发
+### 1.3 本地开发与调试
 
 ```bash
-# 安装依赖
-npm install
-
-# 启动开发服务器
+# 启动前端热重载开发服务器
 npm run dev
+
+# 启动 Tauri 桌面端全栈开发环境
+pnpm tauri dev
 ```
 
-**代码规范：**
-- 遵循 [Conventional Commits](https://www.conventional-commits.org/) 规范
-- 确保 ESLint 和 TypeScript 检查通过
-- 添加必要的测试用例
-- 更新相关文档
+---
 
-### 4. 提交代码
+## 📝 2. 代码与命名规范
+
+严格遵守 [`docs/NAMING_AND_MODULARIZATION.md`](./docs/NAMING_AND_MODULARIZATION.md) 的标准：
+
+1. **命名规范**：
+   * 文件名：纯小写短横线 `kebab-case`（如 `video-player.tsx`, `audio-sync.ts`）；
+   * 函数名：简短有力的动宾风格（如 `get()`, `set()`, `load()`, `save()`, `init()`, `play()`, `seek()`）；
+   * 组件与类型：`PascalCase`（如 `VideoPlayer`, `Screenplay`）；
+2. **纯中文界面规范**：
+   * 所有面向用户的 UI 文案、提示与状态标签统一采用纯中文；
+3. **架构规范**：
+   * 严禁引入 Ant Design 相关库及组件；
+   * UI 基座全面基于原生 Tailwind CSS + `@base-ui/react` + `lucide-react`。
+
+---
+
+## 🧪 3. 测试与质量验证
+
+在提交代码前，必须确保本地所有质量检查和测试通过：
 
 ```bash
-# 提交更改
-git commit -m 'feat: add amazing feature'
+# 运行全量规范与质量扫描（0 AntD、0 循环依赖、命名合规、Token 一致）
+npm run verify:all
 
-# 推送到你的 Fork
-git push origin feature/AmazingFeature
+# 运行前端自动化测试套件
+npm run test:run
+
+# 运行前端生产打包构建
+npm run build
+
+# 运行 Rust 后端编译检查
+cd src-tauri && cargo check
 ```
 
-**提交信息格式：**
-```
-<type>(<scope>): <subject>
+---
 
-<body>
+## 📄 4. 许可证与致谢
 
-<footer>
-```
-
-**Type 说明：**
-- `feat` - 新功能
-- `fix` - Bug 修复
-- `docs` - 文档更新
-- `style` - 代码格式（不影响功能）
-- `refactor` - 代码重构
-- `perf` - 性能优化
-- `test` - 测试相关
-- `chore` - 构建/工具链
-
-**示例：**
-```
-feat(audio): add volume normalization
-
-- Implement audio volume normalization using FFmpeg
-- Add configuration option in settings
-- Update documentation
-
-Closes #123
-```
-
-### 5. 开启 Pull Request
-
-1. 在 GitHub 上开启 Pull Request
-2. 填写 PR 模板，描述变更内容
-3. 确保 CI 检查通过
-4. 等待代码审查
-
-## 🧪 测试
-
-```bash
-# 运行所有测试
-npm test
-
-# 运行测试并生成覆盖率报告
-npm run test:coverage
-
-# 运行特定测试文件
-npm test -- path/to/test.ts
-```
-
-**测试要求：**
-- 新功能必须添加测试用例
-- Bug 修复应添加回归测试
-- 测试覆盖率不低于 90%
-
-## 🗄️ 状态管理
-
-StoryFab 使用 **Zustand v5** 进行全局状态管理，遵循单一数据源（SSOT）原则。
-
-### Store 架构
-
-| Store | 持久化 Key | 职责 |
-|-------|-----------|------|
-| `app-store` | `StoryFab-app` | 全局 UI 状态 + 应用设置 + AI 模型偏好 |
-| `editor-store` | `StoryFab-workspace` | 编辑器运行时状态（tool / viewport / selection / timelineTracks / playhead） |
-| `project-store` | 无（文件级） | 项目数据（currentProject / files / resources / mode / step） |
-| `timeline-store` | `StoryFab-timeline` | 时间轴状态（playhead / tracks / isPlaying） |
-
-### 核心约定
-
-1. **单一数据源**：每个状态域有且仅有一个 Owner Store。
-2. **细粒度 Selector**：组件必须使用细粒度 selector，禁止 `useAppStore()` 整树订阅。
-   ```tsx
-   // ✅ 好
-   const theme = useAppStore(s => s.theme);
-   
-   // ❌ 差
-   const { theme } = useAppStore();
-   ```
-3. **无隐式依赖**：Store 之间通过显式 subscribe 或 action 调用交互，禁止跨 Store 直接读写状态。
-4. **持久化策略**：
-   - `app-store`：partialize 包含 `theme` / `sidebarCollapsed` / `userSettings` / `autoSave` / `aiSettings`
-   - `editor-store`：partialize 包含 `video` / `zoom` / `volume` / `muted` / `snapEnabled` / `snapThreshold`
-   - `project-store`：无持久化，项目数据由 `project-file-service` 管理
-   - `timeline-store`：partialize 包含 `playheadMs` / `tracks` / `isPlaying`
-5. **DevTools**：所有 Store 均注册 devtools，支持时间旅行调试。
-
-### 添加新 Store 的步骤
-
-1. 在 `src/stores/` 下创建 `{store-name}.ts` 和 `{store-name}.test.ts`
-2. 使用 `createPersistedStore` 工厂创建 Store
-3. 在 `src/stores/index.ts` 中统一导出
-4. 在 `docs/stores-boundary.md` 中记录职责边界
-
-### 合并 Store 的步骤
-
-1. 在目标 Store 中扩展状态接口，添加新分区
-2. 迁移 action creators
-3. 更新 `partialize` 包含新分区
-4. 全局搜索替换旧 Store 引用为目标 Store selector
-5. 删除旧 Store 文件及其测试
-6. 将旧测试用例迁入目标 Store 测试文件
-
-## 📝 代码规范
-
-### TypeScript
-
-```typescript
-// ✅ 好 - 使用接口定义类型
-interface User {
-  id: string
-  name: string
-}
-
-// ❌ 差 - 使用 type 定义复杂对象
-type User = {
-  id: string
-  name: string
-}
-```
-
-### React
-
-```typescript
-// ✅ 好 - 使用函数组件 + Hooks
-export function MyComponent({ name }: Props) {
-  const [count, setCount] = useState(0)
-  return <div>{name}</div>
-}
-
-// ❌ 差 - 使用类组件
-class MyComponent extends React.Component {
-  render() {
-    return <div>{this.props.name}</div>
-  }
-}
-```
-
-### 命名规范
-
-- **组件**：PascalCase（`VideoPlayer.tsx`）
-- **Hook**：camelCase 以 `use` 开头（`useVideoPlayer.ts`）
-- **函数**：camelCase（`handleClick`）
-- **常量**：UPPER_SNAKE_CASE（`MAX_FILE_SIZE`）
-- **类型/接口**：PascalCase（`VideoPlayerProps`）
-- **文件**：kebab-case（`video-player.tsx`）
-
-## 🔍 代码审查
-
-所有 PR 需要至少 1 名核心维护者审查批准后才能合并。
-
-**审查标准：**
-- 代码逻辑正确性
-- 性能影响
-- 安全性
-- 可维护性
-- 测试覆盖
-- 文档完整性
-
-## 🐛 报告 Bug
-
-请通过 [GitHub Issues](https://github.com/Agions/story-fab/issues) 报告 Bug。
-
-**报告模板：**
-```markdown
-## Bug 描述
-简要描述 Bug 的表现
-
-## 复现步骤
-1. 打开应用
-2. 执行 XXX 操作
-3. 观察到 XXX 错误
-
-## 预期行为
-描述期望的正确行为
-
-## 实际行为
-描述实际发生的错误
-
-## 环境信息
-- OS: [e.g. Windows 11, macOS 14, Ubuntu 22.04]
-- 版本: [e.g. 2.2.0]
-- 架构: [e.g. x64, ARM64]
-
-## 附加信息
-- 错误日志
-- 截图
-- 屏幕录制
-```
-
-## 💡 功能请求
-
-欢迎通过 [GitHub Issues](https://github.com/Agions/story-fab/issues) 提出功能请求。
-
-**请求模板：**
-```markdown
-## 功能描述
-简要描述你想要的功能
-
-## 使用场景
-描述这个功能的使用场景
-
-## 预期效果
-描述功能实现后的效果
-
-## 替代方案
-描述是否有其他替代方案
-```
-
-## 📄 许可证
-
-贡献即表示你同意你的代码将在 MIT 许可证下发布。
-
-## 🙏 致谢
-
-感谢所有贡献者的努力！<img src="https://contrib.rocks/image?repo=Agions/story-fab" />
+贡献即表示你同意你的代码将在 MIT 许可证下发布。感谢所有创作者与开发者的支持！

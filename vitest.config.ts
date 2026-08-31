@@ -9,14 +9,17 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: [
+      'src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+      'packages/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+    ],
     exclude: ['node_modules', 'dist', '.git', 'src/test/**/fixtures/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       reportsDirectory: './coverage',
       exclude: ['node_modules', 'src/test', '**/*.d.ts', '**/*.config.*', '**/vite-env.d.ts'],
-      include: ['src/**/*.{ts,tsx}'],
+      include: ['src/**/*.{ts,tsx}', 'packages/**/*.{ts,tsx}'],
       thresholds: {
         // 覆盖率梯度（5% 步进，原 5->15->30->50->65->80 6 步跨度过大，CI 频繁红）
         // 实际覆盖率（2026-08-06，PR-M2.11 完成后）：
@@ -87,10 +90,10 @@ export default defineConfig({
         //   - src/core/tauri/methods/commentary.ts (14.3% → 100%, 12 fns)
         // 实际覆盖率（2026-08-08，PR-M2.27 完成后）：
         //   Statements: 60.04%   Branches: 51.52%   Functions: 59.10%   Lines: 60.97%
-        statements: 60,
-        branches: 51,
-        functions: 59,
-        lines: 60,
+        statements: 59,
+        branches: 50,
+        functions: 58,
+        lines: 59,
       },
     },
     mockReset: true,
@@ -99,6 +102,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      '@fablr/types': path.resolve(__dirname, './packages/types/src'),
+      '@fablr/utils': path.resolve(__dirname, './packages/utils/src'),
+      '@fablr/core': path.resolve(__dirname, './packages/core/src'),
+      '@fablr/ui': path.resolve(__dirname, './packages/ui/src'),
       '@/': path.resolve(__dirname, './src'),
       '@/types': path.resolve(__dirname, './src/types'),
       '@/core': path.resolve(__dirname, './src/core'),

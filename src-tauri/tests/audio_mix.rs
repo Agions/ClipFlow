@@ -11,7 +11,7 @@
 //! matches the same pattern as `tests/resilience.rs` and `tests/crash_recovery.rs`
 //! — see commit 839cca17.
 
-use story_fab_lib::utils::pcm_samples_from_wav;
+use fablr_lib::utils::pcm_samples_from_wav;
 
 // ---------------------------------------------------------------------------
 // utils::audio::pcm_samples_from_wav

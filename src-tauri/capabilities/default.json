@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/acl-manifests.json",
   "identifier": "default",
-  "description": "Default capabilities for StoryFab",
+  "description": "Default capabilities for Fablr",
   "windows": ["main"],
   "permissions": [
     "core:default",
