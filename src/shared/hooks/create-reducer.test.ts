@@ -42,7 +42,7 @@ describe('createReducer', () => {
 
   describe('reducer behavior', () => {
     it('returns initial state for unknown action', () => {
-      const result = reducer({ count: 5, name: 'x' }, { type: 'UNKNOWN' as any, payload: undefined });
+      const result = reducer({ count: 5, name: 'x' }, { type: 'UNKNOWN' as unknown as keyof typeof handlers, payload: undefined });
       expect(result).toEqual({ count: 5, name: 'x' });
     });
 
@@ -92,9 +92,9 @@ describe('createReducer', () => {
 
   describe('empty handlers edge case', () => {
     it('reducer with no handlers always returns current state', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const [emptyReducer] = createReducer<State, any>('EMPTY', {}, { count: 5, name: 'x' });
-      const result = emptyReducer({ count: 5, name: 'x' }, { type: 'ANY' as any, payload: undefined });
+      type EmptyActionMap = Record<string, (state: State, payload: unknown) => State>;
+      const [emptyReducer] = createReducer<State, EmptyActionMap>('EMPTY', {}, { count: 5, name: 'x' });
+      const result = emptyReducer({ count: 5, name: 'x' }, { type: 'ANY', payload: undefined });
       expect(result).toEqual({ count: 5, name: 'x' });
     });
   });

@@ -135,9 +135,8 @@ describe('generateText — validation', () => {
   });
 
   it('throws when prompt is non-string', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await expect(
-      aiService.generateText(openaiModel, 123 as any, defaultSettings)
+      aiService.generateText(openaiModel, 123 as unknown as string, defaultSettings)
     ).rejects.toBeInstanceOf(ServiceError);
   });
 });
