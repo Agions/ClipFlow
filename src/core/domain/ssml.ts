@@ -5,7 +5,7 @@
  * 后端 wrap 成标准 SSML 字符串后传给 edge-tts / Azure / CosyVoice 等
  * TTS 后端（不同后端支持的 SSML 标签子集可能不同，见 SsmlCapability）。
  *
- * 标签集合（与 SSML 1.1 对齐 + StoryFab 实际需求收敛）：
+ * 标签集合（与 SSML 1.1 对齐 + Fablr 实际需求收敛）：
  * - <break>      停顿
  * - <emphasis>   强调
  * - <prosody>    韵律（rate / pitch / volume）

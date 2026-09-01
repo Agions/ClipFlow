@@ -6,7 +6,7 @@
  * 监听 `understanding-progress` 事件转发进度给调用方。
  *
  * storyline.json 由 Rust 端落盘到
- * `appData/StoryFab/productions/{id}/artifacts/storyline.json`，
+ * `appData/Fablr/productions/{id}/artifacts/storyline.json`，
  * 本服务只返回落盘引用，不持有产物内容。
  *
  * 注：单步能力（metadata/segment/subtitle/highlight）见同目录

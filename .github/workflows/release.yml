@@ -74,33 +74,33 @@ jobs:
         if: matrix.platform.label == 'macOS ARM64' || matrix.platform.label == 'macOS x64'
         run: |
           cat > "HOW-TO-RUN.txt" << 'RUNEOF'
-          === story-fab macOS Installation Instructions ===
+          === Fablr macOS Installation Instructions ===
 
-          Because story-fab is not signed with an Apple Developer certificate,
+          Because Fablr is not signed with an Apple Developer certificate,
           you must explicitly allow it to run on your Mac:
 
           METHOD 1 — Easiest (Recommended):
-          1. Right-click on story-fab.app
+          1. Right-click on Fablr.app
           2. Select "Open" from the context menu
           3. macOS will show a warning popup
           4. Click "Open Anyway"
-          5. story-fab will launch ✅
+          5. Fablr will launch ✅
 
           METHOD 2 — Terminal:
           1. Open Terminal (Applications → Utilities → Terminal)
           2. Copy and paste this command:
-             sudo xattr -rd com.apple.quarantine "/Applications/story-fab.app"
+             sudo xattr -rd com.apple.quarantine "/Applications/Fablr.app"
           3. Press Enter, enter your password when prompted
-          4. Launch story-fab from Applications normally
+          4. Launch Fablr from Applications normally
 
           METHOD 3 — System Settings:
-          1. Try to open story-fab (double-click)
+          1. Try to open Fablr (double-click)
           2. Go to System Settings → Privacy & Security
           3. Scroll down to "Security policy" section
-          4. Click "Open Anyway" next to story-fab
-          5. Launch story-fab again
+          4. Click "Open Anyway" next to Fablr
+          5. Launch Fablr again
 
-          For more help: https://github.com/Agions/story-fab/releases
+          For more help: https://github.com/Agions/fablr/releases
           RUNEOF
 
       - name: Build Tauri app
@@ -126,9 +126,9 @@ jobs:
         run: |
           APP_PATH=$(find src-tauri/target/${{ matrix.platform.target }}/release/bundle -name "*.app" -type d | head -1)
           echo "Found app: $APP_PATH"
-          7z a -tzip "story-fab-${{ matrix.platform.label }}.zip" "$APP_PATH"
-          echo "Packaged: story-fab-${{ matrix.platform.label }}.zip"
-          ls -lh "story-fab-${{ matrix.platform.label }}.zip"
+          7z a -tzip "fablr-${{ matrix.platform.label }}.zip" "$APP_PATH"
+          echo "Packaged: fablr-${{ matrix.platform.label }}.zip"
+          ls -lh "fablr-${{ matrix.platform.label }}.zip"
 
       - name: Package Linux AppImage
         if: matrix.platform.label == 'Linux x64' || matrix.platform.label == 'Linux ARM64'
@@ -140,25 +140,25 @@ jobs:
           # Compress if larger than 1.5 GB (stay safely under 2 GB GitHub limit)
           if [ "$SIZE" -gt 1610612736 ]; then
             echo "Large AppImage — compressing with 7z..."
-            7z a -t7z "story-fab-${{ matrix.platform.label }}.7z" "$APPIMAGE" -mx9
-            ls -lh "story-fab-${{ matrix.platform.label }}.7z"
+            7z a -t7z "fablr-${{ matrix.platform.label }}.7z" "$APPIMAGE" -mx9
+            ls -lh "fablr-${{ matrix.platform.label }}.7z"
           else
-            mv "$APPIMAGE" "story-fab-${{ matrix.platform.label }}.AppImage"
-            ls -lh "story-fab-${{ matrix.platform.label }}.AppImage"
+            mv "$APPIMAGE" "fablr-${{ matrix.platform.label }}.AppImage"
+            ls -lh "fablr-${{ matrix.platform.label }}.AppImage"
           fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v5
         with:
-          name: StoryFab-${{ matrix.platform.label }}
+          name: Fablr-${{ matrix.platform.label }}
           path: |
             src-tauri/target/${{ matrix.platform.target }}/release/bundle/**/*.exe
             src-tauri/target/${{ matrix.platform.target }}/release/bundle/**/*.msi
             src-tauri/target/${{ matrix.platform.target }}/release/bundle/**/*.deb
             src-tauri/target/${{ matrix.platform.target }}/release/bundle/**/*.rpm
             src-tauri/target/${{ matrix.platform.target }}/release/bundle/**/*.AppImage
-            story-fab-${{ matrix.platform.label }}.zip
-            story-fab-${{ matrix.platform.label }}.7z
+            fablr-${{ matrix.platform.label }}.zip
+            fablr-${{ matrix.platform.label }}.7z
             HOW-TO-RUN.txt
           retention-days: 7
 

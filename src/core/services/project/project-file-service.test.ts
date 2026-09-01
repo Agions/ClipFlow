@@ -139,7 +139,7 @@ describe('saveProjectToFile', () => {
     await saveProjectToFile(validProjectId, sampleProject);
 
     expect(mockFs.writeTextFile).toHaveBeenCalledWith(
-      `story-fab/${validProjectId}.json`,
+      `fablr/${validProjectId}.json`,
       expect.any(String),
       expect.objectContaining({ baseDir: 1 }) // BaseDirectory.AppData
     );
@@ -247,7 +247,7 @@ describe('listProjects', () => {
 
     const projects = await listProjects();
 
-    expect(mockTauri.listAppDataFiles).toHaveBeenCalledWith('story-fab');
+    expect(mockTauri.listAppDataFiles).toHaveBeenCalledWith('fablr');
     expect(projects.length).toBeGreaterThanOrEqual(0);
   });
 
@@ -272,7 +272,7 @@ describe('listProjects', () => {
 
     const projects = await listProjects();
 
-    expect(mockTauri.listAppDataFiles).toHaveBeenCalledWith('story-fab');
+    expect(mockTauri.listAppDataFiles).toHaveBeenCalledWith('fablr');
     expect(projects).toHaveLength(1);
     expect(projects[0].id).toBe('p1');
   });
@@ -358,6 +358,6 @@ describe('deleteProject', () => {
 
 describe('PROJECTS_CHANGED_EVENT', () => {
   it('constant is the documented event name', () => {
-    expect(PROJECTS_CHANGED_EVENT).toBe('StoryFab:projects:changed');
+    expect(PROJECTS_CHANGED_EVENT).toBe('Fablr:projects:changed');
   });
 });

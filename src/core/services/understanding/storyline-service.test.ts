@@ -20,7 +20,7 @@ import { analyzeStoryline } from './storyline-service';
 import type { UnderstandingProgress } from './types';
 
 const mockResult = {
-  storylinePath: '/data/StoryFab/productions/p1/artifacts/storyline.json',
+  storylinePath: '/data/Fablr/productions/p1/artifacts/storyline.json',
   scenesCount: 5,
   subtitlesCount: 12,
   highlightsCount: 3,

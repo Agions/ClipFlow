@@ -65,7 +65,7 @@ function formatASSTime(seconds: number): string {
  * ASS 字幕头部（包含样式定义）
  */
 const ASS_HEADER = `[Script Info]
-Title: StoryFab Subtitles
+Title: Fablr Subtitles
 ScriptType: v4.00+
 
 [V4+ Styles]

@@ -69,7 +69,7 @@ describe('trackToASS', () => {
   it('includes ASS header and dialogue lines', () => {
     const ass = trackToASS(sampleTrack);
     expect(ass).toContain('[Script Info]');
-    expect(ass).toContain('Title: StoryFab Subtitles');
+    expect(ass).toContain('Title: Fablr Subtitles');
     expect(ass).toContain('Dialogue: 0,0:00:00.00,0:00:01.50');
     expect(ass).toContain('第一句');
   });

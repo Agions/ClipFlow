@@ -14,7 +14,7 @@ const root = ReactDOM.createRoot(rootElement);
 if (import.meta.env.DEV) {
   window.addEventListener('unhandledrejection', (e) => {
     if (e.reason instanceof Error && e.reason.message.includes('@tauri-apps/api')) {
-      logger.warn('[story-fab] Tauri API unhandled rejection', e.reason.message);
+      logger.warn('[fablr] Tauri API unhandled rejection', e.reason.message);
     }
   });
 }

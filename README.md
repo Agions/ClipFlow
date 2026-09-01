@@ -61,12 +61,13 @@ SPDX-License-Identifier: MIT
 
 ## 📚 官方文档体系
 
-查看完整的 [📖 剧工 Fablr 官方文档中心](docs/README.md)：
+查看完整的 [📖 剧工 Fablr 官方文档中心 (VitePress)](docs/index.md)：
 
-- **系统架构**：[系统目标架构设计](docs/architecture/01-system-overview.md) | [Rust DDD 仓储层设计](docs/architecture/02-rust-backend-ddd.md)
-- **功能指南**：[素材拆条工坊](docs/features/01-asset-hub.md) | [剧本研磨工坊](docs/features/02-script-studio.md) | [剪辑合成工作台](docs/features/03-workspace-editing.md) | [消重发布中心](docs/features/04-export-dedup.md)
-- **使用教程**：[30秒快速上手](docs/guides/01-quick-start.md) | [博主标准创作 SOP](docs/guides/02-workflow-sop.md)
-- **开发者专区**：[搭建开发环境](docs/developer/01-getting-started.md) | [测试与质量验证](docs/developer/02-testing-and-verify.md) | [命名规范约定](docs/developer/03-naming-convention.md)
+- **新手入门**：[产品定位与核心价值](docs/getting-started/01-introduction.md) | [安装指南](docs/getting-started/02-installation.md) | [5分钟极速上手](docs/getting-started/03-quick-start.md)
+- **核心工坊 SOP**：[素材拆条工坊](docs/workshops/01-asset-hub.md) | [剧本研磨工坊](docs/workshops/02-script-studio.md) | [5轨剪辑工作台](docs/workshops/03-workspace.md) | [消重发布工坊](docs/workshops/04-export-dedup.md)
+- **架构与技术原理**：[系统整体架构分层](docs/architecture/01-system-overview.md) | [原子防竞态持久化驱动](docs/architecture/02-atomic-file-driver.md) | [多 Agent 协同与状态机](docs/architecture/03-multi-agent-system.md) | [Rust 原生引擎与 DDD](docs/architecture/04-rust-native-backend.md)
+- **开发者专区**：[本地开发与环境搭建](docs/developer/01-development-guide.md) | [质量门禁与测试规范](docs/developer/02-testing-and-standards.md) | [自定义模型与 Agent 扩展](docs/developer/03-custom-agent-engine.md)
+- **配置与参考**：[桌面端全功能快捷键](docs/reference/01-keyboard-shortcuts.md) | [全局配置与镜像加速](docs/reference/02-configuration.md) | [常见问题 FAQ](docs/reference/03-faq.md)
 
 ---
 
@@ -75,6 +76,7 @@ SPDX-License-Identifier: MIT
 ### 📦 前置环境 REQUIREMENTS
 
 - **Node.js**: `>= 20.x`
+- **pnpm**: `>= 9.x`
 - **Rust**: `>= 1.80`
 - **FFmpeg**: `>= 6.0`
 
@@ -82,9 +84,9 @@ SPDX-License-Identifier: MIT
 
 ```bash
 # 1. 安装前端依赖
-npm install
+pnpm install
 
-# 2. 启动桌面端开发模式 (Tauri 2)
+# 2. 启动桌面端开发模式 (Tauri 2 + Vite 实时热重载)
 npm run tauri dev
 
 # 3. 生产发布构建
@@ -97,13 +99,13 @@ npm run tauri build
 ## 🧪 自动化测试与工程验证
 
 ```bash
-# 执行代码规范与一致性校验 (AntD 零泄露 / Kebab 命名 / 循环依赖检测 / Token 一致)
+# 执行代码规范与一致性校验 (AntD 零泄露 / 循环依赖检测 / Token 一致)
 npm run verify:all
 
-# 执行前端 165 个测试文件 (2,562 个测试用例)
+# 执行前端 167 个测试套件 (2,574+ 个测试用例全部通过)
 npm run test:run
 
-# 执行 Rust 后端单元与集成测试 (135 个测试用例)
+# 执行 Rust 后端单元与集成测试
 cd src-tauri && cargo test
 ```
 

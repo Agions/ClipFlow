@@ -1,5 +1,5 @@
 /**
- * core/domain — StoryFab v3 领域模型统一出口
+ * core/domain — Fablr 领域模型统一出口
  *
  * 分层说明：
  * - 本层是纯类型 + 纯函数（零框架依赖），供 stores / features / services 引用。

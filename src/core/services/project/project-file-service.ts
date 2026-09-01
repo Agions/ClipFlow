@@ -13,7 +13,7 @@ import { atomicFileDriver } from '@fablr/core';
 
 const errMsg = (err: unknown): string => (err instanceof Error ? err.message : String(err));
 
-export const PROJECTS_CHANGED_EVENT = 'StoryFab:projects:changed';
+export const PROJECTS_CHANGED_EVENT = 'Fablr:projects:changed';
 
 const emitProjectsChanged = (): void => {
   if (typeof window !== 'undefined') {
@@ -56,7 +56,7 @@ const normalizeListedProject = (value: unknown): ProjectFileData | null => {
 };
 
 const ensureAppDataDir = async (): Promise<void> => {
-  const appDir = 'story-fab';
+  const appDir = 'fablr';
   try {
     const dirPath = await tauri.checkAppDataDirectory();
     logger.info('Rust目录检查成功', { dirPath });
@@ -112,7 +112,7 @@ export const saveProjectToFile = async (projectId: string, project: object): Pro
       throw new AppError('APP_PROJECT_SERIALIZE_EMPTY', '项目数据序列化为空', {
         userMessage: '项目数据为空',
       });
-    const projectPath = `story-fab/${normalizedProjectId}.json`;
+    const projectPath = `fablr/${normalizedProjectId}.json`;
     try {
       await tauri.saveProjectFile(normalizedProjectId, projectData);
       emitProjectsChanged();
@@ -153,14 +153,20 @@ const loadProjectFromFile = async <T = ProjectFileData>(projectId: string): Prom
         lastError = rustError;
         logger.warn(`通过 Rust 加载项目失败(${candidateId})，尝试使用 JS API 兜底:`, rustError);
       }
-      const projectPath = `story-fab/${candidateId}.json`;
+      const projectPath = `fablr/${candidateId}.json`;
+      const legacyProjectPath = `story-fab/${candidateId}.json`;
       const existsFile = await exists(projectPath, { baseDir: BaseDirectory.AppData });
-      if (!existsFile) {
-        lastError = new Error(`项目文件不存在: ${candidateId}.json`);
-        continue;
+      if (existsFile) {
+        const content = await readTextFile(projectPath, { baseDir: BaseDirectory.AppData });
+        return JSON.parse(content) as T;
       }
-      const content = await readTextFile(projectPath, { baseDir: BaseDirectory.AppData });
-      return JSON.parse(content) as T;
+      const existsLegacy = await exists(legacyProjectPath, { baseDir: BaseDirectory.AppData });
+      if (existsLegacy) {
+        const content = await readTextFile(legacyProjectPath, { baseDir: BaseDirectory.AppData });
+        return JSON.parse(content) as T;
+      }
+      lastError = new Error(`项目文件不存在: ${candidateId}.json`);
+      continue;
     } catch (error) {
       lastError = error;
     }
@@ -172,6 +178,7 @@ const loadProjectFromFile = async <T = ProjectFileData>(projectId: string): Prom
       for (const candidateId of candidates) {
         const legacyPaths = [
           `${configDir}${candidateId}.json`,
+          `${configDir}fablr/${candidateId}.json`,
           `${configDir}story-fab/${candidateId}.json`,
         ];
         for (const legacyPath of legacyPaths) {
@@ -180,7 +187,7 @@ const loadProjectFromFile = async <T = ProjectFileData>(projectId: string): Prom
             if (!found) continue;
             const content = await readTextFile(legacyPath);
             return JSON.parse(content) as T;
-          } catch (legacyError) {
+            } catch (legacyError) {
             lastError = legacyError;
           }
         }
@@ -228,7 +235,7 @@ export const listProjects = async (): Promise<ProjectFileData[]> => {
       logger.warn('[listProjects] Rust 获取失败，切换到 JS API 兜底:', rustError);
     }
     await ensureAppDataDir();
-    const appDir = 'story-fab';
+    const appDir = 'fablr';
     const files = (await tauri.listAppDataFiles(appDir)) as string[];
     if (!files || !Array.isArray(files) || files.length === 0) return [];
     const projects = await Promise.all(
