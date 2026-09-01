@@ -4,7 +4,7 @@
  */
 
 import type { ScriptData } from '@/types';
-import type { StoryFabFeatureType } from '@/core/types/storyfab';
+import type { WorkflowFeatureType } from '@/core/workflow';
 import { OUT_PINK } from '@/core/video/output-colors';
 
 // 文案风格选项
@@ -69,6 +69,6 @@ export interface ScriptGenerateProps {
   onNext?: () => void;
   setNarrationScript?: (data: ScriptData) => void;
   setRemixScript?: (data: ScriptData) => void;
-  setFeature?: (feature: StoryFabFeatureType) => void;
+  setFeature?: (feature: WorkflowFeatureType) => void;
   goToNextStep?: () => void;
 }

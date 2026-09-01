@@ -1,10 +1,10 @@
-// story-fab Workflow — re-exports for convenient imports
+// Fablr Workflow — unified exports
 export type {
-  StoryFabFeatureType,
-  StoryFabStep,
-  StoryFabState,
-  StoryFabAction,
-  StoryFabMode,
+  WorkflowFeatureType,
+  WorkflowStep,
+  WorkflowState,
+  WorkflowAction,
+  WorkflowMode,
   SemanticSegment,
 } from './workflow';
 export {
@@ -12,9 +12,11 @@ export {
   getNextStep,
   getPrevStep,
   getTotalSteps,
-  STORYFAB_STEPS,
+  WORKFLOW_STEPS,
+  CLIP_STEPS,
+  COMMENTARY_STEPS,
   INITIAL_STEP_STATUS,
   DEFAULT_VOICE_SETTINGS,
   DEFAULT_SYNTHESIS_SETTINGS,
+  workflowReducer,
 } from './workflow';
-export { storyFabReducer } from './workflow';

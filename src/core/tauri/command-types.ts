@@ -495,10 +495,19 @@ type CommandNameToDefs = {
       apiKey?: string;
       baseUrl?: string;
     };
-    output: Record<string, unknown>;
+    output: {
+      script: string;
+      estimatedDurationSecs: number;
+      segments: Array<{
+        index: number;
+        start: number;
+        end: number;
+        text: string;
+      }>;
+    };
   };
   analyze_video_for_narration: {
-    input: { videoPath: string; analysisType?: string };
+    input: { videoPath: string; duration?: number; analysisType?: string };
     output: { videoType: string; summary: string; keyScenes: number[] };
   };
   list_available_models: {

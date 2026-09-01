@@ -2,11 +2,11 @@
  * 前置步骤提示 — 要求用户先完成 AI 分析
  */
 import React from 'react';
-import type { StoryFabAction } from '@/core/types/storyfab';
+import type { WorkflowAction } from '@/core/workflow';
 import styles from './../edit-step/script-writing.module.less';
 
 interface PrerequisiteStepProps {
-  dispatch: (action: StoryFabAction) => void;
+  dispatch: (action: WorkflowAction) => void;
 }
 
 const PrerequisiteStep: React.FC<PrerequisiteStepProps> = ({ dispatch }) => {

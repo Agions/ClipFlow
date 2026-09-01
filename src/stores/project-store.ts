@@ -14,22 +14,22 @@
 import { create } from 'zustand';
 import type { VideoInfo, VideoAnalysis, ProjectData, ExportSettings } from '@/types';
 import type {
-  StoryFabState,
-  StoryFabStep,
-  StoryFabFeatureType,
-  StoryFabMode,
-  StoryFabAction,
-} from '@/core/types/storyfab';
+  WorkflowState,
+  WorkflowStep,
+  WorkflowFeatureType,
+  WorkflowMode,
+  WorkflowAction,
+} from '@/core/workflow';
 import {
   initialState,
   getNextStep,
   getPrevStep,
   getTotalSteps,
-} from '@/core/types/storyfab';
-import { storyFabReducer } from '@/core/types/storyfab';
+} from '@/core/workflow';
+import { workflowReducer } from '@/core/workflow';
 
 /** 派生初始状态（每次调用返回新对象，避免共享引用） */
-const createInitialState = (): StoryFabState => ({
+const createInitialState = (): WorkflowState => ({
   ...initialState,
   project: initialState.project ? { ...initialState.project } : null,
   analysis: null,
@@ -37,15 +37,15 @@ const createInitialState = (): StoryFabState => ({
 
 export interface ProjectStore {
   // ── 状态机核心（沿用 storyFab 状态形）──
-  state: StoryFabState;
+  state: WorkflowState;
 
   // ── action creators（保留 dispatch 过渡期）──
-  dispatch: (action: StoryFabAction) => void;
+  dispatch: (action: WorkflowAction) => void;
 
   // ── 元数据 setter（与 storyFab 当前签名兼容）──
-  setMode: (mode: StoryFabMode) => void;
-  setStep: (step: StoryFabStep) => void;
-  setFeature: (feature: StoryFabFeatureType) => void;
+  setMode: (mode: WorkflowMode) => void;
+  setStep: (step: WorkflowStep) => void;
+  setFeature: (feature: WorkflowFeatureType) => void;
   setProject: (project: ProjectData | null) => void;
   setVideo: (video: VideoInfo | null) => void;
   setAnalysis: (analysis: VideoAnalysis | null) => void;
@@ -63,7 +63,7 @@ export interface ProjectStore {
   goToNextStep: () => void;
   goToPrevStep: () => void;
   reset: () => void;
-  resetStep: (step: StoryFabStep) => void;
+  resetStep: (step: WorkflowStep) => void;
 
   // ── 派生（getter）──
   canProceed: () => boolean;
@@ -75,7 +75,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   state: createInitialState(),
 
   dispatch: (action) => {
-    set((s) => ({ state: storyFabReducer(s.state, action) }));
+    set((s) => ({ state: workflowReducer(s.state, action) }));
   },
 
   setMode: (mode) => get().dispatch({ type: 'SET_MODE', payload: mode }),

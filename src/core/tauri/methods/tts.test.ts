@@ -29,7 +29,7 @@ describe('tts tauri methods', () => {
 
   describe('tts.synthesizeSpeech', () => {
     it('invokes SYNTHESIZE_SPEECH and returns audioPath from the response', async () => {
-      invokeMock.mockResolvedValue({ audioPath: '/tmp/voice.wav', duration: 3.2 });
+      invokeMock.mockResolvedValue({ audioPath: '/tmp/voice.wav', durationSecs: 3.2 });
 
       const result = await tts.synthesizeSpeech({
         text: '你好，世界',
@@ -50,7 +50,7 @@ describe('tts tauri methods', () => {
     });
 
     it('forwards optional fields with defaults when omitted', async () => {
-      invokeMock.mockResolvedValue({ audioPath: '/tmp/min.wav' });
+      invokeMock.mockResolvedValue({ audioPath: '/tmp/min.wav', durationSecs: 1.0 });
 
       const result = await tts.synthesizeSpeech({
         text: 'hi',

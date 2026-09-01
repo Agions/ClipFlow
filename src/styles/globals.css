@@ -413,13 +413,13 @@ video {
 /* ═══════════════════════════════════════════════════════════
    Global animations
    ═══════════════════════════════════════════════════════════ */
-@keyframes storyfab-spin {
+@keyframes fablr-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-@keyframes storyfab-fade-in {
+@keyframes fablr-fade-in {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -430,7 +430,7 @@ video {
   }
 }
 
-@keyframes storyfab-slide-up {
+@keyframes fablr-slide-up {
   from {
     opacity: 0;
     transform: translateY(16px);
@@ -441,7 +441,7 @@ video {
   }
 }
 
-@keyframes storyfab-pulse-glow {
+@keyframes fablr-pulse-glow {
   0%,
   100% {
     box-shadow: var(--glow-amber-sm);
@@ -451,7 +451,7 @@ video {
   }
 }
 
-@keyframes storyfab-light-leak {
+@keyframes fablr-light-leak {
   0% {
     background-position: -200% center;
   }
@@ -513,5 +513,5 @@ video {
   border: 3px solid rgba(200, 149, 108, 0.25);
   border-top-color: #c8956c;
   border-radius: 50%;
-  animation: storyfab-spin 0.9s linear infinite;
+  animation: fablr-spin 0.9s linear infinite;
 }

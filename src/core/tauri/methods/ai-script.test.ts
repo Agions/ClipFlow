@@ -31,7 +31,8 @@ describe('aiScript tauri methods', () => {
     it('invokes GENERATE_NARRATION_SCRIPT with the full input object', async () => {
       const output = {
         script: '解说段落1\n解说段落2',
-        meta: { provider: 'openai', model: 'gpt-4o-mini' },
+        estimatedDurationSecs: 12.5,
+        segments: [{ index: 1, start: 0, end: 5, text: '解说段落1' }],
       };
       invokeMock.mockResolvedValue(output);
 
@@ -52,7 +53,11 @@ describe('aiScript tauri methods', () => {
     });
 
     it('forwards even when optional style and provider are omitted', async () => {
-      invokeMock.mockResolvedValue({ script: 'x' });
+      invokeMock.mockResolvedValue({
+        script: 'x',
+        estimatedDurationSecs: 1.0,
+        segments: [],
+      });
 
       await aiScript.generateNarrationScript({
         subtitles: '00:00 x',

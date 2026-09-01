@@ -66,7 +66,7 @@ beforeEach(() => {
 
 describe('useProjectStore', () => {
   describe('dispatch function', () => {
-    it('runs storyFabReducer through real dispatch (L77)', () => {
+    it('runs workflowReducer through real dispatch (L77)', () => {
       const realDispatch = useProjectStore.getState().dispatch;
 
       const before = useProjectStore.getState().state;

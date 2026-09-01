@@ -1,11 +1,11 @@
 import { vi } from 'vitest';
 import type { UseVideoUploadReturn } from '@/pages/workspace/edit-step/use-video-upload';
 import type { VideoUploadState } from '@/pages/workspace/edit-step/video-upload-reducer';
-import type { StoryFabState } from '@/core/types/storyfab';
+import type { WorkflowState } from '@/core/workflow';
 
 export interface MockVideoUploadOptions {
   state?: Partial<VideoUploadState>;
-  projectState?: Partial<StoryFabState>;
+  projectState?: Partial<WorkflowState>;
 }
 
 export function createMockVideoUpload(options: MockVideoUploadOptions = {}): UseVideoUploadReturn {
@@ -22,16 +22,16 @@ export function createMockVideoUpload(options: MockVideoUploadOptions = {}): Use
     currentFile: null,
   };
 
-  // StoryFabState 字段较多，允许部分覆盖，其他字段通过 cast 补充
+  // WorkflowState 字段较多，允许部分覆盖，其他字段通过 cast 补充
   const defaultProjectState = {
     currentVideo: null,
     ...projectState,
     stepStatus: { 'project-create': true as boolean, ...projectState?.stepStatus },
-  } as StoryFabState;
+  } as WorkflowState;
 
   return {
     state: { ...defaultState, ...state },
-    projectState: defaultProjectState as StoryFabState,
+    projectState: defaultProjectState as WorkflowState,
     validateFile: vi.fn(() => ({ valid: true })),
     handleUpload: vi.fn(),
     handlePauseResume: vi.fn(),

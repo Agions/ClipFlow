@@ -1,6 +1,6 @@
 /**
  * Services 统一导出
- * 只导出服务实例，类型统一从 @/core/types 导入
+ * 只导出服务实例，类型统一从 @/types 或 @/core/models 导入
  */
 
 // 基础 & providers

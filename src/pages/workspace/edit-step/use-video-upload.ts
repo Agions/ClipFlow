@@ -5,7 +5,7 @@
 import { useCallback, useRef, useEffect } from 'react';
 import { useReducerHookFactory } from '@/shared/hooks/use-reducer-hook';
 import { useProjectStore } from '@/stores';
-import type { StoryFabState } from '@/core/types/storyfab';
+import type { WorkflowState } from '@/core/workflow';
 import { logger } from '@/shared/utils/logging';
 import { notify } from '@/shared';
 import { MAX_FILE_SIZE } from '@/shared/constants';
@@ -25,7 +25,7 @@ import type { VideoInfo } from '@/types';
 
 export interface UseVideoUploadReturn {
   state: ReturnType<ReturnType<typeof useReducerHookFactory<typeof videoUploadReducer, typeof initialVideoUploadState>>['state']>;
-  projectState: StoryFabState;
+  projectState: WorkflowState;
   validateFile: (file: File) => { valid: boolean; error?: string };
   handleUpload: (file: File) => Promise<void>;
   handlePauseResume: () => void;

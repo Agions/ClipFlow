@@ -5,13 +5,13 @@
 import { vi } from 'vitest';
 import type { UseAiVisualizerReturn } from '@/pages/workspace/assemble/use-ai-visualizer';
 import type { AIVisualizerState } from '@/pages/workspace/assemble/ai-visualizer-reducer';
-import type { StoryFabState } from '@/core/types/storyfab';
+import type { WorkflowState } from '@/core/workflow';
 
 export interface MockAiVisualizerOptions {
   localState?: Partial<AIVisualizerState>;
   selectedCount?: number;
   hasAnalysis?: boolean | null;
-  projectState?: Partial<StoryFabState>;
+  projectState?: Partial<WorkflowState>;
 }
 
 export function createMockAiVisualizer(options: MockAiVisualizerOptions = {}): UseAiVisualizerReturn {
@@ -43,7 +43,7 @@ export function createMockAiVisualizer(options: MockAiVisualizerOptions = {}): U
     subtitleData: { ocr: [], asr: [] },
     stepStatus: {},
     ...projectState,
-  } as unknown as StoryFabState;
+  } as unknown as WorkflowState;
 
   return {
     projectState: defaultProjectState,

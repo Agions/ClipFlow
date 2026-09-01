@@ -1,15 +1,14 @@
 /**
- * story-fab Workflow — unified types, constants, initial state, helpers
- * Previously split across: workflow.types.ts / workflow.constants.ts / workflow.initialState.ts
- * All content now in one self-contained file, zero circular imports.
+ * Fablr Workflow — unified types, constants, initial state, helpers
+ * Self-contained workflow machine with strict type safety.
  */
 import type { VideoInfo, VideoAnalysis, ScriptData, ProjectData, ExportSettings } from '@/types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type StoryFabFeatureType = 'smartClip' | 'voiceover' | 'subtitle' | 'effect' | 'none';
+export type WorkflowFeatureType = 'smartClip' | 'voiceover' | 'subtitle' | 'effect' | 'none';
 
-export type StoryFabStep =
+export type WorkflowStep =
   | 'project-create'
   | 'video-upload'
   | 'ai-analyze'
@@ -21,7 +20,7 @@ export type StoryFabStep =
   | 'voice-synth'
   | 'video-export';
 
-export type StoryFabMode = 'clip' | 'commentary';
+export type WorkflowMode = 'clip' | 'commentary';
 
 export interface SemanticSegment {
   id: string;
@@ -31,9 +30,9 @@ export interface SemanticSegment {
   description?: string;
 }
 
-export interface StoryFabState {
-  mode: StoryFabMode;
-  currentStep: StoryFabStep;
+export interface WorkflowState {
+  mode: WorkflowMode;
+  currentStep: WorkflowStep;
   stepStatus: {
     'project-create': boolean;
     'video-upload': boolean;
@@ -46,7 +45,7 @@ export interface StoryFabState {
     'voice-synth': boolean;
     'video-export': boolean;
   };
-  selectedFeature: StoryFabFeatureType;
+  selectedFeature: WorkflowFeatureType;
   project: ProjectData | null;
   currentVideo: VideoInfo | null;
   analysis: VideoAnalysis | null;
@@ -83,12 +82,12 @@ export interface StoryFabState {
   semanticSegments: SemanticSegment[];
 }
 
-// StoryFabAction discriminated union
-export type StoryFabAction =
-  | { type: 'SET_MODE'; payload: StoryFabMode }
-  | { type: 'SET_STEP'; payload: StoryFabStep }
-  | { type: 'SET_STEP_COMPLETE'; payload: { step: StoryFabStep; complete: boolean } }
-  | { type: 'SET_FEATURE'; payload: StoryFabFeatureType }
+// WorkflowAction discriminated union
+export type WorkflowAction =
+  | { type: 'SET_MODE'; payload: WorkflowMode }
+  | { type: 'SET_STEP'; payload: WorkflowStep }
+  | { type: 'SET_STEP_COMPLETE'; payload: { step: WorkflowStep; complete: boolean } }
+  | { type: 'SET_FEATURE'; payload: WorkflowFeatureType }
   | { type: 'SET_PROJECT'; payload: ProjectData | null }
   | { type: 'SET_VIDEO'; payload: VideoInfo | null }
   | { type: 'SET_ANALYSIS'; payload: VideoAnalysis | null }
@@ -110,7 +109,7 @@ export type StoryFabAction =
   | { type: 'SET_DURATION'; payload: number }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'RESET' }
-  | { type: 'RESET_STEP'; payload: StoryFabStep };
+  | { type: 'RESET_STEP'; payload: WorkflowStep };
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -122,7 +121,7 @@ export const CLIP_STEPS = [
   'video-export',
 ] as const;
 
-const COMMENTARY_STEPS = [
+export const COMMENTARY_STEPS = [
   'project-create',
   'video-upload',
   'ai-analyze',
@@ -134,7 +133,7 @@ const COMMENTARY_STEPS = [
   'video-export',
 ] as const;
 
-export const STORYFAB_STEPS = CLIP_STEPS;
+export const WORKFLOW_STEPS = CLIP_STEPS;
 
 export const INITIAL_STEP_STATUS = {
   'project-create': false,
@@ -163,7 +162,7 @@ export const DEFAULT_SYNTHESIS_SETTINGS = {
 
 // ─── Initial State ────────────────────────────────────────────────────────────
 
-export const initialState: StoryFabState = {
+export const initialState: WorkflowState = {
   mode: 'clip',
   currentStep: 'project-create',
   stepStatus: { ...INITIAL_STEP_STATUS },
@@ -199,29 +198,29 @@ export const initialState: StoryFabState = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-export function getStepsForMode(mode: StoryFabMode): readonly StoryFabStep[] {
+export function getStepsForMode(mode: WorkflowMode): readonly WorkflowStep[] {
   return mode === 'clip' ? CLIP_STEPS : COMMENTARY_STEPS;
 }
 
-export function getNextStep(currentStep: StoryFabStep, mode: StoryFabMode = 'clip'): StoryFabStep {
+export function getNextStep(currentStep: WorkflowStep, mode: WorkflowMode = 'clip'): WorkflowStep {
   const steps = getStepsForMode(mode);
   const currentIndex = steps.indexOf(currentStep);
   return currentIndex < steps.length - 1 ? steps[currentIndex + 1] : currentStep;
 }
 
-export function getPrevStep(currentStep: StoryFabStep, mode: StoryFabMode = 'clip'): StoryFabStep {
+export function getPrevStep(currentStep: WorkflowStep, mode: WorkflowMode = 'clip'): WorkflowStep {
   const steps = getStepsForMode(mode);
   const currentIndex = steps.indexOf(currentStep);
   return currentIndex > 0 ? steps[currentIndex - 1] : currentStep;
 }
 
-export function getTotalSteps(mode: StoryFabMode): number {
+export function getTotalSteps(mode: WorkflowMode): number {
   return getStepsForMode(mode).length;
 }
 
 // ─── Reducer ──────────────────────────────────────────────────────────────────
 
-export function storyFabReducer(state: StoryFabState, action: StoryFabAction): StoryFabState {
+export function workflowReducer(state: WorkflowState, action: WorkflowAction): WorkflowState {
   switch (action.type) {
     case 'SET_MODE':
       return {

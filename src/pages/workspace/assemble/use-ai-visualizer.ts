@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useReducerHookFactory } from '@/shared/hooks/use-reducer-hook';
 import { useProjectStore } from '@/stores';
-import type { StoryFabState } from '@/core/types/storyfab';
+import type { WorkflowState } from '@/core/workflow';
 import { visionService } from '@/core/services/ai/vision-service';
 import { notify } from '@/shared';
 import { useTimeout } from '@/hooks/use-timeout';
@@ -20,7 +20,7 @@ import {
 import { ANALYSIS_TASKS } from '../config/analysis-tasks';
 
 export interface UseAiVisualizerReturn {
-  projectState: StoryFabState;
+  projectState: WorkflowState;
   localState: AIVisualizerState;
   selectedCount: number;
   hasAnalysis: boolean | null;

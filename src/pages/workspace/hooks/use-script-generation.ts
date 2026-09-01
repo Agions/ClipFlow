@@ -14,7 +14,7 @@ import type { ScriptData, AIModel, AIModelSettings, ModelProvider } from '@/type
 import { AI_MODELS as CORE_AI_MODELS, DEFAULT_MODEL_ID } from '@/core/config/ai-models-config';
 import useLocalStorage from '@/hooks/use-local-storage';
 import { getAllApiKeys } from '@/core/services/auth/api-key-service';
-import type { StoryFabState } from '@/core/types/storyfab';
+import type { WorkflowState } from '@/core/workflow';
 import { notify } from '@/shared';
 import {
   getAvailableModelsFromApiKeys,
@@ -41,7 +41,7 @@ interface AlignmentGate {
 }
 
 interface UseScriptGenerationParams {
-  state: StoryFabState;
+  state: WorkflowState;
   setNarrationScript: (data: ScriptData) => void;
   setRemixScript: (data: ScriptData) => void;
   setFeature: (feature: 'smartClip' | 'voiceover' | 'subtitle') => void;
