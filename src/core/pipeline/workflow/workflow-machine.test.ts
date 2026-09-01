@@ -17,8 +17,8 @@ import {
   failPhase,
   skipPhase,
   JOB_PHASE_ORDER,
-} from '@/core/domain/job';
-import type { PipelineJob } from '@/core/domain/job';
+} from '@/core/models/job';
+import type { PipelineJob } from '@/core/models/job';
 
 /** 将 job 推进到「前 n 个阶段全部完成」的状态 */
 function advanceDone(job: PipelineJob, count: number): PipelineJob {

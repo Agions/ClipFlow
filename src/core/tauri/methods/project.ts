@@ -5,12 +5,12 @@
  * 改为 SQLite-backed ProjectService：
  * - project.create / project.list / project.load / project.save / project.delete
  *
- * 数据模型：见 `src/core/domain/` (Project / Job / Artifact)
+ * 数据模型：见 `src/core/models/` (Project / Job / Artifact)
  * 后端实现：见 `src-tauri/src/commands/project.rs`
  */
 
 import { invoke, TauriCommand } from '../invoke';
-import type { ContentIntent, IntentConfig } from '@/core/domain/intent';
+import type { ContentIntent, IntentConfig } from '@/core/models/intent';
 import type { ProjectDto } from '../command-types';
 
 // ─── 公共类型 ──────────────────────────────────────────────
@@ -78,7 +78,7 @@ export const project = {
    * v3.1 接入 AI 自动判断（基于视频元数据），v3 仅返回 default
    */
   async recommendIntent(_videoPath: string): Promise<IntentConfig> {
-    const { DEFAULT_INTENT_CONFIG } = await import('@/core/domain/intent');
+    const { DEFAULT_INTENT_CONFIG } = await import('@/core/models/intent');
     return DEFAULT_INTENT_CONFIG;
   },
 

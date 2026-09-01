@@ -12,7 +12,7 @@
  * - runAuto(projectId)             一键跑无 gate 阶段
  * - listenPipelineEvents(...)      订阅 backend tauri event
  *
- * 数据契约：见 `src/core/domain/job.ts` (PipelineJob) 和
+ * 数据契约：见 `src/core/models/job.ts` (PipelineJob) 和
  *           `src/core/tauri/methods/pipeline.ts` (pipeline.startPhase 等)。
  *
  * 副作用策略：

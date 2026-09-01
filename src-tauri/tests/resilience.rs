@@ -11,7 +11,7 @@
 //! cannot be polluted by other tests (lib unit tests, parallel
 //! integration tests) holding permits on the shared global limiter.
 
-use fablr_media::utils::{install_panic_hook, ResourceLimiter};
+use media::utils::{install_panic_hook, ResourceLimiter};
 
 /// Helper: a fresh 3-permit limiter that is fully owned by this test.
 fn fresh_limiter() -> ResourceLimiter {

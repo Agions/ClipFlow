@@ -13,7 +13,7 @@
 
 import { create } from 'zustand';
 import { analyzeStoryline, type UnderstandingStage } from '@/core/services/understanding';
-import { parseStoryline, type Storyline } from '@/core/domain/storyline';
+import { parseStoryline, type Storyline } from '@/core/models/storyline';
 import { tauri } from '@/core/tauri';
 
 export type UnderstandingStatus = 'idle' | 'running' | 'done' | 'failed';

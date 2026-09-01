@@ -10,8 +10,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::commands::render::export_video;
-use fablr_domain::platform::{list_platforms as list_platforms_impl, PlatformId, PlatformPreset};
-use fablr_domain::ExportVideoInput;
+use models::platform::{list_platforms as list_platforms_impl, PlatformId, PlatformPreset};
+use models::ExportVideoInput;
 
 // ─── 公开 API ───────────────────────────────────────────
 
@@ -51,11 +51,11 @@ pub struct PlatformExportResult {
 /// 平台导出 IPC：preset → ExportVideoInput → export_video
 #[tauri::command]
 pub async fn platform_export(
-    limiter: tauri::State<'_, fablr_media::utils::ResourceLimiter>,
+    limiter: tauri::State<'_, media::utils::ResourceLimiter>,
     input: PlatformExportInput,
 ) -> Result<PlatformExportResult, String> {
     // 1. 查 preset
-    let preset = fablr_domain::platform::require_platform(input.platform_id);
+    let preset = models::platform::require_platform(input.platform_id);
 
     // 2. preset → ExportVideoInput 转换
     let burn = input
@@ -125,7 +125,7 @@ mod tests {
             output_path: "/b.mp4".to_string(),
             duration: 60.0,
             file_size: 1024,
-            platform: fablr_domain::platform::require_platform(PlatformId::Douyin),
+            platform: models::platform::require_platform(PlatformId::Douyin),
         };
         let json = serde_json::to_string(&result).unwrap();
         assert!(json.contains("\"outputPath\":\"/b.mp4\""));

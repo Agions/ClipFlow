@@ -1,11 +1,11 @@
-//! Understanding commands — Tauri IPC 桥接层，委托至 fablr_media::understanding
+//! Understanding commands — Tauri IPC 桥接层，委托至 media::understanding
 
-use fablr_media::understanding::storyline_builder::{AnalyzeProductionInput, AnalyzeProductionOutput};
+use media::understanding::storyline_builder::{AnalyzeProductionInput, AnalyzeProductionOutput};
 
 #[tauri::command]
 pub async fn analyze_production(
     app: tauri::AppHandle,
     input: AnalyzeProductionInput,
 ) -> Result<AnalyzeProductionOutput, String> {
-    fablr_media::understanding::storyline_builder::analyze_production(app, input).await
+    media::understanding::storyline_builder::analyze_production(app, input).await
 }

@@ -1,9 +1,9 @@
 [workspace]
 members = [
     ".",
-    "crates/fablr-domain",
-    "crates/fablr-db",
-    "crates/fablr-media",
+    "crates/models",
+    "crates/db",
+    "crates/media",
 ]
 resolver = "2"
 
@@ -27,9 +27,9 @@ tempfile = "3"
 tauri = { version = "2.0", features = ["test"] }
 
 [dependencies]
-fablr-domain = { path = "crates/fablr-domain" }
-fablr-db = { path = "crates/fablr-db" }
-fablr-media = { path = "crates/fablr-media" }
+models = { path = "crates/models" }
+db = { path = "crates/db" }
+media = { path = "crates/media" }
 tauri = { version = "2.0", features = [] }
 tauri-plugin-dialog = "2.7"
 tauri-plugin-fs = "2.5"

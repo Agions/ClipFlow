@@ -3,25 +3,25 @@
 //!
 //! 子模块 (`constants` / `helpers` / `parsing` / `providers` / `types`)
 //! 定义在 crate 根的 `src/llm/` 目录里，不再在本目录下重复声明。
-//! 调用方请使用 `fablr_media::llm::...` 路径。
+//! 调用方请使用 `media::llm::...` 路径。
 
 // Reusable HTTP client with connection pooling
 use std::sync::OnceLock;
 use std::time::Duration;
 use reqwest::Client;
 
-use fablr_media::highlight::HighlightOptions;
-use fablr_media::highlight::SceneDetector;
-use fablr_media::llm::constants::{get_default_model, normalize_provider};
-use fablr_media::llm::helpers::{build_system_prompt, build_user_prompt};
-use fablr_media::llm::parsing::parse_script_output;
-use fablr_media::llm::providers::call_llm_provider;
-use fablr_media::llm::types::{
+use media::highlight::HighlightOptions;
+use media::highlight::SceneDetector;
+use media::llm::constants::{get_default_model, normalize_provider};
+use media::llm::helpers::{build_system_prompt, build_user_prompt};
+use media::llm::parsing::parse_script_output;
+use media::llm::providers::call_llm_provider;
+use media::llm::types::{
     AnalyzeVideoForScriptInput, AnalyzeVideoForScriptOutput,
     GenerateScriptInput, GenerateScriptOutput, ScriptStyle,
 };
 
-use fablr_media::llm::{get_model_catalog, ModelInfo};
+use media::llm::{get_model_catalog, ModelInfo};
 
 static HTTP_CLIENT: OnceLock<Client> = OnceLock::new();
 
@@ -116,6 +116,6 @@ pub fn list_available_models() -> Vec<ModelInfo> {
 
 // Re-export types for external consumers (re-exported via llm/mod.rs
 // `pub use types::*;` so consumers should reach them as
-// `fablr_media::llm::types::GenerateScriptInput` etc.). Commands/llm.rs only
+// `media::llm::types::GenerateScriptInput` etc.). Commands/llm.rs only
 // needs the #[tauri::command] function names; types are re-exported
 // from `llm` at the crate root.

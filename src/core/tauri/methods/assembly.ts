@@ -10,12 +10,12 @@
  * - 后端存 SQLite 表 `assembly_kits` (project_id PK + assembly_json)
  * - 项目删除时级联（FK ON DELETE CASCADE）
  *
- * 数据模型：见 `src/core/domain/assembly.ts` (AssemblyKit)
+ * 数据模型：见 `src/core/models/assembly.ts` (AssemblyKit)
  * 后端实现：见 `src-tauri/src/commands/assembly.rs`
  */
 
 import { invoke, TauriCommand } from '../invoke';
-import type { AssemblyKit } from '../../domain/assembly';
+import type { AssemblyKit } from '../../models/assembly';
 
 // ─── 公共类型 ──────────────────────────────────────────────
 
@@ -63,5 +63,5 @@ export const assembly = {
   },
 };
 
-/** Re-export domain type */
+/** Re-export model type */
 export type { AssemblyKit };

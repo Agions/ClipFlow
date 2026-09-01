@@ -2,7 +2,7 @@
  * workflow-machine — 流水线工作流状态机（纯 TS）
  *
  * 职责：
- * - 在 PipelineJob 领域状态机（core/domain/job）之上，推导「人工介入点」：
+ * - 在 PipelineJob 领域状态机（core/models/job）之上，推导「人工介入点」：
  *   脚本生成前需审批导演计划（plan-approval）、配音前需审阅脚本（script-review）、
  *   渲染前需试听配音（voice-review）。
  * - 与 job.ts 的分工：job.ts 负责阶段状态的合法流转（done/failed/skipped），
@@ -15,7 +15,7 @@ import {
   JOB_PHASE_ORDER,
   type PipelineJob,
   type JobPhase,
-} from '@/core/domain/job';
+} from '@/core/models/job';
 
 // ─── 人工介入点（gate） ────────────────────────────────────────
 

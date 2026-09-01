@@ -7,12 +7,12 @@
  * - tts.batch({ segments, maxConcurrency }) 批量并发合成（默认 3 并行，2 重试）
  *
  * 数据模型：
- * - SsmlDocument / SsmlInline 见 `src/core/domain/ssml.ts`
+ * - SsmlDocument / SsmlInline 见 `src/core/models/ssml.ts`
  * - 后端实现见 `src-tauri/src/commands/ai/tts.rs` / `tts_core.rs`
  */
 
 import { invoke, TauriCommand } from '../invoke';
-import type { SsmlDocument } from '../../domain/ssml';
+import type { SsmlDocument } from '../../models/ssml';
 
 // ─── 公共类型 ──────────────────────────────────────────────
 

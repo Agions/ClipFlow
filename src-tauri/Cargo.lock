@@ -735,6 +735,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "db"
+version = "2.2.0"
+dependencies = [
+ "models",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tracing",
+]
+
+[[package]]
 name = "dbus"
 version = "0.9.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1047,12 +1060,12 @@ dependencies = [
 name = "fablr"
 version = "2.2.0"
 dependencies = [
+ "db",
  "dirs",
- "fablr-db",
- "fablr-domain",
- "fablr-media",
  "futures-util",
  "log",
+ "media",
+ "models",
  "once_cell",
  "reqwest 0.12.28",
  "rusqlite",
@@ -1073,49 +1086,6 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
- "urlencoding",
-]
-
-[[package]]
-name = "fablr-db"
-version = "2.2.0"
-dependencies = [
- "fablr-domain",
- "rusqlite",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.18",
- "tracing",
-]
-
-[[package]]
-name = "fablr-domain"
-version = "2.2.0"
-dependencies = [
- "serde",
- "serde_json",
- "thiserror 2.0.18",
-]
-
-[[package]]
-name = "fablr-media"
-version = "2.2.0"
-dependencies = [
- "dirs",
- "fablr-db",
- "fablr-domain",
- "futures-util",
- "log",
- "once_cell",
- "reqwest 0.12.28",
- "serde",
- "serde_json",
- "tauri",
- "tempfile",
- "thiserror 2.0.18",
- "tokio",
- "tracing",
  "urlencoding",
 ]
 
@@ -2357,6 +2327,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "media"
+version = "2.2.0"
+dependencies = [
+ "db",
+ "dirs",
+ "futures-util",
+ "log",
+ "models",
+ "once_cell",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
+ "urlencoding",
+]
+
+[[package]]
 name = "memchr"
 version = "2.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2396,6 +2387,15 @@ dependencies = [
  "libc",
  "wasi",
  "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "models"
+version = "2.2.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
 ]
 
 [[package]]

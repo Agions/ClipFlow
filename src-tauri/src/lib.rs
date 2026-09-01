@@ -9,8 +9,8 @@ pub mod commands;
 pub use commands::{
     ai, assembly, auto_save, crash_recovery, export_state, ffprobe, file_ops, llm, pipeline, platform, project, render, subtitle, understanding, video,
 };
-pub use fablr_domain::*;
-pub use fablr_db::ProjectService;
+pub use models::*;
+pub use db::ProjectService;
 pub use commands::ffprobe::{analyze_video, check_ffmpeg, run_ffprobe};
 pub use commands::ai::{
     detect_highlights, detect_smart_segments, detect_zcr_bursts, get_export_dir, list_tts_backends,
@@ -46,7 +46,7 @@ pub fn run() {
         .init();
 
     // 安装 panic hook
-    fablr_media::utils::install_panic_hook();
+    media::utils::install_panic_hook();
 
     tracing::info!("Fablr 启动中...");
 
@@ -60,7 +60,7 @@ pub fn run() {
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         // 注册资源限流器：render/transcribe/whisper 等重活必须先 acquire()
-        .manage(fablr_media::utils::ResourceLimiter::shared())
+        .manage(media::utils::ResourceLimiter::shared())
         .invoke_handler(tauri::generate_handler![
             // Project CRUD (v3 · SQLite)
             project_create,
@@ -135,7 +135,7 @@ pub fn run() {
 
             // 初始化 SQLite 数据库（自动迁移）
             let db_path = app_data_dir.join("fablr.db");
-            match fablr_db::Db::open(&db_path) {
+            match db::Db::open(&db_path) {
                 Ok(db) => {
                     let schema_v = db.schema_version().unwrap_or(0);
                     tracing::info!(

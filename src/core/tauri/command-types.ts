@@ -272,7 +272,7 @@ type CommandNameToDefs = {
   // Stage 14.1：结构化 SSML → 合成
   synthesize_speech_ssml: {
     input: {
-      doc: import('../domain/ssml').SsmlDocument;
+      doc: import('../models/ssml').SsmlDocument;
       voice: string;
       speed: number;
       format: string;
@@ -286,7 +286,7 @@ type CommandNameToDefs = {
       segments: Array<{
         id: string;
         text?: string | null;
-        ssml?: import('../domain/ssml').SsmlDocument | null;
+        ssml?: import('../models/ssml').SsmlDocument | null;
         voice: string;
         speed: number;
         format: string;
@@ -415,11 +415,11 @@ type CommandNameToDefs = {
   // Platform presets (Stage 15.2) — 数据驱动平台预设 + 一键导出
   list_platform_presets: {
     input: Record<string, never>;
-    output: Array<import('../domain/platform').PlatformPreset>;
+    output: Array<import('../models/platform').PlatformPreset>;
   };
   platform_export: {
     input: {
-      platformId: import('../domain/platform').PlatformId;
+      platformId: import('../models/platform').PlatformId;
       inputPath: string;
       outputPath: string;
       subtitlePath?: string | null;
@@ -429,7 +429,7 @@ type CommandNameToDefs = {
       outputPath: string;
       duration: number;
       fileSize: number;
-      platform: import('../domain/platform').PlatformPreset;
+      platform: import('../models/platform').PlatformPreset;
     };
   };
 

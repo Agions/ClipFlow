@@ -3,16 +3,16 @@
 //! v3 启动时仅做：
 //! - PipelineJob 状态机推进（复用 src/core/domain/job.ts 等价 Rust 实现）
 //! - 事件发送（app.emit）
-//! - 落盘到 SQLite（fablr_db::Db）
+//! - 落盘到 SQLite（db::Db）
 //!
 //! 真实业务逻辑（Director / Script / TTS / Render）在 steps/ 增量落地。
 
 use tauri::{AppHandle, Emitter, Runtime, State};
 
 use crate::commands::project::ProjectService;
-use fablr_db::JobRow;
-use fablr_domain::job::{JobArtifacts, JobError, JobPhase, PhaseRunState, PipelineJob};
-use fablr_media::utils::now_iso8601;
+use db::JobRow;
+use models::job::{JobArtifacts, JobError, JobPhase, PhaseRunState, PipelineJob};
+use media::utils::now_iso8601;
 
 use super::types::{
     PhaseNeedsReviewEvent, PhaseParams, PhaseProgressEvent, PhaseStartedEvent, EVT_PHASE_NEEDS_REVIEW,

@@ -5,12 +5,12 @@
  * - platform.listPresets()  列出所有平台预设（UI 下拉 / 平台选择面板）
  * - platform.export(input)  按平台预设一键导出（preset → ExportVideoInput → ffmpeg）
  *
- * 数据模型：见 `src/core/domain/platform.ts` (PlatformPreset / RenderConfig)
+ * 数据模型：见 `src/core/models/platform.ts` (PlatformPreset / RenderConfig)
  * 后端实现：见 `src-tauri/src/commands/platform.rs`
  */
 
 import { invoke, TauriCommand } from '../invoke';
-import type { PlatformId, PlatformPreset } from '../../domain/platform';
+import type { PlatformId, PlatformPreset } from '../../models/platform';
 
 // ─── 公共类型 ──────────────────────────────────────────────
 
@@ -58,5 +58,5 @@ export const platform = {
   },
 };
 
-/** Re-export domain types */
+/** Re-export model types */
 export type { PlatformId, PlatformPreset };

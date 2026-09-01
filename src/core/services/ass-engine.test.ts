@@ -12,7 +12,7 @@ import {
   serializeAssStyle,
   toAssTime,
 } from './ass-engine';
-import type { SubtitleCue, SubtitleStyle, SubtitleTrack } from '@/core/domain/assembly';
+import type { SubtitleCue, SubtitleStyle, SubtitleTrack } from '@/core/models/assembly';
 
 describe('toAssTime', () => {
   it('formats 0 as 0:00:00.00', () => {

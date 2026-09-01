@@ -6,7 +6,7 @@
 use tauri::{AppHandle, Runtime};
 
 use crate::commands::project::ProjectService;
-use fablr_domain::job::PipelineJob;
+use models::job::PipelineJob;
 
 use super::commands::run_auto as run_auto_impl;
 

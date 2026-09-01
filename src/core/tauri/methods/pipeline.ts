@@ -8,7 +8,7 @@
  * - pipeline.skipPhase      跳过阶段（如用户已有脚本）
  * - pipeline.runAuto        自动跑完无 gate 阶段（understanding + planning）
  *
- * 数据模型：见 `src/core/domain/job.ts` (PipelineJob / JobPhase / PhaseRunState)
+ * 数据模型：见 `src/core/models/job.ts` (PipelineJob / JobPhase / PhaseRunState)
  * 后端实现：见 `src-tauri/src/commands/pipeline/`
  */
 
@@ -20,7 +20,7 @@ import type { PipelineJobDto } from '../command-types';
 /** PipelineJob = PipelineJobDto（与 Rust PipelineJob 对齐的 IPC 数据契约） */
 export type PipelineJob = PipelineJobDto;
 
-/** 阶段枚举（与 domain/job.ts 对齐） */
+/** 阶段枚举（与 models/job.ts 对齐） */
 export type JobPhase = PipelineJobDto['phase'];
 
 /** 阶段执行状态 */

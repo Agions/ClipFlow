@@ -1,0 +1,18 @@
+[package]
+name = "db"
+version = "2.2.0"
+edition = "2021"
+description = "Fablr SQLite 数据库与仓储持久化层"
+authors = ["Agions <agions@qq.com>"]
+license = "MIT"
+
+[dependencies]
+models = { path = "../models" }
+rusqlite = { version = "0.32", features = ["bundled", "chrono"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tracing = "0.1"
+
+[dev-dependencies]
+tempfile = "3"

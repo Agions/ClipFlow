@@ -12,11 +12,11 @@
  * 详见 https://github.com/libass/libass/blob/master/doc/ASSspecs.txt
  *
  * 与 SSML 引擎风格一致：纯函数 + 零依赖 + 双端镜像。
- * 数据源：`src/core/domain/assembly.ts` (SubtitleStyle / SubtitleCue / SubtitleTrack)
+ * 数据源：`src/core/models/assembly.ts` (SubtitleStyle / SubtitleCue / SubtitleTrack)
  * Rust 镜像：`src-tauri/src/commands/render/ass_engine.rs`
  */
 
-import type { SubtitleCue, SubtitleStyle, SubtitleTrack } from '@/core/domain/assembly';
+import type { SubtitleCue, SubtitleStyle, SubtitleTrack } from '@/core/models/assembly';
 
 // ─── 颜色转换 ─────────────────────────────────────────────────
 

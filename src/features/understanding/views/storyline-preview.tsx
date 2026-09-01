@@ -9,9 +9,9 @@ import { CheckCircle, FileJson, Clapperboard, Captions, Sparkles, Clock } from '
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import type { Storyline } from '@/core/domain/storyline';
+import type { Storyline } from '@/core/models/storyline';
 import type { UnderstandingState } from '@/stores/understanding-store';
-import { formatTimecode } from '@/core/domain/storyline';
+import { formatTimecode } from '@/core/models/storyline';
 
 export interface StorylinePreviewProps {
   /** 分析统计（Rust 端返回） */

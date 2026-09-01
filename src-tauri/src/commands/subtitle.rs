@@ -1,6 +1,6 @@
-//! Subtitle commands — Tauri IPC 桥接层，委托至 fablr_media::subtitle
+//! Subtitle commands — Tauri IPC 桥接层，委托至 media::subtitle
 
-use fablr_domain::SubtitleResult;
+use models::SubtitleResult;
 
 #[tauri::command]
 pub async fn transcribe_audio(
@@ -9,5 +9,5 @@ pub async fn transcribe_audio(
     model_size: Option<String>,
     language: Option<String>,
 ) -> Result<SubtitleResult, String> {
-    fablr_media::subtitle::transcribe_audio(app, audio_path, model_size, language).await
+    media::subtitle::transcribe_audio(app, audio_path, model_size, language).await
 }

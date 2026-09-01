@@ -11,10 +11,10 @@
 use serde::{Deserialize, Serialize};
 use tauri::State;
 
-pub use fablr_db::ProjectService;
-use fablr_db::{DbError, DbResult, ArtifactRow, JobRow, ProjectRow};
-use fablr_domain::intent::IntentConfig;
-use fablr_domain::production::{Production, ProductionSource, ProductionStatus};
+pub use db::ProjectService;
+use db::{DbError, DbResult, ArtifactRow, JobRow, ProjectRow};
+use models::intent::IntentConfig;
+use models::production::{Production, ProductionSource, ProductionStatus};
 
 // ─── IPC DTO ──────────────────────────────────────────────────
 
@@ -123,7 +123,7 @@ pub fn project_delete(id: String, service: State<'_, ProjectService>) -> Result<
 // ─── 纯函数实现（便于单元测试） ──────────────────────────────
 
 pub fn create(service: &ProjectService, input: CreateProjectInput) -> DbResult<ProjectDto> {
-    use fablr_domain::intent::DEFAULT_INTENT_CONFIG;
+    use models::intent::DEFAULT_INTENT_CONFIG;
     let now = now_unix();
     let id = input.id.unwrap_or_else(unique_id);
     let intent = input.intent.unwrap_or(DEFAULT_INTENT_CONFIG);
@@ -273,7 +273,7 @@ fn sqlx_err(e: serde_json::Error) -> DbError {
 mod tests {
     use super::*;
     use std::sync::Arc;
-    use fablr_db::Db;
+    use db::Db;
     use tempfile::tempdir;
 
     fn fresh_service() -> ProjectService {
@@ -318,8 +318,8 @@ mod tests {
         let save_input = SaveProjectInput {
             id: p.id.clone(),
             name: "new name".to_string(),
-            intent: fablr_domain::intent::intent_default_config(
-                fablr_domain::intent::ContentIntent::MovieReview,
+            intent: models::intent::intent_default_config(
+                models::intent::ContentIntent::MovieReview,
             ),
             video_path: p.video_path.clone(),
             subtitle_path: Some("/s.srt".to_string()),
@@ -328,7 +328,7 @@ mod tests {
         assert_eq!(updated.name, "new name");
         assert_eq!(
             updated.intent.intent,
-            fablr_domain::intent::ContentIntent::MovieReview
+            models::intent::ContentIntent::MovieReview
         );
         assert_eq!(updated.subtitle_path.as_deref(), Some("/s.srt"));
     }
