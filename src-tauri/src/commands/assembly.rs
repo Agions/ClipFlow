@@ -11,7 +11,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::commands::project::ProjectService;
-use crate::db::AssemblyKitRow;
+use fablr_db::AssemblyKitRow;
 
 // ─── 公开 API ───────────────────────────────────────────
 
@@ -116,7 +116,7 @@ fn now_unix() -> i64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::db::{Db, ProjectRow};
+    use fablr_db::{Db, ProjectRow};
     use std::sync::Arc;
 
     fn fresh_service() -> ProjectService {

@@ -1,53 +1,38 @@
-//! StoryFab — AI-driven professional video editing desktop app
-//! Tauri 2.x backend entry point
+//! Fablr — AI 影视/短剧解说创作平台 (Tauri 2 + Rust)
+//! Tauri 后端入口点与 IPC 桥接层
 
 use tauri::Manager;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-pub mod binary;
 pub mod commands;
-pub mod db;
-pub mod domain;
-pub mod understanding;
-pub mod video;
-pub mod types;
-pub mod utils;
-pub mod subtitle;
-pub mod highlight;
-pub mod segment;
-pub mod llm;
 
 pub use commands::{
-    ai, auto_save, ffprobe, pipeline, project, render, export_state, file_ops,
+    ai, assembly, auto_save, crash_recovery, export_state, ffprobe, file_ops, llm, pipeline, platform, project, render, subtitle, understanding, video,
 };
-pub use types::*;
-
+pub use fablr_domain::*;
+pub use fablr_db::ProjectService;
 pub use commands::ffprobe::{analyze_video, check_ffmpeg, run_ffprobe};
 pub use commands::ai::{
-    detect_highlights, detect_zcr_bursts, detect_smart_segments,
-    get_export_dir, run_ai_director_plan, synthesize_speech, synthesize_speech_batch, synthesize_speech_ssml, check_tts_available, list_tts_backends, TtsBackendInfo, translate_text,
+    detect_highlights, detect_smart_segments, detect_zcr_bursts, get_export_dir, list_tts_backends,
+    run_ai_director_plan, synthesize_speech, synthesize_speech_batch, synthesize_speech_ssml,
+    check_tts_available, translate_text, TtsBackendInfo,
 };
+pub use commands::video::{cut_video, get_audio_duration, mix_audio};
+pub use commands::subtitle::transcribe_audio;
 pub use commands::project::{
-    project_create, project_list, project_load, project_save, project_delete, ProjectService,
+    project_create, project_delete, project_list, project_load, project_save,
 };
 pub use commands::pipeline::{
     pipeline_approve_phase, pipeline_retry_phase, pipeline_run_auto, pipeline_skip_phase,
     pipeline_start_phase,
 };
 pub use commands::render::{
-    export_video, render_autonomous_cut, transcode_with_crop, generate_preview,
+    export_video, generate_preview, render_autonomous_cut, transcode_with_crop,
 };
 pub use commands::export_state::cancel_export;
 pub use commands::file_ops::{clean_temp_file, open_file, voice_discovery};
 pub use commands::platform::{list_platform_presets, platform_export, PlatformExportInput, PlatformExportResult};
-pub use commands::assembly::{assembly_kit_save, assembly_kit_load, AssemblyKitMeta, LoadedAssemblyKit};
-pub use video::processor::VideoProcessor;
-pub use video::ffmpeg_cmd::cut_video;
-pub use video::mix_audio::{mix_audio, MixAudioInput};
-pub use video::audio_duration::get_audio_duration;
-
-// Subtitle re-exports
-pub use subtitle::transcribe_audio;
+pub use commands::assembly::{assembly_kit_load, assembly_kit_save, AssemblyKitMeta, LoadedAssemblyKit};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -55,16 +40,15 @@ pub fn run() {
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "story-fab=info,warn".into()),
+                .unwrap_or_else(|_| "fablr=info,warn".into()),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    // 安装 panic hook (P0-1)：捕捉未处理 panic，写崩溃报告 + 透传 default 行为
-    // 必须在 Tauri::Builder 构造之前完成，否则 panic 时拿不到 app handle
-    crate::utils::install_panic_hook();
+    // 安装 panic hook
+    fablr_media::utils::install_panic_hook();
 
-    tracing::info!("StoryFab 启动中...");
+    tracing::info!("Fablr 启动中...");
 
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
@@ -75,9 +59,8 @@ pub fn run() {
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_store::Builder::new().build())
-        // 注册资源限流器 (P0-2)：render/transcribe/whisper 等重活必须先 acquire()
-        // 默认 (cpus-1) 个 permit，可通过 STORYFAB_RESOURCE_PERMITS 覆盖
-        .manage(crate::utils::ResourceLimiter::shared())
+        // 注册资源限流器：render/transcribe/whisper 等重活必须先 acquire()
+        .manage(fablr_media::utils::ResourceLimiter::shared())
         .invoke_handler(tauri::generate_handler![
             // Project CRUD (v3 · SQLite)
             project_create,
@@ -85,7 +68,7 @@ pub fn run() {
             project_load,
             project_save,
             project_delete,
-            // Pipeline 5 phase (v3 · 替代 v2 run_commentary_pipeline)
+            // Pipeline 5 phase
             pipeline_start_phase,
             pipeline_approve_phase,
             pipeline_retry_phase,
@@ -112,13 +95,8 @@ pub fn run() {
             // AssemblyKit 持久化（Stage 16.3）
             assembly_kit_save,
             assembly_kit_load,
-            // Whisper subtitle transcription (transcribe_audio lives in
-            // subtitle/transcribe.rs; check_faster_whisper /
-            // list_whisper_models / download_whisper_model /
-            // get_whisper_supported_languages are Python helper snippets
-            // in subtitle/whisper.rs and are NOT Tauri commands — they
-            // are called from transcribe.rs internally. Skipped here.)
-            subtitle::transcribe::transcribe_audio,
+            // Whisper subtitle transcription
+            transcribe_audio,
             // Highlight detection & smart segmentation
             detect_highlights,
             detect_zcr_bursts,
@@ -138,14 +116,12 @@ pub fn run() {
             auto_save::recover_autosave,
             auto_save::preview_autosave,
             // L0 Understanding layer (v3) — storyline 编排
-            // 直接引用子模块，避免 re-export 导致 Tauri 宏无法解析
-            understanding::storyline_builder::analyze_production,
+            understanding::analyze_production,
             // LLM / AI 脚本生成
             commands::llm::generate_narration_script,
             commands::llm::analyze_video_for_narration,
             commands::llm::list_available_models,
-            // Crash recovery (P0-3 companion): surface panic-hook crash
-            // reports to the frontend so users can see / share them.
+            // Crash recovery
             commands::crash_recovery::list_crashes,
             commands::crash_recovery::read_crash,
             commands::crash_recovery::delete_crash,
@@ -159,7 +135,7 @@ pub fn run() {
 
             // 初始化 SQLite 数据库（自动迁移）
             let db_path = app_data_dir.join("fablr.db");
-            match crate::db::Db::open(&db_path) {
+            match fablr_db::Db::open(&db_path) {
                 Ok(db) => {
                     let schema_v = db.schema_version().unwrap_or(0);
                     tracing::info!(

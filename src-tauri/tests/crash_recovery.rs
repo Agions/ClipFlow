@@ -59,7 +59,7 @@ fn crash_filename_convention_round_trip() {
 #[test]
 fn crash_dir_uses_app_data_dir() {
     // The panic hook writes to `<app_data_dir>/crashes/`, not
-    // `<app_data_dir>/story-fab/crashes/`. This test is a regression
+    // `<app_data_dir>/fablr/crashes/`. This test is a regression
     // guard against the "extra nesting" bug: if someone moves the
     // directory, both the hook and the recovery command must move
     // together, otherwise the user sees a list of "0 crashes" forever.

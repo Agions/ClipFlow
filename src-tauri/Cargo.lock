@@ -1048,6 +1048,9 @@ name = "fablr"
 version = "2.2.0"
 dependencies = [
  "dirs",
+ "fablr-db",
+ "fablr-domain",
+ "fablr-media",
  "futures-util",
  "log",
  "once_cell",
@@ -1070,6 +1073,49 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+ "urlencoding",
+]
+
+[[package]]
+name = "fablr-db"
+version = "2.2.0"
+dependencies = [
+ "fablr-domain",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tracing",
+]
+
+[[package]]
+name = "fablr-domain"
+version = "2.2.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+]
+
+[[package]]
+name = "fablr-media"
+version = "2.2.0"
+dependencies = [
+ "dirs",
+ "fablr-db",
+ "fablr-domain",
+ "futures-util",
+ "log",
+ "once_cell",
+ "reqwest 0.12.28",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
+ "tracing",
  "urlencoding",
 ]
 

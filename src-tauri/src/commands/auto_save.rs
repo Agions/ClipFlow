@@ -1,4 +1,4 @@
-//! Auto-save and crash-recovery for StoryFab projects.
+//! Auto-save and crash-recovery for Fablr projects.
 //!
 //! Design:
 //! - `auto_save_project` writes a `{project_id}.autosave.json` next to the project file.
@@ -28,17 +28,17 @@ pub fn project_path(story_fab_dir: &PathBuf, project_id: &str) -> PathBuf {
 
 // ─── Directory resolution ─────────────────────────────────────────────────────
 
-/// Returns the story-fab_dir (shared with project.rs storage).
+/// Returns the fablr_dir (shared with project.rs storage).
 pub async fn get_story_fab_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     let app_dir = app
         .path()
         .app_data_dir()
         .map_err(|e| format!("无法获取 AppData 目录: {e}"))?;
-    let story_fab_dir = app_dir.join("StoryFab");
-    tokio_fs::create_dir_all(&story_fab_dir)
+    let fablr_dir = app_dir.join("fablr");
+    tokio_fs::create_dir_all(&fablr_dir)
         .await
         .map_err(|e| format!("创建目录失败: {e}"))?;
-    Ok(story_fab_dir)
+    Ok(fablr_dir)
 }
 
 // ─── Tauri Commands ────────────────────────────────────────────────────────────
@@ -57,7 +57,7 @@ pub async fn auto_save_project(
         .await
         .map_err(|e| format!("自动保存失败: {e}"))?;
 
-    tracing::debug!("[StoryFab] Autosaved project {} to {:?}", project_id, target_path);
+    tracing::debug!("[Fablr] Autosaved project {} to {:?}", project_id, target_path);
     Ok(())
 }
 
@@ -74,7 +74,7 @@ pub async fn clear_autosave(
         tokio_fs::remove_file(&autosave)
             .await
             .map_err(|e| format!("清除自动保存失败: {e}"))?;
-        tracing::debug!("[StoryFab] Cleared autosave for project {}", project_id);
+        tracing::debug!("[Fablr] Cleared autosave for project {}", project_id);
     }
     Ok(())
 }
@@ -143,7 +143,7 @@ pub async fn recover_autosave(
         .await
         .map_err(|e| format!("恢复自动保存失败: {e}"))?;
 
-    tracing::info!("[StoryFab] Recovered project {} from autosave", project_id);
+    tracing::info!("[Fablr] Recovered project {} from autosave", project_id);
     Ok(content)
 }
 

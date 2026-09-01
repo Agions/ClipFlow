@@ -7,8 +7,8 @@ use crate::commands::pipeline::commands::{
     approve_phase_impl, retry_phase_impl, skip_phase_impl, start_phase_impl,
 };
 use crate::commands::project::ProjectService;
-use crate::db::Db;
-use crate::domain::{JobPhase, PhaseRunState};
+use fablr_db::Db;
+use fablr_domain::{JobPhase, PhaseRunState};
 use std::sync::Arc;
 use tempfile::tempdir;
 

@@ -1,3 +1,12 @@
+[workspace]
+members = [
+    ".",
+    "crates/fablr-domain",
+    "crates/fablr-db",
+    "crates/fablr-media",
+]
+resolver = "2"
+
 [package]
 name = "fablr"
 version = "2.2.0"
@@ -18,6 +27,9 @@ tempfile = "3"
 tauri = { version = "2.0", features = ["test"] }
 
 [dependencies]
+fablr-domain = { path = "crates/fablr-domain" }
+fablr-db = { path = "crates/fablr-db" }
+fablr-media = { path = "crates/fablr-media" }
 tauri = { version = "2.0", features = [] }
 tauri-plugin-dialog = "2.7"
 tauri-plugin-fs = "2.5"
@@ -42,11 +54,9 @@ futures-util = "0.3"
 rusqlite = { version = "0.32", features = ["bundled", "chrono"] }
 
 [profile.release]
-# Maximum size optimization — thin LTO → fat LTO for best cross-crate inlining
 lto           = "fat"
 codegen-units = 1
 strip         = true
-opt-level     = 3   # "z" > "s" for minimum binary size
+opt-level     = 3
 panic         = "abort"
-# Optional: enable inlining across crates for better runtime performance
 overflow-checks = false

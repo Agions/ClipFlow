@@ -3,32 +3,25 @@
 //!
 //! 子模块 (`constants` / `helpers` / `parsing` / `providers` / `types`)
 //! 定义在 crate 根的 `src/llm/` 目录里，不再在本目录下重复声明。
-//! 调用方请使用 `crate::llm::...` 路径。
+//! 调用方请使用 `fablr_media::llm::...` 路径。
 
 // Reusable HTTP client with connection pooling
 use std::sync::OnceLock;
 use std::time::Duration;
 use reqwest::Client;
 
-use crate::highlight::HighlightOptions;
-use crate::highlight::SceneDetector;
-use crate::llm::constants::{get_default_model, normalize_provider};
-use crate::llm::helpers::{build_system_prompt, build_user_prompt};
-use crate::llm::parsing::parse_script_output;
-use crate::llm::providers::call_llm_provider;
-use crate::llm::types::{
+use fablr_media::highlight::HighlightOptions;
+use fablr_media::highlight::SceneDetector;
+use fablr_media::llm::constants::{get_default_model, normalize_provider};
+use fablr_media::llm::helpers::{build_system_prompt, build_user_prompt};
+use fablr_media::llm::parsing::parse_script_output;
+use fablr_media::llm::providers::call_llm_provider;
+use fablr_media::llm::types::{
     AnalyzeVideoForScriptInput, AnalyzeVideoForScriptOutput,
     GenerateScriptInput, GenerateScriptOutput, ScriptStyle,
 };
 
-static MODEL_CATALOG: OnceLock<Vec<ModelInfo>> = OnceLock::new();
-
-fn get_model_catalog() -> &'static Vec<ModelInfo> {
-    MODEL_CATALOG.get_or_init(|| {
-        let raw = include_str!("../llm/models.json");
-        serde_json::from_str(raw).expect("Failed to parse llm/models.json")
-    })
-}
+use fablr_media::llm::{get_model_catalog, ModelInfo};
 
 static HTTP_CLIENT: OnceLock<Client> = OnceLock::new();
 
@@ -44,14 +37,6 @@ fn get_http_client() -> &'static Client {
 }
 
 // ─── Tauri 命令实现 ─────────────────────────────────────────────────────────
-
-#[derive(serde::Serialize, Clone, serde::Deserialize)]
-pub struct ModelInfo {
-    pub id: String,
-    pub provider: String,
-    pub name: String,
-    pub context_limit: usize,
-}
 
 /// 生成解说脚本
 #[tauri::command]
@@ -131,6 +116,6 @@ pub fn list_available_models() -> Vec<ModelInfo> {
 
 // Re-export types for external consumers (re-exported via llm/mod.rs
 // `pub use types::*;` so consumers should reach them as
-// `crate::llm::types::GenerateScriptInput` etc.). Commands/llm.rs only
+// `fablr_media::llm::types::GenerateScriptInput` etc.). Commands/llm.rs only
 // needs the #[tauri::command] function names; types are re-exported
 // from `llm` at the crate root.

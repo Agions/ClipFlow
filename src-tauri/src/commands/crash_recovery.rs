@@ -1,7 +1,7 @@
 //! Crash recovery — list and clear panic-hook crash reports.
 //!
-//! The panic hook installed by [`crate::utils::resilience::install_panic_hook`]
-//! writes a JSON file to `<app_data_dir>/story-fab/crashes/crash-<ts>.json`
+//! The panic hook installed by [`fablr_media::utils::resilience::install_panic_hook`]
+//! writes a JSON file to `<app_data_dir>/fablr/crashes/crash-<ts>.json`
 //! for every uncaught panic. This module exposes Tauri commands so the
 //! frontend can surface those reports to the user ("here's what crashed
 //! last time, please send the log").
@@ -27,7 +27,7 @@ use serde::{Deserialize, Serialize};
 use tauri::AppHandle;
 use tokio::fs as tokio_fs;
 
-use crate::utils::resilience::crash_dir_path;
+use fablr_media::utils::resilience::crash_dir_path;
 
 /// Lightweight summary returned by `list_crashes`. The full body is
 /// fetched on-demand by `read_crash` so the list stays cheap.
