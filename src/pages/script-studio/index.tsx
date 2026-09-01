@@ -10,51 +10,26 @@
  *   - 底部联动"以文剪片"视图接入 Workspace
  */
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
-  Sparkles,
-  Bot,
   Activity,
-  Download,
-  Scissors,
-  Plus,
-  Clock,
+  Bot,
   Headphones,
-  ChevronDown,
-  ChevronUp,
-  GripVertical,
-  Wand2,
-  RefreshCw,
-  User,
+  Plus,
+  Sparkles,
 } from 'lucide-react';
 import { withErrorBoundary } from '@/components/common/error-boundary';
 import { multiAgentDramaPipeline } from '@/core/services/ai/script/drama-agents';
 import { loadProjectWithRetry } from '@/core/services/project/project-file-service';
 import { notify } from '@/shared';
+import type { CharacterItem, ScriptBlock, ScriptBlockType } from './types';
+import { ScriptStudioHeader } from './components/script-studio-header';
+import { ScriptGeneratorCard } from './components/script-generator-card';
+import { ScriptCardItem } from './components/script-card-item';
+import { ScriptStudioSidebar } from './components/script-studio-sidebar';
 import styles from './script-studio.module.less';
 
-// ─── 类型定义 ────────────────────────────────────────────────────────────────
-
-/** 卡片类型：黄金Hook / 主线幕 / 高潮反转 / 互动结尾 */
-export type ScriptBlockType = 'hook' | 'act' | 'climax' | 'ending';
-
-export interface ScriptBlock {
-  id: string;
-  type: ScriptBlockType;
-  title: string;
-  content: string;
-  durationEstimate: number;   // 配音时长预估（秒），按中文 4 字/秒计算
-  linkedClipIds: string[];    // 关联的 Asset Hub 切片 ID
-  collapsed: boolean;
-  isAiGenerated: boolean;
-}
-
-interface CharacterItem {
-  id: string;
-  name: string;
-  role: string;
-  avatarBg: string;
-}
+export * from './types';
 
 // ─── 工具函数 ────────────────────────────────────────────────────────────────
 
@@ -71,7 +46,7 @@ function formatDuration(seconds: number): string {
   return `${s}秒`;
 }
 
-const BLOCK_CONFIG: Record<ScriptBlockType, { label: string; icon: React.ReactNode; colorClass: string; borderColor: string; badgeBg: string; placeholder: string }> = {
+export const BLOCK_CONFIG: Record<ScriptBlockType, { label: string; icon: React.ReactNode; colorClass: string; borderColor: string; badgeBg: string; placeholder: string }> = {
   hook: {
     label: '🪝 黄金3秒 Hook',
     icon: <Sparkles size={14} className="text-purple-400" />,
@@ -110,7 +85,6 @@ const BLOCK_CONFIG: Record<ScriptBlockType, { label: string; icon: React.ReactNo
 
 export const ScriptStudioPage: React.FC = () => {
   const { projectId } = useParams<{ projectId?: string }>();
-  const navigate = useNavigate();
   const [blocks, setBlocks] = useState<ScriptBlock[]>([]);
   const [characters, setCharacters] = useState<CharacterItem[]>([]);
   const [projectTitle, setProjectTitle] = useState<string>('');
@@ -287,365 +261,44 @@ export const ScriptStudioPage: React.FC = () => {
   return (
     <div className={styles.container}>
       {/* ── 顶部流程流转条 ── */}
-      <div className={styles.topBarRow}>
-        <div className={styles.titleGroup}>
-          <span className="font-bold text-sm text-white">
-            剧工 Fablr · {projectTitle || 'AI 剧本研磨工坊'}
-          </span>
-          {totalDuration > 0 && (
-            <span className={styles.genreBadge}>
-              <Clock size={10} style={{ display: 'inline', marginRight: 3 }} />
-              预计 {formatDuration(totalDuration)}
-            </span>
-          )}
-        </div>
-
-        <div className={styles.pipelineSteps}>
-          <button className={styles.stepBtn} onClick={() => navigate(projectId ? `/asset-hub/${projectId}` : '/asset-hub')}>
-            1. 素材拆条
-          </button>
-          <button className={`${styles.stepBtn} ${styles.activeStepBtn}`}>
-            2. 剧本研磨 (当前)
-          </button>
-          <button className={styles.stepBtn} onClick={() => navigate(projectId ? `/workspace/${projectId}` : '/workspace')}>
-            3. 剪辑合成
-          </button>
-          <button className={styles.stepBtn} onClick={() => navigate(projectId ? `/export-hub/${projectId}` : '/export-hub')}>
-            4. 消重发布
-          </button>
-        </div>
-
-        <div className={styles.topRightBtns}>
-          <button
-            className={styles.outlineBtn}
-            onClick={() => notify.success('剧本草稿已导出为 TXT 格式！')}
-            disabled={blocks.length === 0}
-          >
-            <Download size={13} />
-            <span>导出剧本</span>
-          </button>
-          <button
-            className={styles.primaryStudioBtn}
-            onClick={() => navigate(projectId ? `/workspace/${projectId}` : '/workspace')}
-            disabled={blocks.length === 0}
-          >
-            <Scissors size={13} />
-            <span>去剪辑合成 →</span>
-          </button>
-        </div>
-      </div>
+      <ScriptStudioHeader
+        projectId={projectId}
+        projectTitle={projectTitle}
+        totalDuration={totalDuration}
+        hasBlocks={blocks.length > 0}
+        formatDuration={formatDuration}
+      />
 
       {/* ── 双栏主视口 ── */}
       <div className="flex gap-3 flex-1 min-h-0">
         {/* ── 左侧：结构化剧本骨架卡片 ── */}
         <main className="flex-1 flex flex-col gap-3 overflow-y-auto">
           {blocks.length === 0 ? (
-            /* 高颜值交互式剧本研磨工作台（交互式创作中枢） */
-            <div className="flex flex-col gap-4">
-              {/* 顶部 AI 协同研磨配置中枢 */}
-              <div className="bg-[#111220] border border-white/8 rounded-xl p-5 flex flex-col gap-4 shadow-xl relative overflow-hidden">
-                <div className="flex items-center justify-between border-b border-white/6 pb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-purple-950/80 border border-purple-700/50 flex items-center justify-center text-purple-400">
-                      <Sparkles size={16} />
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold text-white flex items-center gap-2">
-                        AI 智能编剧研磨中枢
-                        <span className="text-[10px] text-cyan-300 bg-cyan-950/60 border border-cyan-700/40 px-2 py-0.5 rounded-full font-medium">
-                          多 Agent 实时联动
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-text-tertiary">
-                        自动识别原片核心转折点，一键生成结构化分段剧本
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 叙事体裁切换 */}
-                  <div className="flex items-center gap-1 bg-[#18192a] p-1 rounded-lg border border-white/5">
-                    <button
-                      className={`px-3 py-1 text-xs rounded-md font-medium transition-all cursor-pointer ${
-                        selectedGenre === 'short_drama'
-                          ? 'bg-purple-600 text-white shadow-sm'
-                          : 'text-text-tertiary hover:text-white'
-                      }`}
-                      onClick={() => setSelectedGenre('short_drama')}
-                    >
-                      🔥 爆款短剧
-                    </button>
-                    <button
-                      className={`px-3 py-1 text-xs rounded-md font-medium transition-all cursor-pointer ${
-                        selectedGenre === 'movie_recap'
-                          ? 'bg-purple-600 text-white shadow-sm'
-                          : 'text-text-tertiary hover:text-white'
-                      }`}
-                      onClick={() => setSelectedGenre('movie_recap')}
-                    >
-                      🎬 电影深度解说
-                    </button>
-                    <button
-                      className={`px-3 py-1 text-xs rounded-md font-medium transition-all cursor-pointer ${
-                        selectedGenre === 'suspense'
-                          ? 'bg-purple-600 text-white shadow-sm'
-                          : 'text-text-tertiary hover:text-white'
-                      }`}
-                      onClick={() => setSelectedGenre('suspense')}
-                    >
-                      🕵️ 悬疑探案
-                    </button>
-                  </div>
-                </div>
-
-                {/* 剧本生成引导输入区 */}
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between text-xs text-text-secondary">
-                    <span className="font-semibold text-white flex items-center gap-1.5">
-                      <Bot size={13} className="text-purple-400" />
-                      创作提示词或剧情主线 (可选)：
-                    </span>
-                    <span className="text-[10px] text-text-tertiary">
-                      支持输入角色动机、特定反转点或解说语气
-                    </span>
-                  </div>
-                  <textarea
-                    className="w-full bg-[#18192a] border border-white/8 hover:border-purple-600/40 focus:border-purple-600 rounded-lg p-3 text-xs text-white placeholder-white/20 outline-none resize-none transition-colors"
-                    rows={3}
-                    value={customPrompt}
-                    onChange={e => setCustomPrompt(e.target.value)}
-                    placeholder="例如：开头前3秒突出男主隐忍3年后的打脸瞬间，语速偏快，语气带强烈悬念与情绪压迫感..."
-                  />
-                </div>
-
-                {/* 底部动作条 */}
-                <div className="flex items-center justify-between pt-2 border-t border-white/6">
-                  <div className="flex items-center gap-2">
-                    <button
-                      className="px-2.5 py-1 text-[11px] bg-white/5 hover:bg-white/10 text-text-secondary hover:text-white rounded border border-white/8 cursor-pointer transition-colors"
-                      onClick={() => setCustomPrompt('突出反转与打脸，高潮部分情绪激昂，结尾留下悬念')}
-                    >
-                      ⚡ 强情绪反转
-                    </button>
-                    <button
-                      className="px-2.5 py-1 text-[11px] bg-white/5 hover:bg-white/10 text-text-secondary hover:text-white rounded border border-white/8 cursor-pointer transition-colors"
-                      onClick={() => setCustomPrompt('注重细节与心理博弈，层层推进真相')}
-                    >
-                      🕵️ 烧脑悬疑
-                    </button>
-                    <button
-                      className="px-2.5 py-1 text-[11px] bg-white/5 hover:bg-white/10 text-text-secondary hover:text-white rounded border border-white/8 cursor-pointer transition-colors"
-                      onClick={() => setCustomPrompt('快节奏口语化，适合短视频完播率冲刺')}
-                    >
-                      🚀 短视频快节奏
-                    </button>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      className="px-3 py-1.5 text-xs text-text-tertiary hover:text-white cursor-pointer"
-                      onClick={() => addBlock('hook')}
-                    >
-                      + 手动空白新建
-                    </button>
-                    <button
-                      className="px-5 py-2 text-xs bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-lg flex items-center gap-1.5 shadow-lg shadow-purple-600/30 transition-all cursor-pointer"
-                      onClick={() => handleGenerateScript()}
-                      disabled={isGenerating}
-                    >
-                      <Sparkles size={13} />
-                      <span>{isGenerating ? '多 Agent 正在研磨中...' : '一键 AI 研磨剧本骨架'}</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* 3 大爆款短剧结构模板卡 */}
-              <div className="flex flex-col gap-2">
-                <div className="text-xs font-bold text-text-secondary px-1 flex items-center gap-1.5">
-                  <Activity size={13} className="text-amber-400" />
-                  <span>或直接套用短视频爆款剧本骨架：</span>
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <div
-                    className="bg-[#111220] hover:bg-[#15162a] border border-white/8 hover:border-purple-600/50 rounded-xl p-4 flex flex-col gap-2.5 cursor-pointer transition-all shadow-md group"
-                    onClick={() => {
-                      setSelectedGenre('suspense');
-                      handleGenerateScript('suspense');
-                    }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-white group-hover:text-purple-300 transition-colors">
-                        🔥 悬疑反转倒叙模板
-                      </span>
-                      <span className="text-[9px] text-amber-400 bg-amber-950/60 border border-amber-800/40 px-1.5 py-0.5 rounded font-bold">
-                        98% 完播率
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-text-tertiary leading-relaxed">
-                      将大结局或凶案现场最高潮前置为 Hook，前3秒牢牢锁定观众好奇心。
-                    </div>
-                    <div className="mt-auto pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-purple-400 group-hover:text-purple-300">
-                      <span>包含 4 段骨架卡片</span>
-                      <span>点击一键套用 →</span>
-                    </div>
-                  </div>
-
-                  <div
-                    className="bg-[#111220] hover:bg-[#15162a] border border-white/8 hover:border-purple-600/50 rounded-xl p-4 flex flex-col gap-2.5 cursor-pointer transition-all shadow-md group"
-                    onClick={() => {
-                      setSelectedGenre('short_drama');
-                      handleGenerateScript('short_drama');
-                    }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-white group-hover:text-purple-300 transition-colors">
-                        ⚡ 战神逆袭打脸模板
-                      </span>
-                      <span className="text-[9px] text-purple-400 bg-purple-950/60 border border-purple-800/40 px-1.5 py-0.5 rounded font-bold">
-                        超强情绪爽点
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-text-tertiary leading-relaxed">
-                      快速铺垫主角屈辱反差，中段步步紧逼，结尾身份亮明爆发爽感。
-                    </div>
-                    <div className="mt-auto pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-purple-400 group-hover:text-purple-300">
-                      <span>包含 4 段骨架卡片</span>
-                      <span>点击一键套用 →</span>
-                    </div>
-                  </div>
-
-                  <div
-                    className="bg-[#111220] hover:bg-[#15162a] border border-white/8 hover:border-purple-600/50 rounded-xl p-4 flex flex-col gap-2.5 cursor-pointer transition-all shadow-md group"
-                    onClick={() => {
-                      setSelectedGenre('movie_recap');
-                      handleGenerateScript('movie_recap');
-                    }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-white group-hover:text-purple-300 transition-colors">
-                        🎭 情感伦理深度模板
-                      </span>
-                      <span className="text-[9px] text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-1.5 py-0.5 rounded font-bold">
-                        高评论互动
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-text-tertiary leading-relaxed">
-                      家庭矛盾与道德抉择冲突，结尾设置话题问句引发评论区激烈讨论。
-                    </div>
-                    <div className="mt-auto pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-purple-400 group-hover:text-purple-300">
-                      <span>包含 4 段骨架卡片</span>
-                      <span>点击一键套用 →</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ScriptGeneratorCard
+              selectedGenre={selectedGenre}
+              customPrompt={customPrompt}
+              isGenerating={isGenerating}
+              onGenreChange={setSelectedGenre}
+              onPromptChange={setCustomPrompt}
+              onGenerate={() => handleGenerateScript()}
+              onAddBlankBlock={addBlock}
+            />
           ) : (
-            /* 结构化卡片列表 */
             <div className="flex flex-col gap-3">
-              {blocks.map((block) => {
-                const cfg = BLOCK_CONFIG[block.type];
-                return (
-                  <div
-                    key={block.id}
-                    className={`bg-[#111220] border ${cfg.borderColor} rounded-xl overflow-hidden transition-all`}
-                  >
-                    {/* 卡片头部 */}
-                    <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-[#0e0f1c]">
-                      <GripVertical size={14} className="text-white/20 cursor-grab" />
-                      <div className={`flex items-center gap-1.5 ${cfg.colorClass} font-semibold text-sm`}>
-                        {cfg.icon}
-                        <span>{block.title}</span>
-                      </div>
-                      {block.isAiGenerated && (
-                        <span className="text-[9px] bg-purple-950/60 text-purple-400 border border-purple-800/40 px-1.5 py-0.5 rounded-full font-medium">
-                          AI 生成
-                        </span>
-                      )}
-
-                      {/* 配音时长标签 */}
-                      <div className="ml-auto flex items-center gap-2">
-                        {block.durationEstimate > 0 && (
-                          <span className="flex items-center gap-1 text-[10px] text-text-tertiary bg-white/5 border border-white/8 px-2 py-0.5 rounded-full">
-                            <Clock size={9} />
-                            配音约 {formatDuration(block.durationEstimate)}
-                          </span>
-                        )}
-                        <button
-                          className="text-[10px] text-text-tertiary hover:text-white px-1.5 py-0.5 rounded cursor-pointer"
-                          onClick={() => handleAiPolish(block.id)}
-                          title="AI 润色"
-                        >
-                          <Wand2 size={11} />
-                        </button>
-                        <button
-                          className="text-[10px] text-text-tertiary hover:text-white px-1.5 py-0.5 rounded cursor-pointer"
-                          onClick={() => toggleCollapse(block.id)}
-                          title={block.collapsed ? '展开' : '收起'}
-                        >
-                          {block.collapsed ? <ChevronDown size={13} /> : <ChevronUp size={13} />}
-                        </button>
-                        <button
-                          className="text-[10px] text-text-tertiary hover:text-red-400 px-1.5 py-0.5 rounded cursor-pointer"
-                          onClick={() => removeBlock(block.id)}
-                          title="删除卡片"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* 卡片内容 */}
-                    {!block.collapsed && (
-                      <div className="p-4">
-                        <textarea
-                          className="w-full bg-transparent text-sm text-white/90 leading-relaxed resize-none border-0 outline-none placeholder-white/20 min-h-[100px]"
-                          value={block.content}
-                          placeholder={cfg.placeholder}
-                          onChange={e => updateBlockContent(block.id, e.target.value)}
-                          rows={Math.max(4, (block.content.match(/\n/g) || []).length + 4)}
-                        />
-
-                        {/* 卡片底部操作条 */}
-                        <div className="flex items-center gap-2 pt-3 mt-2 border-t border-white/5">
-                          <button
-                            className="text-[10px] text-purple-400 hover:text-purple-300 flex items-center gap-1 cursor-pointer"
-                            onClick={() => handleAiContinue(block.id)}
-                          >
-                            <RefreshCw size={10} /> AI 续写
-                          </button>
-                          <button
-                            className="text-[10px] text-purple-400 hover:text-purple-300 flex items-center gap-1 cursor-pointer"
-                            onClick={() => handleAiPolish(block.id)}
-                          >
-                            <Wand2 size={10} /> AI 润色
-                          </button>
-                          <span className="ml-auto text-[10px] text-text-tertiary">
-                            {block.content.replace(/\s/g, '').length} 字
-                          </span>
-                          {/* 插入下一个卡片 */}
-                          <div className="relative group">
-                            <button className="text-[10px] text-text-tertiary hover:text-white flex items-center gap-1 cursor-pointer">
-                              <Plus size={10} /> 插入段落
-                            </button>
-                            <div className="absolute right-0 bottom-full mb-1 hidden group-hover:flex flex-col bg-[#1a1b2e] border border-white/10 rounded-lg overflow-hidden shadow-lg z-10 w-28">
-                              {(['hook', 'act', 'climax', 'ending'] as ScriptBlockType[]).map(t => (
-                                <button
-                                  key={t}
-                                  className="text-[10px] text-left px-3 py-1.5 hover:bg-white/5 text-text-secondary cursor-pointer"
-                                  onClick={() => addBlock(t, block.id)}
-                                >
-                                  {BLOCK_CONFIG[t].label}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {blocks.map(block => (
+                <ScriptCardItem
+                  key={block.id}
+                  block={block}
+                  config={BLOCK_CONFIG[block.type]}
+                  formatDuration={formatDuration}
+                  onContentChange={updateBlockContent}
+                  onToggleCollapse={toggleCollapse}
+                  onAiPolish={handleAiPolish}
+                  onAiContinue={handleAiContinue}
+                  onRemove={removeBlock}
+                  onAddAfter={addBlock}
+                />
+              ))}
 
               {/* 添加新卡片按钮 */}
               <div className="flex items-center gap-2 px-1">
@@ -665,115 +318,14 @@ export const ScriptStudioPage: React.FC = () => {
         </main>
 
         {/* ── 右侧：多 Agent 状态 + 人物小传 + 节奏摘要 ── */}
-        <aside className={styles.rightColumn}>
-          {/* 多智能体状态 */}
-          <div className={styles.panelHeader}>
-            <span className={styles.panelTitle}>多智能体协作状态</span>
-          </div>
-          <div className={styles.agentList}>
-            <div className={styles.agentCard}>
-              <div className={styles.agentCardHeader}>
-                <div className="flex items-center gap-2">
-                  <div className={`${styles.agentIconCircle} bg-purple-500/20 text-purple-400`}>
-                    <Bot size={13} />
-                  </div>
-                  <span className={styles.agentName}>解说编剧 Agent</span>
-                </div>
-                <span className={styles.agentReadyTag}>● 已就绪</span>
-              </div>
-              <p className={styles.agentDesc}>整体叙事节奏与口语化台词转写</p>
-            </div>
-            <div className={styles.agentCard}>
-              <div className={styles.agentCardHeader}>
-                <div className="flex items-center gap-2">
-                  <div className={`${styles.agentIconCircle} bg-amber-500/20 text-amber-400`}>
-                    <Sparkles size={13} />
-                  </div>
-                  <span className={styles.agentName}>黄金 Hook Agent</span>
-                </div>
-                <span className={styles.agentReadyTag}>● 待命</span>
-              </div>
-              <p className={styles.agentDesc}>前3秒悬念倒叙设计，提升完播率</p>
-            </div>
-            <div className={styles.agentCard}>
-              <div className={styles.agentCardHeader}>
-                <div className="flex items-center gap-2">
-                  <div className={`${styles.agentIconCircle} bg-emerald-500/20 text-emerald-400`}>
-                    <Activity size={13} />
-                  </div>
-                  <span className={styles.agentName}>情绪节奏 Agent</span>
-                </div>
-                <span className={styles.agentReadyTag}>● 待命</span>
-              </div>
-              <p className={styles.agentDesc}>剧情起承转合与高潮背景音对齐</p>
-            </div>
-          </div>
-
-          {/* 节奏摘要 */}
-          {blocks.length > 0 && (
-            <div className={`${styles.emotionCurveCard} mt-3`}>
-              <div className={styles.emotionTitle}>节奏摘要</div>
-              <div className="flex flex-col gap-1.5 mt-2">
-                {blocks.map(b => {
-                  const cfg = BLOCK_CONFIG[b.type];
-                  return (
-                    <div key={b.id} className="flex items-center gap-2">
-                      <span className={`text-[9px] px-1.5 py-0.5 rounded ${cfg.badgeBg}`}>
-                        {cfg.label.split(' ')[1] || cfg.label}
-                      </span>
-                      <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-purple-500/70"
-                          style={{ width: `${Math.min(100, (b.durationEstimate / 60) * 100)}%` }}
-                        />
-                      </div>
-                      <span className="text-[9px] text-text-tertiary">{formatDuration(b.durationEstimate)}</span>
-                    </div>
-                  );
-                })}
-                <div className="flex justify-between items-center mt-1 pt-2 border-t border-white/5">
-                  <span className="text-[10px] text-text-tertiary">总预估时长</span>
-                  <span className="text-[10px] font-bold text-white">{formatDuration(totalDuration)}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 人物小传 */}
-          {characters.length > 0 && (
-            <div className="mt-3">
-              <div className={styles.panelHeader}>
-                <span className={styles.panelTitle}>人物小传</span>
-              </div>
-              <div className={styles.characterList}>
-                {characters.map(c => (
-                  <div key={c.id} className={styles.characterCard}>
-                    <div className={styles.characterAvatar} style={{ background: c.avatarBg }}>
-                      <User size={14} className="text-white/80" />
-                    </div>
-                    <div className={styles.characterMeta}>
-                      <span className={styles.characterName}>{c.name}</span>
-                      <span className={styles.characterRoleTag}>{c.role}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* 操作按钮 */}
-          <div className="mt-auto pt-4 flex flex-col gap-2">
-            <button
-              className={styles.primaryStudioBtn}
-              onClick={() => handleGenerateScript()}
-              disabled={isGenerating}
-              style={{ width: '100%', justifyContent: 'center' }}
-            >
-              <RefreshCw size={13} />
-              <span>{isGenerating ? '生成中...' : '重新生成骨架'}</span>
-            </button>
-          </div>
-        </aside>
+        <ScriptStudioSidebar
+          blocks={blocks}
+          characters={characters}
+          totalDuration={totalDuration}
+          isGenerating={isGenerating}
+          formatDuration={formatDuration}
+          onRegenerate={() => handleGenerateScript()}
+        />
       </div>
     </div>
   );
