@@ -1,6 +1,7 @@
 /**
  * @fablr/utils — 通用工具库与运行时服务
  */
+export * from './time';
 export * from '../../../src/shared/index';
 export * from '../../../src/shared/utils/formatting';
 export * from '../../../src/shared/utils/logging';

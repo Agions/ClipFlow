@@ -6,7 +6,6 @@ import {
   Smartphone,
   Sparkles,
   Square,
-  Zap,
 } from 'lucide-react';
 
 interface AspectMonitorPanelProps {
