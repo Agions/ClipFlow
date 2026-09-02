@@ -28,6 +28,7 @@ import { persist, createJSONStorage, devtools } from 'zustand/middleware';
 
 export interface PersistedStoreOptions<S> {
   name: string;
+  legacyName?: string;
   devtoolsName: string;
   state: (
     set: (partial: Partial<S> | ((prev: S) => Partial<S>)) => void,
@@ -39,11 +40,27 @@ export interface PersistedStoreOptions<S> {
 
 export function createPersistedStore<S>({
   name,
+  legacyName,
   devtoolsName,
   state,
   storage = createJSONStorage(() => localStorage),
   partialize,
 }: PersistedStoreOptions<S>) {
+  if (typeof localStorage !== 'undefined' && legacyName) {
+    try {
+      const current = localStorage.getItem(name);
+      if (!current) {
+        const legacy = localStorage.getItem(legacyName);
+        if (legacy) {
+          localStorage.setItem(name, legacy);
+          localStorage.removeItem(legacyName);
+        }
+      }
+    } catch {
+      /* ignore migration errors */
+    }
+  }
+
   const storeState = (set: (partial: Partial<S> | ((prev: S) => Partial<S>)) => void, get: () => S): S => {
     return state(set, get);
   };

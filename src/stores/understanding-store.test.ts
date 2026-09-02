@@ -19,7 +19,7 @@ import { useUnderstandingStore } from './understanding-store';
 import type { UnderstandingProgress } from '@/core/services/understanding';
 
 const result = {
-  storylinePath: '/data/StoryFab/productions/p1/artifacts/storyline.json',
+  storylinePath: '/data/Fablr/productions/p1/artifacts/storyline.json',
   scenesCount: 5,
   subtitlesCount: 12,
   highlightsCount: 3,

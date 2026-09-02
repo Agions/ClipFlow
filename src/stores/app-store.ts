@@ -93,7 +93,8 @@ const applyThemeClass = (theme: 'light' | 'dark') => {
 // ─── Store ───────────────────────────────────────────────────
 
 export const useAppStore = createPersistedStore<AppState>({
-  name: 'StoryFab-app',
+  name: 'fablr-app',
+  legacyName: 'StoryFab-app',
   devtoolsName: 'AppStore',
   storage: createJSONStorage(() => localStorage),
   partialize: (state) => ({

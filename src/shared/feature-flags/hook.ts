@@ -39,7 +39,7 @@ export function useFeatureFlag(key: FeatureFlagKey): boolean {
 
     // 监听其他 tab 切换 + 手动修改
     const onStorage = (e: StorageEvent) => {
-      if (e.key === 'StoryFab-feature-flags' || e.key === null) {
+      if (e.key === 'fablr-feature-flags' || e.key === 'StoryFab-feature-flags' || e.key === null) {
         setValue(readResolvedFlags()[key]);
       }
     };
@@ -68,7 +68,7 @@ export function useFeatureFlagWithToggle(key: FeatureFlagKey): {
     (next: boolean) => {
       writeFlag(key, next);
       // 触发同 tab 同步（存储事件不会在当前 tab 触发）
-      window.dispatchEvent(new StorageEvent('storage', { key: 'StoryFab-feature-flags' }));
+      window.dispatchEvent(new StorageEvent('storage', { key: 'fablr-feature-flags' }));
     },
     [key]
   );
@@ -77,7 +77,7 @@ export function useFeatureFlagWithToggle(key: FeatureFlagKey): {
 
   const reset = useCallback(() => {
     writeFlag(key, null);
-    window.dispatchEvent(new StorageEvent('storage', { key: 'StoryFab-feature-flags' }));
+    window.dispatchEvent(new StorageEvent('storage', { key: 'fablr-feature-flags' }));
   }, [key]);
 
   return { value, toggle, set, reset, isDefault };

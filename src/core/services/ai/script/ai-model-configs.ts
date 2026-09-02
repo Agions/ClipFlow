@@ -109,7 +109,7 @@ export const AI_MODEL_CONFIGS: Record<AIModelType, ModelConfig> = {
       Authorization: `Bearer ${apiKey}`,
     }),
     transformRequest: (prompt, options) => ({
-      header: { app_id: options?.appId || '', uid: 'StoryFab_user' },
+      header: { app_id: options?.appId || '', uid: 'Fablr_user' },
       parameter: { chat: { domain: 'generalv3.5', temperature: 0.7, max_tokens: 4096 } },
       payload: { message: { text: [{ role: 'user', content: prompt }] } },
     }),

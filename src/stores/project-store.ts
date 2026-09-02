@@ -5,7 +5,7 @@
  * 视频资产（currentVideo / duration）真源，EditorStore 通过 subscribe 投影。
  *
  * 设计选择：
- *  - 保留 StoryFab reducer 协议（SET_MODE / SET_STEP / ...）作为状态机核心，
+ *  - 保留 Fablr reducer 协议（SET_MODE / SET_STEP / ...）作为状态机核心，
  *    避免一次性重写 reducer 触发回归；复合 action（updateVideo、resetStep 等）
  *    以 action creator 形式包在 store action 上。
  *  - 持久化：当前无 persist（与原 storyFabStore 一致），项目数据由

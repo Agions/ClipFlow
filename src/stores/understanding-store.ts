@@ -7,7 +7,7 @@
  *  - `startAnalysis` 编排全链路分析；`loadStoryline` 从落盘 JSON 恢复产物
  *
  * 不持久化：storyline.json 的主真源在磁盘
- * （appData/StoryFab/productions/{id}/artifacts/storyline.json），
+ * （appData/Fablr/productions/{id}/artifacts/storyline.json），
  * store 仅持有轻量引用，启动扫描恢复逻辑在 M4 落地。
  */
 

@@ -12,7 +12,8 @@ import { DEFAULT_FLAGS, isFeatureFlagKey, type FeatureFlagKey } from './types';
 
 // ─── 持久化 Key ──────────────────────────────────────────
 
-const STORAGE_KEY = 'StoryFab-feature-flags';
+export const STORAGE_KEY = 'fablr-feature-flags';
+const LEGACY_STORAGE_KEY = 'StoryFab-feature-flags';
 
 // ─── 序列化格式 ──────────────────────────────────────────
 
@@ -42,11 +43,24 @@ export function readResolvedFlags(): ResolvedFlags {
 
 /**
  * 仅读取 localStorage 中存储的 override（不含默认）。
+ * 优先读取新 key，缺失时从旧 key 迁移并自动清理。
  * 忽略非法 key 和非 boolean 值（防御脏数据）。
  */
 export function readStoredFlags(): StoredFlags {
   if (typeof localStorage === 'undefined') return {};
-  const raw = localStorage.getItem(STORAGE_KEY);
+  let raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) {
+    const legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (legacyRaw) {
+      raw = legacyRaw;
+      try {
+        localStorage.setItem(STORAGE_KEY, legacyRaw);
+        localStorage.removeItem(LEGACY_STORAGE_KEY);
+      } catch {
+        /* ignore */
+      }
+    }
+  }
   if (!raw) return {};
   try {
     const parsed: unknown = JSON.parse(raw);

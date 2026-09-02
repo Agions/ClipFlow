@@ -174,7 +174,8 @@ const initialTimelineState = {
 };
 
 export const useEditorStore = createPersistedStore<EditorStore>({
-  name: 'StoryFab-workspace',
+  name: 'fablr-workspace',
+  legacyName: 'StoryFab-workspace',
   devtoolsName: 'EditorStore',
   storage: createJSONStorage(() => localStorage),
   partialize: state => ({

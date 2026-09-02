@@ -129,7 +129,7 @@ export interface AssBuildOptions {
   width?: number;
   /** 视频高（默认 1080） */
   height?: number;
-  /** 脚本标题（默认 "StoryFab Export"） */
+  /** 脚本标题（默认 "Fablr Export"） */
   title?: string;
   /** 默认 style ID（cues 没指定时用） */
   defaultStyleId?: string;
@@ -139,7 +139,7 @@ export interface AssBuildOptions {
 export function buildAssFile(track: SubtitleTrack, options: AssBuildOptions = {}): string {
   const width = options.width ?? 1920;
   const height = options.height ?? 1080;
-  const title = options.title ?? 'StoryFab Export';
+  const title = options.title ?? 'Fablr Export';
   const defaultStyleId = options.defaultStyleId ?? track.styles[0]?.id ?? 'Default';
 
   const lines: string[] = [];

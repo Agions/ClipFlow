@@ -21,7 +21,7 @@ import {
   type FeatureFlagKey,
 } from './index';
 
-const STORAGE_KEY = 'StoryFab-feature-flags';
+const STORAGE_KEY = 'fablr-feature-flags';
 
 // ─── localStorage 清理 ──────────────────────────────────
 
