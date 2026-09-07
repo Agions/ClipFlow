@@ -112,21 +112,25 @@ jobs:
           releaseName: "v${{ github.ref_name }}"
           args: --target ${{ matrix.platform.target }}
 
-      - name: Copy run instructions to bundle
-        if: matrix.platform.label == 'macOS ARM64' || matrix.platform.label == 'macOS x64'
+      - name: Copy run instructions and user manuals to bundle
         run: |
           find src-tauri/target/${{ matrix.platform.target }}/release/bundle -name "*.app" -type d | while read app_path; do
             parent_dir=$(dirname "$app_path")
-            cp HOW-TO-RUN.txt "$parent_dir/HOW-TO-RUN.txt"
-            echo "Copied HOW-TO-RUN.txt to $parent_dir"
+            cp HOW-TO-RUN.txt "$parent_dir/HOW-TO-RUN.txt" 2>/dev/null || true
+            cp docs/dist-manual/USER_MANUAL.md "$parent_dir/USER_MANUAL.md"
+            cp docs/dist-manual/USER_MANUAL.txt "$parent_dir/USER_MANUAL.txt"
+            echo "Copied manuals to $parent_dir"
           done
+          # Copy to target bundle root for all installers
+          cp docs/dist-manual/USER_MANUAL.md src-tauri/target/${{ matrix.platform.target }}/release/bundle/USER_MANUAL.md 2>/dev/null || true
+          cp docs/dist-manual/USER_MANUAL.txt src-tauri/target/${{ matrix.platform.target }}/release/bundle/USER_MANUAL.txt 2>/dev/null || true
 
       - name: Package macOS app bundle
         if: matrix.platform.label == 'macOS ARM64' || matrix.platform.label == 'macOS x64'
         run: |
           APP_PATH=$(find src-tauri/target/${{ matrix.platform.target }}/release/bundle -name "*.app" -type d | head -1)
           echo "Found app: $APP_PATH"
-          7z a -tzip "fablr-${{ matrix.platform.label }}.zip" "$APP_PATH"
+          7z a -tzip "fablr-${{ matrix.platform.label }}.zip" "$APP_PATH" "docs/dist-manual/USER_MANUAL.md" "docs/dist-manual/USER_MANUAL.txt" "HOW-TO-RUN.txt"
           echo "Packaged: fablr-${{ matrix.platform.label }}.zip"
           ls -lh "fablr-${{ matrix.platform.label }}.zip"
 
@@ -160,6 +164,8 @@ jobs:
             fablr-${{ matrix.platform.label }}.zip
             fablr-${{ matrix.platform.label }}.7z
             HOW-TO-RUN.txt
+            docs/dist-manual/USER_MANUAL.md
+            docs/dist-manual/USER_MANUAL.txt
           retention-days: 7
 
   upload-assets:
@@ -181,7 +187,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          find artifacts -type f \( -name "*.exe" -o -name "*.msi" -o -name "*.zip" -o -name "*.7z" -o -name "*.dmg" -o -name "*.deb" -o -name "*.AppImage" -o -name "HOW-TO-RUN.txt" \) -print0 | while IFS= read -r -d '' artifact; do
+          find artifacts -type f \( -name "*.exe" -o -name "*.msi" -o -name "*.zip" -o -name "*.7z" -o -name "*.dmg" -o -name "*.deb" -o -name "*.AppImage" -o -name "HOW-TO-RUN.txt" -o -name "USER_MANUAL.md" -o -name "USER_MANUAL.txt" \) -print0 | while IFS= read -r -d '' artifact; do
             echo "Uploading $artifact..."
             gh release upload "${{ github.ref_name }}" "$artifact" --clobber --repo ${{ github.repository }}
           done
